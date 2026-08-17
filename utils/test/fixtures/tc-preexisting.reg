@@ -1,0 +1,40 @@
+Windows Registry Editor Version 5.00
+
+; Synthetic pre-populated Tandem Commander destination (config version 105 =
+; 0x69) for the feature-057 harness: user-created content that must survive
+; unselected-category runs and be replaced in selected categories.
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1]
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1\Version]
+"Configuration"=dword:00000069
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1\Configuration]
+"Skill Level"=dword:00000001
+"Theme Mode"=dword:00000001
+"Use Recycle Bin"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1\Hot Paths\1]
+"Name"="My TC Path"
+"Path"="C:\\TC"
+"Visible"=dword:00000001
+"Icon"=dword:00000003
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1\Plugins\9]
+"Name"="FTP Client"
+"DLL"="ftp\\ftp.spl"
+"Configuration Key"="FTP"
+"Uses Password Manager"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1\Plugins Configuration\FTP]
+"Version"=dword:00000025
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1\Plugins Configuration\FTP\Bookmarks\1]
+"Name"="TC Own Server"
+"Address"="ftp.tc.example"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Tandem Commander 0.1\Packers & Unpackers\Custom Packers\1]
+"Type"=dword:00000000
+"Title"="TC packer"
+"Ext"="zip"

@@ -1,0 +1,328 @@
+Windows Registry Editor Version 5.00
+
+; Synthetic Altap Salamander 4.0 configuration (config version 103 = 0x67)
+; for the feature-057 migration test harness. Imported under a scratch key;
+; never touches real product roots.
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0]
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Version]
+"Configuration"=dword:00000067
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Configuration]
+"Skill Level"=dword:00000002
+"Full Row Select"=dword:00000001
+"Use Recycle Bin"=dword:00000001
+"Information Line Content"="$(FileName)"
+"Sort Uses Locale"=dword:00000001
+"Language"="polish.slg"
+"Top ToolBar"="1,2,3,4,5"
+"Plugins.ver Version (x64)"=dword:0000002a
+"Conversion Table"="czech\\852_ISO.TXT"
+"Show Top ToolBar"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Configuration\Confirmation]
+"File Overwrite"=dword:00000001
+"Non-empty Dir Del"=dword:00000000
+"Drag and Drop"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Configuration\Drive Special Settings]
+"Removable Automatic Refresh"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Configuration\Find Options\1]
+"Named"="*.log"
+"Look In"="C:\\Logs"
+"SubDirectories"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Configuration\Command History]
+"1"="cmd.exe /k dir"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Configuration\Working Directories]
+"1"="C:\\Temp"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Hot Paths\1]
+"Name"="Projects"
+"Path"="E:\\Projects"
+"Visible"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Hot Paths\2]
+"Name"="Downloads"
+"Path"="C:\\Users\\test\\Downloads"
+"Visible"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Hot Paths\3]
+"Name"="Tools"
+"Path"="D:\\Tools"
+"Visible"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Hot Paths\4]
+"Name"="Docs"
+"Path"="C:\\Docs"
+"Visible"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Hot Paths\5]
+"Name"="Music"
+"Path"="D:\\Music"
+"Visible"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Hot Paths\6]
+"Name"="Work"
+"Path"="C:\\Work"
+"Visible"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Hot Paths\7]
+"Name"="Backup"
+"Path"="F:\\Backup"
+"Visible"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\User Menu\1]
+"Item Name"="&Notepad"
+"Command"="C:\\Windows\\notepad.exe"
+"Arguments"="$(Name)"
+"Initial Directory"="$(Drive)$(Path)"
+"Execute Through Shell"=dword:00000000
+"Close Shell Window"=dword:00000000
+"Open Shell Window"=dword:00000001
+"Icon"=""
+"Type"=dword:00000000
+"Show In Toolbar"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\User Menu\2]
+"Item Name"="Altap &Tool"
+"Command"="C:\\Program Files\\Altap Salamander\\utils\\tool.exe"
+"Arguments"=""
+"Initial Directory"=""
+"Execute Through Shell"=dword:00000000
+"Close Shell Window"=dword:00000000
+"Open Shell Window"=dword:00000001
+"Icon"="C:\\Program Files\\Altap Salamander\\utils\\tool.exe,0"
+"Type"=dword:00000000
+"Show In Toolbar"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\User Menu\3]
+"Item Name"="-"
+"Command"=""
+"Arguments"=""
+"Initial Directory"=""
+"Execute Through Shell"=dword:00000000
+"Close Shell Window"=dword:00000000
+"Type"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\User Menu\4]
+"Item Name"="Total Diff"
+"Command"="C:\\Tools\\diff.exe"
+"Arguments"="$(Name)"
+"Initial Directory"="$(Drive)$(Path)"
+"Execute Through Shell"=dword:00000000
+"Close Shell Window"=dword:00000000
+"Type"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\User Menu\5]
+"Item Name"="Hex Edit"
+"Command"="C:\\Tools\\hexedit.exe"
+"Arguments"="$(Name)"
+"Initial Directory"="$(Drive)$(Path)"
+"Execute Through Shell"=dword:00000000
+"Close Shell Window"=dword:00000000
+"Type"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Viewers\1]
+"Masks"="*.txt;*.ini"
+"Type"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Viewers\2]
+"Masks"="*.jpg"
+"Type"=dword:ffffffff
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Viewers\3]
+"Masks"="*.bmp|*.gif"
+"Type"=dword:00000000
+"Command"="C:\\Tools\\view.exe"
+"Arguments"="$(Name)"
+"Initial Directory"="$(Drive)$(Path)"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Viewers\4]
+"Masks"="*.log"
+"Type"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Alternative Viewers\1]
+"Masks"="*.*"
+"Type"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Editors\1]
+"Masks"="*.txt;*.ini;*.cfg"
+"Command"="C:\\Windows\\notepad.exe"
+"Arguments"="$(Name)"
+"Initial Directory"="$(Drive)$(Path)"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Colors]
+"Color Scheme"=dword:00000004
+"Item Fg Normal"=dword:01000000
+"Item Bk Normal"=dword:01ffffff
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Colors\Panel Items Hilighting\1]
+"Masks"="*.exe;*.bat"
+"Attributes"=dword:00000000
+"Valid Attributes"=dword:00000000
+"Item Fg Normal"=dword:000000c8
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Custom Colors]
+"1"=dword:00ff0000
+"2"=dword:0000ff00
+"3"=dword:000000ff
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\View Templates\1]
+"Name"="My Detailed"
+"Flags"=dword:00000003
+"Columns"="4b0001,320002,280000,280000,320000,280000,280000,280000,280000,4b0001,320002,280000,280000,320000,280000,280000,280000,280000"
+"Left Smart Mode"=dword:00000001
+"Right Smart Mode"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Viewer]
+"Tabelator Size"=dword:00000008
+"Wrap Text"=dword:00000001
+"Default Mode"=dword:00000000
+"Find Text"="secret search"
+"HEX-mode"=dword:00000000
+"Left"=dword:00000064
+"Top"=dword:00000032
+"Save Window Position"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Default Directories]
+"C"="C:\\Users\\test"
+"D"="D:\\Data"
+"E"="Q:\\wrong-drive-letter"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Window]
+"Left"=dword:00000000
+"Top"=dword:00000000
+"Right"=dword:00000500
+"Bottom"=dword:00000400
+"Show"=dword:00000001
+"Split Position"="50.0"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Left Panel]
+"Path"="C:\\"
+"View Type"=dword:00000002
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Packers & Unpackers]
+"Simple Icons In Archives"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Packers & Unpackers\Custom Packers\1]
+"Type"=dword:00000000
+"Title"="External ZIP"
+"Ext"="zip"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Internal ZIP Packer]
+"Obsolete"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Password Manager]
+"Use Master Password"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins\13]
+"Name"="FTP Client"
+"DLL"="ftp\\ftp.spl"
+"Configuration Key"="FTP"
+"Uses Password Manager"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins\14]
+"Name"="ZIP"
+"DLL"="zip\\zip.spl"
+"Configuration Key"="ZIP"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins\30]
+"Name"="UnRAR"
+"DLL"="unrar\\unrar.spl"
+"Configuration Key"="UnRAR"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP]
+"Version"=dword:00000025
+"Total Speed Limit"="2.5"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\1]
+"Name"="Server One"
+"Address"="ftp.example.com"
+"Anonymous"=dword:00000000
+"User"="alice"
+"PasswordS"=hex:01,aa,bb,cc,dd,ee,ff,00,11,22,33,44,55,66,77,88,99,10
+"Save Password"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\2]
+"Name"="Server Two (encrypted pwd)"
+"Address"="ftps.example.org"
+"Anonymous"=dword:00000000
+"User"="bob"
+"PasswordE"=hex:02,01,02,03,04,05,06,07,08,09,0a,0b,0c,0d,0e,0f,10,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df,e0,f0,f1,f2,f3,f4,f5,f6,f7,f8,f9
+"Save Password"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\3]
+"Name"="Server Three"
+"Address"="ftp3.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\4]
+"Name"="Server Four"
+"Address"="ftp4.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\5]
+"Name"="Server Five"
+"Address"="ftp5.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\6]
+"Name"="Server Six"
+"Address"="ftp6.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\7]
+"Name"="Server Seven"
+"Address"="ftp7.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\8]
+"Name"="Server Eight"
+"Address"="ftp8.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\9]
+"Name"="Server Nine"
+"Address"="ftp9.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\10]
+"Name"="Server Ten"
+"Address"="ftp10.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\11]
+"Name"="Server Eleven"
+"Address"="ftp11.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Bookmarks\12]
+"Name"="Server Twelve"
+"Address"="ftp12.example.com"
+"Anonymous"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Proxy Servers\1]
+"Unique ID"=dword:00000001
+"Name"="corp-proxy"
+"Type"=dword:00000001
+"Host"="proxy.corp.example"
+"Port"=dword:00000bb8
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Server Types\1]
+"Name"="Custom Unix"
+"Autodetect Condition"="syst_contains(\"UNIX\")"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\FTP\Command History]
+"1"="SITE HELP"
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\ZIP]
+"Version"=dword:00000001
+"Compression Level"=dword:00000009
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 4.0\Plugins Configuration\UnRAR]
+"Version"=dword:00000001
+"Some Option"=dword:00000001

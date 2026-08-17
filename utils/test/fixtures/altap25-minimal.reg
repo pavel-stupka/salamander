@@ -1,0 +1,26 @@
+Windows Registry Editor Version 5.00
+
+; Synthetic Altap Salamander 2.51 configuration (config version 40 = 0x28)
+; for the feature-057 harness: exercises the old-generation transforms
+; (T1: '$' doubling in hot paths for cfg < 47; T2: lowercase viewer/editor
+; mask extensions for cfg < 44) and absent-category handling.
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 2.51]
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 2.51\Version]
+"Configuration"=dword:00000028
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 2.51\Configuration]
+"Skill Level"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 2.51\Configuration\Confirmation]
+"File Overwrite"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 2.51\Hot Paths\1]
+"Name"="Money"
+"Path"="C:\\$MONEY$"
+"Visible"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\TCMigTest\Altap Salamander 2.51\Viewers\1]
+"Masks"="*.TXT;*.DOC"
+"Type"=dword:00000001

@@ -11,6 +11,21 @@ plugin.
 
 ## [Unreleased]
 
+### Added
+
+- **Settings migration from Altap Salamander.** A standalone one-time utility,
+  `utils/migrate-altap-settings.cmd` in the source repository (a single
+  downloadable file, not part of the installer), copies selected settings from
+  an existing Altap/Servant Salamander configuration into Tandem Commander:
+  directory hot paths, FTP bookmarks including stored passwords, user menu,
+  viewer/editor associations, colors, confirmations, view templates and the
+  configurations of shipped plugins. It backs up the current Tandem Commander
+  settings first and generates a double-click restore script; the Altap
+  Salamander configuration is read-only to the tool and never modified.
+  Archiver settings and window/session state are deliberately not carried
+  over; the closing summary names everything skipped and why. See
+  `utils/README.md`.
+
 ## [0.1.2] — 2026-08-07
 
 **Build 186.** Maintenance release: the SFTP plugin's dialogs and connection
