@@ -615,6 +615,9 @@ public:
     HANDLE FindFirstChangeNotification(LPCTSTR lpPathName, BOOL bWatchSubtree,
                                        DWORD dwNotifyFilter);
 
+    HANDLE FindFirstChangeNotificationW(LPCWSTR lpPathName, BOOL bWatchSubtree,
+                                        DWORD dwNotifyFilter);
+
     BOOL FindCloseChangeNotification(HANDLE hChangeHandle);
 
     LPVOID GetEnvironmentStrings(VOID);

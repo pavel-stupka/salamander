@@ -26,7 +26,22 @@ plugin.
   over; the closing summary names everything skipped and why. See
   `utils/README.md`.
 
-## [0.1.2] — 2026-08-07
+### Fixed
+
+- **Folders with non-ASCII names misbehaved three ways** — most visibly on
+  cloud drives such as Google Drive's `G:\Můj disk`, where the folder name is
+  not the user's choice: cloud sync-status badges (synced / online-only /
+  syncing / error) never appeared even though Windows Explorer showed them;
+  files like Word documents or PDFs fell back to a generic blank icon; and
+  the window flashed a busy cursor on every activation without any visible
+  result, because automatic change monitoring was silently broken and the
+  panel re-listed the folder on each return to the application (changes made
+  by other programs also stopped appearing automatically in such folders).
+  All three were one regression from the Unicode/long-path rework: three
+  places still interpreted the now-UTF-8 panel path in the legacy 8-bit
+  encoding, so any path with characters like "ů" was garbled before reaching
+  Windows. ASCII-only paths — including typical OneDrive folders — were never
+  affected, which made the defect look Google Drive-specific.
 
 **Build 186.** Maintenance release: the SFTP plugin's dialogs and connection
 handling are reworked for reliability, plugin names render correctly in every

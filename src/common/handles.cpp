@@ -2233,6 +2233,17 @@ C__Handles::FindFirstChangeNotification(LPCTSTR lpPathName, BOOL bWatchSubtree,
     return ret;
 }
 
+HANDLE
+C__Handles::FindFirstChangeNotificationW(LPCWSTR lpPathName, BOOL bWatchSubtree,
+                                         DWORD dwNotifyFilter)
+{
+    HANDLE ret = ::FindFirstChangeNotificationW(lpPathName, bWatchSubtree,
+                                                dwNotifyFilter);
+    CheckCreate(ret != INVALID_HANDLE_VALUE, __htChangeNotification,
+                __hoFindFirstChangeNotification, ret, GetLastError());
+    return ret;
+}
+
 BOOL C__Handles::FindCloseChangeNotification(HANDLE hChangeHandle)
 {
 #ifdef MULTITHREADED_HANDLES_ENABLE

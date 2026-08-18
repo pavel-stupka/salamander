@@ -493,8 +493,17 @@ unsigned IconThreadThreadFBody(void* parameter)
                             path[l++] = '\\';
                         name = path + l; // pointer to the location of the name in the full path
                         *name = 0;
-                        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, path, l, wPath, MAX_PATH + 10);
-                        wName = wPath + l;
+                        // the panel path is UTF-8 (feature 004); the wide prefix may be
+                        // shorter than 'l' bytes, so 'wName' must point past the converted
+                        // prefix, not at wPath + l; CP_ACP fallback for invalid UTF-8
+                        int wl = SalU8ToW(path, l, wPath, MAX_PATH + 10); // includes the null terminator
+                        if (wl == 0)
+                        {
+                            wl = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, path, l, wPath, MAX_PATH + 10 - 1);
+                            wPath[wl] = 0;
+                            wl++; // match SalU8ToW semantics: count includes the terminator
+                        }
+                        wName = wPath + (wl - 1);
                         *wName = 0;
                         pathIsInvalid = !PathContainsValidComponents(path, FALSE);
                         if (pathIsInvalid)

@@ -347,13 +347,23 @@ LPITEMIDLIST SHILCreateFromPath(LPCSTR pszPath)
     if (SUCCEEDED(SHGetDesktopFolder(&psfDesktop)))
     {
         ULONG cchEaten;
-        WCHAR wszPath[MAX_PATH];
+        WCHAR wszPathBuf[MAX_PATH];
 
-        MultiByteToWideChar(CP_ACP, 0, pszPath, -1, wszPath, MAX_PATH);
-        wszPath[MAX_PATH - 1] = 0;
+        // the path is UTF-8 (feature 004; also reachable from plugins via
+        // CSalamanderGeneral::GetFileIcon, where legacy callers pass ACP
+        // strings): UTF-8 first, CP_ACP fallback for invalid UTF-8
+        WCHAR* wszPath = SalU8ToWAlloc(pszPath);
+        if (wszPath == NULL)
+        {
+            MultiByteToWideChar(CP_ACP, 0, pszPath, -1, wszPathBuf, MAX_PATH);
+            wszPathBuf[MAX_PATH - 1] = 0;
+            wszPath = wszPathBuf;
+        }
 
         psfDesktop->ParseDisplayName(NULL, NULL, wszPath, &cchEaten, &pidl, NULL);
 
+        if (wszPath != wszPathBuf)
+            free(wszPath);
         psfDesktop->Release();
     }
     return pidl;

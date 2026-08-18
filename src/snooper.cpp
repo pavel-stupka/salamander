@@ -575,12 +575,21 @@ void AddDirectory(CFilesWindow* win, const char* path, BOOL registerDevNotificat
     // trims the trailing spaces/dots and thus works with a different path
     char pathCopy[3 * MAX_PATH];
     MakeCopyWithBackslashIfNeeded(path, pathCopy);
-    HANDLE h = HANDLES_Q(FindFirstChangeNotification(path, FALSE,
-                                                     FILE_NOTIFY_CHANGE_FILE_NAME |
-                                                         FILE_NOTIFY_CHANGE_DIR_NAME |
-                                                         FILE_NOTIFY_CHANGE_ATTRIBUTES |
-                                                         FILE_NOTIFY_CHANGE_SIZE |
-                                                         FILE_NOTIFY_CHANGE_LAST_WRITE));
+    // the panel path is UTF-8 (feature 004): convert and call the W API, otherwise
+    // monitoring silently fails for paths with characters outside the ACP;
+    // CP_ACP fallback for invalid UTF-8
+    WCHAR wPath[3 * MAX_PATH];
+    if (SalU8ToW(path, -1, wPath, _countof(wPath)) == 0)
+    {
+        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, path, -1, wPath, _countof(wPath));
+        wPath[_countof(wPath) - 1] = 0;
+    }
+    HANDLE h = HANDLES_Q(FindFirstChangeNotificationW(wPath, FALSE,
+                                                      FILE_NOTIFY_CHANGE_FILE_NAME |
+                                                          FILE_NOTIFY_CHANGE_DIR_NAME |
+                                                          FILE_NOTIFY_CHANGE_ATTRIBUTES |
+                                                          FILE_NOTIFY_CHANGE_SIZE |
+                                                          FILE_NOTIFY_CHANGE_LAST_WRITE));
     if (h != INVALID_HANDLE_VALUE)
     {
         win->SetAutomaticRefresh(TRUE);
@@ -717,12 +726,19 @@ void ChangeDirectory(CFilesWindow* win, const char* newPath, BOOL registerDevNot
             // trims the trailing spaces/dots and thus works with a different path
             char newPathCopy[3 * MAX_PATH];
             MakeCopyWithBackslashIfNeeded(newPath, newPathCopy);
-            ObjectArray[i] = HANDLES_Q(FindFirstChangeNotification(newPath, FALSE,
-                                                                   FILE_NOTIFY_CHANGE_FILE_NAME |
-                                                                       FILE_NOTIFY_CHANGE_DIR_NAME |
-                                                                       FILE_NOTIFY_CHANGE_ATTRIBUTES |
-                                                                       FILE_NOTIFY_CHANGE_SIZE |
-                                                                       FILE_NOTIFY_CHANGE_LAST_WRITE));
+            // the panel path is UTF-8 (feature 004): W API + CP_ACP fallback, see AddDirectory
+            WCHAR wNewPath[3 * MAX_PATH];
+            if (SalU8ToW(newPath, -1, wNewPath, _countof(wNewPath)) == 0)
+            {
+                MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, newPath, -1, wNewPath, _countof(wNewPath));
+                wNewPath[_countof(wNewPath) - 1] = 0;
+            }
+            ObjectArray[i] = HANDLES_Q(FindFirstChangeNotificationW(wNewPath, FALSE,
+                                                                    FILE_NOTIFY_CHANGE_FILE_NAME |
+                                                                        FILE_NOTIFY_CHANGE_DIR_NAME |
+                                                                        FILE_NOTIFY_CHANGE_ATTRIBUTES |
+                                                                        FILE_NOTIFY_CHANGE_SIZE |
+                                                                        FILE_NOTIFY_CHANGE_LAST_WRITE));
             if ((HANDLE)ObjectArray[i] == INVALID_HANDLE_VALUE)
             {
                 win->SetAutomaticRefresh(FALSE);
@@ -747,12 +763,19 @@ void ChangeDirectory(CFilesWindow* win, const char* newPath, BOOL registerDevNot
         // trims the trailing spaces/dots and thus works with a different path
         char newPathCopy[3 * MAX_PATH];
         MakeCopyWithBackslashIfNeeded(newPath, newPathCopy);
-        HANDLE h = HANDLES_Q(FindFirstChangeNotification(newPath, FALSE,
-                                                         FILE_NOTIFY_CHANGE_FILE_NAME |
-                                                             FILE_NOTIFY_CHANGE_DIR_NAME |
-                                                             FILE_NOTIFY_CHANGE_ATTRIBUTES |
-                                                             FILE_NOTIFY_CHANGE_SIZE |
-                                                             FILE_NOTIFY_CHANGE_LAST_WRITE));
+        // the panel path is UTF-8 (feature 004): W API + CP_ACP fallback, see AddDirectory
+        WCHAR wNewPath[3 * MAX_PATH];
+        if (SalU8ToW(newPath, -1, wNewPath, _countof(wNewPath)) == 0)
+        {
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, newPath, -1, wNewPath, _countof(wNewPath));
+            wNewPath[_countof(wNewPath) - 1] = 0;
+        }
+        HANDLE h = HANDLES_Q(FindFirstChangeNotificationW(wNewPath, FALSE,
+                                                          FILE_NOTIFY_CHANGE_FILE_NAME |
+                                                              FILE_NOTIFY_CHANGE_DIR_NAME |
+                                                              FILE_NOTIFY_CHANGE_ATTRIBUTES |
+                                                              FILE_NOTIFY_CHANGE_SIZE |
+                                                              FILE_NOTIFY_CHANGE_LAST_WRITE));
         if (h != INVALID_HANDLE_VALUE)
         {
             win->SetAutomaticRefresh(TRUE);
