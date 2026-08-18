@@ -34,7 +34,7 @@
 // where MINORB were hundredths appended without a dot (2.53) and a zero was dropped (5.0)
 #define VERSINFO_SALAMANDER_MAJOR 0
 #define VERSINFO_SALAMANDER_MINORA 1
-#define VERSINFO_SALAMANDER_MINORB 2
+#define VERSINFO_SALAMANDER_MINORB 3
 
 #define VERSINFO_SALAMANDER_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSION_TXT
 #define VERSINFO_SAL_SHORT_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSIONSHORT_TXT
@@ -109,10 +109,14 @@
 // 186 - Tandem Commander 0.1.2 (pre-release stability & security review,
 //       SFTP connect/config dialogs, product-wide contextual UI translations -
 //       features 052-056; see CHANGELOG.md)
+// 187 - Tandem Commander 0.1.3 (Altap Salamander settings migration utility,
+//       cloud sync badges/file icons/auto-refresh in non-ASCII paths,
+//       sync-in-progress badge, pre-release stabilization review -
+//       features 057-060; see CHANGELOG.md)
 
 // ! DULEZITE: nova cisla buildu je nutne zapsat do vetve "default", a pak
 //             teprve do vedlejsi vetve (kompletni seznam je jen v "default" vetvi)
-#define VERSINFO_BUILDNUMBER 186
+#define VERSINFO_BUILDNUMBER 187
 
 // VERSINFO_BETAVERSION_TXT:
 //

@@ -11,6 +11,17 @@ plugin.
 
 ## [Unreleased]
 
+## [0.1.3] — 2026-08-18
+
+**Build 187.** Feature release: a standalone utility migrates settings from an
+existing Altap Salamander installation, and cloud sync-status badges now
+display as in Windows Explorer — in folders with non-ASCII names and for
+items whose sync is still in progress. Shipped after an independent
+multi-perspective stabilization review of every change since 0.1.2 (see
+`specs/060-prerelease-stabilization/review-report.md`), with the full Debug
+and Release builds, the unit tests (1145/0) and the migration utility's test
+harness (98/0) all passing.
+
 ### Added
 
 - **Settings migration from Altap Salamander.** A standalone one-time utility,
@@ -74,6 +85,8 @@ plugin.
   encoding, so any path with characters like "ů" was garbled before reaching
   Windows. ASCII-only paths — including typical OneDrive folders — were never
   affected, which made the defect look Google Drive-specific.
+
+## [0.1.2] — 2026-08-07
 
 **Build 186.** Maintenance release: the SFTP plugin's dialogs and connection
 handling are reworked for reliability, plugin names render correctly in every
