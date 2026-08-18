@@ -28,6 +28,20 @@ plugin.
 
 ### Fixed
 
+- **The sync-in-progress badge (blue arrows) now displays as in Explorer.**
+  Items that Windows Explorer marks as "sync pending" — most visibly folders
+  whose contents are still uploading or downloading in OneDrive — showed no
+  status badge at all, a gap present even before the Open Salamander fork:
+  the sync provider reports this state only through the Windows per-item
+  state property, a channel the panels never consulted, not through the icon
+  overlay handlers the panels read. Panels now fall back to that property
+  (exactly the source Explorer documents for its state icon) for items no
+  overlay handler claims inside a cloud-synced folder, and show a
+  sync-pending badge that clears when the provider finishes. The badge obeys
+  the existing icon-overlay configuration (it can be disabled under the name
+  `TandemCloudSyncPending`); behavior everywhere else, including Google
+  Drive letter drives, is unchanged.
+
 - **Folders with non-ASCII names misbehaved three ways** — most visibly on
   cloud drives such as Google Drive's `G:\Můj disk`, where the folder name is
   not the user's choice: cloud sync-status badges (synced / online-only /

@@ -475,6 +475,7 @@ unsigned IconThreadThreadFBody(void* parameter)
                 WCHAR* wName = wPath;
                 BOOL pathIsInvalid = FALSE;
                 BOOL isGoogleDrivePath = FALSE;
+                BOOL isCloudSyncRootPath = FALSE;
                 if (window->Is(ptDisk))
                 {
                     int l = (int)strlen(window->GetPath());
@@ -509,6 +510,9 @@ unsigned IconThreadThreadFBody(void* parameter)
                         if (pathIsInvalid)
                             TRACE_I("Path contains invalid components, shell cannot read icons from such paths! Path: " << path);
                         isGoogleDrivePath = ShellIconOverlays.IsGoogleDrivePath(path);
+                        // feature 059: cloud-files sync roots get the "sync pending"
+                        // badge fallback (PKEY_StorageProviderState), checked once per cycle
+                        isCloudSyncRootPath = CShellIconOverlays::IsCloudSyncRootPath(wPath);
                     }
                 }
 
@@ -703,7 +707,7 @@ unsigned IconThreadThreadFBody(void* parameter)
                                     DWORD iconOverlayIndex = ShellIconOverlays.GetIconOverlayIndex(wPath, wName, path, name,
                                                                                                    fileName, fileAttrs,
                                                                                                    minPriority, iconReadersIconOverlayIds,
-                                                                                                   isGoogleDrivePath);
+                                                                                                   isGoogleDrivePath, isCloudSyncRootPath);
                                     //                    TRACE_I("Getting icon overlay index is done.");
 
                                     HANDLES(EnterCriticalSection(&window->ICSleepSection));

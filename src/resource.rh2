@@ -340,6 +340,7 @@
 #define IDI_GOOGLEDRIVE     981
 #define IDI_DROPBOX         982
 #define IDI_ONEDRIVE        983
+#define IDI_SYNCPENDING     984 // cloud "sync pending" overlay badge (feature 059)
 
 // feature 047: hot path icon gallery color variants (indices 1..9; index 0 is
 // HFavoritIcon); the IDs must stay consecutive - they are addressed as

@@ -9,6 +9,40 @@
 #include "shiconov.h"
 #include "plugins\shared\sqlite\sqlite3.h"
 
+// feature 059: cloud "sync pending" badge - PKEY_StorageProviderState fallback
+#include <propsys.h>
+#include <propkey.h>
+
+// minimal local declarations for CfGetSyncRootInfoByPath (cldapi.dll is loaded
+// dynamically): cfapi.h cannot be included at the project's _WIN32_WINNT level
+// (it requires NTDDI >= WIN10_RS2 and types the Win7-level windows.h lacks);
+// the shapes below mirror the Windows SDK cfapi.h and are ABI-stable public API
+#define SAL_CF_SYNC_ROOT_INFO_BASIC 0 // CF_SYNC_ROOT_INFO_CLASS::CF_SYNC_ROOT_INFO_BASIC
+typedef struct SAL_CF_SYNC_ROOT_BASIC_INFO
+{
+    LARGE_INTEGER SyncRootFileId;
+} SAL_CF_SYNC_ROOT_BASIC_INFO; // CF_SYNC_ROOT_BASIC_INFO
+
+// pending/transferring values of PKEY_StorageProviderState (propkey.h names them
+// since the Windows 11 SDK; fallback defines keep older SDKs compiling)
+#ifndef STORAGEPROVIDERSTATE_PENDING_UPLOAD
+#define STORAGEPROVIDERSTATE_PENDING_UPLOAD 4ul
+#define STORAGEPROVIDERSTATE_PENDING_DOWNLOAD 5ul
+#define STORAGEPROVIDERSTATE_TRANSFERRING 6ul
+#define STORAGEPROVIDERSTATE_PENDING_UNSPECIFIED 10ul
+#endif
+
+// internal name of the synthetic overlay entry; matched by the icon overlay
+// configuration (per-handler disable list) like any registered handler name
+static const char CLOUD_SYNC_PENDING_OVERLAY_NAME[] = "TandemCloudSyncPending";
+
+// CfGetSyncRootInfoByPath resolved once at startup (main thread) in
+// InitCloudSyncPendingOverlay(); read-only afterwards (icon reader threads)
+typedef HRESULT(WINAPI* FT_CfGetSyncRootInfoByPath)(LPCWSTR path, int /*CF_SYNC_ROOT_INFO_CLASS*/ infoClass,
+                                                    PVOID infoBuffer, DWORD infoBufferLength,
+                                                    DWORD* returnedLength);
+static FT_CfGetSyncRootInfoByPath CfGetSyncRootInfoByPathDyn = NULL;
+
 CShellIconOverlays ShellIconOverlays;                                  // array of all available icon overlays
 TIndirectArray<CShellIconOverlayItem2> ListOfShellIconOverlays(15, 5); // list of all icon overlay handlers
 
@@ -469,6 +503,10 @@ void InitShellIconOverlays()
 
     if (clsIDKey != NULL)
         HANDLES(RegCloseKey(clsIDKey));
+
+    // feature 059: append the synthetic "cloud sync pending" overlay entry (its
+    // badge is driven by PKEY_StorageProviderState, not by a registered handler)
+    ShellIconOverlays.InitCloudSyncPendingOverlay();
 }
 
 void ReleaseShellIconOverlays()
@@ -710,6 +748,8 @@ CShellIconOverlays::CreateIconReadersIconOverlayIds()
             int i;
             for (i = 0; i < Overlays.Count; i++)
             {
+                if (Overlays[i]->Identifier == NULL)
+                    continue; // synthetic entry (feature 059): no COM object, its ids slot stays NULL
                 CreateIconReadersIconOverlayIdsAux(&Overlays[i]->IconOverlayIdCLSID,
                                                    Overlays[i]->IconOverlayName, ids, i);
             }
@@ -751,7 +791,7 @@ void CShellIconOverlays::ReleaseIconReadersIconOverlayIds(IShellIconOverlayIdent
 BOOL GetIconOverlayIndexAuxAux(IShellIconOverlayIdentifier** iconReadersIconOverlayIds,
                                int i, WCHAR* wPath, const char* name, DWORD shAttrs)
 {
-    HRESULT res;
+    HRESULT res = S_FALSE; // stays S_FALSE when the reader slot is NULL (handler creation failed)
     if (iconReadersIconOverlayIds[i] != NULL &&
         (res = iconReadersIconOverlayIds[i]->IsMemberOf(wPath, shAttrs)) == S_OK)
     {
@@ -781,6 +821,61 @@ BOOL GetIconOverlayIndexAux(IShellIconOverlayIdentifier** iconReadersIconOverlay
     return FALSE; // just to satisfy the compiler
 }
 
+// feature 059: TRUE when PKEY_StorageProviderState of 'wPath' reports a pending or
+// transferring state - the state Explorer shows as the blue "sync pending" arrows.
+// GPS_DELAYCREATION | GPS_BESTEFFORT is essential: property handlers initialize
+// lazily, so the file-format (content) handler never runs for this key - no
+// hydration of online-only files and no failure on malformed documents.
+BOOL GetCloudSyncPendingStateAuxAux(const WCHAR* wPath)
+{
+    IPropertyStore* store = NULL;
+    HRESULT hres = SHGetPropertyStoreFromParsingName(wPath, NULL,
+                                                     (GETPROPERTYSTOREFLAGS)(GPS_DELAYCREATION | GPS_BESTEFFORT),
+                                                     IID_PPV_ARGS(&store));
+    BOOL pending = FALSE;
+    if (SUCCEEDED(hres) && store != NULL)
+    {
+        PROPVARIANT pv;
+        PropVariantInit(&pv);
+        if (SUCCEEDED(store->GetValue(PKEY_StorageProviderState, &pv)))
+        {
+            if (pv.vt == VT_UI4) // any other type (VT_EMPTY on non-cloud items) means "no state"
+            {
+                pending = pv.ulVal == STORAGEPROVIDERSTATE_PENDING_UPLOAD ||
+                          pv.ulVal == STORAGEPROVIDERSTATE_PENDING_DOWNLOAD ||
+                          pv.ulVal == STORAGEPROVIDERSTATE_TRANSFERRING ||
+                          pv.ulVal == STORAGEPROVIDERSTATE_PENDING_UNSPECIFIED;
+            }
+            PropVariantClear(&pv);
+        }
+        store->Release();
+    }
+    return pending;
+}
+
+BOOL GetCloudSyncPendingStateAux(const WCHAR* wPath)
+{
+    __try
+    {
+        return GetCloudSyncPendingStateAuxAux(wPath);
+    }
+    __except (CCallStack::HandleException(GetExceptionInformation(), -1, "PKEY_StorageProviderState"))
+    {
+        // unlike the third-party handler wrappers above we do not terminate: a crash
+        // in this read-only shell query is contained by simply showing no badge
+        return FALSE;
+    }
+}
+
+BOOL CShellIconOverlays::IsCloudSyncRootPath(const WCHAR* wPath)
+{
+    CALL_STACK_MESSAGE_NONE // called once per icon-reader work cycle
+        if (CfGetSyncRootInfoByPathDyn == NULL || wPath == NULL || *wPath == 0) return FALSE;
+    SAL_CF_SYNC_ROOT_BASIC_INFO info;
+    DWORD returned = 0;
+    return CfGetSyncRootInfoByPathDyn(wPath, SAL_CF_SYNC_ROOT_INFO_BASIC, &info, sizeof(info), &returned) == S_OK;
+}
+
 DWORD_PTR SHGetFileInfoAux(LPCTSTR pszPath, DWORD dwFileAttributes, SHFILEINFO* psfi,
                            UINT cbFileInfo, UINT uFlags)
 {
@@ -799,7 +894,7 @@ DWORD
 CShellIconOverlays::GetIconOverlayIndex(WCHAR* wPath, WCHAR* wName, char* aPath, char* aName,
                                         char* name, DWORD fileAttrs, int minPriority,
                                         IShellIconOverlayIdentifier** iconReadersIconOverlayIds,
-                                        BOOL isGoogleDrivePath)
+                                        BOOL isGoogleDrivePath, BOOL isCloudSyncRootPath)
 {
     CALL_STACK_MESSAGE_NONE // the call stack would only slow things down here
 
@@ -819,12 +914,14 @@ CShellIconOverlays::GetIconOverlayIndex(WCHAR* wPath, WCHAR* wName, char* aPath,
     //  {
     // Google Drive crashes when IsMemberOf() is called concurrently from both icon readers: one thread allocates,
     // the other one deallocates and the heap gets corrupted (hard to say why, their bug). The critical section slows things down
-    // considerably (by 2x) when reading both panels at once, so we try to use it only when GD is 
+    // considerably (by 2x) when reading both panels at once, so we try to use it only when GD is
     // active (inside its directory)
     BOOL isGD_CS_entered = FALSE;
     for (int i = 0; i < Overlays.Count; i++)
     {
         CShellIconOverlayItem* overlay = Overlays[i];
+        if (overlay->Identifier == NULL)
+            continue; // synthetic entry (feature 059): not a handler, returned only by the fallback below
         if (overlay->Priority > minPriority)
             continue; // use case: overlays for link, share and slow files (offline) have priority 10, so we only take overlays with higher priority (number lower than 10)
                       //      if (GetIconOverlayIndexAux(iconReadersIconOverlayIds, i, wPath, Overlays[i]->IconOverlayName, fi.dwAttributes))
@@ -849,7 +946,35 @@ CShellIconOverlays::GetIconOverlayIndex(WCHAR* wPath, WCHAR* wName, char* aPath,
         HANDLES(LeaveCriticalSection(&GD_CS));
     //  }
     //  else TRACE_I("CShellIconOverlays::GetIconOverlayIndex(): unable to get shell-attributes of: " << wPath);
+
+    // feature 059: no handler claimed the item - in a cloud-files sync root ask
+    // PKEY_StorageProviderState and show the "sync pending" badge for the
+    // pending/transferring family (Explorer displays this state from the same
+    // property; folders in that state are claimed by no overlay handler)
+    if (isCloudSyncRootPath && CloudSyncPendingIndex >= 0 &&
+        GetCloudSyncPendingStateAux(wPath))
+    {
+        return CloudSyncPendingIndex;
+    }
     return ICONOVERLAYINDEX_NOTUSED; // not found
+}
+
+// feature 059: loads all badge sizes of the synthetic "cloud sync pending" overlay
+// from our resources; on partial failure destroys what loaded and returns FALSE
+static BOOL LoadCloudSyncPendingIcons(HICON iconOverlay[ICONSIZE_COUNT])
+{
+    int x;
+    for (x = 0; x < ICONSIZE_COUNT; x++)
+        iconOverlay[x] = SalLoadIcon(HInstance, IDI_SYNCPENDING, IconSizes[x]);
+    if (iconOverlay[ICONSIZE_16] != NULL && iconOverlay[ICONSIZE_32] != NULL && iconOverlay[ICONSIZE_48] != NULL)
+        return TRUE;
+    for (x = 0; x < ICONSIZE_COUNT; x++)
+        if (iconOverlay[x] != NULL)
+        {
+            HANDLES(DestroyIcon(iconOverlay[x]));
+            iconOverlay[x] = NULL;
+        }
+    return FALSE;
 }
 
 void ColorsChangedAuxAux(CShellIconOverlayItem* item)
@@ -933,7 +1058,23 @@ void CShellIconOverlays::ColorsChanged()
     CALL_STACK_MESSAGE1("CShellIconOverlays::ColorsChanged()");
 
     for (int j = 0; j < Overlays.Count; j++)
+    {
+        if (Overlays[j]->Identifier == NULL)
+        {
+            // synthetic entry (feature 059): no COM handler to ask, reload our resources
+            HICON iconOverlay[ICONSIZE_COUNT];
+            if (LoadCloudSyncPendingIcons(iconOverlay))
+            {
+                for (int x = 0; x < ICONSIZE_COUNT; x++)
+                {
+                    HANDLES(DestroyIcon(Overlays[j]->IconOverlay[x]));
+                    Overlays[j]->IconOverlay[x] = iconOverlay[x];
+                }
+            }
+            continue;
+        }
         ColorsChangedAux(Overlays[j]);
+    }
 }
 
 void CShellIconOverlays::InitGoogleDrivePath(CSQLite3DynLoadBase** sqlite3_Dyn_InOut, BOOL debugTestOverlays)
@@ -990,4 +1131,72 @@ BOOL CShellIconOverlays::HasGoogleDrivePath()
         return GoogleDrivePathExists;
     }
     return FALSE;
+}
+
+void CShellIconOverlays::InitCloudSyncPendingOverlay()
+{
+    CALL_STACK_MESSAGE1("CShellIconOverlays::InitCloudSyncPendingOverlay()");
+
+    CloudSyncPendingIndex = -1;
+
+    // list the entry on the configuration page (Icon Overlays) like any handler,
+    // so it can be disabled/re-enabled through the existing UI
+    CShellIconOverlayItem2* item2 = new CShellIconOverlayItem2;
+    if (item2 != NULL)
+    {
+        ListOfShellIconOverlays.Add(item2);
+        if (ListOfShellIconOverlays.IsGood())
+        {
+            lstrcpyn(item2->IconOverlayName, CLOUD_SYNC_PENDING_OVERLAY_NAME, MAX_PATH);
+            lstrcpyn(item2->IconOverlayDescr, "Tandem Commander Cloud Sync Pending Overlay", MAX_PATH);
+        }
+        else
+        {
+            ListOfShellIconOverlays.ResetState();
+            delete item2;
+        }
+    }
+
+    if (IsDisabledCustomIconOverlays(CLOUD_SYNC_PENDING_OVERLAY_NAME))
+        return;
+
+    // without CfGetSyncRootInfoByPath the sync-root gate cannot work and the
+    // whole feature stays inert; the DLL is kept loaded for the entire run
+    // (icon reader threads call through the resolved pointer)
+    if (CfGetSyncRootInfoByPathDyn == NULL)
+    {
+        HINSTANCE cldapiDLL = NOHANDLES(LoadLibrary("cldapi.dll"));
+        if (cldapiDLL != NULL)
+            CfGetSyncRootInfoByPathDyn = (FT_CfGetSyncRootInfoByPath)GetProcAddress(cldapiDLL, "CfGetSyncRootInfoByPath");
+    }
+    if (CfGetSyncRootInfoByPathDyn == NULL)
+    {
+        TRACE_I("InitCloudSyncPendingOverlay(): cldapi.dll is not available, the cloud sync pending badge stays off.");
+        return;
+    }
+
+    HICON iconOverlay[ICONSIZE_COUNT];
+    if (!LoadCloudSyncPendingIcons(iconOverlay))
+    {
+        TRACE_E("InitCloudSyncPendingOverlay(): unable to load the badge icons of all sizes!");
+        return;
+    }
+
+    CShellIconOverlayItem* item = new CShellIconOverlayItem;
+    if (item != NULL && Add(item))
+    {
+        item->Priority = 100;    // the lowest priority: purely informative fallback badge
+        item->Identifier = NULL; // synthetic entry: no COM handler behind it
+        lstrcpyn(item->IconOverlayName, CLOUD_SYNC_PENDING_OVERLAY_NAME, MAX_PATH);
+        item->GoogleDriveOverlay = FALSE;
+        for (int x = 0; x < ICONSIZE_COUNT; x++)
+            item->IconOverlay[x] = iconOverlay[x];
+        CloudSyncPendingIndex = Overlays.Count - 1;
+    }
+    else
+    {
+        delete item; // icons were not assigned yet, destroy them separately
+        for (int x = 0; x < ICONSIZE_COUNT; x++)
+            HANDLES(DestroyIcon(iconOverlay[x]));
+    }
 }

@@ -48,6 +48,7 @@ protected:
     char GoogleDrivePath[MAX_PATH];                 // folder for Google Drive (we do not call their handler elsewhere; it is disgustingly slow and, without the extra synchronization, it crashes)
     BOOL GoogleDrivePathIsFromCfg;                  // TRUE if the folder for Google Drive obtained from the Google Drive configuration (FALSE = it may be only the default one and Google Drive may not be installed at all)
     BOOL GoogleDrivePathExists;                     // does the folder for Google Drive exist on disk?
+    int CloudSyncPendingIndex;                      // index of the synthetic "cloud sync pending" overlay entry (feature 059), -1 = absent/disabled
 
 public:
     CShellIconOverlays() : Overlays(1, 5)
@@ -57,6 +58,7 @@ public:
         GetGDAlreadyCalled = FALSE;
         GoogleDrivePathIsFromCfg = FALSE;
         GoogleDrivePathExists = FALSE;
+        CloudSyncPendingIndex = -1;
     }
     ~CShellIconOverlays() { HANDLES(DeleteCriticalSection(&GD_CS)); }
 
@@ -73,11 +75,24 @@ public:
     // releases the array of IShellIconOverlayIdentifier objects
     void ReleaseIconReadersIconOverlayIds(IShellIconOverlayIdentifier** iconReadersIconOverlayIds);
 
+    // appends the synthetic "cloud sync pending" overlay entry (feature 059): its
+    // blue-arrows badge is shown for items in a cloud-files sync root whose
+    // PKEY_StorageProviderState reports a pending/transferring state and which no
+    // registered overlay handler claimed (Explorer shows this state from the same
+    // property). Called at the end of InitShellIconOverlays(); honours the icon
+    // overlay configuration under the name "TandemCloudSyncPending".
+    void InitCloudSyncPendingOverlay();
+
+    // TRUE if 'wPath' lies under a cloud-files (CFAPI) sync root; uses
+    // CfGetSyncRootInfoByPath from cldapi.dll resolved once at startup in
+    // InitCloudSyncPendingOverlay() (feature 059)
+    static BOOL IsCloudSyncRootPath(const WCHAR* wPath);
+
     // returns the icon overlay index for the file/directory "wPath+name"
     DWORD GetIconOverlayIndex(WCHAR* wPath, WCHAR* wName, char* aPath, char* aName, char* name,
                               DWORD fileAttrs, int minPriority,
                               IShellIconOverlayIdentifier** iconReadersIconOverlayIds,
-                              BOOL isGoogleDrivePath);
+                              BOOL isGoogleDrivePath, BOOL isCloudSyncRootPath);
 
     HICON GetIconOverlay(int iconOverlayIndex, CIconSizeEnum iconSize)
     {

@@ -242,3 +242,35 @@ plugin architecture preservation, UI consistency.
   entries proves human/skip entries byte-identical (0 violations); details in
   `specs/055-contextual-retranslation/run-notes.md`.
 - 051-fix-sftp-keyauth-hang: fixed whole-app freeze on private-key connect. Root cause was in vendored libssh2: `_libssh2_pem_parse_memory`'s scan loops never terminate when the expected PEM marker is absent (`readline_memory` cannot signal EOF), and the WinCNG in-memory loader only understood classic RSA/DSA PEM — so an OpenSSH-container key (ssh-keygen's default since OpenSSH 7.8) spun the CPU forever on the UI thread. Patched pem.c (bounds guards, documented in `src/common/dep/libssh2/readme.txt` "Local patches"), added openssh-key-v1 RSA/ECDSA import + classic-PEM passphrase decryption to the WinCNG memory path, real libssh2 error codes on key-load failures. Plugin side: connect runs on a worker thread with a cancellable wait window (prompts stay on the UI thread via a `cpHostKey`/`cpPassphrase`/`cpPassword` retry handshake), the socket stays non-blocking so libssh2's timeout is actually enforced, key-format gate rejects PKCS#8/ed25519/.ppk up front, error classification by code (not message substrings), password fallback on a server-rejected key, dead-transport detection + reconnect, cancellable F3 download. Test harness reworked onto the product's `publickey_frommemory` path with a hang watchdog (`test/run_keyauth.cmd`, 7 scenarios) plus key-format fixtures in `test/build_and_run.cmd`
+- 058-fix-cloud-status-icons: three feature-004 regressions-by-omission
+  garbled the UTF-8 panel path in code still treating it as ANSI, breaking
+  every folder whose path contains non-ASCII characters (e.g. Google Drive's
+  `G:\Můj disk`): no cloud sync-status overlay badges (icon-reader wide
+  prefix converted via CP_ACP, `fileswn1.cpp`), generic file icons
+  (`SHILCreateFromPath` CP_ACP, `geticon.cpp`), and silently dead
+  auto-refresh causing a busy-cursor re-list on every window activation
+  (ANSI `FindFirstChangeNotification` in `snooper.cpp`, 3 sites). All three
+  converted to the house pattern `SalU8ToW`/`SalU8ToWAlloc` + CP_ACP
+  fallback (legacy plugin callers of `GetFileIcon` keep working); new W
+  overload in the HANDLES layer. The provider was never the trigger — ASCII
+  OneDrive paths worked all along. Contract:
+  `specs/058-fix-cloud-status-icons/contracts/path-encoding-icon-pipeline.md`.
+- 059-fix-onedrive-syncing-badge: the sync-in-progress badge (blue arrows)
+  now shows as in Explorer. Windows exposes cloud state through two
+  channels; folders in a pending state are claimed by NO overlay handler
+  (all seven OneDrive `IsMemberOf` return S_FALSE) — Explorer draws them
+  from `PKEY_StorageProviderState` (documented "Property for the cloud file
+  state icon"), which the overlay-only pipeline never read (missing since
+  Open Salamander). Fix: property fallback in
+  `CShellIconOverlays::GetIconOverlayIndex` — only when every handler
+  declined AND the panel path is under a CFAPI sync root
+  (`CfGetSyncRootInfoByPath`, cldapi.dll dynamic; `G:` letter drives are
+  not CFAPI → unchanged); states {4,5,6,10} map to the synthetic overlay
+  `TandemCloudSyncPending` (own icon `src/res/syncpend.ico`, generator
+  `tools/brand/gen_overlay_syncpend.py`; disable-able via the existing icon
+  overlay config). `GPS_DELAYCREATION|GPS_BESTEFFORT` keeps content
+  property handlers from running (no hydration, no failures on malformed
+  documents). Integration exposed + fixed a latent upstream RTC bug:
+  uninitialized `HRESULT res` in `GetIconOverlayIndexAuxAux` when a reader
+  slot is NULL. `cfapi.h` cannot be included at `_WIN32_WINNT=0x0601` —
+  the two needed ABI-stable declarations are mirrored locally.

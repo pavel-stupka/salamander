@@ -29,6 +29,7 @@ IDI_VIEWER ICON "res\\viewer.ico"
 IDI_GOOGLEDRIVE ICON "res\\googledr.ico"
 IDI_DROPBOX ICON "res\\dropbox.ico"
 IDI_ONEDRIVE ICON "res\\onedrive.ico"
+IDI_SYNCPENDING ICON "res\\syncpend.ico" // cloud "sync pending" overlay badge (feature 059)
 // feature 047: hot path icon gallery color variants
 IDI_HOTPATH_1 ICON "res\\hotpath1.ico"
 IDI_HOTPATH_2 ICON "res\\hotpath2.ico"

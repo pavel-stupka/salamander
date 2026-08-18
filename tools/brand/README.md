@@ -125,3 +125,12 @@ These are the same values the in-app wordmark uses (`TC_COLOR_*` in
   constraints on its content.
 - The red/green/blue main-window icon variants were removed in feature 035;
   the icon pipeline no longer generates `sal_r/g/b.ico`.
+
+## Overlay badges (feature 059)
+
+- `gen_overlay_syncpend.py` generates `src/res/syncpend.ico` — the cloud
+  "sync pending" overlay badge (blue circular arrows, original artwork in
+  the Windows overlay style: transparent full frame, glyph in the
+  lower-left quadrant). Frames 16/32/48 px, 32-bpp BMP-encoded.
+  Regenerate with `python tools/brand/gen_overlay_syncpend.py`
+  (requires Pillow).
