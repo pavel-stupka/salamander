@@ -28,6 +28,24 @@ plugin.
 
 ### Fixed
 
+- **Settings migration: the restore script now works for backup paths with
+  non-ASCII characters.** `utils/migrate-altap-settings.cmd`'s generated
+  "undo" script wrote itself in a fixed encoding that mangled non-ASCII
+  characters in the embedded backup file path (e.g. a user profile name with
+  diacritics) — the restore then deleted the current Tandem Commander
+  settings and failed to find the backup to bring them back, losing both the
+  new and the old configuration. The restore script now verifies the backup
+  file exists before deleting anything, and is written in a way that reads
+  correctly regardless of the launching command prompt's codepage. The
+  wizard's backup screen also now notes that the backup file carries any FTP
+  passwords already saved in Tandem Commander, and should be kept private
+  and deleted once no longer needed.
+- **A rare freeze on window activation over an unresponsive network share is
+  closed.** The sync-status badge check added for cloud-synced folders could,
+  in the narrow case of a hung/unresponsive network path, block the whole
+  window from responding until the underlying network call gave up. Found
+  and fixed during a stability review, not from a user report.
+
 - **The sync-in-progress badge (blue arrows) now displays as in Explorer.**
   Items that Windows Explorer marks as "sync pending" — most visibly folders
   whose contents are still uploading or downloading in OneDrive — showed no

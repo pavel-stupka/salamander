@@ -1055,7 +1055,7 @@ HICON GetDriveIcon(const char* root, UINT type, BOOL accessible, BOOL large)
 HICON SalLoadIcon(HINSTANCE hDLL, int id, int iconSize)
 {
     //return (HICON)HANDLES(LoadImage(hDLL, MAKEINTRESOURCE(id), IMAGE_ICON, iconSize, iconSize, IconLRFlags));
-    HICON hIcon;
+    HICON hIcon = NULL; // LoadIconWithScaleDown does not document writing the out param on failure
     LoadIconWithScaleDown(hDLL, MAKEINTRESOURCEW(id), iconSize, iconSize, &hIcon);
     HANDLES_ADD(__htIcon, __hoLoadImage, hIcon);
     return hIcon;

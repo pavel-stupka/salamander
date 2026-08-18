@@ -1038,20 +1038,41 @@ function New-Backup([string]$outDir, [string]$stamp) {
 
     $lines = @()
     $lines += '@echo off'
+    # a freshly spawned cmd.exe defaults to the OEM codepage for reading this file
+    # and for `if exist`, not the ANSI codepage a .reg-adjacent path might need -
+    # the two differ on this very machine (1250 vs 852); force UTF-8 so the
+    # embedded backup path below is read back exactly as written, regardless of
+    # what codepage the cmd.exe that launches this script happens to start in
+    $lines += 'chcp 65001 >nul'
     $lines += 'echo This restores the Tandem Commander settings saved by the migration'
     $lines += ('echo utility on ' + $stamp + ' and removes everything written after that.')
     $lines += 'echo('
     $lines += 'echo Close Tandem Commander before continuing.'
     $lines += 'pause'
-    $lines += ('reg delete "HKCU\' + $DestRoot + '" /f >nul 2>&1')
     if ($preExisted) {
+        # verify the backup is still where we left it BEFORE deleting anything - an
+        # ASCII-only restore script would otherwise mangle a non-ASCII backup path
+        # (e.g. a user profile name) into one `reg import` can't find, and the
+        # unconditional delete below would already have run by then, leaving the
+        # user with neither the old settings nor a working restore
+        $lines += ('if not exist "' + $regFile + '" (')
+        $lines += '  echo ERROR: backup file not found - nothing was changed.'
+        $lines += '  pause'
+        $lines += '  exit /b 1'
+        $lines += ')'
+        $lines += ('reg delete "HKCU\' + $DestRoot + '" /f >nul 2>&1')
         $lines += ('reg import "' + $regFile + '"')
     } else {
+        $lines += ('reg delete "HKCU\' + $DestRoot + '" /f >nul 2>&1')
         $lines += 'echo (No settings existed before the migration - the settings key was removed.)'
     }
     $lines += 'echo Done.'
     $lines += 'pause'
-    [IO.File]::WriteAllLines($restoreFile, $lines, [Text.Encoding]::ASCII)
+    # UTF-8 without a BOM: matches the 'chcp 65001' above (a BOM would otherwise
+    # sit in front of '@echo off' as stray bytes on cmd.exe versions that don't
+    # skip it)
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [IO.File]::WriteAllLines($restoreFile, $lines, $utf8NoBom)
 
     return @{ PreExisted = $preExisted; RegFile = $regFile; RestoreFile = $restoreFile }
 }
@@ -1205,6 +1226,11 @@ function Show-W5-Backup([hashtable]$paths) {
     Write-Host ('  Backup : ' + $paths.RegFile)
     Write-Host ('  Restore: ' + $paths.RestoreFile + '   (double-click to undo)')
     Write-Host ('  Summary: ' + $paths.SummaryFile)
+    Write-Host ''
+    Write-Host 'If you already have saved FTP passwords in Tandem Commander, the backup'
+    Write-Host 'file above will contain them (recoverable, not just obfuscated). Keep it'
+    Write-Host 'somewhere as private as your Tandem Commander settings themselves, and'
+    Write-Host 'delete it once you no longer need the ability to restore.'
     Write-Host ''
 }
 

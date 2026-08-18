@@ -511,8 +511,20 @@ unsigned IconThreadThreadFBody(void* parameter)
                             TRACE_I("Path contains invalid components, shell cannot read icons from such paths! Path: " << path);
                         isGoogleDrivePath = ShellIconOverlays.IsGoogleDrivePath(path);
                         // feature 059: cloud-files sync roots get the "sync pending"
-                        // badge fallback (PKEY_StorageProviderState), checked once per cycle
+                        // badge fallback (PKEY_StorageProviderState), checked once per cycle.
+                        // CfGetSyncRootInfoByPath can block (e.g. an unresponsive network
+                        // share), and unlike everything else in this setup block it is real
+                        // I/O - the first such call ever placed while ICSleepSection is held.
+                        // Leave the section for it (same pattern the item loop already uses
+                        // around GetIconOverlayIndex below) so SleepIconCacheThread() on the
+                        // main thread - called from many common panel operations - cannot
+                        // block on this main-thread-blocking wait for the call's duration.
+                        // (a goto-to-GO_SLEEP_MODE style early-out is not usable this early:
+                        // it would skip the initialization of several variables declared
+                        // below in this same block, which C++ forbids)
+                        HANDLES(LeaveCriticalSection(&window->ICSleepSection));
                         isCloudSyncRootPath = CShellIconOverlays::IsCloudSyncRootPath(wPath);
+                        HANDLES(EnterCriticalSection(&window->ICSleepSection));
                     }
                 }
 

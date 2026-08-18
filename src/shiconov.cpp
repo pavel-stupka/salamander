@@ -837,17 +837,15 @@ BOOL GetCloudSyncPendingStateAuxAux(const WCHAR* wPath)
     {
         PROPVARIANT pv;
         PropVariantInit(&pv);
-        if (SUCCEEDED(store->GetValue(PKEY_StorageProviderState, &pv)))
+        HRESULT getValueRes = store->GetValue(PKEY_StorageProviderState, &pv);
+        if (SUCCEEDED(getValueRes) && pv.vt == VT_UI4) // any other type (VT_EMPTY on non-cloud items) means "no state"
         {
-            if (pv.vt == VT_UI4) // any other type (VT_EMPTY on non-cloud items) means "no state"
-            {
-                pending = pv.ulVal == STORAGEPROVIDERSTATE_PENDING_UPLOAD ||
-                          pv.ulVal == STORAGEPROVIDERSTATE_PENDING_DOWNLOAD ||
-                          pv.ulVal == STORAGEPROVIDERSTATE_TRANSFERRING ||
-                          pv.ulVal == STORAGEPROVIDERSTATE_PENDING_UNSPECIFIED;
-            }
-            PropVariantClear(&pv);
+            pending = pv.ulVal == STORAGEPROVIDERSTATE_PENDING_UPLOAD ||
+                      pv.ulVal == STORAGEPROVIDERSTATE_PENDING_DOWNLOAD ||
+                      pv.ulVal == STORAGEPROVIDERSTATE_TRANSFERRING ||
+                      pv.ulVal == STORAGEPROVIDERSTATE_PENDING_UNSPECIFIED;
         }
+        PropVariantClear(&pv); // unconditional: a misbehaving provider may fill 'pv' before returning failure
         store->Release();
     }
     return pending;
