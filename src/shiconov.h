@@ -75,13 +75,19 @@ public:
     // releases the array of IShellIconOverlayIdentifier objects
     void ReleaseIconReadersIconOverlayIds(IShellIconOverlayIdentifier** iconReadersIconOverlayIds);
 
-    // appends the synthetic "cloud sync pending" overlay entry (feature 059): its
+    // adds the synthetic "cloud sync pending" overlay entry (feature 059): its
     // blue-arrows badge is shown for items in a cloud-files sync root whose
     // PKEY_StorageProviderState reports a pending/transferring state and which no
     // registered overlay handler claimed (Explorer shows this state from the same
-    // property). Called at the end of InitShellIconOverlays(); honours the icon
-    // overlay configuration under the name "TandemCloudSyncPending".
+    // property). Called at the beginning of InitShellIconOverlays() so the entry
+    // owns a slot even when 15+ loadable handlers are registered (feature 061);
+    // honours the icon overlay configuration under the name "TandemCloudSyncPending".
     void InitCloudSyncPendingOverlay();
+
+    // feature 061 (contract C5.2): TRACEs the final slot table (index, handler name,
+    // priority) in one consolidated block so "provider X shows no badges" reports can
+    // be triaged from a single place; Debug builds only (TRACE compiles away)
+    void TraceLoadedOverlays();
 
     // TRUE if 'wPath' lies under a cloud-files (CFAPI) sync root; uses
     // CfGetSyncRootInfoByPath from cldapi.dll resolved once at startup in

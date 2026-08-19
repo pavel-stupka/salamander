@@ -1397,7 +1397,22 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
             case SHCNE_DRIVEADDGUI:
             case SHCNE_EXTENDED_EVENT:
             {
-                if (!SHGetPathFromIDList(ppidl[0], szPath))
+                // feature 061 (contract C3): panel paths are UTF-8 since feature 004,
+                // so the notified path must be UTF-8 too — the ANSI variant never
+                // matched the IsTheSamePath() gate in IconOverlaysChangedOnPath() on
+                // non-ASCII paths, so asynchronous overlay providers (Tortoise) were
+                // never re-asked there; CP_ACP fallback per the house pattern
+                WCHAR wszPath[2 * MAX_PATH];
+                if (SHGetPathFromIDListW(ppidl[0], wszPath))
+                {
+                    if (SalWToU8(wszPath, -1, szPath, _countof(szPath)) == 0 &&
+                        WideCharToMultiByte(CP_ACP, 0, wszPath, -1, szPath, _countof(szPath), NULL, NULL) == 0)
+                    {
+                        szPath[0] = 0;
+                    }
+                    szPath[_countof(szPath) - 1] = 0;
+                }
+                else
                     szPath[0] = 0;
                 break;
             }

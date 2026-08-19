@@ -11,6 +11,38 @@ plugin.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Third-party icon overlay badges (e.g. TortoiseGit/TortoiseSVN) are back.**
+  Overlay handlers that supply their badge as an `.ico` file — the Tortoise
+  family above all — were silently dropped on any display scaling other than
+  100%, so their badges never appeared in the panels. The cause was the icon
+  extraction helper introduced when Salamander was open-sourced in 2023: it
+  lost the small icon of `.ico`-file sources at DPI-scaled sizes, and the
+  overlay loader then rejected the whole handler. Handlers whose badge lives in
+  a DLL (OneDrive, Google Drive) were unaffected, which is why only the cloud
+  badges appeared to work. The same fix also repairs panel file icons taken
+  from `.ico` files and the shortcut-arrow overlay at scaled DPI. Note the
+  platform limits that remain: Windows caps concurrently usable overlay
+  handlers, and on machines crowded with cloud providers the Tortoise
+  components themselves refuse their rarer states (Locked, Ignored, ReadOnly,
+  Unversioned) system-wide — File Explorer shows those nowhere either.
+- **Overlay badges now refresh on paths with non-ASCII characters.** The
+  change-notification path from Windows was still read through the legacy
+  code page, so it never matched the UTF-8 panel path introduced in 0.1.1 and
+  asynchronous providers (Tortoise status cache) were never re-asked; badge
+  changes (modify, revert, commit) now show up automatically in folders like
+  `D:\Zkouška` just as they do in ASCII paths.
+- **Profiles migrated from Altap Salamander no longer start with icon overlays
+  silently disabled.** Missing overlay settings now mean the factory default
+  (overlays enabled); an explicitly stored "disabled" choice is still
+  respected.
+- **The "sync in progress" badge (0.1.3) survives a full overlay table.** The
+  synthetic cloud-sync-pending entry now reserves its slot before third-party
+  handlers are loaded; previously it silently disabled itself on machines with
+  15 or more loadable handlers — which the TortoiseGit fix above would have
+  made the common case.
+
 ## [0.1.3] — 2026-08-18
 
 **Build 187.** Feature release: a standalone utility migrates settings from an

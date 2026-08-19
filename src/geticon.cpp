@@ -7,29 +7,36 @@
 
 UINT WINAPI ExtractIcons(LPCTSTR szFileName, int nIconIndex, int cxIcon, int cyIcon, HICON* phicon, UINT* piconid, UINT nIcons, UINT flags)
 {
-    UINT nIconSize = cxIcon;
-    HICON hLarge{};
-    HICON hSmall{};
-    auto shRet = SHDefExtractIcon(szFileName, nIconIndex, 0, &hLarge, &hSmall, nIconSize);
-    if (shRet == S_OK)
+    // Callers use the PrivateExtractIcons()-style contract: LOWORD(cxIcon) is the size
+    // of the first icon, HIWORD(cxIcon) of the optional second one. Each size must be
+    // extracted by its own SHDefExtractIcon() call as the "large" icon: the small-icon
+    // output stays NULL for .ico files at any non-standard size (e.g. the DPI-scaled
+    // 40/20 used at 125% scaling), while the large one is scaled for every icon
+    // source. A single paired call therefore silently dropped the small icon of every
+    // .ico-file-based source — which is how all TortoiseOverlays badge handlers were
+    // lost at DPI scaling other than 100% (feature 061).
+    UINT sizes[2] = {LOWORD((UINT)cxIcon), HIWORD((UINT)cxIcon)};
+    UINT extracted = 0;
+    UINT count = (nIcons == 2) ? 2 : 1;
+    for (UINT i = 0; i < count; i++)
     {
-        if (phicon)
+        if (phicon != NULL)
+            phicon[i] = NULL;
+        UINT size = sizes[i] != 0 ? sizes[i] : sizes[0];
+        HICON hLarge{};
+        HICON hSmall{};
+        if (SHDefExtractIcon(szFileName, nIconIndex, 0, &hLarge, &hSmall, size) == S_OK && hLarge != NULL)
         {
-            phicon[0] = hLarge;
-            if (nIcons == 2)
-            {
-                phicon[1] = hSmall;
-            }
+            if (phicon != NULL)
+                phicon[i] = hLarge;
             else
-            {
-                if (hSmall != 0)
-                {
-                    DestroyIcon(hSmall);
-                }
-            }
+                DestroyIcon(hLarge);
+            extracted++;
         }
+        if (hSmall != NULL)
+            DestroyIcon(hSmall);
     }
-    return shRet == S_OK ? 1 : 0;
+    return extracted;
 }
 
 STDAPI SHBindToIDListParent(LPCITEMIDLIST pidl, REFIID riid, void** ppv, LPCITEMIDLIST* ppidlLast)

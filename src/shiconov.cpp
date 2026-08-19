@@ -365,9 +365,35 @@ void InitShellIconOverlaysAux(CLSID* clsid, const char* name)
     }
 }
 
+void CShellIconOverlays::TraceLoadedOverlays()
+{
+#ifdef TRACE_ENABLE
+    // feature 061 (contract C5.2): consolidated slot table; slot index = value stored
+    // in CFileData::IconOverlayIndex, 15 handlers maximum (4-bit field, 15 = unused)
+    TRACE_I("InitShellIconOverlays(): " << Overlays.Count << " icon overlay slot(s) in use (limit is 15):");
+    for (int i = 0; i < Overlays.Count; i++)
+    {
+        CShellIconOverlayItem* item = Overlays[i];
+        if (item->Identifier == NULL)
+            TRACE_I("InitShellIconOverlays(): slot " << i << ": synthetic \"" << item->IconOverlayName << "\"");
+        else
+            TRACE_I("InitShellIconOverlays(): slot " << i << ": \"" << item->IconOverlayName << "\", priority " << item->Priority);
+    }
+#endif // TRACE_ENABLE
+}
+
 void InitShellIconOverlays()
 {
     CALL_STACK_MESSAGE1("InitShellIconOverlays()");
+
+    // feature 061: the synthetic "cloud sync pending" entry (feature 059) is added
+    // BEFORE the registered handlers are enumerated, so it owns a slot even when 15+
+    // loadable handlers are registered (with the feature-061 icon-extraction fix, a
+    // machine with OneDrive + Google Drive + Tortoise fills the whole table and an
+    // appended-last entry would silently self-disable, losing the sync-pending
+    // badge). The query loop skips the entry (Identifier == NULL), so the ask order
+    // of real handlers is unchanged.
+    ShellIconOverlays.InitCloudSyncPendingOverlay();
 
     HKEY clsIDKey;
     LONG errRet;
@@ -481,6 +507,8 @@ void InitShellIconOverlays()
 
                             if (!IsDisabledCustomIconOverlays(keyNames[s]))
                                 InitShellIconOverlaysAux(&clsid, keyNames[s]);
+                            else
+                                TRACE_I("InitShellIconOverlays(): skipping handler disabled in configuration: " << keyNames[s]);
                         }
                         else
                             TRACE_E("InitShellIconOverlays(): invalid CLSID: " << txtClsId);
@@ -504,9 +532,7 @@ void InitShellIconOverlays()
     if (clsIDKey != NULL)
         HANDLES(RegCloseKey(clsIDKey));
 
-    // feature 059: append the synthetic "cloud sync pending" overlay entry (its
-    // badge is driven by PKEY_StorageProviderState, not by a registered handler)
-    ShellIconOverlays.InitCloudSyncPendingOverlay();
+    ShellIconOverlays.TraceLoadedOverlays(); // feature 061 (contract C5.2)
 }
 
 void ReleaseShellIconOverlays()

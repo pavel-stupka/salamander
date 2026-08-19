@@ -2306,14 +2306,6 @@ void LoadIconOvrlsInfo(const char* root)
     if (OpenKey(HKEY_CURRENT_USER, root, hSalamander))
     {
         HKEY actKey;
-        DWORD configVersion = 1; // this configuration is from version 1.52 or older
-        if (OpenKey(hSalamander, SALAMANDER_VERSION_REG, actKey))
-        {
-            configVersion = 2; // this configuration is from version 1.6b1
-            GetValue(actKey, SALAMANDER_VERSIONREG_REG, REG_DWORD,
-                     &configVersion, sizeof(DWORD));
-            CloseKey(actKey);
-        }
         if (OpenKey(hSalamander, SALAMANDER_CONFIG_REG, actKey))
         {
             ClearListOfDisabledCustomIconOverlays();
@@ -2342,11 +2334,13 @@ void LoadIconOvrlsInfo(const char* root)
                     }
                 }
             }
-            else
-            {
-                if (configVersion >= 41) // if this value is missing in newer configurations, disable overlays (older versions didn't have these variables, so it's not an error-leave overlays enabled)
-                    Configuration.EnableCustomIconOverlays = FALSE;
-            }
+            // feature 061 (FR-009, contract C4): absent values mean the factory
+            // default (overlays enabled, none disabled). The Altap-era rule "absent
+            // at config version >= 41 = tampering, disable all overlays" is wrong
+            // here: the feature-057 Altap-settings migration legitimately writes a
+            // modern config version without these two values, so that rule silently
+            // killed every overlay badge on migrated profiles. Stored-but-unreadable
+            // values above still force-disable conservatively.
 
             CloseKey(actKey);
         }
