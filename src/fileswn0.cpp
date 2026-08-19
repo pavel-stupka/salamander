@@ -33,29 +33,6 @@ void CFilesWindow::EndQuickSearch()
     DestroyCaret();
 }
 
-// returns pointer behind the UTF-8 character starting at 's'
-static const char* NextUTF8Char(const char* s)
-{
-    if (*s != 0)
-    {
-        s++;
-        while ((*s & 0xC0) == 0x80) // skip continuation bytes
-            s++;
-    }
-    return s;
-}
-
-// number of UTF-8 characters in the first 'len' bytes of 's'
-static int CountUTF8Chars(const char* s, int len)
-{
-    int count = 0;
-    int i;
-    for (i = 0; i < len; i++)
-        if (((unsigned char)s[i] & 0xC0) != 0x80)
-            count++;
-    return count;
-}
-
 // Unicode variant of AgreeQSMaskAux (see masks.cpp): literal mask segments between
 // '/' wildcards are matched against name prefixes at UTF-8 character boundaries
 // using case-insensitive canonical equivalence (SalNameEqualCI, FR-008)
@@ -74,7 +51,7 @@ static BOOL AgreeQSMaskU8Aux(const char* filename, BOOL hasExtension, const char
                     return TRUE; // the rest of the mask matches
                 if (*iter == 0)
                     return FALSE; // end of filename...
-                iter = NextUTF8Char(iter);
+                iter = SalU8Next(iter);
             }
         }
         // literal mask segment up to the next wildcard or the end of the mask
@@ -82,7 +59,7 @@ static BOOL AgreeQSMaskU8Aux(const char* filename, BOOL hasExtension, const char
         while (*segEnd != 0 && *segEnd != '/')
             segEnd++;
         int segLen = (int)(segEnd - mask);
-        int segChars = CountUTF8Chars(mask, segLen);
+        int segChars = SalU8CharCount(mask, segLen);
         // canonical equivalence can change the character count (NFC vs. NFD), so
         // name prefixes somewhat longer than the segment are tried as well
         const char* p = filename;
@@ -90,7 +67,7 @@ static BOOL AgreeQSMaskU8Aux(const char* filename, BOOL hasExtension, const char
         int chars = 0;
         while (*p != 0 && chars < 3 * segChars + 3)
         {
-            p = NextUTF8Char(p);
+            p = SalU8Next(p);
             chars++;
             if (SalNameEqualCI(mask, segLen, filename, (int)(p - filename)))
             {

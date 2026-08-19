@@ -173,7 +173,7 @@ CConvertFilesDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         break;
     }
@@ -344,7 +344,7 @@ CFilterDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         if (*UseFilter)
         { // we want our own focus in the editbox filter
@@ -966,7 +966,7 @@ CCopyMoveMoreDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         // feature 043: see the note in CCopyMoveDialog::Transfer
         SalSetWindowTextU8(HWindow, Title);
@@ -1222,7 +1222,7 @@ CChangeDirDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_CHANGEDIR_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_CHANGEDIR_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_CHANGEDIR_HINT));
 
         break;
     }
@@ -2167,7 +2167,7 @@ CUnpackDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         break;
     }

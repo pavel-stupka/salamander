@@ -357,10 +357,10 @@ BOOL CMessageBox::CopyToClipboard()
                    (int)strlen(Title) +
                    2 * (int)strlen(text) + // every character may be '\n'; we'll convert them to "\r\n"
                    urlTextLen +
-                   MESSAGEBOX_MAXBUTTONS * (100 + 2 + 4) + // max number of characters in a button we're willing to handle
-                   50;                                     // extra space for "\r\n"
+                   MESSAGEBOX_MAXBUTTONS * (3 * 100 + 2 + 4) + // button labels as UTF-8 (up to 3 B per WCHAR, feature 063)
+                   50;                                         // extra space for "\r\n"
     if (CheckText != NULL)
-        buffSize += 300 + 2 + (int)strlen(separator);
+        buffSize += 3 * 300 + 2 + (int)strlen(separator);
 
     char* buff = (char*)malloc(buffSize);
     if (buff == NULL)
@@ -397,9 +397,15 @@ BOOL CMessageBox::CopyToClipboard()
     {
         if (ButtonsID[i] != 0)
         {
-            char btnText[100];
-            GetDlgItemText(HWindow, ButtonsID[i], btnText, 100);
-            btnText[99] = 0;
+            // read wide + convert: the composed buffer is UTF-8 (Title/Text
+            // already are), the ANSI read mixed CP_ACP into it (feature 063)
+            char btnText[3 * 100];
+            WCHAR btnTextW[100];
+            btnTextW[0] = 0;
+            GetDlgItemTextW(HWindow, ButtonsID[i], btnTextW, 100);
+            btnTextW[99] = 0;
+            if (SalWToU8(btnTextW, -1, btnText, 3 * 100) == 0)
+                btnText[0] = 0;
             RemoveAmpersands(btnText);
 
             written = wsprintf(ptr, "[%s]", btnText);
@@ -419,9 +425,13 @@ BOOL CMessageBox::CopyToClipboard()
     // if a checkbox exists, append its text (strip the '&')
     if (CheckText != NULL)
     {
-        char chkText[300];
-        GetDlgItemText(HWindow, IDS_MSGBOX_CHECK, chkText, 300);
-        chkText[299] = 0;
+        char chkText[3 * 300]; // UTF-8, up to 3 B per WCHAR (feature 063)
+        WCHAR chkTextW[300];
+        chkTextW[0] = 0;
+        GetDlgItemTextW(HWindow, IDS_MSGBOX_CHECK, chkTextW, 300);
+        chkTextW[299] = 0;
+        if (SalWToU8(chkTextW, -1, chkText, 3 * 300) == 0)
+            chkText[0] = 0;
         RemoveAmpersands(chkText);
         written = wsprintf(ptr, "[ ] %s\r\n%s", chkText, separator);
         BOOL checked = IsDlgButtonChecked(HWindow, IDS_MSGBOX_CHECK) == BST_CHECKED;
@@ -432,7 +442,8 @@ BOOL CMessageBox::CopyToClipboard()
 
     *ptr = 0; // terminator
 
-    BOOL ret = CopyTextToClipboard(buff);
+    // the whole composed buffer is UTF-8 (feature 063, contract C2)
+    BOOL ret = CopyTextToClipboardU8(buff);
     free(buff);
 
     return ret;

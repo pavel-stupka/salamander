@@ -2782,7 +2782,7 @@ void CFindDialog::OnCopyNameToClipboard(CCopyNameToClipboardModeEnum mode)
         AlterFileName(name, data->Name, -1, FileNameFormat, 0, data->IsDir);
         CSalPathBuf buff; // UTF-8, long-path capable (feature 004)
         if (buff.Set(data->Path) && buff.AppendComponent(name))
-            CopyTextToClipboard(buff.Get());
+            CopyTextToClipboardU8(buff.Get()); // UTF-8 (feature 063, contract C2)
         else
             TRACE_E(LOW_MEMORY);
         break;
@@ -2791,13 +2791,13 @@ void CFindDialog::OnCopyNameToClipboard(CCopyNameToClipboardModeEnum mode)
     case cntcmName:
     {
         AlterFileName(name, data->Name, -1, FileNameFormat, 0, data->IsDir);
-        CopyTextToClipboard(name);
+        CopyTextToClipboardU8(name); // UTF-8 (feature 063, contract C2)
         break;
     }
 
     case cntcmFullPath:
     {
-        CopyTextToClipboard(data->Path);
+        CopyTextToClipboardU8(data->Path); // UTF-8 (feature 063, contract C2)
         break;
     }
 

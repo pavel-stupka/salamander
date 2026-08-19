@@ -1187,6 +1187,54 @@ BOOL CopyTextToClipboardW(const wchar_t* text, int textLen, BOOL showEcho, HWND 
 
 // ****************************************************************************
 
+BOOL CopyTextToClipboardU8(const char* u8Text, int textLen, BOOL showEcho, HWND hEchoParent)
+{
+    if (u8Text == NULL)
+    {
+        TRACE_E("u8Text == NULL");
+        return FALSE;
+    }
+
+    if (textLen == -1)
+        textLen = (int)strlen(u8Text);
+
+    if (textLen == 0)
+        return CopyTextToClipboardW(L"", 0, showEcho, hEchoParent);
+
+    // input is UTF-8 by contract (feature 063, contract C2); a not-yet-migrated
+    // caller passing ANSI degrades to the legacy CP_ACP interpretation instead
+    // of corrupting (the SalLegacyToU8Alloc tolerance model)
+    UINT cp = CP_UTF8;
+    int wideLen = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, u8Text, textLen, NULL, 0);
+    if (wideLen <= 0)
+    {
+        cp = CP_ACP;
+        wideLen = MultiByteToWideChar(CP_ACP, 0, u8Text, textLen, NULL, 0);
+    }
+
+    BOOL ret = FALSE;
+    if (wideLen > 0)
+    {
+        wchar_t* wide = (wchar_t*)malloc(sizeof(wchar_t) * wideLen);
+        if (wide != NULL)
+        {
+            if (MultiByteToWideChar(cp, cp == CP_UTF8 ? MB_ERR_INVALID_CHARS : 0,
+                                    u8Text, textLen, wide, wideLen) > 0)
+            {
+                ret = CopyTextToClipboardW(wide, wideLen, showEcho, hEchoParent);
+            }
+            free(wide);
+        }
+        else
+            TRACE_E(LOW_MEMORY);
+    }
+    else
+        TRACE_E("CopyTextToClipboardU8: text conversion failed");
+    return ret;
+}
+
+// ****************************************************************************
+
 BOOL CopyTextToClipboard(const char* text, int textLen, BOOL showEcho, HWND hEchoParent)
 {
     if (text == NULL)

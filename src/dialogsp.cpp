@@ -718,7 +718,7 @@ CCfgPageUnpackers::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         // dialog controls should stretch according to the dialog size, set the split controls
         ElasticVerticalLayout(1, IDC_P2_LIST);
@@ -1270,7 +1270,7 @@ CCfgPageArchivesAssoc::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_EXTENDED_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_EXTENDED_MASKS_HINT));
 
         // dialog controls should stretch according to the dialog size, set the split controls
         ElasticVerticalLayout(1, IDC_P4_LIST);

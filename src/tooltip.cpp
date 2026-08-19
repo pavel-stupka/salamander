@@ -302,10 +302,17 @@ BOOL CToolTip::GetText()
         Text[0] = 0;
         SendMessage(HNotifyWindow, WM_USER_TTGETTEXT, LastID, (LPARAM)Text);
         TextLen = lstrlen(Text);
-        // feature 010: the text may carry UTF-8 names/paths; keep a UTF-16
-        // mirror for measuring/drawing (0 = invalid UTF-8 -> legacy ANSI draw)
+        // the text is UTF-8 by contract (feature 063, contract C3); direct
+        // WM_USER_TTGETTEXT producers may still answer ANSI - convert those from
+        // CP_ACP, so drawing is always wide (the old DrawTextA fallback mapped
+        // bytes through the tooltip font's charset and garbled localized hints)
         int lenW = SalU8ToW(Text, TextLen, TextW, TOOLTIP_TEXT_MAX);
-        TextLenW = lenW != 0 ? lenW - 1 : 0;
+        if (lenW != 0)
+            TextLenW = lenW - 1;
+        else if (TextLen > 0)
+            TextLenW = MultiByteToWideChar(CP_ACP, 0, Text, TextLen, TextW, TOOLTIP_TEXT_MAX - 1);
+        else
+            TextLenW = 0;
         TextW[TextLenW] = 0;
     }
     if (TextLen == 0)
@@ -327,10 +334,8 @@ void CToolTip::GetNeededWindowSize(SIZE* sz)
     tR.top = 0;
     tR.right = 0;
     tR.bottom = 0;
-    if (TextLenW > 0)
-        DrawTextW(hDC, TextW, TextLenW, &tR, DT_CALCRECT | DT_LEFT | DT_NOPREFIX | DT_EXPANDTABS);
-    else
-        DrawText(hDC, Text, TextLen, &tR, DT_CALCRECT | DT_LEFT | DT_NOPREFIX | DT_EXPANDTABS);
+    // always wide: GetText produces TextW for every input (feature 063)
+    DrawTextW(hDC, TextW, TextLenW, &tR, DT_CALCRECT | DT_LEFT | DT_NOPREFIX | DT_EXPANDTABS);
     HANDLES(ReleaseDC(HWindow, hDC));
     sz->cx = tR.right - tR.left;
     sz->cy = tR.bottom - tR.top;
@@ -647,10 +652,8 @@ CToolTip::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         int oldBkMode = SetBkMode(hDC, TRANSPARENT);
         r.left += 2;
         r.top += 1;
-        if (TextLenW > 0)
-            DrawTextW(hDC, TextW, TextLenW, &r, DT_LEFT | DT_NOPREFIX | DT_NOCLIP | DT_EXPANDTABS);
-        else
-            DrawText(hDC, Text, TextLen, &r, DT_LEFT | DT_NOPREFIX | DT_NOCLIP | DT_EXPANDTABS);
+        // always wide: GetText produces TextW for every input (feature 063)
+        DrawTextW(hDC, TextW, TextLenW, &r, DT_LEFT | DT_NOPREFIX | DT_NOCLIP | DT_EXPANDTABS);
         SetBkMode(hDC, oldBkMode);
         SetTextColor(hDC, oldTextColor);
         SelectObject(hDC, hOldFont);

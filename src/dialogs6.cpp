@@ -1656,7 +1656,7 @@ CCompareDirsDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         SpacerHeight = r.bottom - r.top;
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
-        hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+        hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         if (!Configuration.CompareMoreOptions)
             DisplayMore(FALSE);

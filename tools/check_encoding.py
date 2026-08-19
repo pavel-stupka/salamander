@@ -117,7 +117,10 @@ UTF8_IDENT = re.compile(
     # plugin metadata holds UTF-8 by CONTRACT, not convention (feature 052):
     # specs/052-fix-plugin-name-encoding/contracts/plugin-metadata-encoding.md
     r'plugin->Name|Plugin->Name|p->Name|pluginData->Name|pluginName|'
-    r'\w+->Description|\w+->Copyright|\w+->Extensions|\w+->ChDrvMenuFSItemName'
+    r'\w+->Description|\w+->Copyright|\w+->Extensions|\w+->ChDrvMenuFSItemName|'
+    # tooltip text is UTF-8 by CONTRACT - normalized at SetToolTipText intake
+    # (feature 063, contracts/filelist-text-encoding.md C3)
+    r'ToolTipText'
     r')\b')
 
 # Legacy sinks: the byte-oriented A-variants. The W and Sal*U8 forms are safe.
@@ -125,6 +128,10 @@ SINK_LISTVIEW = re.compile(r'\bListView_SetItemText\s*\(')
 SINK_WNDTEXT = re.compile(r'(?<!Sal)\b(?:SetWindowText|SetDlgItemText)\s*\(')
 SINK_STATUS = re.compile(r'\bSB_SETTEXT\b(?!W)')
 SINK_COMBO = re.compile(r'\bCB_ADDSTRING\b(?!W)')
+# the ANSI clipboard entry point keeps CP_ACP semantics for the plugin ABI;
+# core code holding UTF-8 must use CopyTextToClipboardU8/W (feature 063,
+# specs/063-fix-filelist-encoding/contracts/filelist-text-encoding.md C2)
+SINK_CLIPBOARD = re.compile(r'\bCopyTextToClipboard\s*\(')
 
 RULES = ("cp-acp-display", "mixed-composition", "dead-dispinfow",
          "utf8-to-legacy-sink", "ansi-template-caption")
@@ -257,7 +264,8 @@ def scan(only=None):
             # identifier that carries one, handed to a byte-oriented sink.
             if only in (None, "utf8-to-legacy-sink"):
                 sink = (SINK_LISTVIEW.search(ln) or SINK_WNDTEXT.search(ln) or
-                        SINK_STATUS.search(ln) or SINK_COMBO.search(ln))
+                        SINK_STATUS.search(ln) or SINK_COMBO.search(ln) or
+                        SINK_CLIPBOARD.search(ln))
                 if sink:
                     # the value is either on this line, or assigned to the
                     # variable this line passes, a few lines above

@@ -32,7 +32,7 @@ from pathlib import Path
 
 from . import REPO_ROOT
 from .config import ConfigError, load_enabled_modules, load_languages
-from .layout import widen
+from .layout import ControlClasses, load_control_classes, widen
 from .slt import load
 
 
@@ -41,7 +41,8 @@ def default_templates_dir() -> Path:
     return build
 
 
-def relayout_file(template_path: Path, target_path: Path, write: bool) -> tuple[int, int, list[str]]:
+def relayout_file(template_path: Path, target_path: Path, write: bool,
+                  classes: ControlClasses | None = None) -> tuple[int, int, list[str]]:
     """Copy dialog geometry from the template into the target ``.slt``.
 
     Returns ``(rows_changed, controls_widened, problems)``. Text is never read
@@ -80,7 +81,7 @@ def relayout_file(template_path: Path, target_path: Path, write: bool) -> tuple[
             if new_numbers != row.numbers:
                 row.numbers = new_numbers
                 changed += 1
-        widened += len(widen(section, {}))
+        widened += len(widen(section, classes))
 
     if problems:
         return 0, 0, problems
@@ -111,7 +112,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     try:
-        modules = {m.name for m in load_enabled_modules()}
+        modules = {m.name: m for m in load_enabled_modules()}
         languages = load_languages(include_disabled=True)
     except ConfigError as e:
         print(f"error: {e}", file=sys.stderr)
@@ -119,6 +120,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.module not in modules:
         print(f"error: {args.module} is not an enabled module", file=sys.stderr)
         return 1
+    # control classes from the module's master .rc: radios/checkboxes get the
+    # glyph allowance, dropdowns stop walling off the free-space scan (063)
+    rh_path = modules[args.module].rh_path
+    classes = load_control_classes(rh_path.with_name("lang.rc"), rh_path)
     if args.languages:
         wanted = set(args.languages)
         languages = [l for l in languages if l.folder in wanted]
@@ -139,7 +144,7 @@ def main(argv: list[str] | None = None) -> int:
         if not target.is_file():
             print(f"  {language.folder:20s} (no {args.module}.slt)")
             continue
-        changed, widened, problems = relayout_file(template_path, target, not args.dry_run)
+        changed, widened, problems = relayout_file(template_path, target, not args.dry_run, classes)
         if problems:
             failures.extend(problems)
             print(f"  {language.folder:20s} REFUSED")

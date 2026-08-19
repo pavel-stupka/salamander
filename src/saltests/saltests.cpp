@@ -103,6 +103,18 @@ static void TestMatching()
     CHECK(SalIsASCII("plain.txt"));
     CHECK(!SalIsASCII(U8_C_CARON_NFC ".txt"));
 
+    // UTF-8 character walking/counting (feature 063: list padding, tooltip clamp)
+    CHECK(SalU8CharCount("abc") == 3);
+    CHECK(SalU8CharCount("") == 0);
+    CHECK(SalU8CharCount(U8_C_CARON_NFC "a" U8_FOLDER_EMOJI) == 3); // 2+1+4 bytes, 3 chars
+    CHECK(SalU8CharCount(U8_C_CARON_NFC "a", 2) == 1);              // sized: first char only
+    const char* walk = U8_C_CARON_NFC "a";
+    walk = SalU8Next(walk);
+    CHECK(strcmp(walk, "a") == 0); // stepped over the 2-byte character
+    walk = SalU8Next(walk);
+    CHECK(*walk == 0);
+    CHECK(SalU8Next(walk) == walk); // identity on the terminator
+
     // canonical equivalence (case-sensitive)
     CHECK(SalNameEquivalent(U8_C_CARON_NFC ".txt", U8_C_CARON_NFD ".txt"));
     CHECK(SalNameEquivalent("same.txt", "same.txt"));

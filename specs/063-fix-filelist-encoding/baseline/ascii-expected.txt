@@ -1,0 +1,4 @@
+a-very-long-ascii-name-for-alignment-tests.log
+plain.txt
+readme.md
+x.txt

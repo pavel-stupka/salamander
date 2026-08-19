@@ -164,6 +164,19 @@ BOOL SalIsASCII(const char* s, int len = -1);
 
 //*****************************************************************************
 //
+// SalU8Next / SalU8CharCount
+//
+// Walk and measure UTF-8 by characters (code points). SalU8Next returns the
+// pointer behind the character starting at 's' (identity on the terminator).
+// SalU8CharCount counts the characters in the first 'len' bytes (-1 =
+// null-terminated). Byte-oriented callers that pad or truncate visible text
+// use these so a multi-byte character is never split (feature 063).
+//
+const char* SalU8Next(const char* s);
+int SalU8CharCount(const char* s, int len = -1);
+
+//*****************************************************************************
+//
 // SalNameEquivalent
 //
 // TRUE when two UTF-8 names are canonically equivalent (their NFC

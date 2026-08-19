@@ -620,7 +620,7 @@ CSelectDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         break;
     }
@@ -1253,7 +1253,7 @@ CCompareArgsDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         CHyperLink* hl = new CHyperLink(HWindow, IDT_UMC_HOWTOREVERT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_UMCCONFIRMHOWTOREV));
+            hl->SetActionShowHint(LoadStrU8(IDS_UMCCONFIRMHOWTOREV));
         break;
     }
 

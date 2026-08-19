@@ -21,7 +21,9 @@ anything it cannot satisfy is left alone for ``--check-layout`` to report.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, field
+from pathlib import Path
 
 from .slt import Row, Section
 from .validate import split_shortcut
@@ -36,6 +38,17 @@ UNITS_PER_CHAR = 4.05
 
 #: CJK glyphs are full-width -- roughly double.
 UNITS_PER_WIDE_CHAR = 7.6
+
+#: Extra units a radio button or checkbox spends before its text begins: the
+#: glyph itself plus the gap to the label (feature 063). Without it every
+#: translated radio caption was judged "fits" while its first word was clipped.
+GLYPH_ALLOWANCE = 12
+
+#: What a closed drop-down combobox actually occupies vertically. Its resource
+#: ``cy`` is the DROPPED-list height (often 100+), and taking that literally
+#: turned every dropdown into a full-height wall in the free-space scan below,
+#: blocking the widening of everything to its lower left (feature 063).
+CLOSED_DROPDOWN_CY = 14
 
 
 def estimate_width(text: str) -> int:
@@ -59,16 +72,122 @@ class Widening:
     text: str
 
 
-def _overlaps_vertically(a: Row, b: Row) -> bool:
+@dataclass(frozen=True)
+class ControlClasses:
+    """Per-dialog control classification from a module's master ``.rc``.
+
+    The ``.slt`` format carries no control classes, but two widening decisions
+    need them (feature 063): ``checkable`` controls (radio/checkbox) render a
+    glyph before the text and need :data:`GLYPH_ALLOWANCE` on top of the text
+    estimate; ``dropdown`` comboboxes store their dropped-list height as ``cy``
+    and must not wall off the free-space scan (:data:`CLOSED_DROPDOWN_CY`).
+    Both maps key ``dialog resource id -> control ids``.
+    """
+
+    checkable: dict[int, frozenset[int]] = field(default_factory=dict)
+    dropdown: dict[int, frozenset[int]] = field(default_factory=dict)
+
+
+_RC_DEFINE = re.compile(r"#define\s+(\w+)\s+(\d+)")
+_RC_DIALOG = re.compile(r"^(\w+)\s+DIALOG(?:EX)?\b")
+_RC_STMT = re.compile(
+    r"^\s*(CONTROL|LTEXT|RTEXT|CTEXT|EDITTEXT|COMBOBOX|LISTBOX|PUSHBUTTON|"
+    r"DEFPUSHBUTTON|GROUPBOX|ICON|AUTOCHECKBOX|AUTORADIOBUTTON|CHECKBOX|"
+    r"RADIOBUTTON|STATE3|END|BEGIN)\b")
+_RC_CHECKABLE_STYLE = re.compile(
+    r"\bBS_(?:AUTO)?(?:RADIOBUTTON|CHECKBOX|3STATE)\b|\bBS_AUTO3STATE\b")
+_RC_CHECKABLE_STMT = re.compile(
+    r"^\s*(AUTOCHECKBOX|AUTORADIOBUTTON|CHECKBOX|RADIOBUTTON|STATE3)\b")
+
+
+def _rc_control_id(stmt: str, defines: dict[str, int]) -> int | None:
+    """The control id of one logical RC statement, or None."""
+    # CONTROL "text",ID,... / AUTOCHECKBOX "text",ID,... / COMBOBOX ID,...
+    m = re.match(r'^\s*\w+\s+(?:"(?:[^"]|"")*"\s*,\s*)?(\w+)\s*,', stmt)
+    if m is None:
+        return None
+    token = m.group(1)
+    if token.isdigit():
+        return int(token)
+    return defines.get(token)
+
+
+def load_control_classes(rc_path: Path, rh_path: Path) -> ControlClasses:
+    """Parse a module's master ``lang.rc`` (+ ``lang.rh``) for control classes.
+
+    Lenient by design: anything unparsed simply yields no classification, and
+    :func:`widen` then behaves exactly as before feature 063 for that control.
+    """
+    if not rc_path.is_file() or not rh_path.is_file():
+        return ControlClasses()
+    defines: dict[str, int] = {}
+    for m in _RC_DEFINE.finditer(rh_path.read_text(encoding="utf-8-sig", errors="replace")):
+        defines[m.group(1)] = int(m.group(2))
+
+    checkable: dict[int, set[int]] = {}
+    dropdown: dict[int, set[int]] = {}
+    dialog: int | None = None
+    depth = 0
+    stmts: list[str] = []
+    for line in rc_path.read_text(encoding="utf-8-sig", errors="replace").splitlines():
+        dm = _RC_DIALOG.match(line)
+        if dm is not None:
+            dialog = defines.get(dm.group(1))
+            depth = 0
+            continue
+        if dialog is None:
+            continue
+        stripped = line.strip()
+        if stripped == "BEGIN" or stripped == "{":
+            depth += 1
+            continue
+        if stripped == "END" or stripped == "}":
+            depth -= 1
+            if depth <= 0:
+                dialog = None
+            continue
+        if depth < 1:
+            continue
+        # join wrapped statements: a line not starting a new statement continues
+        # the previous one
+        if _RC_STMT.match(line) or not stmts:
+            stmts.append(line)
+        else:
+            stmts[-1] += " " + stripped
+        stmt = stmts[-1]
+        cid = _rc_control_id(stmt, defines)
+        if cid is None:
+            continue
+        is_checkable = (_RC_CHECKABLE_STMT.match(stmt) is not None or
+                        ('"Button"' in stmt and _RC_CHECKABLE_STYLE.search(stmt) is not None))
+        is_dropdown = ((stmt.lstrip().startswith("COMBOBOX") or '"ComboBox"' in stmt) and
+                       re.search(r"\bCBS_DROPDOWN(?:LIST)?\b", stmt) is not None)
+        if is_checkable:
+            checkable.setdefault(dialog, set()).add(cid)
+        if is_dropdown:
+            dropdown.setdefault(dialog, set()).add(cid)
+
+    return ControlClasses(
+        checkable={d: frozenset(s) for d, s in checkable.items()},
+        dropdown={d: frozenset(s) for d, s in dropdown.items()},
+    )
+
+
+def _overlaps_vertically(a: Row, b: Row, b_height_cap: int | None = None) -> bool:
     ay, ah = a.numbers[2], a.numbers[4]
     by, bh = b.numbers[2], b.numbers[4]
+    if b_height_cap is not None and bh > b_height_cap:
+        bh = b_height_cap
     return ay < by + bh and by < ay + ah
 
 
-def widen(section: Section, english: dict[int, str]) -> list[Widening]:
+def widen(section: Section, classes: ControlClasses | None = None) -> list[Widening]:
     """Grow clipped controls in one dialog, in place. Returns what changed."""
     if not section.rows or section.kind != "DIALOG":
         return []
+
+    checkable = classes.checkable.get(section.number, frozenset()) if classes else frozenset()
+    dropdown = classes.dropdown.get(section.number, frozenset()) if classes else frozenset()
 
     dialog_cx = section.rows[0].numbers[0]
     controls = section.rows[1:]
@@ -82,16 +201,20 @@ def widen(section: Section, english: dict[int, str]) -> list[Widening]:
             continue
 
         needed = estimate_width(row.text)
+        if cid in checkable:
+            needed += GLYPH_ALLOWANCE
         if needed <= cx:
             continue
 
-        # A control only ever grows into space nothing else occupies.
+        # A control only ever grows into space nothing else occupies. A dropdown
+        # combobox blocks only its closed height, not its dropped-list height.
         limit = dialog_cx - MARGIN
         for other in controls:
             if other is row or len(other.numbers) != 6:
                 continue
             ox = other.numbers[1]
-            if ox > x and _overlaps_vertically(row, other):
+            cap = CLOSED_DROPDOWN_CY if other.numbers[0] in dropdown else None
+            if ox > x and _overlaps_vertically(row, other, cap):
                 limit = min(limit, ox - 2)
 
         new_cx = min(needed, limit - x)

@@ -1796,7 +1796,7 @@ CCfgPageViewer::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
 
         break;
     }
@@ -3360,7 +3360,7 @@ CCfgPageSystem::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FILEMASK_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_MASKS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_MASKS_HINT));
         break;
     }
 

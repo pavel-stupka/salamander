@@ -1850,8 +1850,8 @@ BOOL CopyUNCPathToClipboard(const char* path, const char* name, BOOL isDir, HWND
     if (buff[0] == '\\' && buff[1] == '\\')
     {
         // path is already in UNC form
-        strcat(buff, name); // append the focused item's name
-        return CopyTextToClipboard(buff);
+        strcat(buff, name);                 // append the focused item's name
+        return CopyTextToClipboardU8(buff); // panel names/paths are UTF-8 (feature 063, contract C2)
     }
 
     // if it is a directory, append it to the path
@@ -1869,16 +1869,20 @@ BOOL CopyUNCPathToClipboard(const char* path, const char* name, BOOL isDir, HWND
             SalPathAddBackslash(uncPath, 2 * MAX_PATH); // we want a backslash at the end
             strcat(uncPath, name);
         }
-        return CopyTextToClipboard(uncPath);
+        return CopyTextToClipboardU8(uncPath); // UTF-8 (feature 063, contract C2)
     }
 
     // it might be a mapped drive
-    char localRoot[3];
-    localRoot[0] = buff[0];
-    localRoot[1] = ':';
-    localRoot[2] = 0;
-    DWORD uncPathSize = sizeof(uncPath);
-    if (WNetGetConnection(localRoot, uncPath, &uncPathSize) == NO_ERROR)
+    // W variant + convert: the A variant returned CP_ACP bytes that were then
+    // concatenated with UTF-8 path remainders (feature 063, contract C2)
+    WCHAR localRootW[3];
+    localRootW[0] = (WCHAR)(unsigned char)buff[0]; // drive letter (ASCII)
+    localRootW[1] = L':';
+    localRootW[2] = 0;
+    WCHAR uncPathW[2 * MAX_PATH];
+    DWORD uncPathSize = 2 * MAX_PATH;
+    if (WNetGetConnectionW(localRootW, uncPathW, &uncPathSize) == NO_ERROR &&
+        SalWToU8(uncPathW, -1, uncPath, 2 * MAX_PATH) != 0)
     {
         SalPathAddBackslash(uncPath, 2 * MAX_PATH);
         if (strlen(buff) > 3)
@@ -1888,8 +1892,8 @@ BOOL CopyUNCPathToClipboard(const char* path, const char* name, BOOL isDir, HWND
         }
         if (!isDir)
             strcat(uncPath, name);
-        if (SalGetFullName(uncPath)) // root "c:\\", others without '\\' at the end
-            return CopyTextToClipboard(uncPath);
+        if (SalGetFullName(uncPath))               // root "c:\\", others without '\\' at the end
+            return CopyTextToClipboardU8(uncPath); // UTF-8 (feature 063, contract C2)
     }
 
     // if the path is not UNC, it might be a SUBST drive
@@ -1920,7 +1924,7 @@ BOOL CopyUNCPathToClipboard(const char* path, const char* name, BOOL isDir, HWND
                 SalPathAddBackslash(uncPath, 2 * MAX_PATH); // we want a backslash at the end
                 strcat(uncPath, name);
             }
-            return CopyTextToClipboard(uncPath);
+            return CopyTextToClipboardU8(uncPath); // UTF-8 (feature 063, contract C2)
         }
 
         // all attempts failed -- give up and show an error message
@@ -1986,7 +1990,7 @@ BOOL CFilesWindow::CopyFocusedNameToClipboard(CCopyFocusedNameModeEnum mode)
         AlterFileName(fileName, file->Name, -1, Configuration.FileNameFormat, 0, FocusedIndex < Dirs->Count);
         int l = (int)strlen(buff);
         lstrcpyn(buff + l, fileName, 2 * MAX_PATH - l);
-        return CopyTextToClipboard(buff);
+        return CopyTextToClipboardU8(buff); // panel names/paths are UTF-8 (feature 063, contract C2)
     }
     else
     {
@@ -2000,7 +2004,7 @@ BOOL CFilesWindow::CopyFocusedNameToClipboard(CCopyFocusedNameModeEnum mode)
                 GetPluginFS()->GetPluginInterfaceForFS()->ConvertPathToExternal(GetPluginFS()->GetPluginFSName(),
                                                                                 GetPluginFS()->GetPluginFSNameIndex(),
                                                                                 buff + l);
-                return CopyTextToClipboard(buff);
+                return CopyTextToClipboardU8(buff); // panel names/paths are UTF-8 (feature 063, contract C2)
             }
         }
     }
@@ -2014,7 +2018,7 @@ BOOL CFilesWindow::CopyCurrentPathToClipboard()
     char buff[2 * MAX_PATH];
     buff[0] = 0;
     GetGeneralPath(buff, 2 * MAX_PATH, TRUE);
-    return CopyTextToClipboard(buff);
+    return CopyTextToClipboardU8(buff); // panel names/paths are UTF-8 (feature 063, contract C2)
 }
 
 void AddStrToStr(char* dstStr, int dstBufSize, const char* srcStr)

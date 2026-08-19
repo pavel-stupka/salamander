@@ -715,7 +715,12 @@ DWORD AddUnicodeToClipboard(const char* str, int len);
 
 // vrzne text na clipboard; pokud showEcho, zobrazi message box, ze jako OK
 // pokud je textLen==-1, napocita si delku sam
+// CopyTextToClipboard keeps CP_ACP semantics forever (plugin ABI); core code
+// holding UTF-8 (the feature-004 contract) must use CopyTextToClipboardU8 or
+// the W variant instead - both produce a true CF_UNICODETEXT plus a
+// best-effort CP_ACP CF_TEXT (feature 063, contract C2)
 BOOL CopyTextToClipboard(const char* text, int textLen = -1, BOOL showEcho = FALSE, HWND hEchoParent = NULL);
+BOOL CopyTextToClipboardU8(const char* u8Text, int textLen = -1, BOOL showEcho = FALSE, HWND hEchoParent = NULL);
 BOOL CopyTextToClipboardW(const wchar_t* text, int textLen = -1, BOOL showEcho = FALSE, HWND hEchoParent = NULL);
 BOOL CopyHTextToClipboard(HGLOBAL hGlobalText, int textLen = -1, BOOL showEcho = FALSE, HWND hEchoParent = NULL);
 

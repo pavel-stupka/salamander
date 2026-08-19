@@ -219,7 +219,12 @@ BOOL SalGetTempFileName(const char* path, const char* prefix, char* tmpName, BOO
     char* end = tmpDir + MAX_PATH + 10;
     if (path == NULL)
     {
-        if (!GetTempPath(MAX_PATH, tmpDir))
+        // W API + convert: the A variants return CP_ACP bytes, which the
+        // UTF-8-consuming SalCreateFile/SalCreateDirectory below reject for a
+        // non-ASCII %TEMP% (feature 063, contract C5)
+        WCHAR tmpDirW[MAX_PATH];
+        if (!GetTempPathW(MAX_PATH, tmpDirW) ||
+            SalWToU8(tmpDirW, -1, tmpDir, MAX_PATH + 10) == 0)
         {
             DWORD err = GetLastError();
             TRACE_E("Unable to get TEMP directory.");
@@ -229,7 +234,8 @@ BOOL SalGetTempFileName(const char* path, const char* prefix, char* tmpName, BOO
         if (SalGetFileAttributes(tmpDir) == 0xFFFFFFFF)
         {
             SalMessageBox(NULL, LoadStr(IDS_TMPDIRERROR), LoadStr(IDS_ERRORTITLE), MB_OK | MB_ICONEXCLAMATION);
-            if (GetSystemDirectory(tmpDir, MAX_PATH) == 0)
+            if (GetSystemDirectoryW(tmpDirW, MAX_PATH) == 0 ||
+                SalWToU8(tmpDirW, -1, tmpDir, MAX_PATH + 10) == 0)
             {
                 DWORD err = GetLastError();
                 TRACE_E("Unable to get system directory.");

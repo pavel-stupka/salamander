@@ -617,8 +617,12 @@ BOOL CStaticText::SetText(const char* text)
     memmove(Text, text, l);
     TextLen = l - 1;
     // build the UTF-16 form used for measurement and painting; invalid UTF-8
-    // (transitional) degrades to a byte-widened copy so drawing still works
+    // means a not-yet-migrated producer passed ANSI - convert from CP_ACP
+    // (the old byte-widening rendered CP1250 diacritics as Latin-1 mojibake,
+    // feature 063); byte widening remains only as the last resort
     TextLenW = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, Text, TextLen, TextW, Allocated);
+    if (TextLenW <= 0 && TextLen > 0)
+        TextLenW = MultiByteToWideChar(CP_ACP, 0, Text, TextLen, TextW, Allocated);
     if (TextLenW <= 0 && TextLen > 0)
     {
         int i;
@@ -872,9 +876,6 @@ BOOL CStaticText::TextHitTest(POINT* screenCursorPos)
 
 BOOL CStaticText::SetToolTipText(const char* text)
 {
-    if (text != NULL && ToolTipText != NULL && strcmp(ToolTipText, text) == 0)
-        return TRUE;
-
     if (text == NULL)
     {
         if (ToolTipText != NULL)
@@ -885,9 +886,18 @@ BOOL CStaticText::SetToolTipText(const char* text)
         return TRUE;
     }
 
-    char* newText = DupStr(text);
+    // ToolTipText is UTF-8 by contract (feature 063, contract C3); producers may
+    // still pass ANSI (LoadStr sites, plugins) - normalize at intake, and compare
+    // the normalized forms so the early-out keeps working for ANSI repeats
+    char* newText = SalLegacyToU8Alloc(text);
     if (newText == NULL)
         return FALSE;
+
+    if (ToolTipText != NULL && strcmp(ToolTipText, newText) == 0)
+    {
+        free(newText);
+        return TRUE;
+    }
 
     if (ToolTipText != NULL)
         free(ToolTipText);
@@ -963,6 +973,28 @@ BOOL CStaticText::ShowHint()
     MainWindow->ToolTip->Show(r.left + xOffset, r.bottom, FALSE, TRUE, HWindow);
     // note: Show has the parameter 'modal'==TRUE, so control returns here only after the tooltip is closed
     return TRUE;
+}
+
+// copies the UTF-8 ToolTipText into the TOOLTIP_TEXT_MAX-byte answer buffer of
+// WM_USER_TTGETTEXT; when the clamp truncates, it never leaves a torn multi-byte
+// sequence at the end (feature 063, contract C3)
+static void CopyToolTipAnswer(const char* toolTipText, char* dst)
+{
+    lstrcpyn(dst, toolTipText, TOOLTIP_TEXT_MAX);
+    if ((int)strlen(toolTipText) >= TOOLTIP_TEXT_MAX)
+    {
+        int end = TOOLTIP_TEXT_MAX - 1; // index of the terminator
+        int start = end;
+        while (start > 0 && ((unsigned char)dst[start - 1] & 0xC0) == 0x80)
+            start--;
+        if (start > 0 && (unsigned char)dst[start - 1] >= 0xC0)
+        {
+            unsigned char lead = (unsigned char)dst[start - 1];
+            int seqLen = lead >= 0xF0 ? 4 : (lead >= 0xE0 ? 3 : 2);
+            if (end - (start - 1) < seqLen) // the sequence is incomplete
+                dst[start - 1] = 0;
+        }
+    }
 }
 
 LRESULT
@@ -1053,7 +1085,7 @@ CStaticText::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_USER_TTGETTEXT:
     {
         if (ToolTipText != NULL)
-            lstrcpyn((char*)lParam, ToolTipText, TOOLTIP_TEXT_MAX);
+            CopyToolTipAnswer(ToolTipText, (char*)lParam);
         return 0;
     }
 
@@ -1357,7 +1389,12 @@ MENU_TEMPLATE_ITEM HyperLinkMenu[] =
     DestroyMenu(hMenu);
     if (cmd == 1)
     {
-        CopyTextToClipboard(Text, -1, TRUE, HWindow);
+        // Text is UTF-8 with a UTF-16 mirror (feature 005); the ANSI clipboard
+        // entry point garbled non-ASCII link text (feature 063, contract C2)
+        if (TextW != NULL)
+            CopyTextToClipboardW(TextW, TextLenW, TRUE, HWindow);
+        else
+            CopyTextToClipboardU8(Text, -1, TRUE, HWindow);
     }
 }
 
@@ -1974,7 +2011,9 @@ BOOL CButton::SetToolTipText(const char* text)
         return TRUE;
     }
 
-    char* newText = DupStr(text);
+    // ToolTipText is UTF-8 by contract (feature 063, contract C3); normalize
+    // at intake - producers (LoadStr sites, plugins) may still pass ANSI
+    char* newText = SalLegacyToU8Alloc(text);
     if (newText == NULL)
         return FALSE;
 
@@ -2520,7 +2559,7 @@ CButton::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_USER_TTGETTEXT:
     {
         if (ToolTipText != NULL)
-            lstrcpyn((char*)lParam, ToolTipText, TOOLTIP_TEXT_MAX);
+            CopyToolTipAnswer(ToolTipText, (char*)lParam);
         return 0;
     }
 

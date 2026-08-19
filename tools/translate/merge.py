@@ -35,7 +35,7 @@ from .config import (
     load_enabled_modules,
     load_languages,
 )
-from .layout import dedupe_accelerators, widen
+from .layout import dedupe_accelerators, load_control_classes, widen
 from .deepl import TARGET_CODES, Client, DeepLError, load_key
 from .match import CAPTION_KEY, entry_key, index_entries, match
 from .rebrand import find_residue, rebrand
@@ -186,6 +186,10 @@ def build_slt(
     cov.total, cov.skip, cov.discarded = stats.total, stats.untranslatable, stats.discarded
 
     symbols: dict[int, str] = load_symbols(module) if module is not None else {}
+    # control classes for the widening pass (feature 063): radio/checkbox glyph
+    # allowance + dropdowns no longer wall off the free-space scan
+    classes = (load_control_classes(module.rh_path.with_name("lang.rc"), module.rh_path)
+               if module is not None else None)
 
     legacy_index = index_entries(legacy) if legacy is not None else {}
     legacy_sections = {s.key: s for s in legacy.sections} if legacy is not None else {}
@@ -304,7 +308,7 @@ def build_slt(
 
         # Grow controls the translation outgrew, before the accelerator check.
         if section.kind == "DIALOG":
-            cov.widened += len(widen(section, {}))
+            cov.widened += len(widen(section, classes))
 
         # Windows cycles between controls that share an accelerator instead of
         # activating one, so a duplicate within a dialog or menu is a real

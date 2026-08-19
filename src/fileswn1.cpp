@@ -1952,7 +1952,8 @@ void CFilesWindow::StoreGlobalSelection()
                                 p += 2;
                             }
                         }
-                        CopyTextToClipboard(buff, size);
+                        // names are UTF-8 (feature 063, contract C2)
+                        CopyTextToClipboardU8(buff, size);
                         free(buff);
                     }
                     else

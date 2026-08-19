@@ -131,7 +131,7 @@ char* SalLegacyToU8Alloc(const char* src, int maxBytes)
         memcpy(u8, src, len + 1);
     }
     else
-    {   // transitional tolerance: a not-yet-migrated producer passed ANSI bytes
+    { // transitional tolerance: a not-yet-migrated producer passed ANSI bytes
         // (the same heuristic the registry facade applies on write, see
         // SalRegSetValueExW8)
         int wlen = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
@@ -282,6 +282,34 @@ BOOL SalIsASCII(const char* s, int len)
                 return FALSE;
     }
     return TRUE;
+}
+
+//*****************************************************************************
+//
+// SalU8Next / SalU8CharCount
+//
+
+const char* SalU8Next(const char* s)
+{
+    if (*s != 0)
+    {
+        s++;
+        while ((*s & 0xC0) == 0x80) // skip continuation bytes
+            s++;
+    }
+    return s;
+}
+
+int SalU8CharCount(const char* s, int len)
+{
+    if (len < 0)
+        len = (int)strlen(s);
+    int count = 0;
+    int i;
+    for (i = 0; i < len; i++)
+        if (((unsigned char)s[i] & 0xC0) != 0x80)
+            count++;
+    return count;
 }
 
 //*****************************************************************************

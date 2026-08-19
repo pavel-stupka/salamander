@@ -281,15 +281,26 @@ void CMainWindow::MakeFileList()
         if (fileName[0] != 0)
         {
             BOOL append = (Configuration.FileListDestination == 2 && Configuration.FileListAppend);
-            HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_WRITE | GENERIC_READ,
-                                                FILE_SHARE_READ, NULL,
-                                                append ? OPEN_ALWAYS : CREATE_ALWAYS,
-                                                FILE_FLAG_RANDOM_ACCESS,
-                                                NULL));
+            HANDLE hFile = SalCreateFile(fileName, GENERIC_WRITE | GENERIC_READ, // fileName is UTF-8 (feature 063, contract C5)
+                                         FILE_SHARE_READ, NULL,
+                                         append ? OPEN_ALWAYS : CREATE_ALWAYS,
+                                         FILE_FLAG_RANDOM_ACCESS,
+                                         NULL);
             if (hFile != INVALID_HANDLE_VALUE)
             {
                 // position the file pointer
                 SetFilePointer(hFile, 0, NULL, append ? FILE_END : FILE_BEGIN);
+
+                if (Configuration.FileListDestination == 1) // viewer
+                {
+                    // the viewer receives only a file name (the plugin viewer data has no
+                    // encoding field), so a UTF-8 BOM is the channel that makes its encoding
+                    // detection unconditional - content sampling sees just the first 10000
+                    // bytes, which can be all-ASCII (feature 063, contract C1); the clipboard
+                    // destination must NOT get a BOM (its bytes are read back verbatim below)
+                    DWORD bomWritten;
+                    WriteFile(hFile, "\xEF\xBB\xBF", 3, &bomWritten, NULL);
+                }
 
                 // fill the file with data -- insert one entry for each file or directory
                 BOOL deleteFile = TRUE;
@@ -312,7 +323,9 @@ void CMainWindow::MakeFileList()
                             DWORD read;
                             if (ReadFile(hFile, buff, fileSize, &read, NULL))
                             {
-                                CopyTextToClipboard(buff, fileSize, FALSE, NULL);
+                                // the list is UTF-8 (expanded from CFileData names);
+                                // the ANSI entry point garbled it (feature 063, contract C2)
+                                CopyTextToClipboardU8(buff, fileSize, FALSE, NULL);
                             }
                             else
                             {
@@ -329,7 +342,7 @@ void CMainWindow::MakeFileList()
 
                 // if the destination was the clipboard, delete the temporary file
                 if (deleteFile || Configuration.FileListDestination == 0) // clipboard
-                    DeleteFile(fileName);
+                    SalDeleteFile(fileName);                              // fileName is UTF-8 (feature 063, contract C5)
                 else
                 {
                     if (Configuration.FileListDestination == 1) // viewer

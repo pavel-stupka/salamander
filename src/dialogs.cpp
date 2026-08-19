@@ -1978,7 +1978,7 @@ CFileListDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         CHyperLink* hl = new CHyperLink(HWindow, IDC_FL_LINE_HINT, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_FILELISTLINE_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_FILELISTLINE_HINT));
 
         InstallWordBreakProc(GetDlgItem(HWindow, IDC_FL_FILENAME)); // install WordBreakProc into the editline
 

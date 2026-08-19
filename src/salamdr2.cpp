@@ -1009,12 +1009,16 @@ MENU_TEMPLATE_ITEM MsgBoxButtons[] =
                 if (!validateOnly)
                 {
                     int len = (int)strlen(value);
+                    // ':N'/':max' widths are displayed characters, not bytes: values are
+                    // UTF-8 (feature 063, contract C4); ASCII keeps width == len so
+                    // ASCII-only output stays byte-identical
+                    int width = SalIsASCII(value, len) ? len : SalU8CharCount(value, len);
                     if (detectMax)
                     {
                         if (currentMaxVarIndex < maxVarWidthsCount)
                         {
-                            if (maxVarWidths[currentMaxVarIndex] < len)
-                                maxVarWidths[currentMaxVarIndex] = len;
+                            if (maxVarWidths[currentMaxVarIndex] < width)
+                                maxVarWidths[currentMaxVarIndex] = width;
                             currentMaxVarIndex++;
                         }
                         else
@@ -1022,7 +1026,29 @@ MENU_TEMPLATE_ITEM MsgBoxButtons[] =
                     }
                     if (buffer != NULL)
                     {
-                        int totalLen = (valueOutLen > 0) ? valueOutLen : len;
+                        int copyBytes = len;
+                        int padSpaces = 0;
+                        if (valueOutLen > 0)
+                        {
+                            if (valueOutLen >= width)
+                                padSpaces = valueOutLen - width;
+                            else
+                            {
+                                // truncate after 'valueOutLen' characters, never inside a
+                                // multi-byte sequence
+                                const char* cut = value;
+                                int chars = 0;
+                                while (chars < valueOutLen)
+                                {
+                                    cut = SalU8Next(cut);
+                                    chars++;
+                                }
+                                copyBytes = (int)(cut - value);
+                            }
+                        }
+                        // varPlacements stays in BYTES - its consumers (info line
+                        // sub-texts) index this byte buffer directly
+                        int totalLen = copyBytes + padSpaces;
                         if (out + totalLen + 1 <= outEnd) // it must still be possible to null-terminate it
                         {
                             if (varPlacementIndex < varPlacementIndexCount)
@@ -1035,9 +1061,9 @@ MENU_TEMPLATE_ITEM MsgBoxButtons[] =
                                 if (varPlacements != NULL)
                                     TRACE_E("Buffer varPlacements is small");
                             }
-                            memcpy(out, value, min(totalLen, len));
-                            if (len < totalLen)
-                                memset(out + len, ' ', totalLen - len);
+                            memcpy(out, value, copyBytes);
+                            if (padSpaces > 0)
+                                memset(out + copyBytes, ' ', padSpaces);
                             out += totalLen;
                         }
                         else
@@ -1705,7 +1731,7 @@ UINT MyGetDriveType(const char* path)
     char ourPath[MAX_PATH];
     char resPath[MAX_PATH];
     if (strlen(path) >= MAX_PATH)
-    {   // feature 062 (contract C1): panel paths may exceed MAX_PATH while the reparse
+    { // feature 062 (contract C1): panel paths may exceed MAX_PATH while the reparse
         // walk below works in MAX_PATH buffers (the plugin-facing contract of
         // ResolveLocalPathWithReparsePoints); classify overlong paths by their root
         // instead of by a silently truncated copy (which used to yield

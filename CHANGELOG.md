@@ -13,6 +13,38 @@ plugin.
 
 ### Fixed
 
+- **Make File List (Ctrl+M) no longer garbles accented names.** The generated
+  list reached the clipboard through a legacy code-page conversion, so Czech
+  (and any non-ASCII) file names pasted as mojibake. The clipboard now carries
+  true Unicode; applications that can only take legacy text get the best
+  representation the system code page allows. The same wrong conversion sat
+  behind every other text-copy command — Ctrl+C copy name/path, Copy UNC path,
+  copies from the Find window, the directory/status line, message boxes
+  (Ctrl+C) and the internal viewer's Copy on UTF-8 files — all fixed the same
+  way. ASCII-only copies are byte-identical to before.
+- **Make File List works with a non-ASCII list file name and %TEMP%.** Saving
+  the list to a file like `seznam-příloh.txt` created a garbled file name on
+  disk, and a Windows profile whose TEMP path contains accented characters made
+  Ctrl+M fail outright with "error creating temporary file".
+- **Make File List `:N`/`:max` columns align for accented names.** Width
+  modifiers counted bytes, not characters, so accented names misaligned the
+  columns — and a numeric width could even cut a name in the middle of a
+  character. Widths now count displayed characters and cuts land on character
+  boundaries. The viewer destination also renders the list correctly even when
+  the first ten thousand bytes are plain ASCII.
+- **Hint tooltips show correct diacritics in localized UIs.** The line-syntax
+  help in Make File List — and every other hint of this kind (file-mask hints,
+  hot-path hints, plugin-supplied hints) — was drawn through a font-charset
+  dependent legacy path and rendered Czech text as mojibake. The tooltip text
+  is now converted explicitly and always drawn wide.
+- **Dialog labels are no longer clipped in translated UIs.** The "File:" radio
+  label in Make File List was cut short in every non-English language
+  ("Soubor:" showed as "Sou…"), and the same sizing defect hid parts of other
+  labels (German "Interner Dateibetrachter" among them). The automatic layout
+  widener now accounts for radio/checkbox glyphs and no longer lets a
+  drop-down box block the space scan, and the affected dialog got more room in
+  the master template; all shipped languages were re-laid-out, translations
+  untouched.
 - **DEL no longer permanently deletes in folders with non-ASCII characters in the
   path.** In any folder whose path contains characters outside the system code page
   (Czech diacritics above all — OneDrive trees with localized folder names were the

@@ -1553,7 +1553,19 @@ CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // if (startSel == -1) startSel = 0; // cannot happen (-1 can only be both at once and we do not get here)
                     __int64 endSel = max(StartSelection, EndSelection);
                     // if (endSel == -1) endSel = 0; // cannot happen (-1 can only be both at once and we do not get here)
-                    if (fatalErr || !CopyHTextToClipboard(h, (int)(endSel - startSel)))
+                    if (!fatalErr && ContentEncoding == VCE_UTF8)
+                    {
+                        // the selection is raw UTF-8 file bytes; the legacy path built
+                        // CF_UNICODETEXT via CP_ACP and garbled it (feature 063, contract C2)
+                        char* bytes = (char*)HANDLES(GlobalLock(h));
+                        if (bytes != NULL)
+                        {
+                            CopyTextToClipboardU8(bytes, (int)(endSel - startSel));
+                            HANDLES(GlobalUnlock(h));
+                        }
+                        NOHANDLES(GlobalFree(h)); // the U8 path made its own clipboard copy
+                    }
+                    else if (fatalErr || !CopyHTextToClipboard(h, (int)(endSel - startSel)))
                         NOHANDLES(GlobalFree(h));
                 }
                 if (fatalErr)

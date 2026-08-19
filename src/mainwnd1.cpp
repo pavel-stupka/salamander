@@ -2673,13 +2673,15 @@ MENU_TEMPLATE_ITEM InfoLineMenu[] =
 */
         case 8:
         {
-            CopyTextToClipboard(HotText);
+            // HotText is UTF-8 (feature 010; see the correct in-place copy in
+            // stswnd.cpp) - feature 063, contract C2
+            CopyTextToClipboardU8(HotText);
             panel->DirectoryLine->FlashText(TRUE);
         }
         break;
         case 9:
         {
-            CopyTextToClipboard(HotText);
+            CopyTextToClipboardU8(HotText); // UTF-8 (feature 063, contract C2)
             panel->StatusLine->FlashText(TRUE);
         }
         break;

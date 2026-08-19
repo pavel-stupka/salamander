@@ -3166,10 +3166,10 @@ CCfgPageChangeDrive::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         CHyperLink* hl;
         hl = new CHyperLink(HWindow, IDS_CHD_HOTPATHS, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_CHDHOTPATHS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_CHDHOTPATHS_HINT));
         hl = new CHyperLink(HWindow, IDS_CHD_PLUGINS, STF_DOTUNDERLINE);
         if (hl != NULL)
-            hl->SetActionShowHint(LoadStr(IDS_CHDPLUGINS_HINT));
+            hl->SetActionShowHint(LoadStrU8(IDS_CHDPLUGINS_HINT));
 
         break;
     }
