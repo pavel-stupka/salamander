@@ -370,7 +370,7 @@ public:
     {
         Path[0] = 0;
         TopIndexesCount = 0;
-    } // clears memory
+    }                                                 // clears memory
     void Push(const char* path, int topIndex);        // stores the top index for the given path
     BOOL FindAndPop(const char* path, int& topIndex); // looks for the top index of the path, FALSE -> not found
 };
@@ -476,9 +476,9 @@ public:
 class CFilesWindowAncestor : public CWindow // the real object core - everything private ;-)
 {
 private:
-    char Path[SAL_MAX_PATH_UTF8]; // path for a ptDisk panel - normal ("c:\path") or UNC ("\\server\share\path");
-                                  // UTF-8, long-path capable (feature 004)
-    BOOL SuppressAutoRefresh; // TRUE if the user canceled directory listing during reading and chose temporary auto-refresh suppression
+    char Path[SAL_MAX_PATH_UTF8];                    // path for a ptDisk panel - normal ("c:\path") or UNC ("\\server\share\path");
+                                                     // UTF-8, long-path capable (feature 004)
+    BOOL SuppressAutoRefresh;                        // TRUE if the user canceled directory listing during reading and chose temporary auto-refresh suppression
     BOOL EquivalentPairNoticeShown;                  // feature 004 (FR-007): TRUE once the one-time notice about a canonically
                                                      // equivalent (NFC vs NFD) name pair was shown for the current path
     char EquivalentPairNoticeName[SAL_FIND_NAME_U8]; // name to show in that notice (empty = nothing pending)
@@ -489,11 +489,11 @@ private:
     UINT DriveType;      // disk+archive: drive type of Path (see MyGetDriveType())
 
     // when we are inside an archive:
-    CSalamanderDirectory* ArchiveDir; // content of the open archive; basic data - array of CFileData
+    CSalamanderDirectory* ArchiveDir;   // content of the open archive; basic data - array of CFileData
     char ZIPArchive[SAL_MAX_PATH_UTF8]; // path to the open archive (UTF-8, long-path capable)
     char ZIPPath[SAL_MAX_PATH_UTF8];    // path inside the open archive (UTF-8)
-    FILETIME ZIPArchiveDate;          // archive date (used for the ".." date and during refresh)
-    CQuadWord ZIPArchiveSize;         // archive size - used to detect archive changes
+    FILETIME ZIPArchiveDate;            // archive date (used for the ".." date and during refresh)
+    CQuadWord ZIPArchiveSize;           // archive size - used to detect archive changes
 
     // when browsing a plugin file system:
     CPluginFSInterfaceEncapsulation PluginFS; // pointer to the open FS
@@ -753,6 +753,10 @@ public:
     CRITICAL_SECTION ICSleepSection;      // critical section -> sleep-icon-thread must pass through it
     CRITICAL_SECTION ICSectionUsingIcon;  // critical section -> image-list is used inside
     CRITICAL_SECTION ICSectionUsingThumb; // critical section -> thumbnail is used inside
+    CRITICAL_SECTION ICThumbLoadSection;  // held by the icon-reader across a plugin LoadThumbnail call while
+                                          // ICSleepSection is released (feature 064, contract C3);
+                                          // SleepIconCacheThread passes through it, so the icon cache and the
+                                          // thumbnail-loader plugins cannot be torn down under a running decode
 
     BOOL AutomaticRefresh;      // is the panel refreshed automatically (or manually)?
     BOOL FilesActionInProgress; // is work already being prepared or executed for the Worker?
@@ -779,11 +783,11 @@ public:
     BOOL SortedWithRegSet;    // used to monitor changes of the global variable Configuration.SortUsesLocale
     BOOL SortedWithDetectNum; // used to monitor changes of the global variable Configuration.SortDetectNumbers
 
-    char DropPath[SAL_MAX_PATH_UTF8]; // buffer for the current directory used in a drop operation (long-path capable)
+    char DropPath[SAL_MAX_PATH_UTF8];     // buffer for the current directory used in a drop operation (long-path capable)
     char NextFocusName[SAL_FIND_NAME_U8]; // the name that will receive focus on the next refresh (UTF-8, feature 004)
     BOOL DontClearNextFocusName;          // TRUE = do not clear NextFocusName when the main Salamander window is activated
-    BOOL FocusFirstNewItem;       // refresh: should the newly added item be selected? (for system New)
-    CTopIndexMem TopIndexMem;     // memory of top index for Execute()
+    BOOL FocusFirstNewItem;               // refresh: should the newly added item be selected? (for system New)
+    CTopIndexMem TopIndexMem;             // memory of top index for Execute()
 
     int LastRefreshTime; // used to handle the chaos of directory change notifications
 
@@ -839,12 +843,12 @@ public:
     CMaskGroup Filter;  // filter for the panel
     BOOL FilterEnabled; // is the filter enabled
 
-    BOOL QuickSearchMode;               // Quick Search mode?
-    short CaretHeight;                  // it is set when measuring the font in CFilesWindow
-    char QuickSearch[3 * MAX_PATH];     // name of the file that was sought via Quick Search (UTF-8)
-    char QuickSearchMask[3 * MAX_PATH]; // quick search mask in UTF-8 (may contain '/' after any number of characters)
+    BOOL QuickSearchMode;                  // Quick Search mode?
+    short CaretHeight;                     // it is set when measuring the font in CFilesWindow
+    char QuickSearch[3 * MAX_PATH];        // name of the file that was sought via Quick Search (UTF-8)
+    char QuickSearchMask[3 * MAX_PATH];    // quick search mask in UTF-8 (may contain '/' after any number of characters)
     WCHAR QuickSearchPendingSurrogate = 0; // high surrogate from WM_CHAR waiting for its low surrogate (0 = none)
-    int SearchIndex;                    // position of the cursor during Quick Search
+    int SearchIndex;                       // position of the cursor during Quick Search
 
     int FocusedIndex;  // current caret position
     BOOL FocusVisible; // is focus displayed?

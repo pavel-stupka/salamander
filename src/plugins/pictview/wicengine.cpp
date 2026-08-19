@@ -504,6 +504,212 @@ static PVCODE DecodeFrame(CWicImage* img, int frame, TProgressProc progress, voi
     return PVC_OK;
 }
 
+//*****************************************************************************
+//
+// Thumbnail fast path (feature 064, contract C4)
+//
+
+// convert an arbitrary WIC source into the context DIB (PBGRA composited over
+// BkColor); shared by the embedded-thumbnail and reduced-decode paths
+static PVCODE DecodeSourceToDib(CWicImage* img, IWICBitmapSource* src)
+{
+    IWICImagingFactory* factory = GetWicFactory();
+    if (factory == NULL)
+        return PVC_EXCEPTION;
+    UINT w = 0, h = 0;
+    if (FAILED(src->GetSize(&w, &h)) || w == 0 || h == 0)
+        return PVC_READING_ERROR;
+    IWICFormatConverter* conv = NULL;
+    HRESULT hr = factory->CreateFormatConverter(&conv);
+    if (SUCCEEDED(hr))
+        hr = conv->Initialize(src, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone,
+                              NULL, 0.0, WICBitmapPaletteTypeCustom);
+    PVCODE code = PVC_OK;
+    if (FAILED(hr))
+        code = (hr == E_OUTOFMEMORY) ? PVC_OOM : PVC_READING_ERROR;
+    else if (!AllocDib(img, (int)w, (int)h))
+        code = PVC_OOM;
+    else
+    {
+        hr = conv->CopyPixels(NULL, w * 4, w * 4 * h, img->DibBits);
+        if (FAILED(hr))
+        {
+            FreeDib(img);
+            code = (hr == E_OUTOFMEMORY) ? PVC_OOM : PVC_READING_ERROR;
+        }
+    }
+    if (conv != NULL)
+        conv->Release();
+    if (code == PVC_OK)
+        CompositeOverBackground(img);
+    return code;
+}
+
+// embedded decoder thumbnail (typically the EXIF preview, ~160x120): orders of
+// magnitude cheaper than any decode; may be smaller than the requested box
+static PVCODE TryEmbeddedThumbnail(CWicImage* img, IWICBitmapFrameDecode* fr,
+                                   int maxW, int maxH, int* onlyPreview)
+{
+    IWICBitmapSource* th = NULL;
+    if (FAILED(fr->GetThumbnail(&th)) || th == NULL)
+        return PVC_UNSUP_FILE_TYPE;
+    UINT w = 0, h = 0;
+    th->GetSize(&w, &h);
+    PVCODE code = (w == 0 || h == 0) ? PVC_READING_ERROR : DecodeSourceToDib(img, th);
+    th->Release();
+    if (code == PVC_OK)
+        *onlyPreview = (w < (UINT)maxW && h < (UINT)maxH); // same rule the driver uses
+    return code;
+}
+
+// reduced-resolution decode through IWICBitmapSourceTransform (JPEG decodes in
+// the DCT domain at 1/2..1/8): full final quality at a fraction of the cost
+static PVCODE TryReducedDecode(CWicImage* img, IWICBitmapFrameDecode* fr,
+                               int maxW, int maxH, UINT fullW, UINT fullH)
+{
+    IWICImagingFactory* factory = GetWicFactory();
+    if (factory == NULL)
+        return PVC_EXCEPTION;
+
+    IWICBitmapSourceTransform* st = NULL;
+    if (FAILED(fr->QueryInterface(IID_PPV_ARGS(&st))) || st == NULL)
+        return PVC_UNSUP_FILE_TYPE;
+
+    PVCODE code = PVC_UNSUP_FILE_TYPE;
+    // largest power-of-two reduction whose result still covers the box
+    UINT n = 1;
+    while (n < 8 && fullW / (n * 2) >= (UINT)maxW && fullH / (n * 2) >= (UINT)maxH)
+        n *= 2;
+    UINT w = fullW / n;
+    UINT h = fullH / n;
+    if (n > 1 && SUCCEEDED(st->GetClosestSize(&w, &h)) &&
+        w != 0 && h != 0 && (w < fullW || h < fullH))
+    {
+        WICPixelFormatGUID fmt = GUID_WICPixelFormat32bppPBGRA;
+        UINT bpp = 0;
+        if (SUCCEEDED(st->GetClosestPixelFormat(&fmt)))
+        {
+            IWICComponentInfo* ci = NULL;
+            if (SUCCEEDED(factory->CreateComponentInfo(fmt, &ci)) && ci != NULL)
+            {
+                IWICPixelFormatInfo* pfi = NULL;
+                if (SUCCEEDED(ci->QueryInterface(IID_PPV_ARGS(&pfi))) && pfi != NULL)
+                {
+                    pfi->GetBitsPerPixel(&bpp);
+                    pfi->Release();
+                }
+                ci->Release();
+            }
+        }
+        if (bpp >= 8)
+        {
+            UINT stride = (w * bpp + 7) / 8;
+            stride = (stride + 3) & ~3u; // DWORD-aligned rows for CreateBitmapFromMemory
+            UINT size = stride * h;
+            BYTE* buf = (BYTE*)malloc(size);
+            if (buf != NULL)
+            {
+                HRESULT hr = st->CopyPixels(NULL, w, h, &fmt, WICBitmapTransformRotate0,
+                                            stride, size, buf);
+                if (SUCCEEDED(hr))
+                {
+                    IWICBitmap* bmp = NULL;
+                    hr = factory->CreateBitmapFromMemory(w, h, fmt, stride, size, buf, &bmp);
+                    if (SUCCEEDED(hr) && bmp != NULL)
+                    {
+                        code = DecodeSourceToDib(img, bmp);
+                        bmp->Release();
+                    }
+                }
+                free(buf);
+            }
+            else
+                code = PVC_OOM;
+        }
+    }
+    st->Release();
+    return code;
+}
+
+DWORD WicPrepareThumbnailSource(void* hPVImage, int maxW, int maxH, int fastMode,
+                                DWORD* effWidth, DWORD* effHeight, int* onlyPreview)
+{
+    CWicImage* img = (CWicImage*)hPVImage;
+    *onlyPreview = FALSE;
+    if (img == NULL || maxW <= 0 || maxH <= 0)
+        return PVC_INVALID_HANDLE;
+    if (img->Decoder == NULL || img->DecodedFrame >= 0)
+    {
+        // attached bitmap or already decoded: report what is there
+        if (img->DibBits == NULL)
+            return PVC_INVALID_HANDLE;
+        *effWidth = img->Width;
+        *effHeight = img->Height;
+        return PVC_OK;
+    }
+
+    IWICBitmapFrameDecode* fr = NULL;
+    if (FAILED(img->Decoder->GetFrame(0, &fr)) || fr == NULL)
+        return PVC_READING_ERROR;
+    UINT fullW = 0, fullH = 0;
+    fr->GetSize(&fullW, &fullH);
+
+    PVCODE code = PVC_UNSUP_FILE_TYPE;
+    if (fastMode)
+        code = TryEmbeddedThumbnail(img, fr, maxW, maxH, onlyPreview);
+    if (code != PVC_OK)
+    {
+        *onlyPreview = FALSE;
+        code = TryReducedDecode(img, fr, maxW, maxH, fullW, fullH);
+    }
+    fr->Release();
+    if (code != PVC_OK && code != PVC_OOM)
+        return code; // caller silently keeps the classic full-decode path
+    if (code != PVC_OK)
+        return code;
+
+    if (!BuildLines(img)) // keep the handle fully usable (pipette path expects Lines)
+    {
+        FreeDib(img);
+        return PVC_OOM;
+    }
+    img->DecodedFrame = 0; // PVSaveImage's DecodeFrame becomes a no-op
+    img->InfoFrame = 0;
+    *effWidth = (DWORD)img->Width;
+    *effHeight = (DWORD)img->Height;
+    return PVC_OK;
+}
+
+int WicGetExifOrientation(void* hPVImage)
+{
+    CWicImage* img = (CWicImage*)hPVImage;
+    if (img == NULL || img->Decoder == NULL)
+        return 0;
+    IWICBitmapFrameDecode* fr = NULL;
+    if (FAILED(img->Decoder->GetFrame(0, &fr)) || fr == NULL)
+        return 0;
+    int orient = 0;
+    IWICMetadataQueryReader* q = NULL;
+    if (SUCCEEDED(fr->GetMetadataQueryReader(&q)) && q != NULL)
+    {
+        PROPVARIANT v;
+        PropVariantInit(&v);
+        // JPEG stores the IFD under APP1; TIFF-family containers at the root
+        if (SUCCEEDED(q->GetMetadataByName(L"/app1/ifd/{ushort=274}", &v)) ||
+            SUCCEEDED(q->GetMetadataByName(L"/ifd/{ushort=274}", &v)))
+        {
+            if (v.vt == VT_UI2)
+                orient = v.uiVal;
+            else if (v.vt == VT_UI4)
+                orient = (int)v.ulVal;
+        }
+        PropVariantClear(&v);
+        q->Release();
+    }
+    fr->Release();
+    return (orient >= 1 && orient <= 8) ? orient : 0;
+}
+
 // blit the decoded (already composited) DIB to 'dc' with the image origin at
 // (X, Y), honoring the stretch/mirror state, clipped to 'clip' when given
 static PVCODE BlitTo(CWicImage* img, HDC dc, int X, int Y, const RECT* clip)

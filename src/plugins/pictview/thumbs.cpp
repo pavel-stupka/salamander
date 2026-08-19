@@ -5,6 +5,7 @@
 
 #include "lib/pvw32dll.h"
 #include "pictview.h"
+#include "wicengine.h"
 #include "exif/exif.h"
 #include "pictview.rh"
 #include "pictview.rh2"
@@ -845,22 +846,28 @@ BOOL CPluginInterfaceForThumbLoader::LoadThumbnail(LPCTSTR filename, int thumbWi
     PVOpenImageExInfo pvoi;
     sReadMemFuncData rmfd;
     PVCODE code;
-    unsigned char* thumbData;
+    unsigned char* thumbData = NULL;
     DWORD pictureFlags = 0;
+    BOOL fromWinThumb = FALSE; // Thumbs.db/ADS fallback in use
+    DWORD effWidth, effHeight;
 
-    pvoi.DataSize = ExtractWinThumbnail(filename, &thumbData);
-
-    for (;;)
+    // feature 064 (contract C4): open the real file first - the WIC engine can
+    // serve the thumbnail from an embedded EXIF preview or a reduced-resolution
+    // decode; the Thumbs.db/ADS probe used to run for every file on every round
+    // and is now only the fallback when the file cannot be opened as an image
+    pvoi.cbSize = sizeof(pvoi);
+    /* PVFF_FAST: Discard/do not alloc all unnecessary info */
+    pvoi.Flags = PVFF_FAST | (G.IgnoreThumbnails ? 0 : (fastThumbnail ? PVOF_THUMBNAIL : 0));
+    // 'filename' is UTF-8; the WIC engine opens Unicode/long paths directly (feature 006)
+    pvoi.FileName = filename;
+    pvoi.DataSize = 0;
+    code = PVW32DLL.PVOpenImageEx(&hPVImage, &pvoi, &pvii, sizeof(pvii));
+    if (code != PVC_OK && !G.IgnoreThumbnails)
     {
-        pvoi.cbSize = sizeof(pvoi);
-        /* PVFF_FAST: Discard/do not alloc all unnecessary info */
-        //     pvoi.Flags  = PVFF_FAST | (G.IgnoreThumbnails ? 0 : PVOF_THUMBNAIL);
-        pvoi.Flags = PVFF_FAST | (G.IgnoreThumbnails ? 0 : (fastThumbnail ? PVOF_THUMBNAIL : 0));
-
-        // 'filename' is UTF-8; the WIC engine opens Unicode/long paths directly (feature 006)
-        pvoi.FileName = filename;
+        pvoi.DataSize = ExtractWinThumbnail(filename, &thumbData);
         if (pvoi.DataSize)
         {
+            fromWinThumb = TRUE;
             pvoi.Flags |= PVOF_USERDEFINED_INPUT;
             pvoi.ReadFunc = MyMemReadFunc;
             pvoi.SeekFunc = MyMemSeekFunc;
@@ -868,112 +875,98 @@ BOOL CPluginInterfaceForThumbLoader::LoadThumbnail(LPCTSTR filename, int thumbWi
             rmfd.Size = pvoi.DataSize;
             rmfd.Pos = 0;
             rmfd.Buffer = thumbData;
+            code = PVW32DLL.PVOpenImageEx(&hPVImage, &pvoi, &pvii, sizeof(pvii));
         }
-        // open the image
-        code = PVW32DLL.PVOpenImageEx(&hPVImage, &pvoi, &pvii, sizeof(pvii));
-        if (code != PVC_OK)
-        {
-            free(thumbData);
-            return FALSE; // probably not a bitmap
-        }
-        if (pvii.Height * pvii.Width > G.MaxThumbImgSize * 1024 * 1024)
-        {
-            // image too large and presumably thumbnailing it would take too much time
-            free(thumbData);
-            PVW32DLL.PVCloseImage(hPVImage);
-            return FALSE;
-        }
-
-        if (!pvoi.DataSize || fastThumbnail || (pvii.Width >= (DWORD)thumbWidth) || (pvii.Height >= (DWORD)thumbHeight))
-        {
-            break;
-        }
-        // ignore thumbnail from thumbs.db or ADS - resize the real image data
+    }
+    if (code != PVC_OK)
+    {
+        free(thumbData);
+        return FALSE; // probably not a bitmap
+    }
+    if (pvii.Height * pvii.Width > G.MaxThumbImgSize * 1024 * 1024)
+    {
+        // image too large and presumably thumbnailing it would take too much time
+        free(thumbData);
         PVW32DLL.PVCloseImage(hPVImage);
-        pvoi.DataSize = NULL;
+        return FALSE;
     }
 
-    if (pvii.Flags & PVFF_ROTATE90)
+    /* Set transparent handle - must precede the fast path, which composites
+       alpha sources over this background (feature 064) */
+    CALL_STACK_MESSAGE1("PVW32DLL.PVSetBkHandle");
+    PVW32DLL.PVSetBkHandle(hPVImage, G.rgbPanelBackground);
+
+    // feature 064: cheapest pixel source (EXIF preview in the fast round,
+    // reduced-resolution decode otherwise); when nothing cheaper is available
+    // the classic full decode inside PVSaveImage still applies
+    effWidth = pvii.Width;
+    effHeight = pvii.Height;
+    if (!fromWinThumb)
     {
-        // 90/270deg rotated thumbnail, most likely EXIF JPEG
+        int onlyPreview = FALSE;
+        if (WicPrepareThumbnailSource(hPVImage, thumbWidth, thumbHeight,
+                                      fastThumbnail && !G.IgnoreThumbnails,
+                                      &effWidth, &effHeight, &onlyPreview) == PVC_OK)
+        {
+            if (onlyPreview)
+                pictureFlags |= SSTHUMB_ONLY_PREVIEW; // core schedules the quality round
+        }
+        else
+        {
+            effWidth = pvii.Width;
+            effHeight = pvii.Height;
+        }
+    }
+
+    // EXIF orientation via WIC metadata (feature 064, contract C5) - restores
+    // rotated panel thumbnails; the old EXIF.DLL path needed engine flags the
+    // WIC engine never set, so it was unreachable since feature 006
+    switch (WicGetExifOrientation(hPVImage))
+    {
+        //         case 1: /* normal case */
+    case 2:
+        pictureFlags |= SSTHUMB_MIRROR_HOR;
+        break;
+    case 3:
+        pictureFlags |= SSTHUMB_MIRROR_HOR | SSTHUMB_MIRROR_VERT;
+        break;
+    case 4:
+        pictureFlags |= SSTHUMB_MIRROR_VERT;
+        break;
+    case 5:
+        pictureFlags |= SSTHUMB_MIRROR_VERT | SSTHUMB_ROTATE_90CW;
+        break;
+    case 6:
+        pictureFlags |= SSTHUMB_ROTATE_90CW;
+        break;
+    case 7:
+        pictureFlags |= SSTHUMB_MIRROR_HOR | SSTHUMB_ROTATE_90CW;
+        break;
+    case 8:
+        pictureFlags |= SSTHUMB_MIRROR_VERT | SSTHUMB_MIRROR_HOR | SSTHUMB_ROTATE_90CW;
+        break;
+    }
+    if (pictureFlags & SSTHUMB_ROTATE_90CW)
+    {
+        // the maker rotates after shrinking; the shrink box must be swapped so
+        // the rotated result fits the requested thumbnail box
         int tmp = thumbWidth;
         thumbWidth = thumbHeight;
         thumbHeight = tmp;
     }
-    if ((pvii.Flags & PVFF_THUMBNAIL) || pvoi.DataSize)
+    if (fromWinThumb && (pvii.Width < (DWORD)thumbWidth) && (pvii.Height < (DWORD)thumbHeight))
     {
-        if ((pvii.Width < (DWORD)thumbWidth) && (pvii.Height < (DWORD)thumbHeight))
-        {
-            pictureFlags |= SSTHUMB_ONLY_PREVIEW;
-        }
+        pictureFlags |= SSTHUMB_ONLY_PREVIEW;
     }
-    // 2007.03.14: The DLL temporarily doesn't honour PVFF_BOTTOMTOTOP if PVFF_ROTATE90 is also set (see Canon Raw *.CR2)
-    if ((pvii.Flags & (PVFF_BOTTOMTOTOP /*| PVFF_ROTATE90*/)) == PVFF_BOTTOMTOTOP)
+    // legacy engine-flag translations kept for completeness (the WIC engine
+    // reports pvii.Flags == 0 today)
+    if ((pvii.Flags & PVFF_BOTTOMTOTOP) == PVFF_BOTTOMTOTOP)
     {
         pictureFlags |= SSTHUMB_MIRROR_VERT;
-    }
-    if (pvii.Flags & PVFF_ROTATE90)
-    {
-        pictureFlags |= SSTHUMB_ROTATE_90CW;
     }
     if (pvii.Flags & PVFF_FLIP_HOR)
     {
         pictureFlags |= SSTHUMB_MIRROR_HOR;
-    }
-    if ((pvii.Format == PVF_JPG) && (pvii.Flags & PVFF_EXIF) && !(pvii.Flags & PVFF_THUMBNAIL))
-    {
-        InitEXIF(NULL, TRUE);
-        if (EXIFLibrary)
-        {
-            // EXIF.DLL has an ANSI-only interface; skip orientation when the
-            // name is not reachable through an ANSI path (feature 006)
-            char* filenameA = U8ToDLLPathAlloc(filename);
-            EXIFGETORIENTATIONINFO getInfo = (EXIFGETORIENTATIONINFO)GetProcAddress(EXIFLibrary, "EXIFGetOrientationInfo");
-            if (getInfo && filenameA != NULL)
-            {
-                SThumbExifInfo info;
-
-                getInfo(filenameA, &info);
-                if ((info.flags & (TEI_WIDTH | TEI_HEIGHT)) == (TEI_WIDTH | TEI_HEIGHT))
-                {
-                    if (((DWORD)info.Width != pvii.Width) || ((DWORD)info.Height != pvii.Height) || (info.Width < info.Height))
-                    {
-                        // the file has been modified (most likely rotated in something buggy
-                        // like UfonView or cropped)
-                        // Normal situation is info.Width > info.Height. Some cameras (namely Konica Minolta DiMAGE Z3
-                        // seem to store image data with normal orientatation but (Orient != 1) && (info.Width < info.Height)
-                        info.Orient = 1;
-                        pictureFlags &= ~(SSTHUMB_MIRROR_VERT | SSTHUMB_MIRROR_HOR | SSTHUMB_ROTATE_90CW);
-                    }
-                }
-                switch (info.Orient)
-                {
-                    //         case 1: /* normal case */
-                case 2:
-                    pictureFlags |= SSTHUMB_MIRROR_HOR;
-                    break;
-                case 3:
-                    pictureFlags |= SSTHUMB_MIRROR_HOR | SSTHUMB_MIRROR_VERT;
-                    break;
-                case 4:
-                    pictureFlags |= SSTHUMB_MIRROR_VERT;
-                    break;
-                case 5:
-                    pictureFlags |= SSTHUMB_MIRROR_VERT | SSTHUMB_ROTATE_90CW;
-                    break;
-                case 6:
-                    pictureFlags |= SSTHUMB_ROTATE_90CW;
-                    break;
-                case 7:
-                    pictureFlags |= SSTHUMB_MIRROR_HOR | SSTHUMB_ROTATE_90CW;
-                    break;
-                case 8:
-                    pictureFlags |= SSTHUMB_MIRROR_VERT | SSTHUMB_MIRROR_HOR | SSTHUMB_ROTATE_90CW;
-                    break;
-                }
-            }
-            free(filenameA);
-        }
     }
     memset(&sii, 0, sizeof(sii));
     sii.cbSize = sizeof(sii);
@@ -982,7 +975,7 @@ BOOL CPluginInterfaceForThumbLoader::LoadThumbnail(LPCTSTR filename, int thumbWi
     sii.Colors = PV_COLOR_TC32;
     sii.ColorModel = PVCM_RGB;
 
-    if (((int)pvii.Width >= 8 * thumbWidth) || ((int)pvii.Height >= 8 * thumbHeight))
+    if (((int)effWidth >= 8 * thumbWidth) || ((int)effHeight >= 8 * thumbHeight))
     {
         sii.Flags |= PVSF_SUPERFAST;
     }
@@ -993,16 +986,13 @@ BOOL CPluginInterfaceForThumbLoader::LoadThumbnail(LPCTSTR filename, int thumbWi
     // Ask the lib to do upside-down mirror possibly to avoid caching.
     // Works only if no simultaneous rotation
     // 2007.05.03: Do not rotate Win2K NTFS ADS thumbnails
-    if (((pvii.Flags & (PVFF_BOTTOMTOTOP | PVFF_ROTATE90)) == PVFF_BOTTOMTOTOP) && !pvoi.DataSize)
+    if (((pvii.Flags & (PVFF_BOTTOMTOTOP | PVFF_ROTATE90)) == PVFF_BOTTOMTOTOP) && !fromWinThumb)
     {
         sii.Flags |= PVSF_FLIP_VERT;
     }
     /*     if (pvii.Flags & PVFF_FLIP_HOR) {
         sii.Flags |= PVSF_FLIP_HOR;
      }*/
-    /* Set transparent handle */
-    CALL_STACK_MESSAGE1("PVW32DLL.PVSetBkHandle");
-    PVW32DLL.PVSetBkHandle(hPVImage, G.rgbPanelBackground);
 
     { // Group needed by CALL_STACK_MESSAGE macros
         sWriteFuncData wfd;
@@ -1010,9 +1000,9 @@ BOOL CPluginInterfaceForThumbLoader::LoadThumbnail(LPCTSTR filename, int thumbWi
         CALL_STACK_MESSAGE3("PVW32DLL.PVSaveImage, thumbFlags: %x, sii.Flags: %x", pictureFlags, sii.Flags);
 
         wfd.thumbMaker = thumbMaker;
-        wfd.bytesperline = pvii.Width * 4;
-        wfd.Size = wfd.bytesperline * pvii.Height;
-        code = PVW32DLL.CreateThumbnail(hPVImage, &sii, pvii.CurrentImage, pvii.Width, pvii.Height,
+        wfd.bytesperline = effWidth * 4; // rows arrive at the effective (possibly reduced) size (feature 064)
+        wfd.Size = wfd.bytesperline * effHeight;
+        code = PVW32DLL.CreateThumbnail(hPVImage, &sii, pvii.CurrentImage, effWidth, effHeight,
                                         thumbWidth, thumbHeight, thumbMaker, pictureFlags, ThumbProgressProc, &wfd);
 
         // close the image

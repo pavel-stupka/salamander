@@ -71,6 +71,10 @@ void CFilesBox::SetItemsCount(int count, int xOffset, int topIndex, BOOL disable
     }
     Parent->VisibleItemsArray.InvalidateArr();
     Parent->VisibleItemsArraySurround.InvalidateArr();
+    // feature 064 (contract C2): refresh synchronously so the icon-reader
+    // retargets the new viewport immediately (idle refresh stays as safety net)
+    Parent->VisibleItemsArray.RefreshArr(Parent);
+    Parent->VisibleItemsArraySurround.RefreshArr(Parent);
 }
 
 void CFilesBox::SetItemsCount2(int count)
@@ -602,6 +606,10 @@ void CFilesBox::EnsureItemVisible(int index, BOOL forcePaint, BOOL scroll, BOOL 
             HANDLES(DeleteObject(hUpdateRgn));
             Parent->VisibleItemsArray.InvalidateArr();
             Parent->VisibleItemsArraySurround.InvalidateArr();
+            // feature 064 (contract C2): refresh synchronously so the icon-reader
+            // retargets the new viewport immediately (idle refresh stays as safety net)
+            Parent->VisibleItemsArray.RefreshArr(Parent);
+            Parent->VisibleItemsArraySurround.RefreshArr(Parent);
         }
         else if (forcePaint)
             PaintItem(index, selFocChangeOnly ? DRAWFLAG_SELFOC_CHANGE : 0);
@@ -656,6 +664,10 @@ void CFilesBox::EnsureItemVisible(int index, BOOL forcePaint, BOOL scroll, BOOL 
             HANDLES(DeleteObject(hUpdateRgn));
             Parent->VisibleItemsArray.InvalidateArr();
             Parent->VisibleItemsArraySurround.InvalidateArr();
+            // feature 064 (contract C2): refresh synchronously so the icon-reader
+            // retargets the new viewport immediately (idle refresh stays as safety net)
+            Parent->VisibleItemsArray.RefreshArr(Parent);
+            Parent->VisibleItemsArraySurround.RefreshArr(Parent);
         }
         else if (forcePaint)
             PaintItem(index, selFocChangeOnly ? DRAWFLAG_SELFOC_CHANGE : 0);
@@ -712,6 +724,10 @@ void CFilesBox::EnsureItemVisible(int index, BOOL forcePaint, BOOL scroll, BOOL 
             HANDLES(DeleteObject(hUpdateRgn));
             Parent->VisibleItemsArray.InvalidateArr();
             Parent->VisibleItemsArraySurround.InvalidateArr();
+            // feature 064 (contract C2): refresh synchronously so the icon-reader
+            // retargets the new viewport immediately (idle refresh stays as safety net)
+            Parent->VisibleItemsArray.RefreshArr(Parent);
+            Parent->VisibleItemsArraySurround.RefreshArr(Parent);
         }
         else if (forcePaint)
             PaintItem(index, selFocChangeOnly ? DRAWFLAG_SELFOC_CHANGE : 0);
@@ -947,6 +963,10 @@ void CFilesBox::EnsureItemVisible2(int newTopIndex, int index)
         ImageDragShow(TRUE);
     Parent->VisibleItemsArray.InvalidateArr();
     Parent->VisibleItemsArraySurround.InvalidateArr();
+    // feature 064 (contract C2): refresh synchronously so the icon-reader
+    // retargets the new viewport immediately (idle refresh stays as safety net)
+    Parent->VisibleItemsArray.RefreshArr(Parent);
+    Parent->VisibleItemsArraySurround.RefreshArr(Parent);
 }
 
 void CFilesBox::OnHScroll(int scrollCode, int pos)
@@ -1085,11 +1105,10 @@ void CFilesBox::OnHScroll(int scrollCode, int pos)
                 ImageDragShow(TRUE);
             Parent->VisibleItemsArray.InvalidateArr();
             Parent->VisibleItemsArraySurround.InvalidateArr();
-            if (scrollCode == SB_THUMBTRACK)
-            {
-                Parent->VisibleItemsArray.RefreshArr(Parent);         // do a hard refresh here
-                Parent->VisibleItemsArraySurround.RefreshArr(Parent); // do a hard refresh here
-            }
+            // feature 064 (contract C2): refresh synchronously so the icon-reader
+            // retargets the new viewport immediately (idle refresh stays as safety net)
+            Parent->VisibleItemsArray.RefreshArr(Parent);
+            Parent->VisibleItemsArraySurround.RefreshArr(Parent);
         }
         if (scrollCode != SB_THUMBTRACK)
             SetupScrollBars(UPDATE_HORZ_SCROLL);
@@ -1166,11 +1185,10 @@ void CFilesBox::OnVScroll(int scrollCode, int pos)
                 ImageDragShow(TRUE);
             Parent->VisibleItemsArray.InvalidateArr();
             Parent->VisibleItemsArraySurround.InvalidateArr();
-            if (scrollCode == SB_THUMBTRACK)
-            {
-                Parent->VisibleItemsArray.RefreshArr(Parent);         // do a hard refresh here
-                Parent->VisibleItemsArraySurround.RefreshArr(Parent); // do a hard refresh here
-            }
+            // feature 064 (contract C2): refresh synchronously so the icon-reader
+            // retargets the new viewport immediately (idle refresh stays as safety net)
+            Parent->VisibleItemsArray.RefreshArr(Parent);
+            Parent->VisibleItemsArraySurround.RefreshArr(Parent);
         }
         if (scrollCode != SB_THUMBTRACK)
             SetupScrollBars(UPDATE_VERT_SCROLL);
@@ -1240,11 +1258,10 @@ void CFilesBox::OnVScroll(int scrollCode, int pos)
                 ImageDragShow(TRUE);
             Parent->VisibleItemsArray.InvalidateArr();
             Parent->VisibleItemsArraySurround.InvalidateArr();
-            if (scrollCode == SB_THUMBTRACK)
-            {
-                Parent->VisibleItemsArray.RefreshArr(Parent);         // do a hard refresh here
-                Parent->VisibleItemsArraySurround.RefreshArr(Parent); // do a hard refresh here
-            }
+            // feature 064 (contract C2): refresh synchronously so the icon-reader
+            // retargets the new viewport immediately (idle refresh stays as safety net)
+            Parent->VisibleItemsArray.RefreshArr(Parent);
+            Parent->VisibleItemsArraySurround.RefreshArr(Parent);
         }
         if (scrollCode != SB_THUMBTRACK)
             SetupScrollBars(UPDATE_VERT_SCROLL);
@@ -2372,6 +2389,10 @@ void CFilesBox::CheckAndCorrectBoundaries()
                     ImageDragShow(TRUE);
                 Parent->VisibleItemsArray.InvalidateArr();
                 Parent->VisibleItemsArraySurround.InvalidateArr();
+                // feature 064 (contract C2): refresh synchronously so the icon-reader
+                // retargets the new viewport immediately (idle refresh stays as safety net)
+                Parent->VisibleItemsArray.RefreshArr(Parent);
+                Parent->VisibleItemsArraySurround.RefreshArr(Parent);
             }
         }
         break;
@@ -2390,6 +2411,10 @@ void CFilesBox::CheckAndCorrectBoundaries()
                 InvalidateRect(HWindow, &FilesRect, FALSE);
                 Parent->VisibleItemsArray.InvalidateArr();
                 Parent->VisibleItemsArraySurround.InvalidateArr();
+                // feature 064 (contract C2): refresh synchronously so the icon-reader
+                // retargets the new viewport immediately (idle refresh stays as safety net)
+                Parent->VisibleItemsArray.RefreshArr(Parent);
+                Parent->VisibleItemsArraySurround.RefreshArr(Parent);
             }
         }
         break;
@@ -2423,6 +2448,10 @@ void CFilesBox::CheckAndCorrectBoundaries()
                     ImageDragShow(TRUE);
                 Parent->VisibleItemsArray.InvalidateArr();
                 Parent->VisibleItemsArraySurround.InvalidateArr();
+                // feature 064 (contract C2): refresh synchronously so the icon-reader
+                // retargets the new viewport immediately (idle refresh stays as safety net)
+                Parent->VisibleItemsArray.RefreshArr(Parent);
+                Parent->VisibleItemsArraySurround.RefreshArr(Parent);
             }
         }
         break;
@@ -2586,6 +2615,10 @@ void CFilesBox::LayoutChilds(BOOL updateAndCheck)
     }
     Parent->VisibleItemsArray.InvalidateArr();
     Parent->VisibleItemsArraySurround.InvalidateArr();
+    // feature 064 (contract C2): refresh synchronously so the icon-reader
+    // retargets the new viewport immediately (idle refresh stays as safety net)
+    Parent->VisibleItemsArray.RefreshArr(Parent);
+    Parent->VisibleItemsArraySurround.RefreshArr(Parent);
 }
 
 void CFilesBox::PaintHeaderLine()

@@ -13,6 +13,21 @@ plugin.
 
 ### Fixed
 
+- **Thumbnails view (Alt+5) starts showing previews immediately, even in huge
+  photo folders.** Two causes were fixed. The panel used to query sync/status
+  badges for every file in the folder before attempting the first thumbnail,
+  so in a folder with thousands of photos previews arrived only after minutes;
+  that whole-folder pass now runs after the thumbnails of the visible screen.
+  And every preview was produced by decoding the entire photo at full
+  resolution (typically around a second per photo); the generator now uses the
+  photo's embedded preview when present, or decodes at reduced resolution, and
+  a background pass upgrades any lower-quality previews afterwards. Scrolling
+  or jumping anywhere in the folder immediately redirects generation to the
+  files on screen, and changing folders no longer waits for a running decode.
+- **Photos taken in portrait orientation show correctly rotated thumbnails.**
+  The panel ignored the EXIF orientation ever since the built-in Windows
+  imaging engine replaced the proprietary one, so rotated photos appeared
+  lying on their side in Thumbnails view.
 - **Make File List (Ctrl+M) no longer garbles accented names.** The generated
   list reached the clipboard through a legacy code-page conversion, so Czech
   (and any non-ASCII) file names pasted as mojibake. The clipboard now carries

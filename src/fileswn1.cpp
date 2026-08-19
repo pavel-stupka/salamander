@@ -924,6 +924,17 @@ unsigned IconThreadThreadFBody(void* parameter)
                                             {
                                                 strcpy(name, s);
 
+                                                // feature 064 (contract C3): do not hold ICSleepSection across the
+                                                // plugin decode - path changes/refreshes must not wait for it.
+                                                // ICThumbLoadSection is taken BEFORE releasing ICSleepSection so
+                                                // there is no gap: SleepIconCacheThread passes through both, hence
+                                                // the icon cache and the loader plugins stay alive for the whole
+                                                // loop below; the ICSleep check further down discards a stale result
+                                                if (window->ICSleep)
+                                                    goto GO_SLEEP_MODE;
+                                                HANDLES(EnterCriticalSection(&window->ICThumbLoadSection));
+                                                HANDLES(LeaveCriticalSection(&window->ICSleepSection));
+
                                                 //                          TRACE_I("Load thumbnail for: " << name << "...");
                                                 CPluginInterfaceForThumbLoaderEncapsulation** loader;
                                                 loader = (CPluginInterfaceForThumbLoaderEncapsulation**)(s + size + sizeof(CQuadWord) + sizeof(FILETIME));
@@ -943,6 +954,9 @@ unsigned IconThreadThreadFBody(void* parameter)
                                                 if (*loader == NULL)
                                                     thumbMaker.Clear(); // failed thumbnail -> clean it up
                                                                         //                          TRACE_I("Load thumbnail is done.");
+
+                                                HANDLES(EnterCriticalSection(&window->ICSleepSection));
+                                                HANDLES(LeaveCriticalSection(&window->ICThumbLoadSection));
                                             }
                                             else
                                             {
@@ -1104,7 +1118,13 @@ unsigned IconThreadThreadFBody(void* parameter)
                     }
                     else
                     {
-                        if (canReadIconOverlays && !readIconOverlaysNow)
+                        // feature 064 (contract C1): the whole-listing overlay sweep is one
+                        // shell call per file and used to run before the first thumbnail; in
+                        // Thumbnails view defer it past the new-thumbnail phase (visible and
+                        // surround overlay bands still run right away in phase 0)
+                        BOOL deferOverlaysAll = readThumbnails && firstRound &&
+                                                wanted == 0 && selectMode == 4;
+                        if (canReadIconOverlays && !readIconOverlaysNow && !deferOverlaysAll)
                         { // now we are going to read icon overlays
                             i = 0;
                             readIconOverlaysNow = TRUE;
@@ -1126,7 +1146,10 @@ unsigned IconThreadThreadFBody(void* parameter)
                         }
 
                         // the first icon-reading round is over, so all icon overlays are loaded -> prevent needless attempts to read them again
-                        canReadIconOverlays = FALSE;
+                        // (unless the whole-listing sweep was deferred behind the new-thumbnail
+                        // phase - then it runs at the end of that phase, feature 064)
+                        if (!deferOverlaysAll)
+                            canReadIconOverlays = FALSE;
 
                         // loading order: new icons, new thumbnails, old icons, old thumbnails
                         BOOL done = FALSE; // TRUE == break, everything is loaded
@@ -1379,6 +1402,7 @@ CFilesWindow::CFilesWindow(CMainWindow* parent)
     HANDLES(InitializeCriticalSection(&ICSleepSection));
     HANDLES(InitializeCriticalSection(&ICSectionUsingIcon));
     HANDLES(InitializeCriticalSection(&ICSectionUsingThumb));
+    HANDLES(InitializeCriticalSection(&ICThumbLoadSection));
     DWORD ThreadID;
     IconCacheThread = NULL;
     if (ICEventTerminate != NULL && ICEventWork != NULL)
@@ -1528,6 +1552,7 @@ CFilesWindow::~CFilesWindow()
     }
 
     HANDLES(DeleteCriticalSection(&ICSectionUsingThumb));
+    HANDLES(DeleteCriticalSection(&ICThumbLoadSection));
     HANDLES(DeleteCriticalSection(&ICSectionUsingIcon));
     HANDLES(DeleteCriticalSection(&ICSleepSection));
     if (ICEventTerminate != NULL)
@@ -1561,6 +1586,12 @@ void CFilesWindow::SleepIconCacheThread()
     HANDLES(EnterCriticalSection(&ICSleepSection));
     ICSleep = ICWorking; // TRUE only if the icon reader is stuck in SHGetFileInfo
     HANDLES(LeaveCriticalSection(&ICSleepSection));
+    // a plugin LoadThumbnail call may still be in flight with ICSleepSection
+    // released (feature 064, contract C3); pass through its guard so callers
+    // (IconCache release, plugin unload) never tear data down under a running
+    // decode - ICStopWork above makes the decode cancel quickly
+    HANDLES(EnterCriticalSection(&ICThumbLoadSection));
+    HANDLES(LeaveCriticalSection(&ICThumbLoadSection));
 }
 
 void CFilesWindow::WakeupIconCacheThread()
