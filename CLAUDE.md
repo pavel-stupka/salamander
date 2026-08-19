@@ -8,7 +8,7 @@ WinAPI C++ application — no MFC, no Qt, no cross-platform frameworks.
 
 ## Product Identity (established in feature 032, renamed in feature 046)
 
-- **Product name**: Tandem Commander, version **0.1.3** (internal build 187);
+- **Product name**: Tandem Commander, version **0.1.4** (internal build 188);
   released versions and what changed in each are recorded in `CHANGELOG.md`
   (mandatory per the constitution: a release bumps
   `VERSINFO_SALAMANDER_MINORB` + `VERSINFO_BUILDNUMBER` in

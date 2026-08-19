@@ -9,7 +9,15 @@ not restate Open Salamander's own history. Versions follow
 also carries an internal build number shared by the application and every
 plugin.
 
-## [Unreleased]
+## [0.1.4] — 2026-08-19
+
+**Build 188.** Bug-fix release: thumbnails in large photo folders start
+appearing immediately and honor EXIF rotation; DEL deletes to the Recycle Bin
+in folders with non-ASCII characters in the path; clipboard copies (Make File
+List, copy name/path and every related text-copy command) keep accented
+characters intact; TortoiseGit/TortoiseSVN status badges are back at display
+scaling other than 100%. Full Debug and Release builds and the unit test
+suite (1152/0) pass.
 
 ### Fixed
 
