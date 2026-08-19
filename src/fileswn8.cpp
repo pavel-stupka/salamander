@@ -371,7 +371,15 @@ void CFilesWindow::FilesAction(CActionType type, CFilesWindow* target, int count
         BOOL canUseRecycleBin = TRUE;
         if (type == atDelete)
         {
-            if (MyGetDriveType(GetPath()) != DRIVE_FIXED)
+            UINT panelDriveType = MyGetDriveType(GetPath());
+            // feature 062 (contract C2, FR-005): veto the Recycle Bin only for
+            // locations that genuinely have none; an indeterminate classification
+            // attempts the recoverable route (SHFileOperationW reports visibly when
+            // recycling is truly impossible) - the former "anything but DRIVE_FIXED
+            // deletes directly" silently escalated every classification failure
+            // into a permanent delete
+            if (panelDriveType == DRIVE_REMOVABLE || panelDriveType == DRIVE_REMOTE ||
+                panelDriveType == DRIVE_CDROM || panelDriveType == DRIVE_RAMDISK)
             {
                 recycle = 0;              // none
                 canUseRecycleBin = FALSE; // it will not work because Windows does not support it
@@ -388,6 +396,10 @@ void CFilesWindow::FilesAction(CActionType type, CFilesWindow* target, int count
                 else
                     recycle = Configuration.UseRecycleBin;
             }
+            // feature 062 (contract C5): the recycle decision must be diagnosable —
+            // a wrong drive-type classification silently escalates DEL to a
+            // permanent delete, which is exactly the defect class this trace guards
+            TRACE_I("FilesAction(atDelete): driveType=" << panelDriveType << " recycle=" << recycle << " canUseRecycleBin=" << canUseRecycleBin << " path: " << GetPath());
         }
 
         CFileData* f = NULL;

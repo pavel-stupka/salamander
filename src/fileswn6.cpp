@@ -1697,7 +1697,15 @@ MENU_TEMPLATE_ITEM MsgBoxButtons[] =
         targetPathState = GetTargetPathState(targetPathState, targetPath);
     }
     //---
-    if (type == atDelete && (sourceDirAttr & FILE_ATTRIBUTE_REPARSE_POINT))
+    // feature 062 (contract C3): only genuine links (volume mount points, junctions,
+    // symlinks - GetReparsePointDestination succeeds exactly for those) get the
+    // protective "remove the link, not the target" handling; other reparse
+    // directories (cloud placeholders, e.g. OneDrive) are plain directories - the
+    // worker's link executor refuses their tag with ERROR_REPARSE_TAG_MISMATCH, so
+    // they used to be undeletable on this route
+    int repPointType;
+    if (type == atDelete && (sourceDirAttr & FILE_ATTRIBUTE_REPARSE_POINT) &&
+        GetReparsePointDestination(sourcePath, NULL, 0, &repPointType, TRUE))
     { // deleting links (volume mount points + junction points + symlinks)
         op.Opcode = ocDeleteDirLink;
         op.OpFlags = 0;

@@ -6200,6 +6200,33 @@ BOOL DoMoveFile(COperation* op, HWND hProgressDlg, void* buffer,
     }
 }
 
+// feature 062 (contract C4): recycles one item (UTF-8 path, < MAX_PATH - callers
+// guard) via the wide shell API; the former ANSI SHFileOperation mangled non-ACP
+// names through the code page (live in the masks mode and under SHIFT-inversion) -
+// the same defect class feature 005 fixed for the whole-selection route
+static int SalRecycleSingleItem(HWND hProgressDlg, const char* name, const char* sewCaption)
+{
+    WCHAR nameListW[MAX_PATH + 1];
+    int wl = SalU8ToW(name, -1, nameListW, MAX_PATH);
+    if (wl == 0)
+        wl = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name, -1, nameListW, MAX_PATH);
+    if (wl == 0)
+        return ERROR_INVALID_NAME;
+    nameListW[wl] = 0; // second terminator of the double-null list ('wl' includes the first one)
+
+    CShellExecuteWnd shellExecuteWnd;
+    SHFILEOPSTRUCTW opCode;
+    memset(&opCode, 0, sizeof(opCode));
+
+    opCode.hwnd = shellExecuteWnd.Create(hProgressDlg, sewCaption);
+
+    opCode.wFunc = FO_DELETE;
+    opCode.pFrom = nameListW;
+    opCode.fFlags = FOF_ALLOWUNDO | FOF_SILENT | FOF_NOCONFIRMATION;
+    opCode.lpszProgressTitle = L"";
+    return SHFileOperationW(&opCode);
+}
+
 BOOL DoDeleteFile(HWND hProgressDlg, char* name, const CQuadWord& size, COperations* script,
                   CQuadWord& totalDone, DWORD attr, CProgressDlgData& dlgData)
 {
@@ -6299,28 +6326,10 @@ BOOL DoDeleteFile(HWND hProgressDlg, char* name, const CQuadWord& size, COperati
             }
             else if (useRecycleBin)
             {
-                char nameList[MAX_PATH + 1];
-                int l = (int)strlen(name) + 1;
-                memmove(nameList, name, l);
-                nameList[l] = 0;
-                if (!PathContainsValidComponents(nameList, FALSE))
-                {
+                if (!PathContainsValidComponents((char*)name, FALSE))
                     err = ERROR_INVALID_NAME;
-                }
                 else
-                {
-                    CShellExecuteWnd shellExecuteWnd;
-                    SHFILEOPSTRUCT opCode;
-                    memset(&opCode, 0, sizeof(opCode));
-
-                    opCode.hwnd = shellExecuteWnd.Create(hProgressDlg, "SEW: DoDeleteFile");
-
-                    opCode.wFunc = FO_DELETE;
-                    opCode.pFrom = nameList;
-                    opCode.fFlags = FOF_ALLOWUNDO | FOF_SILENT | FOF_NOCONFIRMATION;
-                    opCode.lpszProgressTitle = "";
-                    err = SHFileOperation(&opCode);
-                }
+                    err = SalRecycleSingleItem(hProgressDlg, name, "SEW: DoDeleteFile"); // feature 062 (contract C4)
             }
             else
             {
@@ -6935,28 +6944,10 @@ BOOL DoDeleteDir(HWND hProgressDlg, char* name, const CQuadWord& size, COperatio
             (int)strlen(name) < MAX_PATH && // Recycle Bin (SHFileOperation) is MAX_PATH-bound; longer (empty) dirs are removed permanently below - avoids overrunning nameList (feature 014)
             IsDirectoryEmpty(name))         // subdirectory must not contain any files!!!
         {
-            char nameList[MAX_PATH + 1];
-            int l = (int)strlen(name) + 1;
-            memmove(nameList, name, l);
-            nameList[l] = 0;
-            if (!PathContainsValidComponents(nameList, FALSE))
-            {
+            if (!PathContainsValidComponents((char*)name, FALSE))
                 err = ERROR_INVALID_NAME;
-            }
             else
-            {
-                CShellExecuteWnd shellExecuteWnd;
-                SHFILEOPSTRUCT opCode;
-                memset(&opCode, 0, sizeof(opCode));
-
-                opCode.hwnd = shellExecuteWnd.Create(hProgressDlg, "SEW: DoDeleteDir");
-
-                opCode.wFunc = FO_DELETE;
-                opCode.pFrom = nameList;
-                opCode.fFlags = FOF_ALLOWUNDO | FOF_SILENT | FOF_NOCONFIRMATION;
-                opCode.lpszProgressTitle = "";
-                err = SHFileOperation(&opCode);
-            }
+                err = SalRecycleSingleItem(hProgressDlg, name, "SEW: DoDeleteDir"); // feature 062 (contract C4)
         }
         else
         {

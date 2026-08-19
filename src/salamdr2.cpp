@@ -1499,15 +1499,26 @@ BOOL GetReparsePointDestination(const char* repPointDir, char* repPointDstBuf, D
     char repPointDirCrFileCopy[3 * MAX_PATH];
     MakeCopyWithBackslashIfNeeded(repPointDirCrFile, repPointDirCrFileCopy);
 
-    DWORD attrs = GetFileAttributes(repPointDirCrFile);
+    // feature 062 (contract C1): the path is UTF-8 (feature 004) - convert once and
+    // call the wide APIs; the ANSI variants reinterpreted non-ASCII paths through the
+    // code page, so reparse points on such paths were never detected
+    WCHAR repPointDirW[3 * MAX_PATH];
+    if (SalU8ToW(repPointDirCrFile, -1, repPointDirW, _countof(repPointDirW)) == 0 &&
+        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, repPointDirCrFile, -1, repPointDirW, _countof(repPointDirW)) == 0)
+    {
+        return FALSE;
+    }
+    repPointDirW[_countof(repPointDirW) - 1] = 0;
+
+    DWORD attrs = GetFileAttributesW(repPointDirW);
     if (attrs == 0xffffffff || (attrs & FILE_ATTRIBUTE_REPARSE_POINT) == 0)
     {
         //    TRACE_I("GetReparsePointDestination(): Reparse point not found: " << repPointDir);
         return FALSE;
     }
 
-    HANDLE file = HANDLES_Q(CreateFile(repPointDirCrFile, 0 /*GENERIC_READ*/, 0, 0, OPEN_EXISTING,
-                                       FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, NULL));
+    HANDLE file = HANDLES_Q(CreateFileW(repPointDirW, 0 /*GENERIC_READ*/, 0, 0, OPEN_EXISTING,
+                                        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, NULL));
     if (file == INVALID_HANDLE_VALUE)
     {
         DWORD err = GetLastError();
@@ -1586,7 +1597,9 @@ BOOL GetReparsePointDestination(const char* repPointDir, char* repPointDstBuf, D
                 lstrcpynW(symlinkAbsPath + 2, s, 1000 - 2);
             else
             {
-                if (MultiByteToWideChar(CP_ACP, 0, repPointDir + 2, -1, symlinkAbsPath + 2, 1000 - 2) == 0)
+                // feature 062 (contract C1): the base path is UTF-8, CP_ACP fallback per the house pattern
+                if (SalU8ToW(repPointDir + 2, -1, symlinkAbsPath + 2, 1000 - 2) == 0 &&
+                    MultiByteToWideChar(CP_ACP, 0, repPointDir + 2, -1, symlinkAbsPath + 2, 1000 - 2) == 0)
                 {
                     DWORD err = GetLastError();
                     TRACE_E("GetReparsePointDestination(): MultiByteToWideChar error: " << err);
@@ -1608,7 +1621,11 @@ BOOL GetReparsePointDestination(const char* repPointDir, char* repPointDstBuf, D
         }
         if (myType == 3 /* SYMBOLIC LINK */ && *s != 0 && *(s + 1) == L':' && *(s + 2) == L'\\')
             SalRemovePointsFromPath(s + 3);
-        if (WideCharToMultiByte(CP_ACP, 0, s, -1, repPointDstBuf, repPointDstBufSize, NULL, NULL) == 0)
+        // feature 062 (contract C1): the destination continues into UTF-8 consumers
+        // (panel paths, path comparisons) - the former CP_ACP conversion produced
+        // bytes those consumers could never match
+        if (SalWToU8(s, -1, repPointDstBuf, repPointDstBufSize) == 0 &&
+            WideCharToMultiByte(CP_ACP, 0, s, -1, repPointDstBuf, repPointDstBufSize, NULL, NULL) == 0)
         {
             DWORD err = GetLastError();
             TRACE_I("WideCharToMultiByte error: " << err);
@@ -1667,24 +1684,49 @@ BOOL GetCurrentLocalReparsePoint(const char* path, char* currentReparsePoint, BO
     return ret;
 }
 
+// feature 062 (contract C1): GetDriveType for a UTF-8 path (feature 004); the ANSI
+// variant reinterpreted UTF-8 through the code page, so every non-ASCII path came
+// back DRIVE_NO_ROOT_DIR and the Recycle Bin was silently lost for it (DEL showed
+// the direct-delete confirmation and deleted permanently, like SHIFT+DEL)
+static UINT SalGetDriveTypeU8(const char* u8Path)
+{
+    WCHAR wPath[MAX_PATH + 10];
+    if (SalU8ToW(u8Path, -1, wPath, _countof(wPath)) == 0 &&
+        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, u8Path, -1, wPath, _countof(wPath)) == 0)
+    {
+        return DRIVE_UNKNOWN;
+    }
+    wPath[_countof(wPath) - 1] = 0;
+    return GetDriveTypeW(wPath);
+}
+
 UINT MyGetDriveType(const char* path)
 {
     char ourPath[MAX_PATH];
     char resPath[MAX_PATH];
+    if (strlen(path) >= MAX_PATH)
+    {   // feature 062 (contract C1): panel paths may exceed MAX_PATH while the reparse
+        // walk below works in MAX_PATH buffers (the plugin-facing contract of
+        // ResolveLocalPathWithReparsePoints); classify overlong paths by their root
+        // instead of by a silently truncated copy (which used to yield
+        // DRIVE_NO_ROOT_DIR and cost the Recycle Bin)
+        GetRootPath(ourPath, path);
+        return SalGetDriveTypeU8(ourPath);
+    }
     lstrcpyn(resPath, path, MAX_PATH);
     ResolveSubsts(resPath);
     GetRootPath(ourPath, resPath);
     UINT ret = DRIVE_UNKNOWN;
     if (!IsUNCPath(ourPath))
     {
-        UINT drvType = GetDriveType(ourPath);
+        UINT drvType = SalGetDriveTypeU8(ourPath);
         if (drvType == DRIVE_FIXED) // reparse points only make sense to look for on fixed disks
         {                           // gradually try shortening the path; on a mounted directory it can return the mounted disk parameters
             // if it is not a root path, try traversing the reparse points as well
             BOOL cutPathIsPossible = TRUE;
             ResolveLocalPathWithReparsePoints(ourPath, path, &cutPathIsPossible, NULL, NULL, NULL, NULL, NULL);
 
-            while ((ret = GetDriveType(ourPath)) == DRIVE_UNKNOWN)
+            while ((ret = SalGetDriveTypeU8(ourPath)) == DRIVE_UNKNOWN)
             { // NOTE: differs from MyGetVolumeInformation because GetDriveType returns success for any path (not just root + mounted volume)
                 if (!cutPathIsPossible || !CutDirectory(ourPath))
                     break; // we must not cut it or even the root did not succeed; end with error
@@ -1695,7 +1737,7 @@ UINT MyGetDriveType(const char* path)
             ret = drvType;
     }
     else
-        ret = GetDriveType(ourPath);
+        ret = SalGetDriveTypeU8(ourPath);
     return ret;
 }
 

@@ -13,6 +13,29 @@ plugin.
 
 ### Fixed
 
+- **DEL no longer permanently deletes in folders with non-ASCII characters in the
+  path.** In any folder whose path contains characters outside the system code page
+  (Czech diacritics above all — OneDrive trees with localized folder names were the
+  common victim), DEL showed the direct-delete confirmation and deleted permanently,
+  exactly like SHIFT+DEL, instead of moving files to the Recycle Bin as configured.
+  The drive-type check feeding the recycle decision still read the UTF-8 panel path
+  (0.1.1) through the legacy code page, classified the folder as invalid, and
+  silently disabled the Recycle Bin. The decision is also fail-safe now: when the
+  location cannot be classified, deletion attempts the Recycle Bin route instead of
+  silently escalating to a permanent delete. Locations that genuinely have no
+  Recycle Bin (network, removable, optical) keep today's direct delete with
+  confirmation.
+- **OneDrive folders can be deleted on the direct route.** Cloud-synced folders are
+  reparse points, and the permanent-delete path treated every reparse directory as a
+  junction/symlink, then refused the unfamiliar cloud tag with a confusing "error
+  deleting directory link". Genuine junctions and symlinks keep the protective
+  "remove the link, not the target" behavior.
+- **The "Recycle Bin only for specified files" mode handles non-ASCII names.** The
+  per-file recycle route (masks mode, and SHIFT-inverted deletes in the "delete
+  directly" mode) still used the ANSI shell operation on UTF-8 names; it now uses
+  the wide API like the main route (same fix class as 0.1.1's Recycle Bin repair).
+  Junction and symlink targets with non-ASCII names are also resolved correctly now
+  (shared machinery).
 - **Third-party icon overlay badges (e.g. TortoiseGit/TortoiseSVN) are back.**
   Overlay handlers that supply their badge as an `.ico` file — the Tortoise
   family above all — were silently dropped on any display scaling other than
