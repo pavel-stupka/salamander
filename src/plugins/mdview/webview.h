@@ -20,11 +20,11 @@ class CMdWebHost
 public:
     struct Callbacks
     {
-        std::function<void()> OnReady;                     // controller ready -> render
+        std::function<void()> OnReady;                           // controller ready -> render
         std::function<void(const std::wstring&)> OnActivateLink; // navigation gate
-        std::function<void()> OnInitFailed;                // env/controller/runtime failure
-        std::function<void()> OnProcessFailed;             // renderer crashed
-        std::function<void(int)> OnZoomChanged;            // engine-driven zoom (percent)
+        std::function<void()> OnInitFailed;                      // env/controller/runtime failure
+        std::function<void()> OnProcessFailed;                   // renderer crashed
+        std::function<void(int)> OnZoomChanged;                  // engine-driven zoom (percent)
     };
 
     CMdWebHost();
@@ -54,3 +54,28 @@ private:
     CMdWebHost(const CMdWebHost&) = delete;
     CMdWebHost& operator=(const CMdWebHost&) = delete;
 };
+
+// --- feature 065: shared-engine contract + session keeper ------------------
+//
+// The WebView2 browser-process tree is shared by user data folder; the
+// helpers below (and the environment-options helper inside webview.cpp) are
+// the single source of truth for the app-wide sharing contract every future
+// WebView2 consumer inherits. See architecture/11-webview2-integration.md
+// and specs/065-mdview-instant-render/contracts/keeper.md.
+
+// Canonical user data folder: %LOCALAPPDATA%\Tandem Commander\WebView2.
+// Used by the viewer windows and the keeper alike.
+std::wstring MdUserDataFolder();
+
+// Best-effort removal of the pre-065 mdview.WebView2 cache folder (cache
+// only, nothing is migrated). Once per session; main-thread-only; failures
+// are silent and retried next session.
+void MdCleanupOldUserDataFolder();
+
+// Session keeper: a hidden environment+controller that keeps the shared
+// browser tree alive so every view after the first attaches warm. All three
+// are MAIN-THREAD-ONLY and idempotent; every failure path is silent (the
+// next view may arm again). Disarm restores the current build's lifecycle.
+void MdKeeperArm();
+void MdKeeperDisarm();
+bool MdKeeperArmed();

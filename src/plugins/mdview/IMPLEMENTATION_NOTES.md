@@ -164,3 +164,61 @@ feature-021 GUI testing, all fixed in `webview.{h,cpp}` + `viewer.{h,cpp}`:
 
 Tests: `tests/mdview_htmlgen_test/` extended to 29 assertions (source view +
 find-in-source). Debug x64 builds clean. GUI smoke test pending user.
+
+---
+
+# v2.2 — Feature 065: instant display (session keeper)
+
+Spec/plan/tasks: `specs/065-mdview-instant-render/`. Root cause of the
+slow first open: the first WebView2 controller creation spawns the shared
+`msedgewebview2.exe` tree (cold), and the tree exits when the last viewer
+window closes — so the cost recurred in one-document-at-a-time work.
+
+## What v2.2 implements
+
+- **Session keeper** (`webview.cpp`, `MdKeeperArm/Disarm/Armed` in
+  `webview.h`): at the **first actual view** (`ViewFile`, main thread) a
+  hidden `WS_EX_TOOLWINDOW` window + environment + controller is created
+  asynchronously on the main thread and held for the rest of the session,
+  so every later view attaches warm. Idle footprint shrunk via
+  `put_IsVisible(FALSE)` + best-effort `TrySuspend` (`ICoreWebView2_3`) and
+  `MemoryUsageTargetLevel(LOW)` (`ICoreWebView2_19`). Failures are silent;
+  `ProcessFailed`/`BrowserProcessExited` → quiet teardown, re-arm at the
+  next view; a `gen` counter invalidates stale async completions. Disarm:
+  config toggle-off, `CPluginInterface::Release`, process exit. Nothing
+  runs before the first view (zero cost for Markdown-free sessions).
+- **Shared-engine contract** (feature 065 R9,
+  `architecture/11-webview2-integration.md`): user data folder renamed to
+  the app-neutral `%LOCALAPPDATA%\Tandem Commander\WebView2`
+  (`MdUserDataFolder()`, moved to `webview.cpp`); environment options
+  extracted into the single helper `MdBuildEnvOptions()` (viewer hosts and
+  keeper share it — later environments' `AdditionalBrowserArguments` are
+  silently ignored, so per-site drift would be invisible). The pre-065
+  `mdview.WebView2` cache folder is deleted best-effort at the first view
+  on a short-lived `CThread` (`CMdUdfJanitorThread`, registered in
+  `ThreadQueue`).
+- **Configuration** (FR-008): first real Configuration dialog (`IDD_CFG`
+  in `lang/lang.rc2`, IDs 310/311 in `mdview.rh2`) replaces the About
+  placeholder — one checkbox, default ON, persisted as `KeepReady`
+  (`REG_DWORD`, clamped). Turning it off disarms immediately (with no
+  viewer open the tree exits ≈ pre-065 behavior); turning it on applies
+  from the next view. Dialog follows constitution VI + the feature-049
+  two-touchpoint dark-theme pattern.
+- **Timing instrumentation** (R8): Debug `TRACE_I` at `ViewFile`,
+  controller-ready, `NavigationCompleted`, and keeper transitions.
+- **Translations**: stage-1/2/3 pipeline run for module mdview — the new
+  dialog's 4 strings are `english_fallback` in the 8 enabled languages
+  (recorded in `mdview.origin`); `python -m translate.merge --module mdview`
+  with a DeepL key in `temp/deepl_key.txt` machine-translates exactly these
+  gaps. Stage-3 import verified (8 language modules build).
+
+## v2.2 verification status
+
+Debug x64 + `build.cmd full release` build clean; `.slt` round-trip
+byte-exact (290 files). **Runtime GUI verification (F3 timing, toggle,
+crash recovery, footprint) is the one manual step** — protocol and result
+tables in `specs/065-mdview-instant-render/baseline.md` (the pre-065
+baseline is measured with the option OFF, which reproduces the old
+lifecycle exactly). The `tests/mdview_htmlgen_test/` inputs (htmlgen,
+render, highlight, md4c) are untouched by this feature; its `.vcxproj` has
+never been committed (only the sources), a pre-existing gap.

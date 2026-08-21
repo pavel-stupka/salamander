@@ -150,6 +150,7 @@ Detailed analysis is in the `architecture/` directory:
 | [08-code-standards.md](architecture/08-code-standards.md) | Encoding, formatting, conventions |
 | [09-plugin-catalog.md](architecture/09-plugin-catalog.md) | All 36 plugins categorized by purpose |
 | [10-plugin-maintenance-outlook.md](architecture/10-plugin-maintenance-outlook.md) | Per-plugin 2026+ maintenance assessment (Czech) |
+| [11-webview2-integration.md](architecture/11-webview2-integration.md) | **Binding contract** for any plugin embedding WebView2: canonical user data folder, single browser-arguments helper, keeper pattern (warm shared engine) |
 
 ## Compiler Recommendation
 
@@ -191,6 +192,18 @@ plugin architecture preservation, UI consistency.
 - Language build policy: `translations/languages.cfg` `enabled = on|off` per language; validated and reconciled by `src/vcxproj/lang_policy.ps1` on every `build.cmd` run (039-language-build-policy)
 - Code signing: `tools/codesign/codesign.cfg` (committed profile: certificate SHA-1 thumbprint + Certum timestamp URL) consumed by `tools/codesign/sign_release.ps1` (Windows PowerShell 5.1 sweep, idempotent) and `setup/build_setup.cmd`; signtool.exe from the Windows SDK; Inno Setup 7 for the installer (050-code-signing)
 - SFTP plugin: vendored libssh2 1.11.1_DEV (`src/common/dep/libssh2`) on the WinCNG backend (`LIBSSH2_WINCNG` + `LIBSSH2_ECDSA_WINCNG` — RSA/ECDSA only, no ed25519, no OpenSSL); test harness `src/plugins/sftp/test/` runs against a local Docker reference server (container `tandem-sftp`, localhost:2222) (051-fix-sftp-keyauth-hang)
+- **WebView2 shared-engine contract** — MANDATORY for any plugin embedding
+  WebView2 (planned: formatted source viewer, WebGPU), see
+  `architecture/11-webview2-integration.md`: one canonical user data folder
+  `%LOCALAPPDATA%\Tandem Commander\WebView2` (a different UDF spawns a
+  separate cold browser tree), one browser-arguments set built by the shared
+  options helper in `src/plugins/mdview/webview.cpp` (later environments'
+  args are silently ignored — extensions are coordinated helper changes,
+  never per-plugin overrides), per-controller security stays per-plugin,
+  and each plugin arms its own session-long keeper at its own first use
+  (any one live controller keeps the warm tree for all). SDK vendored at
+  `src/common/dep/webview2/` (v1.0.4078.44); second consumer lifts the
+  helper to `src/common/` instead of copying it (065-mdview-instant-render)
 
 ## Recent Changes
 - 002-msvc-x64-build-script: Added Windows Batch script (.cmd) + MSBuild (from VS2022), vswhere.exe

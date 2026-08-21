@@ -5,6 +5,8 @@
 
 #include "precomp.h"
 #include "render.h"
+#include "htmlgen.h"
+#include "webview.h" // feature 065: MdKeeperDisarm (COM-free header)
 
 // plugin interface objects
 CPluginInterface PluginInterface;
@@ -28,6 +30,7 @@ char g_schemeDark[32] = "graphite";
 int g_zoom = 100;
 BOOL g_savePos = TRUE;
 WINDOWPLACEMENT g_wndPlacement = {0};
+BOOL g_keepReady = TRUE; // default on (spec 065 FR-008)
 
 #define CURRENT_CONFIG_VERSION 1
 static const char* CONFIG_VERSION = "Version";
@@ -38,6 +41,7 @@ static const char* CONFIG_SCHEMEDARK = "SchemeDark";
 static const char* CONFIG_ZOOM = "ZoomPercent";
 static const char* CONFIG_SAVEPOS = "SavePosition";
 static const char* CONFIG_WNDPLACEMENT = "WindowPlacement";
+static const char* CONFIG_KEEPREADY = "KeepReady";
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -126,7 +130,10 @@ BOOL WINAPI CPluginInterface::Release(HWND parent, BOOL force)
         if (!ThreadQueue.KillAll(force) && !force)
             ret = FALSE;
         else
+        {
+            MdKeeperDisarm(); // feature 065: release the session keeper before unload
             ReleaseViewer();
+        }
     }
     return ret;
 }
@@ -150,12 +157,17 @@ void WINAPI CPluginInterface::LoadConfiguration(HWND parent, HKEY regKey, CSalam
         registry->GetValue(regKey, CONFIG_ZOOM, REG_DWORD, &g_zoom, sizeof(DWORD));
         registry->GetValue(regKey, CONFIG_SAVEPOS, REG_DWORD, &g_savePos, sizeof(DWORD));
         registry->GetValue(regKey, CONFIG_WNDPLACEMENT, REG_BINARY, &g_wndPlacement, sizeof(WINDOWPLACEMENT));
+        registry->GetValue(regKey, CONFIG_KEEPREADY, REG_DWORD, &g_keepReady, sizeof(DWORD));
     }
     // corruption tolerance (FR-063): clamp to valid values
     ClampScheme(g_scheme);
-    if (MdThemeById(g_schemeLight) == NULL || MdThemeById(g_schemeLight)->dark) lstrcpynA(g_schemeLight, "paper", 32);
-    if (MdThemeById(g_schemeDark) == NULL || !MdThemeById(g_schemeDark)->dark) lstrcpynA(g_schemeDark, "graphite", 32);
-    if (g_zoom < 50 || g_zoom > 300) g_zoom = 100;
+    if (MdThemeById(g_schemeLight) == NULL || MdThemeById(g_schemeLight)->dark)
+        lstrcpynA(g_schemeLight, "paper", 32);
+    if (MdThemeById(g_schemeDark) == NULL || !MdThemeById(g_schemeDark)->dark)
+        lstrcpynA(g_schemeDark, "graphite", 32);
+    if (g_zoom < 50 || g_zoom > 300)
+        g_zoom = 100;
+    g_keepReady = g_keepReady ? TRUE : FALSE; // missing/corrupt -> stays default (on)
 }
 
 void WINAPI CPluginInterface::SaveConfiguration(HWND parent, HKEY regKey, CSalamanderRegistryAbstract* registry)
@@ -169,13 +181,50 @@ void WINAPI CPluginInterface::SaveConfiguration(HWND parent, HKEY regKey, CSalam
     registry->SetValue(regKey, CONFIG_ZOOM, REG_DWORD, &g_zoom, sizeof(DWORD));
     registry->SetValue(regKey, CONFIG_SAVEPOS, REG_DWORD, &g_savePos, sizeof(DWORD));
     registry->SetValue(regKey, CONFIG_WNDPLACEMENT, REG_BINARY, &g_wndPlacement, sizeof(WINDOWPLACEMENT));
+    registry->SetValue(regKey, CONFIG_KEEPREADY, REG_DWORD, &g_keepReady, sizeof(DWORD));
+}
+
+static INT_PTR CALLBACK CfgDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    // feature 049: raw dialog proc - the two-touchpoint theme pattern
+    // (WM_INITDIALOG apply + WM_CTLCOLOR* fallback; the FindDlgProc precedent)
+    if (msg >= WM_CTLCOLORMSGBOX && msg <= WM_CTLCOLORSTATIC)
+    {
+        INT_PTR brush;
+        if (SalamanderGeneral->ThemeHandleCtlColor(msg, wParam, lParam, &brush))
+            return brush;
+    }
+
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        CheckDlgButton(hDlg, IDC_CFG_KEEPREADY, g_keepReady ? BST_CHECKED : BST_UNCHECKED);
+        SalamanderGeneral->ThemeApplyToDialog(hDlg);
+        return TRUE;
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK)
+        {
+            BOOL keep = IsDlgButtonChecked(hDlg, IDC_CFG_KEEPREADY) == BST_CHECKED;
+            if (g_keepReady && !keep)
+                MdKeeperDisarm(); // turning off releases the kept-ready engine now (FR-008)
+            g_keepReady = keep;   // turning on applies from the next view
+            EndDialog(hDlg, IDOK);
+            return TRUE;
+        }
+        if (LOWORD(wParam) == IDCANCEL)
+        {
+            EndDialog(hDlg, IDCANCEL);
+            return TRUE;
+        }
+        break;
+    }
+    return FALSE;
 }
 
 void WINAPI CPluginInterface::Configuration(HWND parent)
 {
-    // v1 has no configuration dialog; scheme is chosen live in the viewer's
-    // View menu (FR-062). Show About as a harmless placeholder.
-    OnAbout(parent);
+    // feature 065: one option - keep the rendering engine ready (FR-008)
+    DialogBoxW(HLanguage, MAKEINTRESOURCEW(IDD_CFG), parent, CfgDlgProc);
 }
 
 void WINAPI CPluginInterface::Connect(HWND parent, CSalamanderConnectAbstract* salamander)

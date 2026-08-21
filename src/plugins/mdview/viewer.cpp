@@ -79,18 +79,6 @@ static std::wstring UriDecode(const std::wstring& in)
     return w;
 }
 
-static std::wstring UserDataFolder()
-{
-    wchar_t path[MAX_PATH] = {0};
-    if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, path)))
-    {
-        std::wstring p = path;
-        p += L"\\Tandem Commander\\mdview.WebView2";
-        return p;
-    }
-    return std::wstring();
-}
-
 // ==========================================================================
 // Init / release
 // ==========================================================================
@@ -312,6 +300,17 @@ BOOL WINAPI CPluginInterfaceForViewer::ViewFile(const char* name, int left, int 
         }
         return TRUE;
     }
+
+    TRACE_I("mdview: ViewFile (t=" << GetTickCount64() << " ms)"); // R8 timing
+
+    // feature 065: the FIRST actual view of a session is the only trigger for
+    // engine work - it retires the pre-065 cache folder and (unless the user
+    // opted out, FR-008) arms the session keeper that keeps the WebView2
+    // browser tree warm so every later view attaches instantly. Both calls
+    // are asynchronous, idempotent, and never block F3.
+    MdCleanupOldUserDataFolder();
+    if (g_keepReady)
+        MdKeeperArm();
 
     HANDLE contEvent = HANDLES(CreateEvent(NULL, FALSE, FALSE, NULL));
     if (contEvent == NULL)
@@ -854,7 +853,7 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         { PostMessage(HWindow, WM_APP + 1, 0, 0); };
         cb.OnZoomChanged = [this](int pct)
         { g_zoom = pct; UpdateTitle(); };
-        Web->Create(HWindow, UserDataFolder(), cb);
+        Web->Create(HWindow, MdUserDataFolder(), cb);
         Web->SetBackgroundColor(Theme->docBg); // applied when the controller is ready
         break;
     }

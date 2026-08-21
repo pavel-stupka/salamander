@@ -1,7 +1,7 @@
 ﻿[EXPORTINFO]
 PROJECTNAME,"translator\projects\_template\mdview\mdview.atp"
 TEXTVERSION,"1.0 (x64)"
-VERSION,"1,0,0,185"
+VERSION,"1,0,0,188"
 
 [TRANSLATION]
 LANGID,3082
@@ -15,6 +15,13 @@ COMMENT,"Versión en español"
 301,7,21,206,12,1,""
 1,108,40,53,14,1,"Buscar siguie&nte"
 2,163,40,50,14,1,"Cancelar"
+
+[DIALOG 310]
+270,66,0,"Markdown Viewer Configuration"
+311,7,9,256,10,0,"&Keep the rendering engine ready for instant viewing"
+3001,18,23,248,17,0,"Markdown files then open instantly after the first view in a session, at the cost of a small amount of memory held for the rest of the session."
+1,158,45,50,14,0,"OK"
+2,213,45,50,14,0,"Cancel"
 
 [STRINGTABLE 0]
 46,1,"Markdown Viewer"

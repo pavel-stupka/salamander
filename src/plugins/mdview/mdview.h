@@ -17,36 +17,38 @@ BOOL InitViewer();
 void ReleaseViewer();
 
 // --- configuration (persisted to the plugin registry key) ---
-extern char g_scheme[32];       // active color scheme id (stable ASCII)
-extern int g_followSys;         // follow OS light/dark
-extern char g_schemeLight[32];  // per-polarity slot for follow-system mode
+extern char g_scheme[32];      // active color scheme id (stable ASCII)
+extern int g_followSys;        // follow OS light/dark
+extern char g_schemeLight[32]; // per-polarity slot for follow-system mode
 extern char g_schemeDark[32];
-extern int g_zoom;              // zoom percent (50..300)
-extern BOOL g_savePos;          // persist window placement
+extern int g_zoom;     // zoom percent (50..300)
+extern BOOL g_savePos; // persist window placement
 extern WINDOWPLACEMENT g_wndPlacement;
+extern BOOL g_keepReady; // feature 065: keep the WebView2 engine warm
+                         // for the session after the first view (FR-008)
 
 // [0,0] broadcast to open viewer windows: configuration changed
 #define WM_USER_VIEWERCFGCHNG (WM_APP + 3400)
 
 // --- viewer menu command ids (our own top-level window) ---
-#define CM_FILE_OPENTEXT   101
-#define CM_FILE_CLOSE      102
-#define CM_EDIT_COPY       103
-#define CM_EDIT_SELALL     104
-#define CM_EDIT_FIND       105
-#define CM_EDIT_FINDNEXT   106
-#define CM_EDIT_FINDPREV   107
-#define CM_VIEW_FOLLOWSYS  108
-#define CM_VIEW_ZOOMIN     109
-#define CM_VIEW_ZOOMOUT    110
-#define CM_VIEW_ZOOMRESET  111
-#define CM_HELP_ABOUT      112
-#define CM_NEXTFILE        113
-#define CM_PREVFILE        114
-#define CM_VIEW_REMOTEIMG  115
-#define CM_SCHEME_FIRST    200 // 200..209 (one per theme)
-#define CM_SCHEME_NEXT     210
-#define CM_SCHEME_PREV     211
+#define CM_FILE_OPENTEXT 101
+#define CM_FILE_CLOSE 102
+#define CM_EDIT_COPY 103
+#define CM_EDIT_SELALL 104
+#define CM_EDIT_FIND 105
+#define CM_EDIT_FINDNEXT 106
+#define CM_EDIT_FINDPREV 107
+#define CM_VIEW_FOLLOWSYS 108
+#define CM_VIEW_ZOOMIN 109
+#define CM_VIEW_ZOOMOUT 110
+#define CM_VIEW_ZOOMRESET 111
+#define CM_HELP_ABOUT 112
+#define CM_NEXTFILE 113
+#define CM_PREVFILE 114
+#define CM_VIEW_REMOTEIMG 115
+#define CM_SCHEME_FIRST 200 // 200..209 (one per theme)
+#define CM_SCHEME_NEXT 210
+#define CM_SCHEME_PREV 211
 
 void OnAbout(HWND hParent);
 
