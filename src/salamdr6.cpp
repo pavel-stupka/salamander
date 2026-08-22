@@ -2340,7 +2340,12 @@ LONG SalRegQueryValueExW8(HKEY hKey, LPCSTR lpValueName, LPDWORD lpType,
         if (type == REG_MULTI_SZ)
             wbuf[wlen + 1] = 0;
 
-        int needed = WideCharToMultiByte(CP_UTF8, 0, wbuf, wlen + terminators, NULL, 0, NULL, NULL);
+        // SalWToU8 instead of a lenient WinAPI call (feature 066): a stored
+        // path carrying an unpaired surrogate must come back as WTF-8, not
+        // with U+FFFD baked in; for valid Unicode values the bytes are
+        // identical. SalWToU8 counts one extra terminator of its own - the
+        // value's terminator(s) are already among the converted units.
+        int needed = SalWToU8(wbuf, wlen + terminators, NULL, 0) - 1;
         if (needed <= 0)
         {
             free(wbuf);
@@ -2360,7 +2365,20 @@ LONG SalRegQueryValueExW8(HKEY hKey, LPCSTR lpValueName, LPDWORD lpType,
             free(wbuf);
             return ERROR_MORE_DATA;
         }
-        WideCharToMultiByte(CP_UTF8, 0, wbuf, wlen + terminators, (char*)lpData, needed, NULL, NULL);
+        char* u8 = (char*)malloc(needed + 1); // + SalWToU8's own terminator
+        if (u8 == NULL)
+        {
+            free(wbuf);
+            return ERROR_NOT_ENOUGH_MEMORY;
+        }
+        if (SalWToU8(wbuf, wlen + terminators, u8, needed + 1) == 0)
+        {
+            free(u8);
+            free(wbuf);
+            return ERROR_INVALID_DATA;
+        }
+        memcpy(lpData, u8, needed);
+        free(u8);
         *lpcbData = needed;
         free(wbuf);
         return ERROR_SUCCESS;
@@ -2387,23 +2405,38 @@ LONG SalRegSetValueExW8(HKEY hKey, LPCSTR lpValueName, DWORD type,
     if ((type == REG_SZ || type == REG_EXPAND_SZ || type == REG_MULTI_SZ) &&
         lpData != NULL && cbData > 0)
     {
-        int wlen = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                       (const char*)lpData, cbData, NULL, 0);
-        UINT srcCP = CP_UTF8;
-        if (wlen <= 0)
-        { // transitional tolerance: a not-yet-migrated caller passed ANSI bytes
-            srcCP = CP_ACP;
-            wlen = MultiByteToWideChar(CP_ACP, 0, (const char*)lpData, cbData, NULL, 0);
-            if (wlen <= 0)
+        // WTF-8-aware probe + conversion (feature 066): a path value carrying
+        // an unpaired surrogate must be stored as its true UTF-16 - a raw
+        // MB_ERR_INVALID_CHARS probe would misroute it into the ANSI branch
+        // and corrupt it on save
+        int wlen = SalU8ToW((const char*)lpData, cbData, NULL, 0); // converted units + 1
+        if (wlen > 0)
+        {
+            WCHAR* wbuf = (WCHAR*)malloc(wlen * sizeof(WCHAR));
+            if (wbuf == NULL)
+                return ERROR_NOT_ENOUGH_MEMORY;
+            if (SalU8ToW((const char*)lpData, cbData, wbuf, wlen) == 0)
+            { // cannot happen (sized above); keep the fail-safe honest
+                free(wbuf);
                 return ERROR_INVALID_DATA;
+            }
+            LONG ret = RegSetValueExW(hKey, name, 0, type, (CONST BYTE*)wbuf,
+                                      (wlen - 1) * sizeof(WCHAR)); // exclude the added terminator
+            free(wbuf);
+            return ret;
         }
-        WCHAR* wbuf = (WCHAR*)malloc(wlen * sizeof(WCHAR));
-        if (wbuf == NULL)
-            return ERROR_NOT_ENOUGH_MEMORY;
-        MultiByteToWideChar(srcCP, 0, (const char*)lpData, cbData, wbuf, wlen);
-        LONG ret = RegSetValueExW(hKey, name, 0, type, (CONST BYTE*)wbuf, wlen * sizeof(WCHAR));
-        free(wbuf);
-        return ret;
+        { // transitional tolerance: a not-yet-migrated caller passed ANSI bytes
+            int alen = MultiByteToWideChar(CP_ACP, 0, (const char*)lpData, cbData, NULL, 0);
+            if (alen <= 0)
+                return ERROR_INVALID_DATA;
+            WCHAR* wbuf = (WCHAR*)malloc(alen * sizeof(WCHAR));
+            if (wbuf == NULL)
+                return ERROR_NOT_ENOUGH_MEMORY;
+            MultiByteToWideChar(CP_ACP, 0, (const char*)lpData, cbData, wbuf, alen);
+            LONG ret = RegSetValueExW(hKey, name, 0, type, (CONST BYTE*)wbuf, alen * sizeof(WCHAR));
+            free(wbuf);
+            return ret;
+        }
     }
     return RegSetValueExW(hKey, name, 0, type, lpData, cbData);
 }

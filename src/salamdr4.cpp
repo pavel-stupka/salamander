@@ -1201,35 +1201,43 @@ BOOL CopyTextToClipboardU8(const char* u8Text, int textLen, BOOL showEcho, HWND 
     if (textLen == 0)
         return CopyTextToClipboardW(L"", 0, showEcho, hEchoParent);
 
-    // input is UTF-8 by contract (feature 063, contract C2); a not-yet-migrated
-    // caller passing ANSI degrades to the legacy CP_ACP interpretation instead
+    // input is UTF-8 by contract (feature 063, contract C2); the probe is
+    // WTF-8-aware (feature 066) so "copy name/path" places the true units of
+    // a surrogate-bearing name on the clipboard; a not-yet-migrated caller
+    // passing ANSI degrades to the legacy CP_ACP interpretation instead
     // of corrupting (the SalLegacyToU8Alloc tolerance model)
-    UINT cp = CP_UTF8;
-    int wideLen = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, u8Text, textLen, NULL, 0);
-    if (wideLen <= 0)
-    {
-        cp = CP_ACP;
-        wideLen = MultiByteToWideChar(CP_ACP, 0, u8Text, textLen, NULL, 0);
-    }
-
     BOOL ret = FALSE;
+    int wideLen = SalU8ToW(u8Text, textLen, NULL, 0); // converted units + 1
     if (wideLen > 0)
     {
         wchar_t* wide = (wchar_t*)malloc(sizeof(wchar_t) * wideLen);
         if (wide != NULL)
         {
-            if (MultiByteToWideChar(cp, cp == CP_UTF8 ? MB_ERR_INVALID_CHARS : 0,
-                                    u8Text, textLen, wide, wideLen) > 0)
-            {
-                ret = CopyTextToClipboardW(wide, wideLen, showEcho, hEchoParent);
-            }
+            if (SalU8ToW(u8Text, textLen, wide, wideLen) > 0)
+                ret = CopyTextToClipboardW(wide, wideLen - 1, showEcho, hEchoParent);
             free(wide);
         }
         else
             TRACE_E(LOW_MEMORY);
     }
     else
-        TRACE_E("CopyTextToClipboardU8: text conversion failed");
+    {
+        wideLen = MultiByteToWideChar(CP_ACP, 0, u8Text, textLen, NULL, 0);
+        if (wideLen > 0)
+        {
+            wchar_t* wide = (wchar_t*)malloc(sizeof(wchar_t) * wideLen);
+            if (wide != NULL)
+            {
+                if (MultiByteToWideChar(CP_ACP, 0, u8Text, textLen, wide, wideLen) > 0)
+                    ret = CopyTextToClipboardW(wide, wideLen, showEcho, hEchoParent);
+                free(wide);
+            }
+            else
+                TRACE_E(LOW_MEMORY);
+        }
+        else
+            TRACE_E("CopyTextToClipboardU8: text conversion failed");
+    }
     return ret;
 }
 

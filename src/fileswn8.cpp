@@ -126,15 +126,18 @@ BOOL CFilesWindow::DeleteThroughRecycleBin(int* selection, int selCount, CFileDa
 
     // feature 005: 'names' holds a UTF-8 double-null list; convert it to UTF-16
     // and call the W shell API so non-ACP / decomposed names reach the Recycle
-    // Bin (the A variant mangled them through the code page and deleted nothing)
-    int wchars = MultiByteToWideChar(CP_UTF8, 0, names.Text, names.Length, NULL, 0);
+    // Bin (the A variant mangled them through the code page and deleted nothing).
+    // Feature 066: the conversion is the WTF-8-aware strict one - a lenient
+    // call substituted U+FFFD for an unpaired surrogate, so the shell was
+    // asked to delete a name that does not exist
+    int wchars = SalU8ToW(names.Text, names.Length, NULL, 0); // converted units + 1
     WCHAR* fromW = wchars > 0 ? (WCHAR*)malloc((wchars + 1) * sizeof(WCHAR)) : NULL;
     if (fromW == NULL)
     {
         SetCurrentDirectoryToSystem();
         return FALSE;
     }
-    MultiByteToWideChar(CP_UTF8, 0, names.Text, names.Length, fromW, wchars);
+    SalU8ToW(names.Text, names.Length, fromW, wchars);
     fromW[wchars] = 0; // ensure the extra terminator of the double-null list
 
     CShellExecuteWnd shellExecuteWnd;

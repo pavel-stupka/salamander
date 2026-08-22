@@ -66,8 +66,10 @@ static void TestConversions()
     CHECK(SalU8ToWAlloc("\xC4") == NULL);
     CHECK(SalU8ToWAlloc("\xFF\xFE") == NULL);
 
-    // unpaired surrogate is not representable (documented limitation)
-    CHECK(SalWToU8Alloc(L"\xD83D") == NULL);
+    // unpaired surrogate travels as WTF-8 (feature 066): ED A0 BD for U+D83D
+    u8 = SalWToU8Alloc(L"\xD83D");
+    CHECK(u8 != NULL && strcmp(u8, "\xED\xA0\xBD") == 0);
+    free(u8);
 
     // sized (non-null-terminated) inputs get terminated output
     WCHAR wbuf[8];
@@ -1013,6 +1015,214 @@ static void TestPluginMetadataEncoding()
     CHECK(SalLegacyToU8Alloc(NULL) == NULL);
 }
 
+// WTF-8 byte sequences (feature 066): a lone surrogate U+D800..U+DFFF encodes
+// as ED A0 80 .. ED BF BF
+#define WTF8_D800 "\xED\xA0\x80"
+#define WTF8_D801 "\xED\xA0\x81"
+#define WTF8_DC00 "\xED\xB0\x80"
+#define WTF8_REPRO "Lone" WTF8_D800 "surrogate.txt" // the reported repro name
+
+static void TestWtf8()
+{
+    // (1) every class of lone surrogate round-trips W -> WTF-8 -> W
+    //     (block boundaries + mid-range samples)
+    static const WCHAR lone[] = {0xD800, 0xD83D, 0xDBFF, 0xDC00, 0xDDDD, 0xDFFF};
+    for (int i = 0; i < _countof(lone); i++)
+    {
+        WCHAR in[2] = {lone[i], 0};
+        char* u8 = SalWToU8Alloc(in);
+        CHECK(u8 != NULL && strlen(u8) == 3);
+        if (u8 != NULL)
+        {
+            WCHAR* back = SalU8ToWAlloc(u8);
+            CHECK(back != NULL && wcscmp(back, in) == 0);
+            free(back);
+            free(u8);
+        }
+    }
+
+    // (2) the reported repro name converts to the exact WTF-8 bytes and back
+    const WCHAR* reproW = L"Lone\xD800surrogate.txt";
+    char* u8 = SalWToU8Alloc(reproW);
+    CHECK(u8 != NULL && strcmp(u8, WTF8_REPRO) == 0);
+    if (u8 != NULL)
+    {
+        WCHAR* back = SalU8ToWAlloc(u8);
+        CHECK(back != NULL && wcscmp(back, reproW) == 0);
+        free(back);
+        free(u8);
+    }
+
+    // (3) valid parts stay byte-identical to strict UTF-8 (a valid pair is
+    //     one 4-byte sequence, never CESU-8) even next to a lone surrogate
+    const WCHAR mixedW[] = {0x010D, 0xD800, 0xD83D, 0xDCC1, 0x0041, 0};
+    u8 = SalWToU8Alloc(mixedW);
+    CHECK(u8 != NULL && strcmp(u8, "\xC4\x8D" WTF8_D800 "\xF0\x9F\x93\x81"
+                                   "A") == 0);
+    if (u8 != NULL)
+    {
+        WCHAR* back = SalU8ToWAlloc(u8);
+        CHECK(back != NULL && wcscmp(back, mixedW) == 0);
+        free(back);
+        free(u8);
+    }
+
+    // (4) decoder strictness is preserved for every OTHER malformed input -
+    //     the "valid UTF-8, else ANSI" heuristics depend on these failing
+    CHECK(SalU8ToWAlloc("\xC0\x80") == NULL);         // overlong 2-byte
+    CHECK(SalU8ToWAlloc("\xE0\x80\x80") == NULL);     // overlong 3-byte
+    CHECK(SalU8ToWAlloc("\xF0\x80\x80\x80") == NULL); // overlong 4-byte
+    CHECK(SalU8ToWAlloc("\xED\xA0") == NULL);         // truncated surrogate sequence
+    CHECK(SalU8ToWAlloc("\xED\xA0"
+                        "A") == NULL);                // bad continuation byte
+    CHECK(SalU8ToWAlloc("\x80") == NULL);             // stray continuation
+    CHECK(SalU8ToWAlloc("\xF5\x80\x80\x80") == NULL); // lead above U+10FFFF
+    CHECK(SalU8ToWAlloc("\xF4\x90\x80\x80") == NULL); // value above U+10FFFF
+    CHECK(SalU8ToWAlloc("\xC4") == NULL);             // truncated 2-byte
+
+    // (5) sized variants keep the terminator counting and the
+    //     too-small-buffer -> empty-string fail-safe
+    char cbuf[8];
+    CHECK(SalWToU8(L"\xD800", 1, cbuf, 8) == 4 && strcmp(cbuf, WTF8_D800) == 0);
+    CHECK(SalWToU8(L"\xD800", 1, cbuf, 3) == 0 && cbuf[0] == 0); // no room for the terminator
+    WCHAR wbuf[8];
+    CHECK(SalU8ToW(WTF8_D800, 3, wbuf, 8) == 2 && wbuf[0] == 0xD800 && wbuf[1] == 0);
+    CHECK(SalU8ToW(WTF8_D800, 3, wbuf, 1) == 0 && wbuf[0] == 0); // exact-fit failure
+
+    // (6) SalConvertFindDataW carries the true identity - the feature-066
+    //     defect was exactly this intake substituting U+FFFD
+    WIN32_FIND_DATAW fdw;
+    memset(&fdw, 0, sizeof(fdw));
+    wcscpy(fdw.cFileName, L"Lone\xD800surrogate.txt");
+    char nameU8[SAL_FIND_NAME_U8];
+    SalConvertFindDataW(&fdw, NULL, nameU8, sizeof(nameU8), NULL, 0);
+    CHECK(strcmp(nameU8, WTF8_REPRO) == 0);
+    WCHAR* back = SalU8ToWAlloc(nameU8);
+    CHECK(back != NULL && wcscmp(back, fdw.cFileName) == 0);
+    free(back);
+
+    // (7) look-alike names (differing only in the lone surrogate) stay
+    //     distinct and deterministically ordered; the comparison helpers
+    //     must not crash on non-normalizable input (NormalizeString rejects
+    //     unpaired surrogates -> byte-wise fallback)
+    const char* twinA = "twin" WTF8_D800 ".txt";
+    const char* twinB = "twin" WTF8_D801 ".txt";
+    CHECK(!SalNameEquivalent(twinA, twinB));
+    CHECK(SalNameEquivalent(twinA, twinA));
+    CHECK(!SalNameEqualCI(twinA, -1, twinB, -1));
+    CHECK(SalNameEqualCI(twinA, -1, twinA, -1));
+    int ab = SalCompareNamesUTF8(twinA, -1, twinB, -1, TRUE);
+    int ba = SalCompareNamesUTF8(twinB, -1, twinA, -1, TRUE);
+    CHECK(ab != 0 && ba != 0 && (ab < 0) != (ba < 0));
+
+    // (8) display decodes WTF-8 to the true unit (paints like Explorer);
+    //     non-WTF-8 junk keeps the lenient replacement degradation
+    WCHAR disp[32];
+    CHECK(SalU8ToWDisplay("Lone" WTF8_D800 "s", -1, disp, _countof(disp)) > 0);
+    CHECK(disp[4] == 0xD800 && disp[5] == L's');
+    CHECK(SalU8ToWDisplay("a\xFF"
+                          "b",
+                          -1, disp, _countof(disp)) > 0);
+    CHECK(disp[0] == L'a' && disp[1] == 0xFFFD);
+
+    // (9) byte-structural helpers treat a WTF-8 sequence as one character
+    CHECK(SalU8CharCount("Lone" WTF8_D800 "s", -1) == 6);
+    const char* p = WTF8_D800 "s";
+    CHECK(SalU8Next(p) == p + 3);
+
+    // (10) the registry facade's data shape: a sized buffer with embedded
+    //      terminators (REG_MULTI_SZ) converts as WTF-8 unit for unit
+    const char multi[] = "a\0" WTF8_D800 "\0"; // "a", lone surrogate, double NUL
+    WCHAR wmulti[8];
+    int wl = SalU8ToW(multi, (int)sizeof(multi), wmulti, _countof(wmulti));
+    CHECK(wl == 6 && wmulti[0] == L'a' && wmulti[1] == 0 &&
+          wmulti[2] == 0xD800 && wmulti[3] == 0 && wmulti[4] == 0);
+}
+
+static void TestWtf8FileOps()
+{
+    char tmp[MAX_PATH];
+    DWORD n = GetTempPathA(sizeof(tmp), tmp);
+    if (n == 0 || n >= sizeof(tmp))
+    {
+        printf("skipping TestWtf8FileOps (no temp path)\n");
+        return;
+    }
+
+    CSalPathBuf base;
+    CHECK(base.Set(tmp));
+    CHECK(base.AppendComponent("saltests-wtf8"));
+    CHECK(SalCreateDirectory(base.Get(), NULL) || GetLastError() == ERROR_ALREADY_EXISTS);
+
+    // create the reported repro file through the facade (WTF-8 path -> the
+    // true wide name lands on disk)
+    CSalPathBuf file(base);
+    CHECK(file.AppendComponent(WTF8_REPRO));
+    HANDLE h = SalCreateFile(file.Get(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+                             FILE_ATTRIBUTE_NORMAL, NULL);
+    CHECK(h != INVALID_HANDLE_VALUE);
+    if (h != INVALID_HANDLE_VALUE)
+    {
+        DWORD written;
+        CHECK(WriteFile(h, "066", 3, &written, NULL) && written == 3);
+        CloseHandle(h);
+    }
+
+    // ground truth: enumeration sees the real U+D800 unit and the intake
+    // conversion preserves the identity byte for byte
+    WIN32_FIND_DATAW fd;
+    CSalPathBuf pattern(base);
+    CHECK(pattern.AppendComponent("*"));
+    HANDLE find = SalFindFirstFile(pattern.Get(), &fd);
+    CHECK(find != INVALID_HANDLE_VALUE);
+    BOOL seen = FALSE;
+    char nameU8[SAL_FIND_NAME_U8];
+    if (find != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            if (wcscmp(fd.cFileName, L"Lone\xD800surrogate.txt") == 0)
+            {
+                seen = TRUE;
+                SalConvertFindDataW(&fd, NULL, nameU8, sizeof(nameU8), NULL, 0);
+                CHECK(strcmp(nameU8, WTF8_REPRO) == 0);
+            }
+        } while (SalFindNextFile(find, &fd));
+        FindClose(find);
+    }
+    CHECK(seen);
+
+    // attributes, copy, move, delete all address the true file; the copy and
+    // move DESTINATION names carry lone surrogates too (name fidelity)
+    CHECK(SalGetFileAttributes(file.Get()) != INVALID_FILE_ATTRIBUTES);
+    CSalPathBuf copy(base);
+    CHECK(copy.AppendComponent("copy" WTF8_DC00 ".txt")); // lone LOW surrogate
+    CHECK(SalCopyFile(file.Get(), copy.Get(), TRUE));
+    WIN32_FILE_ATTRIBUTE_DATA fad;
+    CHECK(SalGetFileAttributesEx(copy.Get(), &fad) && fad.nFileSizeLow == 3);
+    CSalPathBuf moved(base);
+    CHECK(moved.AppendComponent("moved" WTF8_D800 ".txt"));
+    CHECK(SalMoveFile(copy.Get(), moved.Get()));
+    CHECK(SalGetFileAttributes(copy.Get()) == INVALID_FILE_ATTRIBUTES); // source gone
+    CHECK(SalDeleteFile(moved.Get()));
+    CHECK(SalDeleteFile(file.Get()));
+
+    // a DIRECTORY with a surrogate name works as an ancestor path component
+    CSalPathBuf sub(base);
+    CHECK(sub.AppendComponent("dir" WTF8_D800 "sub"));
+    CHECK(SalCreateDirectory(sub.Get(), NULL) || GetLastError() == ERROR_ALREADY_EXISTS);
+    CSalPathBuf child(sub);
+    CHECK(child.AppendComponent("child.txt"));
+    h = SalCreateFile(child.Get(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+                      FILE_ATTRIBUTE_NORMAL, NULL);
+    CHECK(h != INVALID_HANDLE_VALUE);
+    if (h != INVALID_HANDLE_VALUE)
+        CloseHandle(h);
+    CHECK(SalDeleteFile(child.Get()));
+    CHECK(SalRemoveDirectory(sub.Get()));
+    CHECK(SalRemoveDirectory(base.Get()));
+}
+
 int main()
 {
     TestConversions();
@@ -1029,6 +1239,8 @@ int main()
     TestComposedMessageEncoding();
     TestUiTextEncoding();
     TestPluginMetadataEncoding();
+    TestWtf8();
+    TestWtf8FileOps();
 
     printf("saltests: %d checks, %d failed\n", g_checks, g_failures);
     return g_failures;

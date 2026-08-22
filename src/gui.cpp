@@ -616,11 +616,15 @@ BOOL CStaticText::SetText(const char* text)
     }
     memmove(Text, text, l);
     TextLen = l - 1;
-    // build the UTF-16 form used for measurement and painting; invalid UTF-8
-    // means a not-yet-migrated producer passed ANSI - convert from CP_ACP
+    // build the UTF-16 form used for measurement and painting; the probe is
+    // WTF-8-aware (feature 066) so a file name carrying an unpaired surrogate
+    // paints as its true units (notdef glyph) instead of falling into the
+    // ANSI branch as mojibake; invalid non-WTF-8 input means a
+    // not-yet-migrated producer passed ANSI - convert from CP_ACP
     // (the old byte-widening rendered CP1250 diacritics as Latin-1 mojibake,
     // feature 063); byte widening remains only as the last resort
-    TextLenW = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, Text, TextLen, TextW, Allocated);
+    int resW = SalU8ToW(Text, TextLen, TextW, Allocated);
+    TextLenW = resW > 0 ? resW - 1 : 0; // SalU8ToW counts the terminator it wrote
     if (TextLenW <= 0 && TextLen > 0)
         TextLenW = MultiByteToWideChar(CP_ACP, 0, Text, TextLen, TextW, Allocated);
     if (TextLenW <= 0 && TextLen > 0)

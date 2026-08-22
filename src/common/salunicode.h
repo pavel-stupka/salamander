@@ -16,18 +16,25 @@
 // helpers; NFC normalization is applied to transient copies used for
 // matching and collation only.
 //
-// Limitation: names containing unpaired UTF-16 surrogates (legal on
-// NTFS, producible only deliberately) are not representable in strict
-// UTF-8; conversions fail for them and callers surface the standard
-// per-item error (FR-004/FR-014 semantics).
+// Names containing unpaired UTF-16 surrogates (legal on NTFS) are not
+// representable in strict UTF-8; since feature 066 the converter pair
+// carries them as WTF-8 - a strict superset of UTF-8 encoding each lone
+// surrogate as its 3-byte sequence ED A0 80..ED BF BF - so every on-disk
+// name round-trips losslessly. For valid Unicode text the encoding is
+// byte-identical to UTF-8. Binding contract:
+// specs/066-fix-surrogate-filenames/contracts/name-encoding-wtf8.md
 //
 
 //*****************************************************************************
 //
 // SalU8ToW / SalWToU8
 //
-// Convert between UTF-8 and UTF-16. Strict conversions: invalid input
-// sequences fail (return 0) instead of being silently replaced.
+// Convert between WTF-8 (UTF-8 + lone-surrogate sequences, feature 066)
+// and UTF-16. SalWToU8 is total: it succeeds for every input unit
+// sequence. SalU8ToW stays strict for everything else: any malformed
+// input other than a lone-surrogate sequence fails (returns 0) instead
+// of being silently replaced - the "valid UTF-8, else ANSI" transitional
+// heuristics (features 004/063) depend on that failure.
 //
 // Parameters
 //   src: source string (need not be null-terminated when srcLen >= 0)
@@ -75,7 +82,9 @@ char* SalLegacyToU8Alloc(const char* src, int maxBytes = -1);
 // LENIENT UTF-8 -> UTF-16 conversion, for DISPLAY ONLY (feature 041).
 //
 // Unlike SalU8ToW, malformed input does not fail: each offending byte becomes
-// U+FFFD and conversion continues. Use this only where the result is drawn and
+// U+FFFD and conversion continues. WTF-8 names (feature 066) decode to their
+// true units first, so a lone surrogate paints as the font's notdef glyph,
+// exactly like Explorer. Use this only where the result is drawn and
 // then discarded.
 //
 // NEVER use it on a value that will be written back into a name, a path, or

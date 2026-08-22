@@ -58,6 +58,9 @@ void SalConvertFindDataW(const WIN32_FIND_DATAW* w, WIN32_FIND_DATA* a,
         a->cFileName[0] = 0;          // names are NOT kept in the legacy view,
         a->cAlternateFileName[0] = 0; // they live in nameU8/dosNameU8
     }
+    // SalWToU8 is total since feature 066 (unpaired surrogates travel as
+    // WTF-8), so it fails only for a too-small buffer; the lenient WinAPI
+    // call remains as a last-resort fail-safe only
     if (nameU8 != NULL &&
         SalWToU8(w->cFileName, -1, nameU8, nameU8Size) == 0 &&
         WideCharToMultiByte(CP_UTF8, 0, w->cFileName, -1, nameU8, nameU8Size, NULL, NULL) == 0)

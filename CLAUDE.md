@@ -268,6 +268,24 @@ plugin architecture preservation, UI consistency.
   overload in the HANDLES layer. The provider was never the trigger — ASCII
   OneDrive paths worked all along. Contract:
   `specs/058-fix-cloud-status-icons/contracts/path-encoding-icon-pipeline.md`.
+- 066-fix-surrogate-filenames: files with unpaired UTF-16 surrogates in the
+  name (legal on NTFS, e.g. `Lone<U+D800>surrogate.txt`) could not be deleted,
+  copied, moved, renamed or viewed — the feature-004 intake
+  (`SalConvertFindDataW`) substituted U+FFFD on the strict-conversion failure,
+  so every operation recomposed a nonexistent path. Fix: the house converter
+  pair `SalWToU8`/`SalU8ToW` is **WTF-8** — `SalWToU8` is total (a lone
+  surrogate encodes as its 3-byte sequence `ED A0 80..ED BF BF`), `SalU8ToW`
+  additionally accepts exactly those sequences and still rejects every other
+  malformed input (the "valid UTF-8, else ANSI" heuristics depend on that);
+  byte-identical to UTF-8 for all valid Unicode names. Display
+  (`SalU8ToWDisplay`, `CStaticText::SetText`) decodes to the true unit
+  (Explorer-parity notdef glyph). WTF-8-aware probes: registry facade both
+  directions (`SalRegQueryValueExW8` read side had been *lenient* — stored
+  surrogate values loaded as U+FFFD), `CopyTextToClipboardU8`,
+  `SalLegacyToU8Alloc`; the F8 recycle-list build in `fileswn8.cpp` converted
+  leniently and was the one residual operational site. Contract:
+  `specs/066-fix-surrogate-filenames/contracts/name-encoding-wtf8.md`;
+  saltests 1221/0 incl. a real-NTFS facade round trip (`TestWtf8FileOps`).
 - 059-fix-onedrive-syncing-badge: the sync-in-progress badge (blue arrows)
   now shows as in Explorer. Windows exposes cloud state through two
   channels; folders in a pending state are claimed by NO overlay handler

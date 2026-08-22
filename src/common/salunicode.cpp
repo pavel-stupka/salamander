@@ -9,6 +9,228 @@
 
 //*****************************************************************************
 //
+// WTF-8 fallback codec (feature 066)
+//
+// Windows file names are arbitrary 16-bit unit sequences and may contain
+// unpaired surrogates, which strict UTF-8 cannot represent - the strict
+// WinAPI conversions below fail for them, and before feature 066 that
+// failure cost the file its operational identity (the enumeration fallback
+// substituted U+FFFD, so delete/copy/move targeted a name that does not
+// exist). The fallbacks here extend the pair to WTF-8: each unpaired
+// surrogate U+D800..U+DFFF travels as its 3-byte sequence ED A0 80..ED BF BF.
+// For valid Unicode input the output stays byte-identical to strict UTF-8
+// (the WinAPI fast path runs first and the encoder mirrors it), and the
+// decoder keeps rejecting every OTHER malformed input - the feature-004/063
+// "valid UTF-8, else ANSI" heuristics depend on that failure. Binding
+// contract: specs/066-fix-surrogate-filenames/contracts/name-encoding-wtf8.md
+//
+
+// TRUE when the string contains a surrogate unit without its valid partner
+// (the only input the strict W->UTF-8 conversion can reject)
+static BOOL SalWHasLoneSurrogate(const WCHAR* s, int len)
+{
+    for (int i = 0; len < 0 ? s[i] != 0 : i < len; i++)
+    {
+        WCHAR c = s[i];
+        if (c >= 0xD800 && c <= 0xDBFF)
+        {
+            // len < 0: s[i] != 0, so s[i + 1] is readable (worst case the terminator)
+            WCHAR next = (len < 0 || i + 1 < len) ? s[i + 1] : 0;
+            if (next >= 0xDC00 && next <= 0xDFFF)
+                i++; // valid pair, encoded as one 4-byte sequence
+            else
+                return TRUE;
+        }
+        else if (c >= 0xDC00 && c <= 0xDFFF)
+            return TRUE;
+    }
+    return FALSE;
+}
+
+// encodes exactly 'units' UTF-16 units as WTF-8; returns the byte count, or
+// -1 when 'buf' is too small (buf == NULL just measures)
+static int SalWToWtf8Units(const WCHAR* src, int units, char* buf, int bufSize)
+{
+    int out = 0;
+    for (int i = 0; i < units; i++)
+    {
+        DWORD cp = src[i];
+        if (cp >= 0xD800 && cp <= 0xDBFF && i + 1 < units &&
+            src[i + 1] >= 0xDC00 && src[i + 1] <= 0xDFFF)
+        { // valid pair -> one supplementary code point (identical to UTF-8)
+            cp = 0x10000 + ((cp - 0xD800) << 10) + (src[i + 1] - 0xDC00);
+            i++;
+        }
+        int seq = cp < 0x80 ? 1 : cp < 0x800 ? 2
+                              : cp < 0x10000 ? 3 // BMP incl. a LONE surrogate (the WTF-8 extension)
+                                             : 4;
+        if (buf != NULL)
+        {
+            if (out + seq > bufSize)
+                return -1;
+            switch (seq)
+            {
+            case 1:
+                buf[out] = (char)cp;
+                break;
+            case 2:
+                buf[out] = (char)(0xC0 | (cp >> 6));
+                buf[out + 1] = (char)(0x80 | (cp & 0x3F));
+                break;
+            case 3:
+                buf[out] = (char)(0xE0 | (cp >> 12));
+                buf[out + 1] = (char)(0x80 | ((cp >> 6) & 0x3F));
+                buf[out + 2] = (char)(0x80 | (cp & 0x3F));
+                break;
+            case 4:
+                buf[out] = (char)(0xF0 | (cp >> 18));
+                buf[out + 1] = (char)(0x80 | ((cp >> 12) & 0x3F));
+                buf[out + 2] = (char)(0x80 | ((cp >> 6) & 0x3F));
+                buf[out + 3] = (char)(0x80 | (cp & 0x3F));
+                break;
+            }
+        }
+        out += seq;
+    }
+    return out;
+}
+
+// WTF-8 encoding fallback with SalWToU8's exact call semantics (terminator
+// counting, too-small-buffer -> empty string + 0)
+static int SalWToU8Wtf8(const WCHAR* src, int srcLen, char* buf, int bufSize)
+{
+    int units = srcLen < 0 ? (int)wcslen(src) + 1 : srcLen; // -1: convert the terminator too (WinAPI parity)
+    if (buf == NULL)
+    {
+        int needed = SalWToWtf8Units(src, units, NULL, 0);
+        return srcLen < 0 ? needed : needed + 1; // count includes the terminator (WinAPI/SalWToU8 parity)
+    }
+    int written = SalWToWtf8Units(src, units, buf, bufSize);
+    if (written < 0)
+    {
+        if (bufSize > 0)
+            buf[0] = 0;
+        return 0;
+    }
+    if (srcLen >= 0)
+    {
+        if (written >= bufSize)
+        {
+            buf[0] = 0;
+            return 0;
+        }
+        buf[written] = 0;
+        written++;
+    }
+    return written;
+}
+
+// decodes 'bytes' bytes of WTF-8 (strict UTF-8 whose 3-byte sequences may
+// additionally decode to a lone surrogate); returns the unit count, -1 on
+// any other malformed input, -2 when 'buf' is too small
+static int SalWtf8ToWBytes(const char* src, int bytes, WCHAR* buf, int bufSize)
+{
+    const unsigned char* s = (const unsigned char*)src;
+    int out = 0;
+    int i = 0;
+    while (i < bytes)
+    {
+        DWORD cp;
+        int seq;
+        unsigned char b = s[i];
+        if (b < 0x80)
+        {
+            cp = b;
+            seq = 1;
+        }
+        else if (b >= 0xC2 && b <= 0xDF)
+        {
+            cp = b & 0x1F;
+            seq = 2;
+        }
+        else if (b >= 0xE0 && b <= 0xEF)
+        {
+            cp = b & 0x0F;
+            seq = 3;
+        }
+        else if (b >= 0xF0 && b <= 0xF4)
+        {
+            cp = b & 0x07;
+            seq = 4;
+        }
+        else
+            return -1; // stray continuation, overlong C0/C1, or F5..FF
+        if (i + seq > bytes)
+            return -1; // truncated sequence
+        for (int k = 1; k < seq; k++)
+        {
+            unsigned char c = s[i + k];
+            if (c < 0x80 || c > 0xBF)
+                return -1;
+            cp = (cp << 6) | (c & 0x3F);
+        }
+        // minimality and range checks match strict UTF-8; the ONLY extension
+        // is that a 3-byte sequence may decode to a surrogate (WTF-8)
+        if ((seq == 2 && cp < 0x80) ||
+            (seq == 3 && cp < 0x800) ||
+            (seq == 4 && (cp < 0x10000 || cp > 0x10FFFF)))
+            return -1;
+        if (cp >= 0x10000)
+        {
+            if (buf != NULL)
+            {
+                if (out + 2 > bufSize)
+                    return -2;
+                buf[out] = (WCHAR)(0xD800 + ((cp - 0x10000) >> 10));
+                buf[out + 1] = (WCHAR)(0xDC00 + ((cp - 0x10000) & 0x3FF));
+            }
+            out += 2;
+        }
+        else
+        {
+            if (buf != NULL)
+            {
+                if (out + 1 > bufSize)
+                    return -2;
+                buf[out] = (WCHAR)cp;
+            }
+            out++;
+        }
+        i += seq;
+    }
+    return out;
+}
+
+// WTF-8 decoding fallback with SalU8ToW's exact call semantics; malformed
+// non-WTF-8 input keeps failing (returns 0) - callers' ANSI heuristics rely on it
+static int SalU8ToWWtf8(const char* src, int srcLen, WCHAR* buf, int bufSize)
+{
+    int bytes = srcLen < 0 ? (int)strlen(src) + 1 : srcLen; // -1: decode the terminator too (WinAPI parity)
+    int res = SalWtf8ToWBytes(src, bytes, buf, buf == NULL ? 0 : bufSize);
+    if (res < 0)
+    {
+        if (buf != NULL && bufSize > 0)
+            buf[0] = 0;
+        return 0;
+    }
+    if (srcLen >= 0)
+    {
+        if (buf != NULL)
+        {
+            if (res >= bufSize)
+            {
+                buf[0] = 0;
+                return 0;
+            }
+            buf[res] = 0;
+        }
+        res++;
+    }
+    return res;
+}
+
+//*****************************************************************************
+//
 // SalU8ToW
 //
 
@@ -22,6 +244,13 @@ int SalU8ToW(const char* src, int srcLen, WCHAR* buf, int bufSize)
     }
     int res = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, src, srcLen,
                                   buf, buf == NULL ? 0 : bufSize);
+    if (res == 0 && srcLen != 0)
+    {
+        // strict UTF-8 refused: accept WTF-8 (feature 066) - lone-surrogate
+        // sequences decode to their unit, every other malformed input still
+        // fails here exactly as before
+        return SalU8ToWWtf8(src, srcLen, buf, bufSize);
+    }
     if (res > 0 && srcLen >= 0)
     {
         // input was not null-terminated: report/write the terminator ourselves
@@ -56,6 +285,12 @@ int SalWToU8(const WCHAR* src, int srcLen, char* buf, int bufSize)
     }
     int res = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, src, srcLen,
                                   buf, buf == NULL ? 0 : bufSize, NULL, NULL);
+    if (res == 0 && SalWHasLoneSurrogate(src, srcLen))
+    {
+        // strict UTF-8 cannot carry an unpaired surrogate: encode as WTF-8
+        // (feature 066) so every on-disk name round-trips losslessly
+        return SalWToU8Wtf8(src, srcLen, buf, bufSize);
+    }
     if (res > 0 && srcLen >= 0)
     {
         if (buf != NULL)
@@ -122,8 +357,8 @@ char* SalLegacyToU8Alloc(const char* src, int maxBytes)
         return NULL;
 
     char* u8;
-    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, src, -1, NULL, 0) > 0)
-    { // already valid UTF-8 (ASCII included) - keep the bytes unchanged
+    if (SalU8ToW(src, -1, NULL, 0) > 0) // WTF-8-aware probe (feature 066)
+    {                                   // already valid UTF-8/WTF-8 (ASCII included) - keep the bytes unchanged
         int len = (int)strlen(src);
         u8 = (char*)malloc(len + 1);
         if (u8 == NULL)
@@ -422,6 +657,13 @@ int SalU8ToWDisplay(const char* src, int srcLen, WCHAR* buf, int bufSize)
             buf[0] = 0;
         return 0;
     }
+    // names may be WTF-8 (feature 066): the strict decoder maps a
+    // lone-surrogate sequence to its true unit, which paints like Explorer
+    // (the font's notdef glyph); only input that is not WTF-8 falls through
+    // to the lenient substitution below
+    int strict = SalU8ToW(src, srcLen, buf, bufSize);
+    if (strict > 0)
+        return strict;
     int res = MultiByteToWideChar(CP_UTF8, 0, src, srcLen,
                                   buf, buf == NULL ? 0 : bufSize);
     if (res > 0 && srcLen >= 0)

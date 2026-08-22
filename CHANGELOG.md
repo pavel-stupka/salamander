@@ -9,6 +9,25 @@ not restate Open Salamander's own history. Versions follow
 also carries an internal build number shared by the application and every
 plugin.
 
+## [Unreleased]
+
+### Fixed
+
+- **Files whose names contain a broken (unpaired-surrogate) character can now
+  be deleted, copied, moved, renamed, viewed and modified.** Windows permits
+  file names that are not valid Unicode text — they typically arrive from
+  other tools or extracted archives, and the panel shows the unreadable
+  character as a replacement glyph (Windows Explorer draws a box). Every
+  operation on such a file failed with "file not found": the name lost its
+  broken character the moment the folder was read, so all later operations
+  asked Windows for a name that does not exist on disk. Names now keep their
+  exact on-disk identity end to end — a copy or move reproduces the name
+  character for character, two files differing only in the unreadable
+  character stay distinct, "copy name/path" places the true name on the
+  clipboard, and such names survive in the saved configuration (for example
+  as a panel path) instead of being corrupted on exit. The panel and dialogs
+  now render the unreadable character the same way Explorer does.
+
 ## [0.1.4] — 2026-08-19
 
 **Build 188.** Bug-fix release: thumbnails in large photo folders start
