@@ -118,3 +118,63 @@ in the whole feature (both "the feature stops working entirely, for everyone")
 were introduced by *fixes*, and one of those by a *fix to a fix*. Every one was
 caught before the work was called done. No automated gate in this project would
 have caught any of them.
+
+---
+
+## Review D — the corrections to the corrections · **REJECTED** → corrected by **reverting**
+
+A fourth reviewer, given only the Review-C correction diff. It rejected that too,
+and its lead finding is the reason the archive-listing conversion is **not**
+shipping in this feature.
+
+| # | Sev | Site | Finding | Disposition |
+|---|---|---|---|---|
+| **D1** | **HIGH** | `pack1.cpp:321` → `zip.cpp:5771` | **The panel grows a second folder of the same name, with the files divided between them.** `useU8` can only be decided *per item*, but the directory components it yields are shared *between* items, and `CSalamanderDirectory::FindDir` matches them with `SalDirStrCmpEx` — a **byte** comparison. So one item falling back spells its directory differently from its siblings and a second node is created. Both spellings render correctly (one natively, one through the tolerant sink's A fallback), so it reads as data loss rather than as mojibake. Reachable on Japanese Windows with an 86-character name, Cyrillic at 128, Thai at 86 — and more easily through the *path*, which splits at a shared ancestor. | **fixed by reverting** the listing-side conversion — see below |
+| **D2** | MEDIUM | `salunicode.cpp:574` | **My O2 "fix" was wrong on both counts.** Its premise (MSDN: `CP_UTF8` rejects a non-zero flag set and a non-NULL `lpUsedDefaultChar`) is false on the supported platform, and the change *deleted a guard that works*: under `CP_UTF8` `usedDefault` is set for an **unpaired surrogate** — the one thing UTF-8 also cannot express — so dropping it removed the only detector. A feature-066 lone-surrogate file would have been written into the list file as `EF BF BD` and **silently left out of the archive**. | **reverted**, and the measurement recorded in the comment so it is not "fixed" again |
+| **D3** | LOW | `pack1.cpp:321` | The name-length guard fired even when `pomptr2 == NULL`, where `AddFile` applies no limit at all. | moot — the code is reverted |
+| **D4** | LOW | `dialogs6.cpp:650` | O4 removed the first line of a two-line suppression and orphaned the second. | **fixed** |
+
+I verified D2 independently rather than taking it on trust, by calling
+`WideCharToMultiByte` on this machine with code page 65001 and a lone surrogate:
+all four flag/`usedDefault` combinations return 5 with `usedDefault = 1`. The
+reviewer is right and MSDN describes older behaviour.
+
+### Why F-P1-05's listing half is reverted rather than fixed again
+
+The reviewer offered a narrower repair — let the *path* decide and let an
+over-long *name* fall back on its own. It is a genuine improvement, but it
+still splits the tree whenever the **path** is the thing that overflows, and it
+reintroduces the mixed name/path chain the fix existed to remove. Three separate
+attempts at this one conversion produced, in order: a fatal listing abort, a
+tree split, and a narrower tree split. That is the signal to stop.
+
+So the listing stays in the active code page, exactly as it shipped, and the
+reason is written at the site. **What this does not cost**: the user-visible
+half of F-P1-05 — the list file handed to the external archiver, and the unpack
+side — is fixed and does not depend on the listing's encoding. That is the half
+the changelog describes and the half the finding was raised for. The listing's
+*display* encoding moves as a whole or not at all, and it belongs with the rest
+of the archive-name work in REMAINING-WORK.md.
+
+### Categories Review D checked and found clean
+
+`useU8` on every path including `pomptr2 == NULL`; `pathU8` never read
+uninitialized; `newfile.NameLen` correct in both branches; nothing reading
+`filename` after the skipped in-place `OemToChar` (it is a per-call local);
+the extension scan byte-identical for ASCII; `newfile.Name` freed on all five
+error returns; buffer worst case 778 bytes into 780. **`shares.cpp`**: the
+`MAX_PATH` sizing is byte-for-byte the pre-069 one, `SalGetFullName` is a pure
+byte function so an ACP-fallback path is not dropped, and the `netname`/`remark`
+asymmetry is justified (no fixed-buffer sink; `NNLEN` caps a share name at 80).
+**`stswnd`/`toolbar5`**: `wrote` does include the terminator, so `path[wrote-1]`
+is already the NUL and the index is bounded by `MAX_PATH-1`; on `wrote == 0` the
+empty path is rejected downstream and no drop is accepted; all six call sites do
+pass `char[MAX_PATH]`. **The 13 `SalU8ToACP` checks** are code-page independent
+as written. Plugin ABI untouched; nothing newly persisted; no refuted finding
+re-opened.
+
+### Gates after Review D's corrections
+
+Debug **0 errors**, Release **0 errors**, no warning in any changed file;
+`saltests` **1301 checks, 0 failed**; guard strict **TOTAL: 0**, draft 149; both
+configurations launch, paint a correct title and close with exit 0.

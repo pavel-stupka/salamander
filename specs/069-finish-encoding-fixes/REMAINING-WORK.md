@@ -16,13 +16,21 @@ what is left, and it is self-contained: nothing here needs the 069 conversation.
 | **Fixed** | **31** findings + D01, D02, D03, D04, D05 |
 | Verify-closed | 3 — F-P1-03 (X06/X07), F-P2-10 (X02, a duplicate of F-P6-02), the jump-list half of F-P1-25 (X03) |
 | Fix groups | 11, each its own commit, each independently regression-reviewed |
-| Reviews | 5 batches; **3 REJECTED** first — ten regressions the fixes themselves introduced, five severe and one destructive; the corrections were themselves reviewed and that review found the worst one, all corrected and re-gated ([regression-X16-X22.md](findings/regression-X16-X22.md)) |
+| Reviews | 6 batches; **4 REJECTED** first — twelve regressions the fixes themselves introduced, six severe and one destructive. Each correction was itself reviewed, and every such review found something; the last ended in a **revert** ([regression-X16-X22.md](findings/regression-X16-X22.md)) |
 | Tests | `saltests` 1257 → **1301**, 0 failed |
 | Guard | strict `TOTAL: 0` with **10** rules (`acp-title-seed` added, `signed-char-name-byte` retired in favour of `acp-byte-table-on-name`); draft 183 → 149 |
 | Plugin ABI | untouched — interface 106, no forwarder change, `src/plugins/shared/` diff is comments only |
 
 **Do not re-open**: the fix list is in `closing-report.md` with a per-item
 disposition, the reviewer's verdict and the check for each.
+
+---
+
+## 0b. Deferred out of 069 by its own reviews
+
+| Item | Why it is not in 069 | What it needs |
+|---|---|---|
+| **F-P1-05, the archive *listing* display encoding** (`pack1.cpp`, both sites) | Three attempts, three defects: a **fatal listing abort** (an archive with a long non-ASCII path stopped opening at all), then a **tree split** (the panel showing one folder twice with the files divided between them), then a narrower tree split. The cause is structural: the decision can only be made per item, but `CSalamanderDirectory::FindDir` matches directory components by **bytes**, so any per-item fallback splits the tree. | The listing must move **as a whole**: every name and path in one archive in one encoding, with `AddFile`/`AddDir`'s `MAX_PATH - 5` limit raised or measured in the target encoding first. Not a contained fix. The list-file and unpack halves of F-P1-05 **are** fixed and do not depend on this. |
 
 ---
 

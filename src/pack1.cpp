@@ -301,75 +301,39 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
     // UTF-8 form can be longer than the OEM one, so the buffer is sized for it
     // and NameLen is taken from the result.  The pack side above converts the
     // other way with the matching helper: both directions move together.
-    char oemName[2 * MAX_PATH];
-    char nameU8[3 * MAX_PATH];
-    char pathU8[3 * MAX_PATH];
-    int oemLen = newfile.NameLen;
-    if (oemLen > (int)sizeof(oemName) - 1)
-        oemLen = (int)sizeof(oemName) - 1;
-    memcpy(oemName, pomptr, oemLen);
-    oemName[oemLen] = 0;
+    // set the name of the new file or directory
+    //
+    // feature 069 (F-P1-05): this listing stays in the ACTIVE CODE PAGE, and
+    // deliberately so.  Converting it to UTF-8 was tried and reverted twice.
+    // The decision can only ever be made per item, but the directory components
+    // it yields are shared BETWEEN items, and CSalamanderDirectory::FindDir
+    // (zip.cpp) matches them with SalDirStrCmpEx - a byte comparison.  So any
+    // item that has to fall back (AddFile/AddDir refuse a name or path over
+    // MAX_PATH - 5, and the UTF-8 form is up to three times longer than the OEM
+    // one) spells its directory differently from its siblings and the panel
+    // grows a SECOND folder of the same name with the files divided between
+    // them.  Both spellings even render correctly, so it reads as data loss.
+    // Moving the whole listing at once is the real fix and it belongs with the
+    // rest of the archive-name work - see REMAINING-WORK.md.  The user-visible
+    // half of F-P1-05 (the list file handed to the archiver, and the unpack
+    // side) is fixed and does not depend on this.
+    newfile.Name = (char*)malloc(newfile.NameLen + 1);
+    if (!newfile.Name)
+        return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_NOMEM);
+    OemToCharBuff(pomptr, newfile.Name, newfile.NameLen); // copy with conversion from OEM to ANSI
+    newfile.Name[newfile.NameLen] = '\0';
 
-    // feature 069 (F-P1-05): the name and the path convert TOGETHER or not at
-    // all - a UTF-8 leaf under a code-page directory is the mixed chain this
-    // fix exists to remove.  And the decision has to weigh the LENGTH, not just
-    // the conversion: UTF-8 needs up to three bytes per character where the OEM
-    // form needed one, and AddFile/AddDir refuse anything over MAX_PATH - 5
-    // (zip.cpp) - which is FATAL to the whole listing here (IDS_PACKERR_FDATA
-    // below), so an archive that used to list as mojibake would stop opening at
-    // all.  Degrading the encoding is allowed; failing the operation is not.
-    BOOL useU8 = SalOEMToU8(oemName, nameU8, sizeof(nameU8)) != 0 &&
-                 (int)strlen(nameU8) <= MAX_PATH - 5;
-    if (useU8 && pomptr2 != NULL)
-    {
-        useU8 = SalOEMToU8(pomptr2, pathU8, sizeof(pathU8)) != 0 &&
-                (int)strlen(pathU8) <= MAX_PATH - 5;
-    }
-
-    if (useU8)
-    {
-        newfile.NameLen = (int)strlen(nameU8);
-        newfile.Name = (char*)malloc(newfile.NameLen + 1);
-        if (!newfile.Name)
-            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_NOMEM);
-        memcpy(newfile.Name, nameU8, newfile.NameLen + 1);
-    }
-    else
-    { // legacy fallback: exactly what this code did before
-        newfile.Name = (char*)malloc(newfile.NameLen + 1);
-        if (!newfile.Name)
-            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_NOMEM);
-        OemToCharBuff(pomptr, newfile.Name, newfile.NameLen); // copy with conversion from OEM to ANSI
-        newfile.Name[newfile.NameLen] = '\0';
-    }
-
-    // The path half moves with the name half (decided above), or the listing
-    // would carry UTF-8 leaf names under code-page directory components and any
-    // later composition of the two (Copy Full Name, for one) would degrade the
-    // name back.  It cannot be converted in place: 'pomptr2' points into the
-    // caller's buffer and the UTF-8 form is longer, so the result goes into its
-    // own buffer and that is what AddFile/AddDir receive.
-    const char* dirPathU8 = NULL;
+    // convert the path from OEM to ANSI as well
     if (pomptr2 != NULL)
-    {
-        if (useU8)
-            dirPathU8 = pathU8;
-        else
-        {
-            OemToChar(pomptr2, pomptr2); // legacy fallback, in place as before
-            dirPathU8 = pomptr2;
-        }
-    }
+        OemToChar(pomptr2, pomptr2);
 
-    // set the extension - scanned in the CONVERTED name, because a byte offset
-    // taken in the OEM form would not survive the conversion ('.' cannot occur
-    // inside a UTF-8 sequence, so the scan itself is unchanged)
-    char* s = newfile.Name + newfile.NameLen - 2; // as before: start one back, so
-    while (s >= newfile.Name && *s != '.')        // a trailing '.' is not the extension
+    // set the extension
+    char* s = tmpfname - 1;
+    while (s >= pomptr && *s != '.')
         s--;
-    if (s >= newfile.Name)
-        //  if (s > newfile.Name)  // ".cvspass" is an extension in Windows...
-        newfile.Ext = s + 1;
+    if (s >= pomptr)
+        //  if (s > pomptr)  // ".cvspass" is an extension in Windows...
+        newfile.Ext = newfile.Name + (s - pomptr) + 1;
     else
         newfile.Ext = newfile.Name + newfile.NameLen;
 
@@ -598,7 +562,7 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
         newfile.IsLink = IsFileLink(newfile.Ext);
 
         // it is a file, add a file
-        if (!dir.AddFile(dirPathU8, newfile, NULL))
+        if (!dir.AddFile(pomptr2, newfile, NULL))
         {
             free(newfile.Name);
             return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_FDATA);
@@ -611,7 +575,7 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
         newfile.IsLink = 0;
         if (!Configuration.SortDirsByExt)
             newfile.Ext = newfile.Name + newfile.NameLen; // directories have no extension
-        if (!dir.AddDir(dirPathU8, newfile, NULL))
+        if (!dir.AddDir(pomptr2, newfile, NULL))
         {
             free(newfile.Name);
             return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_FDATA);
@@ -1186,25 +1150,13 @@ BOOL PackUC2List(const char* archiveFileName, CPackLineArray& lineArray,
                     if (*txtPtr == '\0')
                         return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
                     // and store it in the structure
-                    // feature 069 (F-P1-05): as above - convert, and take the length from the
-                    // result because the UTF-8 form can be longer
-                    char nameU8b[3 * MAX_PATH];
-                    if (SalOEMToU8(newName, nameU8b, sizeof(nameU8b)) != 0)
-                    {
-                        newfile.NameLen = (unsigned)strlen(nameU8b);
-                        newfile.Name = (char*)malloc(newfile.NameLen + 1);
-                        if (!newfile.Name)
-                            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
-                        memcpy(newfile.Name, nameU8b, newfile.NameLen + 1);
-                    }
-                    else
-                    {
-                        newfile.NameLen = (unsigned)strlen(newName);
-                        newfile.Name = (char*)malloc(newfile.NameLen + 1);
-                        if (!newfile.Name)
-                            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
-                        OemToChar(newName, newfile.Name); // legacy fallback
-                    }
+                    // feature 069 (F-P1-05): code page, like the main listing
+                    // above - one panel must not mix the two spellings
+                    newfile.NameLen = (unsigned)strlen(newName);
+                    newfile.Name = (char*)malloc(newfile.NameLen + 1);
+                    if (!newfile.Name)
+                        return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
+                    OemToChar(newName, newfile.Name);
                     newfile.Ext = strrchr(newfile.Name, '.');
                     if (newfile.Ext != NULL) // ".cvspass" is an extension in Windows ...
                                              //          if (newfile.Ext != NULL && newfile.Name != newfile.Ext)

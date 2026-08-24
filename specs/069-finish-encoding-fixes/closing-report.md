@@ -30,7 +30,7 @@ pass-after evidence required by FR-008; "manual V-nn" points at
 | F-P1-13 `subst` targets | **fixed** | X19 | manual V-12 |
 | F-P1-14 labels / mapped drives | **fixed** | X19 | manual V-12 |
 | F-P1-27 shares | **fixed** (producer-only; the `shellib.cpp` STRRET half deferred) | X20 | manual V-13 |
-| F-P1-05 archiver list files | **fixed**, both directions in one change | X17 | **19 unit checks** on the new converter pair |
+| F-P1-05 archiver list files | **fixed** for the list file and the unpack side — the two halves the finding was raised for. Its third half, the archive **listing's** display encoding, is **reverted and deferred**: three attempts produced a fatal listing abort, then a tree split, then a narrower tree split (Review D, D1). Reason written at the site. | X17 | **19 unit checks** on the new converter pair |
 | F-P1-06 archiver file APIs | **fixed** | X17 | manual V-10 (7-Zip as a custom archiver; no RAR on this machine) |
 | F-P1-07 `salspawn.exe` path | **fixed** | X17 | manual V-10 |
 | F-P2-04 wait window | **fixed**, the two confirmed sites (+ a torn-tail trim added on review) | X11 / X15 | manual V-16 |
@@ -412,8 +412,8 @@ last fix commit, i.e. after both rejected batches were corrected.
 
 ## What the independent reviews cost, and why that is the result
 
-Five review batches were run, each by an agent that had not written the code it
-judged. **Two came back ACCEPTED, three came back REJECTED** — including the
+Six review batches were run, each by an agent that had not written the code it
+judged. **Two came back ACCEPTED, four came back REJECTED** — including the
 review of the corrections themselves, which found the single worst defect of the
 whole feature — and the rejections
 are the most valuable output this feature produced, because between them they
@@ -437,11 +437,12 @@ for this class of work it is the only gate that has ever failed.
 ## Standing on the governing rule
 
 The user's rule for this feature was: **no regression may be introduced that
-makes the program malfunction.** Ten regressions *were* introduced during the
-work — five of them severe, one of them destructive, and two of them capable of
-stopping a whole feature for every user regardless of language. All ten were
+makes the program malfunction.** Twelve regressions *were* introduced during the
+work — six of them severe, one destructive, and two capable of stopping a whole
+feature for every user regardless of language. All twelve were
 found before the work was finished, by reviewers rather than by the author, and
-all ten are fixed and re-gated above. Two were introduced by *fixes to fixes*,
+all twelve are fixed and re-gated above — one of them by reverting the change
+that kept producing them. Three were introduced by *fixes to fixes*,
 which is why the corrections were themselves put through a review rather than
 trusted. That is the rule honoured by the process built for it, not by the
 fixes having been right the first time.

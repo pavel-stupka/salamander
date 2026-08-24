@@ -55,10 +55,8 @@ plugin.
   reporting it could not find the file; unpacking into an accented folder, or
   working with a temporary folder whose path is accented, failed with "cannot
   create the file list" or a MoveFile error and left the temporary folder
-  behind. Existing archives keep listing and extracting exactly as before -
-  including the rare entry whose in-archive path is long enough that its
-  Unicode form would not fit the internal limit, which keeps the old
-  code-page rendering rather than refusing to open.
+  behind. How an archive's contents are *displayed* is unchanged — that half
+  needs the whole listing to move at once and is still to come.
 
 - **Volume information, `subst` drives and shared folders.** Ctrl+F1 on a
   network drive or a junction shows the share or link target readably; a volume
