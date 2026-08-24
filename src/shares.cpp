@@ -99,8 +99,16 @@ void CShares::Refresh()
                 // conversions could fail and the share would vanish from the
                 // list and lose its shared-folder marker
                 char netname[3 * MAX_PATH];
-                char path[3 * MAX_PATH];
                 char remark[3 * MAX_PATH];
+                // 'path' stays at MAX_PATH on purpose, unlike its two
+                // neighbours: CSharesItem lstrcpyn's it into a MAX_PATH buffer,
+                // which cuts on a BYTE boundary and would tear the last UTF-8
+                // sequence.  Leaving it narrow means a path too long for UTF-8
+                // falls to the code-page branch below and reaches the item
+                // whole - exactly as before, mojibake but readable - while
+                // every path that does fit still arrives as UTF-8 and matches
+                // the panel.
+                char path[MAX_PATH];
                 // we do not want specials because Explorer does not show them
                 BOOL include = p->shi502_type == 0;
                 if (!SubsetOnly && p->shi502_type == 0x80000000) // special share

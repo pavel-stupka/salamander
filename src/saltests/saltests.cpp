@@ -1549,6 +1549,52 @@ static void TestEncodingFixes069()
     CHECK(SalOEMToU8(NULL, back, sizeof(back)) == 0);
     CHECK(SalU8ToOEM("x", NULL, 0) == 0);
     CHECK(SalOEMToU8("x", NULL, 0) == 0);
+
+    // ---- SalU8ToACP: UTF-8 back to the active code page --------------------
+    // Added late in feature 069 to fix three HIGH review findings: an ANSI
+    // OPENFILENAME's lpstrInitialDir (twice) and the plugin-facing
+    // CSalamanderGeneral::GetTargetDirectory.  What those callers need is not a
+    // particular transliteration - the code page is a machine property - but
+    // the SAFETY properties: never overrun, always NUL-terminated, and never a
+    // half-written string that a caller would then treat as a real path.
+    {
+        char acp[MAX_PATH];
+
+        // (1) ASCII is byte-identical, and the length includes the terminator
+        CHECK(SalU8ToACP("Hello.txt", acp, sizeof(acp)) == 10);
+        CHECK(strcmp(acp, "Hello.txt") == 0);
+
+        // (2) a too-small target fails and EMPTIES - it must never hand back a
+        //     truncated path that looks usable (this is the one that matters
+        //     for lpstrInitialDir: a half path would open the wrong folder)
+        CHECK(SalU8ToACP("Hello.txt", acp, 4) == 0);
+        CHECK(acp[0] == 0);
+
+        // (3) NULL is tolerated in both positions
+        acp[0] = 'x';
+        CHECK(SalU8ToACP(NULL, acp, sizeof(acp)) == 0);
+        CHECK(acp[0] == 0); // emptied before the input is even looked at
+        CHECK(SalU8ToACP("x", NULL, 0) == 0);
+        CHECK(SalU8ToACP("x", acp, 0) == 0);
+
+        // (4) input that is NOT valid UTF-8 is already legacy text: it is
+        //     passed through unchanged rather than destroyed, which is what
+        //     keeps a caller that never migrated working
+        CHECK(SalU8ToACP("\xC4", acp, sizeof(acp)) == 2);
+        CHECK((unsigned char)acp[0] == 0xC4 && acp[1] == 0);
+
+        // (5) the pass-through branch respects the target size too
+        CHECK(SalU8ToACP("\xC4\xC4\xC4\xC4\xC4\xC4", acp, 3) == 3);
+        CHECK(acp[2] == 0);
+
+        // (6) a character the code page cannot express is lossy BY DESIGN -
+        //     that is exactly the pre-069 behaviour of these boundaries - but
+        //     it must still terminate and stay in bounds.  Written as a branch
+        //     because the ACP is a machine property: on CP1250 this becomes the
+        //     default character, on CP932/936/950 it converts for real.
+        int n = SalU8ToACP("\xE6\xBC\xA2" ".txt", acp, sizeof(acp));
+        CHECK(n == 0 || (n > 0 && n <= (int)sizeof(acp) && acp[n - 1] == 0));
+    }
     // ---- G6: the per-item enumeration cost, measured not asserted ----------
     // Feature 069 moves several enumerations from FindFirstFile/FindNextFile (A)
     // to SalFindFirstFile + SalConvertFindDataW.  That is a per-item path

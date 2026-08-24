@@ -565,12 +565,19 @@ int SalU8ToOEM(const char* u8, char* buf, int bufSize)
     WCHAR* w = SalU8ToWAlloc(u8);
     if (w == NULL)
         return 0; // not valid UTF-8 (or WTF-8): the caller keeps the legacy path
+    // With Windows' "Use Unicode UTF-8 worldwide" setting the OEM code page IS
+    // UTF-8, and WideCharToMultiByte rejects both a non-zero flag set and a
+    // non-NULL lpUsedDefaultChar for CP_UTF8 - passing them would make this
+    // function fail for every name, ASCII included, and pin the archivers on
+    // the legacy path forever.  Neither argument has anything to do there:
+    // UTF-8 can represent every character, so nothing is ever substituted.
+    BOOL utf8OEM = GetOEMCP() == CP_UTF8;
     BOOL usedDefault = FALSE;
-    // WC_NO_BEST_FIT_CHARS, or the promise above is false: without it the API
-    // silently transliterates (z-caron -> z) and leaves usedDefault FALSE, so
-    // the archiver would be handed a plausible but DIFFERENT name
-    int written = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, w, -1, buf, bufSize,
-                                      NULL, &usedDefault);
+    // Otherwise WC_NO_BEST_FIT_CHARS, or the promise above is false: without it
+    // the API silently transliterates (z-caron -> z) and leaves usedDefault
+    // FALSE, so the archiver would be handed a plausible but DIFFERENT name
+    int written = WideCharToMultiByte(CP_OEMCP, utf8OEM ? 0 : WC_NO_BEST_FIT_CHARS, w, -1,
+                                      buf, bufSize, NULL, utf8OEM ? NULL : &usedDefault);
     free(w);
     if (written == 0 || usedDefault)
     { // the archiver would be given a name that does not exist on disk

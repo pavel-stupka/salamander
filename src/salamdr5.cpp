@@ -1889,9 +1889,12 @@ BOOL CreateOurPathInRoamingAPPDATA(char* buf)
         if (SalPathAppend(path, "Tandem Commander", MAX_PATH))
         {
             // feature 069 (F-P1-08): the same facade the read side uses, so what
-            // is created here can be found again; the narrow call still gets its
-            // turn when the path did not convert, so the legacy branch keeps
-            // creating the directory exactly as before
+            // is created here can be found again.  The narrow call behind it is
+            // an unconditional retry, not a conversion-gated one - it also runs
+            // on the (usual) already-exists, where it is a no-op.  That costs a
+            // redundant call rather than a probe this layer does not have, and
+            // it cannot create anything the wide call could not: the leaf is
+            // always ASCII, so an unconvertible parent fails for both.
             if (!SalCreateDirectory(path, NULL))
                 CreateDirectory(path, NULL); // if it fails (e.g. already exists), we do not care...
             if (buf != NULL)

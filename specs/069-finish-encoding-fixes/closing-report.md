@@ -402,7 +402,7 @@ last fix commit, i.e. after both rejected batches were corrected.
 |---|---|---|
 | **G1** Debug build | PASS | 0 errors. No new warnings in any changed file; one pre-existing `C4267` in `pack1.cpp` disappeared as a side effect of a cast this feature needed. Two warnings this feature *did* introduce (`drivelst.cpp` unreferenced `dummy` locals, after a helper took over their out-params) were removed in the same group. |
 | **G2** Release build | PASS | `build.cmd full release`: **0 errors**, exit 0. LTO/WPO path included.
-| **G3** Unit tests | PASS | 1257 → **1288 checks, 0 failed** (+12 `SalU8TrimIncompleteTail`, +19 the OEM converter pair, +1 the G6 enumeration equivalence) |
+| **G3** Unit tests | PASS | 1257 → **1301 checks, 0 failed** (+12 `SalU8TrimIncompleteTail`, +19 the OEM converter pair, +1 the G6 enumeration equivalence) |
 | **G4** Guard, strict | PASS | `TOTAL: 0` with 10 rules, `acp-title-seed` added and proven to fire |
 | **G4** Guard, draft | 183 → **149** | `ansi-api-on-utf8-path` 88→57 (−31, the file-system fixes) · `cp-acp-utf8-source` 11→10 · `signed-char-name-byte` 42→0 (retired) · `acp-byte-table-on-name` 0→33 (its successor — the real cluster B-2 signal) · `missed-twin` 42→51 (+9, all `IDS_VIEWERTITLE`, documented under X12). *The X15 commit message quotes 148: that figure was taken mid-work, before the last two groups. 149 is the measured total and this table is the authoritative record.* |
 | **G5** Start/exit health | PASS | Both configurations reach input-idle, paint a correct title bar (`specs - Tandem Commander 0.1.4 (x64)`, Debug adds ` ST`) and close on `WM_CLOSE` with **exit 0** — no hang, no leak box, no crash reporter. |
@@ -412,8 +412,10 @@ last fix commit, i.e. after both rejected batches were corrected.
 
 ## What the independent reviews cost, and why that is the result
 
-Four review batches were run, each by an agent that had not written the code it
-judged. **Two came back ACCEPTED, two came back REJECTED** — and the rejections
+Five review batches were run, each by an agent that had not written the code it
+judged. **Two came back ACCEPTED, three came back REJECTED** — including the
+review of the corrections themselves, which found the single worst defect of the
+whole feature — and the rejections
 are the most valuable output this feature produced, because between them they
 caught defects that a build, a unit suite and a guard sweep all pass cleanly:
 
@@ -425,6 +427,7 @@ caught defects that a build, a unit suite and a guard sweep all pass cleanly:
 | Producer improved, comparison not | Drive Information **renaming a volume to `??????`** | No — a data-loss bug reachable by opening a dialog and pressing OK |
 | Fix landed near the defect, not on it | D02's `IDC_FILEATTR`, still raw ANSI | No — the finding's own symptom survived the fix |
 | Core→plugin return bytes changed | `GetTargetDirectory` handing UTF-8 to plugins that persist it | No — the ABI is unchanged, so nothing complains |
+| A length limit the longer encoding now trips | an archive with a long Cyrillic path **refusing to open at all** | No — it compiles, and no gate opens a RAR |
 
 Every one of these is a *semantic* defect in a change whose *syntax* is correct,
 which is exactly the shape of change this feature consists of. The lesson for
@@ -434,11 +437,14 @@ for this class of work it is the only gate that has ever failed.
 ## Standing on the governing rule
 
 The user's rule for this feature was: **no regression may be introduced that
-makes the program malfunction.** Eight regressions *were* introduced during the
-work — four of them severe, one of them destructive. All eight were found before
-the work was finished, by reviewers rather than by the author, and all eight are
-fixed and re-gated above. That is the rule honoured by the process that was
-designed for it, not by the fixes having been right the first time.
+makes the program malfunction.** Ten regressions *were* introduced during the
+work — five of them severe, one of them destructive, and two of them capable of
+stopping a whole feature for every user regardless of language. All ten were
+found before the work was finished, by reviewers rather than by the author, and
+all ten are fixed and re-gated above. Two were introduced by *fixes to fixes*,
+which is why the corrections were themselves put through a review rather than
+trusted. That is the rule honoured by the process built for it, not by the
+fixes having been right the first time.
 
 Two things remain outside this feature's reach and are stated plainly rather
 than implied: the six systemic clusters B-1…B-6 inherited from 068 are still

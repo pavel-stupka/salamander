@@ -71,3 +71,50 @@ single outcome); `check_encoding.py --strict` **TOTAL: 0**; draft 149.
    analysis correctly established that a plugin *sending* better-formed text to
    a tolerant sink is safe — and then the same feature changed a service's
    *return* bytes two files away without noticing it was the same rule.
+
+---
+
+## Review C — the corrections themselves · **REJECTED** → corrected
+
+The correction commit (`bcd2cfa`) was new, unreviewed code, which is the shape
+that had already failed twice. A third reviewer was given only that diff and the
+charter. It rejected it, and it was right on both counts.
+
+| # | Sev | Site | Finding | Disposition |
+|---|---|---|---|---|
+| **F1** | **CRITICAL** | `pack1.cpp:334` → `zip.cpp:5888` | **An external-archiver listing could stop opening at all.** `AddFile`/`AddDir` refuse a path or name over `MAX_PATH - 5`, and here that refusal is *fatal* — `PackScanLine` turns it into `IDS_PACKERR_FDATA` and `PackList` aborts. The OEM form could never trip it (one byte per character, inside `filename[MAX_PATH]`); the UTF-8 form is up to three times longer. A `.rar`/`.arj`/`.lzh`/`.ace`/`.uc2` holding a ~130-character Cyrillic path, or an ~86-character Japanese one, went from *lists, as mojibake* to *error box, empty panel*. The R8 path fix and the earlier name fix each contributed one half. | **fixed**: name and path are now decided **together**, and the decision weighs the **length** as well as the conversion — if either converted form would be refused, both fall back to the pre-069 conversion. Degrading the encoding is allowed by the charter; failing the operation is not. |
+| **F2** | MEDIUM | `shares.cpp:102` → `shares.cpp:19` | R10's widening moved the failure rather than removing it: `CSharesItem` `lstrcpyn`s the path into a `MAX_PATH` buffer, which cuts on a **byte** boundary. A ≥87-character CJK share path used to fail the UTF-8 conversion, fall to the complete code-page form and render correctly through the tolerant sink's ANSI fallback; after R10 it converted, got torn mid-sequence, and rendered as chopped mojibake. | **fixed**: `path` alone returns to `MAX_PATH` (`netname`/`remark` keep the widening they actually needed — they are `DupStr`'d, not copied into a fixed buffer), with the asymmetry explained at the declaration |
+| **F3** | MEDIUM | `salunicode.cpp` | A5 evidence missing: `SalU8ToACP` was added to fix three HIGH findings and shipped with **no check at all**, while three sinks branch on its exact contract. | **fixed**: 13 checks — ASCII identity, the never-truncate property that matters for `lpstrInitialDir`, NULL in both positions, the legacy pass-through branch and its size limit, and a code-page-independent bounds/termination check |
+| **O1** | LOW | `stswnd.cpp:1470`, `toolbar5.cpp:172` | A comment **I added** asserted "one byte per character", which is false on any DBCS code page — and it sat over a *pre-existing* overrun: the destination was sized from the **source** length while every caller passes `char[MAX_PATH]`, so a 300-character drop wrote 301 bytes into 260. | **fixed**: the bound now comes from the buffer and the terminator from the API's own return value. Pre-existing, but two characters of code and a wrong comment of mine. |
+| **O2** | LOW | `salunicode.cpp:576` | Under Windows' "Use Unicode UTF-8 worldwide" setting `GetOEMCP()` is `CP_UTF8`, for which `WideCharToMultiByte` **rejects** both a non-zero flag set and a non-NULL `lpUsedDefaultChar` — so `SalU8ToOEM` would fail for *every* name, ASCII included, pinning the archivers on the legacy path and failing unit case (1). | **fixed**: both arguments are dropped when the OEM code page is UTF-8, where neither has any meaning |
+| **O3** | note | `salamdr5.cpp:1895` | The narrow retry is unconditional, not conversion-gated as its comment claimed. The reviewer judged the behaviour itself harmless (the leaf is always ASCII, so an unconvertible parent fails either way). | **comment fixed**, not the code — gating it would need a validity probe this layer does not have and an allocation to free, for no behavioural gain |
+| **O4** | note | `dialogs6.cpp:650` | The `mixed-composition` suppression went stale when the site moved to `LoadStrU8`. | **removed** |
+| **O5** | record | `pack3.cpp:1444` | The revived 8.3 branch returns an *unquoted* path, so a packer under `D:\My Tools\…` breaks where 8.3 creation is disabled. Correct against the shipped baseline (the branch was alive pre-069; only the parent commit had it dead), so this is pre-existing. | **recorded**, not changed — it is a packer-quoting defect, not an encoding one |
+
+### What Review C confirmed
+
+R1/R2 are genuinely fixed — `SalConvertFindDataW` re-runs after every
+`SalFindNextFile` at `pack1.cpp:1719` and `:1989`, the pre-loop conversion
+covers the first record, and the reviewer independently re-checked the other
+four loops (`pack2.cpp:531`, `packac.cpp:662`, `pack3.cpp:1263`, `pack1.cpp:1695`)
+and the `goto _ERR` handle close. Also confirmed: the `salamdr2.cpp` suppression
+parses as intended (`&&` binds tighter); `drivelst.cpp` returns `FALSE` with the
+buffer untouched and both callers respect it; the only allocation in the diff is
+freed on its single path; every tolerant-sink fallback still does the whole job;
+`zip.cpp:3382` cannot truncate against the documented `MAX_PATH` contract; and
+`SafeGetOpenFileName`/`SafeGetSaveFileName` are *also* plugin services whose
+pre-069 bytes the fix restores — which the record had not said, and now does.
+
+### Gates after Review C's corrections
+
+Debug **0 errors**, Release **0 errors**, no warning in any changed file;
+`saltests` 1288 → **1301 checks, 0 failed**; guard strict **TOTAL: 0**, draft
+149; both configurations launch, paint a correct title and close with exit 0.
+
+### The count that matters
+
+Three reviews, three rejections, **thirty findings** — and the two most severe
+in the whole feature (both "the feature stops working entirely, for everyone")
+were introduced by *fixes*, and one of those by a *fix to a fix*. Every one was
+caught before the work was called done. No automated gate in this project would
+have caught any of them.

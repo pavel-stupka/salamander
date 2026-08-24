@@ -169,10 +169,14 @@ public:
                             // converting it through the code page discarded exactly what it
                             // carried - the strict path check right after then refused the drop
                             if (SalWToU8(fileW, l + 1, path, MAX_PATH) == 0)
-                            { // legacy fallback: one byte per character, so the
-                                // terminator does belong at 'l' there
-                                WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, l + 1, NULL, NULL);
-                                path[l] = 0;
+                            { // legacy fallback.  The destination is sized from the
+                                // BUFFER, never from the source: every caller passes a
+                                // char[MAX_PATH] and a longer drop would otherwise
+                                // write past it.  On a DBCS code page the result is
+                                // also not one byte per character, so the terminator
+                                // goes where the API says it wrote to, not at 'l'.
+                                int wrote = WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, MAX_PATH, NULL, NULL);
+                                path[wrote > 0 ? wrote - 1 : 0] = 0;
                             }
                             ret = TRUE;
                         }

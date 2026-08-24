@@ -303,12 +303,30 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
     // other way with the matching helper: both directions move together.
     char oemName[2 * MAX_PATH];
     char nameU8[3 * MAX_PATH];
+    char pathU8[3 * MAX_PATH];
     int oemLen = newfile.NameLen;
     if (oemLen > (int)sizeof(oemName) - 1)
         oemLen = (int)sizeof(oemName) - 1;
     memcpy(oemName, pomptr, oemLen);
     oemName[oemLen] = 0;
-    if (SalOEMToU8(oemName, nameU8, sizeof(nameU8)) != 0)
+
+    // feature 069 (F-P1-05): the name and the path convert TOGETHER or not at
+    // all - a UTF-8 leaf under a code-page directory is the mixed chain this
+    // fix exists to remove.  And the decision has to weigh the LENGTH, not just
+    // the conversion: UTF-8 needs up to three bytes per character where the OEM
+    // form needed one, and AddFile/AddDir refuse anything over MAX_PATH - 5
+    // (zip.cpp) - which is FATAL to the whole listing here (IDS_PACKERR_FDATA
+    // below), so an archive that used to list as mojibake would stop opening at
+    // all.  Degrading the encoding is allowed; failing the operation is not.
+    BOOL useU8 = SalOEMToU8(oemName, nameU8, sizeof(nameU8)) != 0 &&
+                 (int)strlen(nameU8) <= MAX_PATH - 5;
+    if (useU8 && pomptr2 != NULL)
+    {
+        useU8 = SalOEMToU8(pomptr2, pathU8, sizeof(pathU8)) != 0 &&
+                (int)strlen(pathU8) <= MAX_PATH - 5;
+    }
+
+    if (useU8)
     {
         newfile.NameLen = (int)strlen(nameU8);
         newfile.Name = (char*)malloc(newfile.NameLen + 1);
@@ -325,17 +343,16 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
         newfile.Name[newfile.NameLen] = '\0';
     }
 
-    // feature 069 (F-P1-05): the path half must move with the name half, or the
-    // listing carries UTF-8 leaf names under code-page directory components -
-    // and any later composition of the two (Copy Full Name, for one) degrades
-    // the name back.  It cannot be converted in place: 'pomptr2' points into the
+    // The path half moves with the name half (decided above), or the listing
+    // would carry UTF-8 leaf names under code-page directory components and any
+    // later composition of the two (Copy Full Name, for one) would degrade the
+    // name back.  It cannot be converted in place: 'pomptr2' points into the
     // caller's buffer and the UTF-8 form is longer, so the result goes into its
     // own buffer and that is what AddFile/AddDir receive.
-    char pathU8[3 * MAX_PATH];
     const char* dirPathU8 = NULL;
     if (pomptr2 != NULL)
     {
-        if (SalOEMToU8(pomptr2, pathU8, sizeof(pathU8)) != 0)
+        if (useU8)
             dirPathU8 = pathU8;
         else
         {
