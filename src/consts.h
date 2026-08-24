@@ -823,6 +823,13 @@ WCHAR* LoadStrW(int resID, HINSTANCE hInstance = NULL); // taha wide-string z re
 // for instance), which is a far larger change than this defect warrants.
 char* LoadStrU8(int resID, HINSTANCE hInstance = NULL);
 
+// feature 069 (F-P1-10): the module path as UTF-8, for the buffers whose
+// consumers are the strict facade (help directory, ConfigurationName,
+// $(SalDir)/$(SalPath)).  The plugin, language-module and conversion-table
+// loaders keep their ANSI producer - see
+// specs/069-finish-encoding-fixes/findings/c5-consumer-classification.md
+DWORD GetModuleFileNameU8(HMODULE module, char* buf, DWORD bufSize);
+
 // podpora pro tvorbu parametrizovanych textu (reseni jednotnych a mnoznych cisel
 // v textech); 'lpFmt' je formatovaci retezec pro vysledny text - popis jeho formatu
 // nasleduje; vysledny text se vraci v bufferu 'lpOut' o velikosti 'nOutMax' bytu;

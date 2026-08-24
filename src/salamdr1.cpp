@@ -3563,7 +3563,12 @@ BOOL ParseCommandLineParameters(LPSTR cmdLine, CCommandLineParams* cmdLineParams
     int p = 20; // pocet prvku pole argv
 
     char curDir[MAX_PATH];
-    GetModuleFileName(HInstance, ConfigurationName, MAX_PATH);
+    // feature 069 (F-P1-10): FileExists below is the strict UTF-8 facade, so a
+    // config.reg sitting next to the executable was never found when the install
+    // path is not ASCII.  ImportConfiguration's own open is converted with it -
+    // it used to be an ANSI CreateFile, which is also why an accented -C path
+    // (UTF-8 since feature 004) could not be opened either.
+    GetModuleFileNameU8(HInstance, ConfigurationName, MAX_PATH);
     *(strrchr(ConfigurationName, '\\') + 1) = 0;
     const char* configReg = "config.reg";
     strcat(ConfigurationName, configReg);
@@ -3666,7 +3671,8 @@ BOOL ParseCommandLineParameters(LPSTR cmdLine, CCommandLineParams* cmdLineParams
                     }
                     else // relativni jmeno
                     {
-                        GetModuleFileName(HInstance, ConfigurationName, MAX_PATH);
+                        // feature 069 (F-P1-10): see the note at the first producer
+                        GetModuleFileNameU8(HInstance, ConfigurationName, MAX_PATH);
                         *(strrchr(ConfigurationName, '\\') + 1) = 0;
                         SalPathAppend(ConfigurationName, s, MAX_PATH);
                         if (!FileExists(ConfigurationName) && GetOurPathInRoamingAPPDATA(curDir) &&

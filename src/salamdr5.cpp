@@ -1853,8 +1853,22 @@ void SetThreadNameInVCAndTrace(const char* name)
     SetThreadNameInVC(name);
 }
 
+// feature 069 (F-P1-08): the ANSI SHGetFolderPath returns %APPDATA% through the
+// code page, and this value is then handed to the strict UTF-8 facade
+// (FileExists / SalGetFileAttributes) - so on an account whose name is not
+// ASCII (Jiri, Sarka, Kovacs with diacritics) nothing under that folder was
+// ever found: an auto-import config.reg placed there was ignored.  The write
+// side converts with it, because the ANSI pair could create a directory it
+// could then never read back.
 BOOL GetOurPathInRoamingAPPDATA(char* buf)
 {
+    WCHAR pathW[MAX_PATH];
+    if (SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, pathW) == S_OK &&
+        SalWToU8(pathW, -1, buf, MAX_PATH) != 0)
+    {
+        return SalPathAppend(buf, "Tandem Commander", MAX_PATH);
+    }
+    // not convertible (transitional): keep the legacy path
     return SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, buf) == S_OK &&
            SalPathAppend(buf, "Tandem Commander", MAX_PATH);
 }
@@ -1864,11 +1878,18 @@ BOOL CreateOurPathInRoamingAPPDATA(char* buf)
     static char path[MAX_PATH]; // called from the exception handler; the stack may be full
     if (buf != NULL)
         buf[0] = 0;
-    if (SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, path) == S_OK)
+    WCHAR pathW[MAX_PATH];
+    BOOL gotPath = SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, pathW) == S_OK &&
+                   SalWToU8(pathW, -1, path, MAX_PATH) != 0;
+    if (!gotPath) // not convertible (transitional): keep the legacy path
+        gotPath = SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, path) == S_OK;
+    if (gotPath)
     {
         if (SalPathAppend(path, "Tandem Commander", MAX_PATH))
         {
-            CreateDirectory(path, NULL); // if it fails (e.g. already exists), we do not care...
+            // feature 069 (F-P1-08): the same facade the read side uses, so what
+            // is created here can be found again
+            SalCreateDirectory(path, NULL); // if it fails (e.g. already exists), we do not care...
             if (buf != NULL)
                 lstrcpyn(buf, path, MAX_PATH);
             return TRUE;

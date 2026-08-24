@@ -346,8 +346,17 @@ finding's confirmed consequence to the share marker and `GetUNCPath`. Recorded.
 
 ## Gates
 
+Run after every accepted group; the figures below are the state after the
+second fix commit (`3ad87bb`).
+
 | Gate | Result | Evidence |
 |---|---|---|
-| G1–G4 per group | *(per fix, below)* | |
-| G1–G7 final | *(pending)* | |
-| G8 on-screen sweep | *(maintainer)* | |
+| **G1** Debug build | PASS | 0 errors. No new warnings in any changed file; one pre-existing `C4267` in `pack1.cpp` disappeared as a side effect of a cast this feature needed. Two warnings this feature *did* introduce (`drivelst.cpp` unreferenced `dummy` locals, after a helper took over their out-params) were removed in the same group. |
+| **G2** Release build | *(pending — run once C5 lands)* | |
+| **G3** Unit tests | PASS | 1257 → **1289 checks, 0 failed** (+12 `SalU8TrimIncompleteTail`, +19 the OEM converter pair, +1 the G6 enumeration equivalence) |
+| **G4** Guard, strict | PASS | `TOTAL: 0` with 10 rules, `acp-title-seed` added and proven to fire |
+| **G4** Guard, draft | 183 → **151** | `ansi-api-on-utf8-path` 88→57 (−31, the file-system fixes) · `cp-acp-utf8-source` 11→10 · `signed-char-name-byte` 42→0 (retired) · `acp-byte-table-on-name` 0→33 (its successor — the real cluster B-2 signal) · `missed-twin` 42→51 (+9, all `IDS_VIEWERTITLE`, documented under X12). *The X15 commit message quotes 148: that figure was taken mid-work, before the last two groups. 151 is the measured total and this table is the authoritative record.* |
+| **G5** Start/exit health | *(pending)* | |
+| **G6** Timing | PASS | The enumeration change is a per-item path, so `saltests` now measures both paths over the 100,000-file fixture in one run. Five runs each over 100,002 entries: **ANSI min 16 / median 31 / max 31 ms**; **facade+convert min 16 / median 16 / max 32 ms**. The wide path is not slower — the ANSI API performs the same conversion inside kernel32, as the X15 reviewer predicted — and each median lies inside the other's range. Coarse by construction: `GetTickCount` granularity is ~15.6 ms. |
+| **G7** English spot-check | *(pending — `Release_x64_prefix069` is kept for it)* | |
+| **G8** On-screen sweep | *(maintainer — W1–W20 + V-01…V-24)* | |

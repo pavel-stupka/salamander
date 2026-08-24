@@ -2925,8 +2925,10 @@ BOOL ImportConfiguration(HWND hParent, const char* fileName, BOOL ignoreIfNotExi
 {
     TRACE_I("ImportConfiguration(): begin");
     DWORD err = 0;
-    HANDLE file = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL,
-                                       OPEN_EXISTING, 0, 0));
+    // feature 069 (F-P1-10): 'fileName' is ConfigurationName, i.e. UTF-8 - both
+    // from the -C command line (feature 004) and now from the install directory
+    HANDLE file = SalCreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL,
+                                OPEN_EXISTING, 0, 0);
     if (file == INVALID_HANDLE_VALUE)
     {
         err = GetLastError();

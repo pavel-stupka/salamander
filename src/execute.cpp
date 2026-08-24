@@ -825,7 +825,10 @@ const char* WINAPI ExecuteExpSysDir(HWND msgParent, void* param) // full path to
 const char* WINAPI ExecuteExpSalDir(HWND msgParent, void* param) // full path to the Salamander directory
 {
     CExecuteExpData* data = (CExecuteExpData*)param;
-    GetModuleFileName(HInstance, data->Buffer, _countof(data->Buffer));
+    // feature 069 (F-P1-10): the value goes into a command line that
+    // SalCreateProcess consumes as UTF-8, so one code-page byte here discarded
+    // the whole line and the menu item silently did nothing
+    GetModuleFileNameU8(HInstance, data->Buffer, _countof(data->Buffer));
     *(strrchr(data->Buffer, '\\') + 1) = 0;
     return data->Buffer;
 }
@@ -916,7 +919,10 @@ const char* WINAPI ExecuteExpSysDir2(HWND msgParent, void* param) // full path t
 const char* WINAPI ExecuteExpSalDir2(HWND msgParent, void* param) // full path to the Salamander directory without trailing '\\'
 {
     CExecuteExpData* data = (CExecuteExpData*)param;
-    GetModuleFileName(HInstance, data->Buffer, _countof(data->Buffer));
+    // feature 069 (F-P1-10): the value goes into a command line that
+    // SalCreateProcess consumes as UTF-8, so one code-page byte here discarded
+    // the whole line and the menu item silently did nothing
+    GetModuleFileNameU8(HInstance, data->Buffer, _countof(data->Buffer));
     char* s = strrchr(data->Buffer, '\\');
     if (s == NULL)
     {

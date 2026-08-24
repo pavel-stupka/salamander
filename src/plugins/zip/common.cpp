@@ -2474,11 +2474,30 @@ void GetInfo(char* buffer, FILETIME* lastWrite, QWORD size)
     FileTimeToLocalFileTime(lastWrite, &ft);
     FileTimeToSystemTime(&ft, &st);
 
+    // feature 069 (D02): NumberToStr returns the thousands separator as UTF-8
+    // (on cs-CZ it is U+00A0), while the ANSI GetDateFormat/GetTimeFormat return
+    // code-page bytes - so this buffer was neither, and the sink that renders it
+    // (the plugin's own dialogs and, through CSalamanderGeneral::DialogOverwrite,
+    // the core's overwrite dialog, which uses the tolerant SalSetDlgItemTextU8)
+    // fell back to the legacy draw: on cs-CZ every file of 1000 bytes or more
+    // showed a stray "A-circumflex" in both ZIP overwrite prompts.  Take the
+    // date and time wide and convert them, so the whole string is UTF-8.
+    //   English and every other ASCII locale are byte-identical: the separator
+    //   is "," and the date/time are ASCII either way.
     char date[50], time[50], number[50];
-    if (GetTimeFormat(LOCALE_USER_DEFAULT, 0, &st, NULL, time, 50) == 0)
-        sprintf(time, "%u:%02u:%02u", st.wHour, st.wMinute, st.wSecond);
-    if (GetDateFormat(LOCALE_USER_DEFAULT, DATE_SHORTDATE, &st, NULL, date, 50) == 0)
-        sprintf(date, "%u.%u.%u", st.wDay, st.wMonth, st.wYear);
+    WCHAR timeW[50], dateW[50];
+    if (GetTimeFormatW(LOCALE_USER_DEFAULT, 0, &st, NULL, timeW, 50) == 0 ||
+        SplWToU8(timeW, time, 50) <= 0)
+    {
+        if (GetTimeFormat(LOCALE_USER_DEFAULT, 0, &st, NULL, time, 50) == 0)
+            sprintf(time, "%u:%02u:%02u", st.wHour, st.wMinute, st.wSecond);
+    }
+    if (GetDateFormatW(LOCALE_USER_DEFAULT, DATE_SHORTDATE, &st, NULL, dateW, 50) == 0 ||
+        SplWToU8(dateW, date, 50) <= 0)
+    {
+        if (GetDateFormat(LOCALE_USER_DEFAULT, DATE_SHORTDATE, &st, NULL, date, 50) == 0)
+            sprintf(date, "%u.%u.%u", st.wDay, st.wMonth, st.wYear);
+    }
     sprintf(buffer, "%s, %s, %s", SalamanderGeneral->NumberToStr(number, CQuadWord().SetUI64(size)), date, time);
 }
 

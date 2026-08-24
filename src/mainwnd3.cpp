@@ -111,6 +111,19 @@ BOOL MainFrameIsActive = FALSE;
 // HtmlHelp support
 //
 
+// feature 069 (F-P1-10): the install directory as UTF-8.  Only the buffers whose
+// consumers are the strict facade move to this helper - the plugin, language and
+// conversion-table loaders keep the ANSI producer they are paired with (the
+// classification is in specs/069-.../findings/c5-consumer-classification.md).
+DWORD GetModuleFileNameU8(HMODULE module, char* buf, DWORD bufSize)
+{
+    WCHAR pathW[MAX_PATH];
+    DWORD len = GetModuleFileNameW(module, pathW, _countof(pathW));
+    if (len != 0 && len < _countof(pathW) && SalWToU8(pathW, -1, buf, bufSize) != 0)
+        return (DWORD)strlen(buf);
+    return GetModuleFileName(module, buf, bufSize); // legacy fallback
+}
+
 // universal callback for our MessageBox when the user clicks the HELP button
 // should be called, for example, like this:
 //    MSGBOXEX_PARAMS params;
@@ -168,7 +181,14 @@ BOOL OpenHtmlHelp(char* helpFileName, HWND parent, CHtmlHelpCommand command, DWO
             strcpy(helpSubdir, "english");
         }
         BOOL ok = FALSE;
-        if (GetModuleFileName(HInstance, CurrentHelpDir, MAX_PATH) != 0 &&
+        // feature 069 (F-P1-10): the ANSI GetModuleFileName returned the install
+        // directory in the code page and DirExists below is the strict UTF-8
+        // facade, so on an install path with a non-ASCII character (or a
+        // portable copy under such a path) F1 reported that help cannot be
+        // found although help\english\ sits right next to the executable.
+        // The whole chain moves: this producer, the search below, and the
+        // HtmlHelp call at the end of the function.
+        if (GetModuleFileNameU8(HInstance, CurrentHelpDir, MAX_PATH) != 0 &&
             CutDirectory(CurrentHelpDir) &&
             SalPathAppend(CurrentHelpDir, "help", MAX_PATH) &&
             DirExists(CurrentHelpDir))
@@ -185,23 +205,28 @@ BOOL OpenHtmlHelp(char* helpFileName, HWND parent, CHtmlHelpCommand command, DWO
                     lstrcpyn(helpPath, CurrentHelpDir, MAX_PATH);
                     if (SalPathAppend(helpPath, "*", MAX_PATH))
                     { // try to find at least some other directory
+                        // feature 069 (F-P1-10): the path is UTF-8 now, so the
+                        // search must go through the facade too
                         WIN32_FIND_DATA data;
-                        HANDLE find = HANDLES_Q(FindFirstFile(helpPath, &data));
+                        WIN32_FIND_DATAW dataW;
+                        char helpNameU8[SAL_FIND_NAME_U8];
+                        HANDLE find = SalFindFirstFile(helpPath, &dataW); // registers with HANDLES itself
                         if (find != INVALID_HANDLE_VALUE)
                         {
                             do
                             {
-                                if (strcmp(data.cFileName, ".") != 0 && strcmp(data.cFileName, "..") != 0 &&
+                                SalConvertFindDataW(&dataW, &data, helpNameU8, sizeof(helpNameU8), NULL, 0);
+                                if (strcmp(helpNameU8, ".") != 0 && strcmp(helpNameU8, "..") != 0 &&
                                     (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) // only if it is a directory
                                 {
                                     lstrcpyn(helpPath, CurrentHelpDir, MAX_PATH);
-                                    if (SalPathAppend(helpPath, data.cFileName, MAX_PATH))
+                                    if (SalPathAppend(helpPath, helpNameU8, MAX_PATH))
                                     {
                                         ok = TRUE;
                                         break;
                                     }
                                 }
-                            } while (FindNextFile(find, &data));
+                            } while (SalFindNextFile(find, &dataW));
                             HANDLES(FindClose(find));
                         }
                     }
@@ -291,7 +316,12 @@ BOOL OpenHtmlHelp(char* helpFileName, HWND parent, CHtmlHelpCommand command, DWO
     if (SalPathAppend(helpPath, helpFileName == NULL ? "salamand.chm" : helpFileName, MAX_PATH) &&
         FileExists(helpPath))
     {
-        if (HtmlHelp(NULL, helpPath, uCommand, dwData) == NULL)
+        // feature 069 (F-P1-10): helpPath is UTF-8 (see the note above), and the
+        // un-suffixed HtmlHelp is the ANSI entry point
+        WCHAR helpPathW[MAX_PATH + 50];
+        BOOL helpPathWValid = SalU8ToW(helpPath, -1, helpPathW, _countof(helpPathW)) != 0;
+        if ((helpPathWValid ? HtmlHelpW(NULL, helpPathW, uCommand, dwData)
+                            : HtmlHelp(NULL, helpPath, uCommand, dwData)) == NULL)
         {
             BOOL errorHandled = FALSE;
             HH_LAST_ERROR lasterror;
@@ -2841,7 +2871,11 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
                 char buff[3000];
                 // encoding-check: allow mixed-composition - configuration name chosen in-app, not a file name
                 //   (feature 042, FR-010)
-                _snprintf_s(buff, _TRUNCATE, LoadStr(IDS_SAVECFG_EXPFILEEXISTS), ConfigurationName);
+                // feature 069 (F-P2-13): ConfigurationName is UTF-8 from every
+                // producer now (F-P1-10), so the template must be too - the user
+                // was being asked to confirm overwriting a file whose name they
+                // could not read, in seven of the eight shipped languages
+                _snprintf_s(buff, _TRUNCATE, LoadStrU8(IDS_SAVECFG_EXPFILEEXISTS), ConfigurationName);
                 int ret = SalMessageBox(HWindow, buff, LoadStr(IDS_INFOTITLE),
                                         MB_ICONINFORMATION | MB_OKCANCEL);
                 if (ret == IDCANCEL)

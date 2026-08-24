@@ -2472,6 +2472,22 @@ struct CBrowseData
     HWND HCenterWindow;
 };
 
+// feature 069 (F-P1-24): the ANSI SHGetPathFromIDList returns the picked folder
+// in the active code page, and the value goes straight on to the copy/move
+// engine and to the panel - both strict UTF-8 consumers - so picking an accented
+// target directory in the Browse dialog produced a path they rejected at the
+// moment of use, long after the pick.  The wide twin gives the true path.
+static BOOL SalSHGetPathFromIDListU8(LPCITEMIDLIST pidl, char* u8Path, int u8PathSize)
+{
+    WCHAR pathW[MAX_PATH];
+    if (SHGetPathFromIDListW(pidl, pathW))
+    {
+        if (SalWToU8(pathW, -1, u8Path, u8PathSize) != 0)
+            return TRUE;
+    }
+    return SHGetPathFromIDList(pidl, u8Path); // legacy fallback
+}
+
 int CALLBACK DirectoryBrowse(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
     CALL_STACK_MESSAGE4("DirectoryBrowse(, 0x%X, 0x%IX, 0x%IX)", uMsg, lParam, lpData);
@@ -2500,7 +2516,7 @@ int CALLBACK DirectoryBrowse(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
         if ((ITEMIDLIST*)lParam != NULL)
         {
             char path[MAX_PATH];
-            BOOL ret = SHGetPathFromIDList((ITEMIDLIST*)lParam, path);
+            BOOL ret = SalSHGetPathFromIDListU8((ITEMIDLIST*)lParam, path, MAX_PATH);
             SendMessage(hwnd, BFFM_ENABLEOK, 0, ret);
         }
     }
@@ -2544,7 +2560,7 @@ BOOL GetTargetDirectoryAux(HWND parent, HWND hCenterWindow,
         BOOL ret = FALSE; // return value
         if (res != NULL)
         {
-            SHGetPathFromIDList(res, path);
+            SalSHGetPathFromIDListU8(res, path, MAX_PATH);
             ret = TRUE;
         }
         // release the item ID list
@@ -2940,7 +2956,7 @@ BOOL GetMyDocumentsOrDesktopPath(char* path, int pathLen)
     ITEMIDLIST* pidl = NULL;
     if (SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl) == NOERROR)
     {
-        if (SHGetPathFromIDList(pidl, buff))
+        if (SalSHGetPathFromIDListU8(pidl, buff, 2 * MAX_PATH))
             ret = TRUE;
         IMalloc* alloc;
         if (SUCCEEDED(CoGetMalloc(1, &alloc)))
@@ -2951,7 +2967,7 @@ BOOL GetMyDocumentsOrDesktopPath(char* path, int pathLen)
     }
     if (!ret && SHGetSpecialFolderLocation(NULL, CSIDL_DESKTOP, &pidl) == NOERROR)
     {
-        if (SHGetPathFromIDList(pidl, buff))
+        if (SalSHGetPathFromIDListU8(pidl, buff, 2 * MAX_PATH))
             ret = TRUE;
         IMalloc* alloc;
         if (SUCCEEDED(CoGetMalloc(1, &alloc)))
