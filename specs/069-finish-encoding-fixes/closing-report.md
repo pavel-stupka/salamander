@@ -10,7 +10,10 @@ regression verdict and its check.
 ## Disposition of every item (FR-001, FR-014)
 
 34 items from the 068 handoff's section 1, plus D01–D05 from its section 3.
-**31 fixed · 3 verify-closed · 0 abandoned.** "Check" is the fail-before /
+**31 fixed · 3 verify-closed · 0 abandoned**, with one item — F-P1-05 —
+fixed in the two halves it was raised for and **partly deferred** in a third
+that its own reviews proved is not containable (the archive listing's display
+encoding; see Review D). "Check" is the fail-before /
 pass-after evidence required by FR-008; "manual V-nn" points at
 [quickstart.md](quickstart.md), whose scenarios are the maintainer's sweep.
 
