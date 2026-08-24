@@ -169,8 +169,11 @@ public:
                             // converting it through the code page discarded exactly what it
                             // carried - the strict path check right after then refused the drop
                             if (SalWToU8(fileW, l + 1, path, MAX_PATH) == 0)
+                            { // legacy fallback: one byte per character, so the
+                                // terminator does belong at 'l' there
                                 WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, l + 1, NULL, NULL);
-                            path[l] = 0;
+                                path[l] = 0;
+                            }
                             ret = TRUE;
                         }
                     }

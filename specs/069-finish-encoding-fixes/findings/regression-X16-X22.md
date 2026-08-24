@@ -1,0 +1,73 @@
+# Regression review — X16–X20 (groups C2, C4, C1, C3, C6) and X21–X22 (C5, D02)
+
+Two independent reviewers, neither of whom wrote the fixes. Charter:
+`contracts/fix-protocol.md` Part B. **Both returned REJECTED.** Between them
+they found **eight** regressions the fixes themselves introduced, plus one
+defect that meant a fix did not actually fix its finding. Every one is
+corrected below; nothing was argued away.
+
+---
+
+## Review A — X16–X20 · **REJECTED** → corrected
+
+| # | Sev | Site | Finding | Disposition |
+|---|---|---|---|---|
+| **R1** | **CRITICAL** | `pack1.cpp:1699` | `SalConvertFindDataW` was called **once, before** the `.`/`..` skip loop; the loop advanced the wide record but never refreshed the UTF-8 name, so the test kept re-reading `"."` and spun until `FindNextFile` failed. **Every external-archiver unpack failed — ASCII archives included** — and the extracted files were then deleted with the temp tree. | **fixed**: re-convert inside the loop after each `SalFindNextFile` |
+| **R2** | **CRITICAL** | `pack1.cpp:1966` | The identical defect in `PackUnpackOneFile`: F3-view or extract-one-file from `.rar/.arj/.lzh/.uc2/.ace` always failed. | **fixed**, same way |
+| **R3** | **HIGH** | `dialogs3.cpp:1631` | **Stack buffer overflow.** `userName` is `char[100]`, but the new code told `SalWToU8` the destination was `MAX_PATH` while `WNetGetUserW` was allowed to fill 259 chars — smashing the two `BOOL`s next to it. The pre-fix ANSI call was correctly bounded at 100. | **fixed**: the wide buffer is capped to 100 and `sizeof(userName)` is passed |
+| **R5** | **HIGH (data)** | `dialogs3.cpp:1333` | **The Drive Information dialog could rename the volume.** `OldVolumeName` became the *true* label while `IDE_VOLNAME` sits in an ANSI dialog and reads back `?` for anything outside the code page, so `Validate` saw a difference and called `SetVolumeLabel` — a drive labelled in Cyrillic/Greek/CJK was renamed to `??????` merely by opening the dialog and pressing OK. | **fixed**: the reference is now seeded from the control, so it is compared against what the user actually sees |
+| **R4** | **HIGH** | `pack3.cpp:1443` | `SalGetShortPathName` returns `BOOL`, not a length, but the code compared it with `strlen(buff)` — the 8.3 branch became dead for every install, ASCII included, on a line whose purpose is DOS-program output redirection. | **fixed** |
+| **R6** | MEDIUM | `stswnd.cpp:1471`, `toolbar5.cpp:173` | The surviving `path[l] = 0` (a WCHAR count) truncated the longer UTF-8 result by one byte per non-ASCII character, so the drop still failed — the surface the record claimed corrected was not. | **fixed**: the terminator now belongs to the legacy branch only, where one byte per character holds |
+| **R7** | MEDIUM | `salunicode.cpp` | `SalU8ToOEM` omitted `WC_NO_BEST_FIT_CHARS`, so the API silently transliterated (`ž`→`z`) and left `usedDefault` FALSE — the exact opposite of the guarantee its own header documents, and it made two of the new unit checks machine-dependent. | **fixed**: flag added; and case (3) rewritten to hold on a CJK OEM code page too ("either it fails cleanly, or it round-trips exactly") |
+| **R8** | MEDIUM | `pack1.cpp:329` | DC-09: converting the archive listing's **name** to UTF-8 while its **path** stayed code-page left a tree with mixed components; the in-place guard could only ever be satisfied by pure ASCII, so the conversion was a no-op exactly where it was needed. | **fixed**: the path is converted into its own buffer and *that* is what `AddFile`/`AddDir` receive |
+| **R9** | LOW | `dialogs6.cpp:648` | The "stop sharing" confirmation still composed an ANSI template with the now-UTF-8 share name; its suppression comment's premise had just been invalidated by X20. | **fixed** (`LoadStrU8`) |
+| **R10** | LOW | `shares.cpp` | With `MAX_PATH` buffers a long accented remark could fail **both** conversions, dropping the share from the list and losing its marker. | **fixed**: buffers sized `3 * MAX_PATH` |
+| **R11** | LOW | `drivelst.cpp:1352` | The helper fell back to the ANSI call when the *wide call* failed, costing two volume-information round trips per inaccessible drive on a timeout-sensitive per-item path. | **fixed**: the fallback is now for a failed *conversion* only, matching its `salamdr2.cpp` twin |
+| **R12** | record | `mainwnd5.cpp:1239` | The comment claimed the return value "is honoured"; it is not — only the initializer makes the behaviour defined. | **fixed**: comment corrected to say what the code does |
+| **O6** | note | `pack1.cpp` | The rewritten extension scan started one byte later than the original, changing ASCII behaviour for a trailing dot. | **fixed**: original start restored |
+
+## Review B — X21–X22 · **REJECTED** → corrected
+
+| # | Sev | Site | Finding | Disposition |
+|---|---|---|---|---|
+| **R3** | **HIGH** | `zip.cpp:3375` | **FR-005 violation.** `CSalamanderGeneral::GetTargetDirectory` is a plugin-facing service, and making the core's `::GetTargetDirectory` return UTF-8 changed the bytes plugins receive. `undelete` and `pictview` (both shipped `on`) put that value straight into ANSI dialog controls and **pictview persists it into its own configuration**. | **fixed**: converted back at the forwarder with the new `SalU8ToACP`, so the plugin's bytes are exactly what they were — the deferral shape FR-012 prescribes |
+| **R1** | **HIGH** | `mainwnd3.cpp:2945` | Export Configuration's Save-As default folder: `CreateOurPathInRoamingAPPDATA` now yields UTF-8 and it went straight to `lpstrInitialDir` of an **ANSI** `OPENFILENAME`. Under an accented account the dialog opened nowhere. | **fixed**: converted back at that sink |
+| **R2** | **HIGH** | `salamdr6.cpp:1709,1730` | The same shape in both ANSI common-dialog recovery paths — a file task T038 named and the implementation never touched. A localized Documents folder worked before and was mojibake after. | **fixed**: both sites |
+| **R4** | MEDIUM | `zip/dialogs.cpp:1852,1940` | **D02 did not fix D02**: the plugin's own two overwrite dialogs still set `IDC_FILEATTR` with a raw ANSI `WM_SETTEXT`, so the stray `Â` remained there; and the producer change regressed non-ASCII *regional formats* (ko-KR, ar-SA), whose date/time bytes had rendered correctly as ACP. | **fixed**: both sinks now use the plugin's `SetDlgItemTextU8` with the ANSI call as fallback — the same shape as the `IDC_FILE` neighbour, which repairs the finding *and* the regional-format case |
+| **R5** | LOW | `shellib.cpp:2985` | `buff` can now exceed `pathLen`, and `lstrcpyn` cuts on a byte boundary. | **fixed**: `SalU8TrimIncompleteTail` — the helper this feature added for exactly this |
+| **R6** | LOW | `salamdr2.cpp:2934` | `SalCreateFile` reports `ERROR_INVALID_NAME`, which the `ignoreIfNotExists` suppression did not list — a silent startup would have grown an error box. | **fixed**: code added to the suppression |
+| **N2** | note | `salamdr5.cpp:1891` | `SalCreateDirectory` has no narrow fallback, so the legacy branch stopped creating the folder (an A4 deviation). | **fixed**: narrow fallback added |
+| **N3** | note | `salamdr5.cpp:1881` | The `static` buffer's "called from the exception handler" comment was stale, and the fix had added stack to that function without re-validating it. | **fixed**: comment corrected |
+
+## What both reviewers confirmed as sound
+
+The parts that were hardest to get right came back clean: the wide multi-string
+in `CopyFilesTo` is correctly aligned and double-NUL terminated; `HANDLES`
+bookkeeping is right at every new site (`SalFindFirstFile` never wrapped in
+`HANDLES_Q`, always closed with `HANDLES(FindClose)`); `SalConvertFindDataW` is
+called before first use on every iteration in the *other* four loops (including
+across `packac.cpp`'s `continue`); all 16 name renames landed; every `free`
+path is balanced; `SalRegQueryValueExW8` preserves the callers' `type`/`size`
+semantics exactly; the command-line fix genuinely moves no selection offset; and
+the plugin ABI is untouched (`src/plugins/shared/` absent from every diff,
+interface 106).
+
+## Re-cut verdict
+
+All fourteen findings of Review A and all eight of Review B are fixed above.
+Gates after the corrections: build 0 errors with no new warnings in any changed
+file; `saltests` **1288 checks, 0 failed** (one fewer than before because the
+CJK case now branches on the machine's OEM code page instead of asserting a
+single outcome); `check_encoding.py --strict` **TOTAL: 0**; draft 149.
+
+**Two lessons worth carrying forward**, both of which cost a rejection here:
+
+1. **A conversion inside a loop must be inside the loop.** R1/R2 are the same
+   one-line slip in two places, and it broke a whole feature for every user, not
+   just for accented names. The four loops that were written correctly used the
+   `do { convert; … } while (next)` shape; the two broken ones converted before
+   a `while`.
+2. **"Plugin-facing" includes what the core *returns* to a plugin.** The D02
+   analysis correctly established that a plugin *sending* better-formed text to
+   a tolerant sink is safe — and then the same feature changed a service's
+   *return* bytes two files away without noticing it was the same rule.

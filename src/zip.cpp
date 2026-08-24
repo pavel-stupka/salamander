@@ -3372,7 +3372,19 @@ BOOL CSalamanderGeneral::GetTargetDirectory(HWND parent, HWND hCenterWindow, con
 {
     CALL_STACK_MESSAGE5("CSalamanderGeneral::GetTargetDirectory(, , %s, %s, , %d, %s)",
                         title, comment, onlyNet, initDir);
-    return ::GetTargetDirectory(parent, hCenterWindow, title, comment, path, onlyNet, initDir);
+    // feature 069 (F-P1-24): the core's ::GetTargetDirectory now returns the
+    // picked folder as UTF-8, because its own consumers are the panel and the
+    // copy engine.  What a PLUGIN receives is frozen (FR-009): undelete and
+    // pictview put this value straight into ANSI dialog controls and pictview
+    // persists it, so handing them UTF-8 would write mojibake into their
+    // configuration.  Convert back at the forwarder - the plugin's bytes are
+    // exactly what they were, and 'initDir' coming the other way is theirs.
+    if (!::GetTargetDirectory(parent, hCenterWindow, title, comment, path, onlyNet, initDir))
+        return FALSE;
+    char acpPath[MAX_PATH];
+    if (SalU8ToACP(path, acpPath, _countof(acpPath)) != 0)
+        lstrcpyn(path, acpPath, MAX_PATH);
+    return TRUE;
 }
 
 void CSalamanderGeneral::CallPluginOperationFromDisk(int panel, SalPluginOperationFromDisk callback,

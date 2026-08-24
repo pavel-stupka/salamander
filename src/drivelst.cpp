@@ -1353,13 +1353,16 @@ static BOOL GetVolumeInformationU8Menu(const char* u8Root, char* volName, DWORD 
     WCHAR rootW[MAX_PATH];
     WCHAR volW[MAX_PATH];
     DWORD dummy;
-    if (SalU8ToW(u8Root, -1, rootW, _countof(rootW)) != 0 &&
-        GetVolumeInformationW(rootW, volW, _countof(volW), NULL, &dummy, fsFlags, NULL, 0))
-    {
+    if (SalU8ToW(u8Root, -1, rootW, _countof(rootW)) != 0)
+    { // the wide call is the answer, success or failure - retrying it as ANSI
+        // would cost a second round trip per drive on every menu build, and this
+        // runs once per drive with a known timeout sensitivity
+        if (!GetVolumeInformationW(rootW, volW, _countof(volW), NULL, &dummy, fsFlags, NULL, 0))
+            return FALSE;
         if (SalWToU8(volW, -1, volName, volNameSize) != 0)
             return TRUE;
     }
-    // not convertible (transitional) or the wide call failed: legacy behaviour
+    // not convertible (transitional): legacy behaviour
     return GetVolumeInformation(u8Root, volName, volNameSize, NULL, &dummy, fsFlags, NULL, 0);
 }
 

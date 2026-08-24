@@ -1330,7 +1330,14 @@ void CDriveInfo::Transfer(CTransferInfo& ti)
             }
             else // not valid UTF-8 (transitional): keep the legacy path
                 SetWindowText(GetDlgItem(HWindow, IDE_VOLNAME), volumeName);
-            strcpy(OldVolumeName, volumeName);
+            // feature 069 (F-P1-14): seed the "unchanged" reference from the
+            // CONTROL, not from the true label.  IDE_VOLNAME is in an ANSI
+            // dialog (cluster B-1), so a label with characters the code page
+            // cannot express reads back as "?" - comparing that against the true
+            // label would look like an edit, and Validate would then write the
+            // "?" form back with SetVolumeLabel, renaming the user's volume
+            // merely because they opened this dialog and pressed OK.
+            SalGetWindowTextU8(GetDlgItem(HWindow, IDE_VOLNAME), OldVolumeName, MAX_PATH);
 
             char mountPoint[MAX_PATH];
             char guidPath[MAX_PATH];
@@ -1624,11 +1631,13 @@ void CDriveInfo::Transfer(CTransferInfo& ti)
             if (!remoteNameValid)
                 remoteNameValid = (WNetGetConnection(buff, remoteName, &l) == NO_ERROR);
             l = 100;
-            WCHAR userNameW[MAX_PATH];
+            // 'userName' is char[100], NOT MAX_PATH - the wide buffer is capped
+            // to match, and SalWToU8 is told the real destination size
+            WCHAR userNameW[100];
             DWORD luW = _countof(userNameW);
             userNameValid = SalU8ToW(buff, -1, buffW, _countof(buffW)) != 0 &&
                             WNetGetUserW(buffW, userNameW, &luW) == NO_ERROR &&
-                            SalWToU8(userNameW, -1, userName, MAX_PATH) != 0;
+                            SalWToU8(userNameW, -1, userName, sizeof(userName)) != 0;
             if (!userNameValid)
                 userNameValid = (WNetGetUser(buff, userName, &l) == NO_ERROR);
         }

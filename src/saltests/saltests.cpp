@@ -1519,11 +1519,20 @@ static void TestEncodingFixes069()
         CHECK(strcmp(back, u8) == 0); // exact round trip
     }
 
-    // (3) a character no single-byte OEM code page can represent fails cleanly
-    //     instead of silently becoming '?' - the archiver must not be handed a
-    //     name that does not exist
-    CHECK(SalU8ToOEM("\xE6\xBC\xA2.txt", oem, sizeof(oem)) == 0); // CJK
-    CHECK(oem[0] == 0);
+    // (3) the archiver must never be handed a name that does not exist: either
+    //     the character cannot be represented and the call fails cleanly, or it
+    //     can and the round trip is exact.  Written this way because the OEM
+    //     code page is a machine property - a CJK OEM page (932/936/950) CAN
+    //     represent this one, and the check has to hold there too.
+    if (SalU8ToOEM("\xE6\xBC\xA2" ".txt", oem, sizeof(oem)) == 0)
+    {
+        CHECK(oem[0] == 0);
+    }
+    else
+    {
+        CHECK(SalOEMToU8(oem, back, sizeof(back)) != 0);
+        CHECK(strcmp(back, "\xE6\xBC\xA2" ".txt") == 0);
+    }
 
     // (4) invalid UTF-8 in, no output (the caller keeps the legacy path)
     CHECK(SalU8ToOEM("\xC4", oem, sizeof(oem)) == 0);

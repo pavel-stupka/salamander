@@ -2942,7 +2942,14 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
 
             if (WindowsVistaAndLater)
             {
-                if (!CreateOurPathInRoamingAPPDATA(defDir))
+                // feature 069 (F-P1-24): CreateOurPathInRoamingAPPDATA returns
+                // UTF-8 now, but 'defDir' goes on to lpstrInitialDir of an ANSI
+                // OPENFILENAME (SafeGetSaveFileName is GetSaveFileNameA), which
+                // must keep receiving code-page bytes - the pre-Vista branch
+                // below still fills the same buffer with the ANSI producer
+                char defDirU8[SAL_MAX_PATH_UTF8];
+                if (!CreateOurPathInRoamingAPPDATA(defDirU8) ||
+                    SalU8ToACP(defDirU8, defDir, MAX_PATH) == 0)
                 {
                     TRACE_E("CM_EXPORTCONFIG: unexpected situation: unable to get our directory under CSIDL_APPDATA");
                     return 0;

@@ -649,7 +649,7 @@ CSharesDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     char buff[2000];
                     // encoding-check: allow mixed-composition - network share name from the OS enumeration, not a
                     //   file name (feature 042, FR-010)
-                    wsprintf(buff, LoadStr(IDS_CONFIRM_STOPSHARE), remoteName);
+                    wsprintf(buff, LoadStrU8(IDS_CONFIRM_STOPSHARE), remoteName);
                     if (SalMessageBox(HWindow, buff, LoadStr(IDS_QUESTION),
                                       MB_OKCANCEL | MB_ICONQUESTION) == IDOK)
                     {

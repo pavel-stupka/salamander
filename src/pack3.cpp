@@ -1441,7 +1441,10 @@ PackExpExeName(unsigned int index, BOOL unpacker = FALSE)
         // on older Windows it was impossible to redirect output from a DOS program in a directory
         // with a long name; I no longer feel like patching and risking this that it won't work
         buff[0] = '\0';
-        DWORD len = SalGetShortPathName(exe, buff, MAX_PATH);
+        // SalGetShortPathName returns BOOL, not a length (unlike the ANSI
+        // GetShortPathName it replaced) - comparing it with strlen made this
+        // branch dead for every install, ASCII included
+        DWORD len = SalGetShortPathName(exe, buff, MAX_PATH) ? (DWORD)strlen(buff) : 0;
         // if the path was shortened successfully, return the short name
         if (len == strlen(buff) && len > 0)
         {

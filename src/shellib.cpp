@@ -2983,6 +2983,10 @@ BOOL GetMyDocumentsOrDesktopPath(char* path, int pathLen)
             TRACE_E("GetMyDocumentsOrDesktopPath() Buffer too small!");
 
         lstrcpyn(path, buff, pathLen);
+        // feature 069 (F-P1-24): 'buff' is UTF-8 now and can exceed pathLen, and
+        // lstrcpyn cuts on a byte boundary - a torn character would make every
+        // strict probe downstream reject the path
+        SalU8TrimIncompleteTail(path);
     }
 
     return ret;

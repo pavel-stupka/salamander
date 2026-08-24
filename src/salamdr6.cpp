@@ -1703,11 +1703,19 @@ BOOL SafeGetOpenFileName(LPOPENFILENAME lpofn)
     {
         // Windows refuse to open the dialog for a path like "C:\" or for a non-existent path.
         // In that case, force Documents
+        // feature 069 (F-P1-24): GetMyDocumentsOrDesktopPath returns UTF-8 now,
+        // and this is an OPENFILENAME handed to the ANSI common dialog - it must
+        // receive code-page bytes, exactly as before.  (The W twin below does
+        // SalU8ToW on the same value; this is the other side of that coin.)
         char initDir[MAX_PATH];
+        char initDirU8[SAL_MAX_PATH_UTF8];
         const char* oldInitDir = lpofn->lpstrInitialDir;
         lpofn->lpstrInitialDir = initDir;
-        if (!GetMyDocumentsOrDesktopPath(initDir, MAX_PATH))
+        if (!GetMyDocumentsOrDesktopPath(initDirU8, SAL_MAX_PATH_UTF8) ||
+            SalU8ToACP(initDirU8, initDir, MAX_PATH) == 0)
+        {
             strcpy(initDir, "");
+        }
         strcpy(lpofn->lpstrFile, "");
         ret = GetOpenFileName(lpofn);
         lpofn->lpstrInitialDir = oldInitDir;
@@ -1724,11 +1732,19 @@ BOOL SafeGetSaveFileName(LPOPENFILENAME lpofn)
     {
         // Windows refuse to open the dialog for a path like "C:\" or for a non-existent path.
         // In that case, force Documents
+        // feature 069 (F-P1-24): GetMyDocumentsOrDesktopPath returns UTF-8 now,
+        // and this is an OPENFILENAME handed to the ANSI common dialog - it must
+        // receive code-page bytes, exactly as before.  (The W twin below does
+        // SalU8ToW on the same value; this is the other side of that coin.)
         char initDir[MAX_PATH];
+        char initDirU8[SAL_MAX_PATH_UTF8];
         const char* oldInitDir = lpofn->lpstrInitialDir;
         lpofn->lpstrInitialDir = initDir;
-        if (!GetMyDocumentsOrDesktopPath(initDir, MAX_PATH))
+        if (!GetMyDocumentsOrDesktopPath(initDirU8, SAL_MAX_PATH_UTF8) ||
+            SalU8ToACP(initDirU8, initDir, MAX_PATH) == 0)
+        {
             strcpy(initDir, "");
+        }
         strcpy(lpofn->lpstrFile, "");
         ret = GetSaveFileName(lpofn);
         lpofn->lpstrInitialDir = oldInitDir;

@@ -217,6 +217,15 @@ void SalU8TrimIncompleteTail(char* buf);
 // represent makes SalU8ToOEM fail rather than silently substituting '?', because
 // the result is used to name a file the archiver must find.
 
+// Converts UTF-8 back to the active code page, for a boundary that is ANSI by
+// contract and must keep receiving exactly the bytes it received before: an
+// ANSI common dialog's OPENFILENAME, or a value handed to a plugin under the
+// frozen ANSI plugin contract.  Returns the bytes written including the
+// terminator, 0 on failure (and then leaves 'buf' empty).  Lossy by nature -
+// a character the code page cannot express becomes the API's default - which
+// is exactly the pre-existing behaviour of those boundaries (feature 069).
+int SalU8ToACP(const char* u8, char* buf, int bufSize);
+
 int SalU8ToOEM(const char* u8, char* buf, int bufSize);
 int SalOEMToU8(const char* oem, char* u8Buf, int u8BufSize);
 

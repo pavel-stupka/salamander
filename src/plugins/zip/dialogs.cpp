@@ -1849,7 +1849,12 @@ BOOL COverwriteDialog::OnInit(WPARAM wParam, LPARAM lParam)
     // that belongs to the deferred group B-1 work.
     if (!SetDlgItemTextU8(Dlg, IDC_FILE, File))
         SendDlgItemMessage(Dlg, IDC_FILE, WM_SETTEXT, 0, (LPARAM)File);
-    SendDlgItemMessage(Dlg, IDC_FILEATTR, WM_SETTEXT, 0, (LPARAM)Attr);
+    // feature 069 (D02): 'Attr' is UTF-8 now (GetInfo takes the date and time
+    // wide, so it no longer mixes them with NumberToStr's UTF-8 separator) -
+    // the same sink its IDC_FILE neighbour above already uses, with the raw
+    // ANSI call kept for anything that does not convert
+    if (!SetDlgItemTextU8(Dlg, IDC_FILEATTR, Attr))
+        SendDlgItemMessage(Dlg, IDC_FILEATTR, WM_SETTEXT, 0, (LPARAM)Attr);
     CenterDlgToParent();
     return TRUE;
 }
@@ -1937,7 +1942,12 @@ BOOL COverwriteDialog2::OnInit(WPARAM wParam, LPARAM lParam)
     // feature 068 (F-P5-08): see the note in COverwriteDialog::OnInit
     if (!SetDlgItemTextU8(Dlg, IDC_FILE, File))
         SendDlgItemMessage(Dlg, IDC_FILE, WM_SETTEXT, 0, (LPARAM)File);
-    SendDlgItemMessage(Dlg, IDC_FILEATTR, WM_SETTEXT, 0, (LPARAM)Attr);
+    // feature 069 (D02): 'Attr' is UTF-8 now (GetInfo takes the date and time
+    // wide, so it no longer mixes them with NumberToStr's UTF-8 separator) -
+    // the same sink its IDC_FILE neighbour above already uses, with the raw
+    // ANSI call kept for anything that does not convert
+    if (!SetDlgItemTextU8(Dlg, IDC_FILEATTR, Attr))
+        SendDlgItemMessage(Dlg, IDC_FILEATTR, WM_SETTEXT, 0, (LPARAM)Attr);
     CenterDlgToParent();
     return TRUE;
 }

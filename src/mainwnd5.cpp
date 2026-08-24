@@ -1236,20 +1236,20 @@ void CMainWindow::CompareDirectories(DWORD flags)
         BOOL rightFAT = FALSE;
         if (LeftPanel->Is(ptDisk))
         {
-            // feature 069 (F-P1-12): initialised, and the result below is honoured -
-            // this buffer used to be read even when MyGetVolumeInformation
-            // failed, so whether Compare Directories applied the 2-second FAT
-            // timestamp tolerance was undefined
+            // feature 069 (F-P1-12): initialised.  This buffer used to be READ
+            // even when MyGetVolumeInformation failed, so whether Compare
+            // Directories applied the 2-second FAT timestamp tolerance was
+            // undefined; the initializer makes the failure case mean "not FAT".
             char fileSystem[20] = "";
             MyGetVolumeInformation(LeftPanel->GetPath(), NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, fileSystem, 20);
             leftFAT = StrNICmp(fileSystem, "FAT", 3) == 0; // FAT and FAT32 use DOS time (precision only 2 seconds)
         }
         if (RightPanel->Is(ptDisk))
         {
-            // feature 069 (F-P1-12): initialised, and the result below is honoured -
-            // this buffer used to be read even when MyGetVolumeInformation
-            // failed, so whether Compare Directories applied the 2-second FAT
-            // timestamp tolerance was undefined
+            // feature 069 (F-P1-12): initialised.  This buffer used to be READ
+            // even when MyGetVolumeInformation failed, so whether Compare
+            // Directories applied the 2-second FAT timestamp tolerance was
+            // undefined; the initializer makes the failure case mean "not FAT".
             char fileSystem[20] = "";
             MyGetVolumeInformation(RightPanel->GetPath(), NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, fileSystem, 20);
             rightFAT = StrNICmp(fileSystem, "FAT", 3) == 0; // FAT and FAT32 use DOS time (precision only 2 seconds)

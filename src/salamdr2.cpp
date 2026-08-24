@@ -2938,7 +2938,12 @@ BOOL ImportConfiguration(HWND hParent, const char* fileName, BOOL ignoreIfNotExi
     if (file == INVALID_HANDLE_VALUE)
     {
         err = GetLastError();
-        if (!ignoreIfNotExists || err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND)
+        // feature 069 (F-P1-10): SalCreateFile reports ERROR_INVALID_NAME when the
+        // path cannot be converted, which for "the file is simply not there" must
+        // stay as quiet as the two not-found codes - otherwise a startup that
+        // used to be silent grows an error box
+        if (!ignoreIfNotExists || err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND &&
+                                      err != ERROR_INVALID_NAME)
             ShowFileError(hParent, IDS_IMPORTCFG_OPENERR, fileName, err);
         TRACE_I("ImportConfiguration(): end");
         return FALSE;

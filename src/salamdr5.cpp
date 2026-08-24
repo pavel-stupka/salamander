@@ -1875,7 +1875,8 @@ BOOL GetOurPathInRoamingAPPDATA(char* buf)
 
 BOOL CreateOurPathInRoamingAPPDATA(char* buf)
 {
-    static char path[MAX_PATH]; // called from the exception handler; the stack may be full
+    static char path[MAX_PATH]; // kept static: this used to be reachable from the
+                                // exception handler, where the stack may be full
     if (buf != NULL)
         buf[0] = 0;
     WCHAR pathW[MAX_PATH];
@@ -1888,8 +1889,11 @@ BOOL CreateOurPathInRoamingAPPDATA(char* buf)
         if (SalPathAppend(path, "Tandem Commander", MAX_PATH))
         {
             // feature 069 (F-P1-08): the same facade the read side uses, so what
-            // is created here can be found again
-            SalCreateDirectory(path, NULL); // if it fails (e.g. already exists), we do not care...
+            // is created here can be found again; the narrow call still gets its
+            // turn when the path did not convert, so the legacy branch keeps
+            // creating the directory exactly as before
+            if (!SalCreateDirectory(path, NULL))
+                CreateDirectory(path, NULL); // if it fails (e.g. already exists), we do not care...
             if (buf != NULL)
                 lstrcpyn(buf, path, MAX_PATH);
             return TRUE;

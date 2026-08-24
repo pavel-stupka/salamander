@@ -325,24 +325,30 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
         newfile.Name[newfile.NameLen] = '\0';
     }
 
-    // convert the path from OEM to ANSI as well
+    // feature 069 (F-P1-05): the path half must move with the name half, or the
+    // listing carries UTF-8 leaf names under code-page directory components -
+    // and any later composition of the two (Copy Full Name, for one) degrades
+    // the name back.  It cannot be converted in place: 'pomptr2' points into the
+    // caller's buffer and the UTF-8 form is longer, so the result goes into its
+    // own buffer and that is what AddFile/AddDir receive.
+    char pathU8[3 * MAX_PATH];
+    const char* dirPathU8 = NULL;
     if (pomptr2 != NULL)
     {
-        char pathU8[3 * MAX_PATH];
-        if (SalOEMToU8(pomptr2, pathU8, sizeof(pathU8)) != 0 &&
-            strlen(pathU8) <= strlen(pomptr2))
-        {
-            strcpy(pomptr2, pathU8); // fits in place
-        }
+        if (SalOEMToU8(pomptr2, pathU8, sizeof(pathU8)) != 0)
+            dirPathU8 = pathU8;
         else
-            OemToChar(pomptr2, pomptr2); // legacy fallback
+        {
+            OemToChar(pomptr2, pomptr2); // legacy fallback, in place as before
+            dirPathU8 = pomptr2;
+        }
     }
 
     // set the extension - scanned in the CONVERTED name, because a byte offset
     // taken in the OEM form would not survive the conversion ('.' cannot occur
     // inside a UTF-8 sequence, so the scan itself is unchanged)
-    char* s = newfile.Name + newfile.NameLen - 1;
-    while (s >= newfile.Name && *s != '.')
+    char* s = newfile.Name + newfile.NameLen - 2; // as before: start one back, so
+    while (s >= newfile.Name && *s != '.')        // a trailing '.' is not the extension
         s--;
     if (s >= newfile.Name)
         //  if (s > newfile.Name)  // ".cvspass" is an extension in Windows...
@@ -575,7 +581,7 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
         newfile.IsLink = IsFileLink(newfile.Ext);
 
         // it is a file, add a file
-        if (!dir.AddFile(pomptr2, newfile, NULL))
+        if (!dir.AddFile(dirPathU8, newfile, NULL))
         {
             free(newfile.Name);
             return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_FDATA);
@@ -588,7 +594,7 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
         newfile.IsLink = 0;
         if (!Configuration.SortDirsByExt)
             newfile.Ext = newfile.Name + newfile.NameLen; // directories have no extension
-        if (!dir.AddDir(pomptr2, newfile, NULL))
+        if (!dir.AddDir(dirPathU8, newfile, NULL))
         {
             free(newfile.Name);
             return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_FDATA);
@@ -1708,6 +1714,9 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
                     strcpy(buffer, "FindNextFile: ");
                     goto _ERR;
                 }
+                // the name must be re-converted for every record, or this test
+                // keeps re-reading the first one
+                SalConvertFindDataW(&foundFileW, &foundFile, foundNameU8, sizeof(foundNameU8), NULL, 0);
             }
             HANDLES(FindClose(found));
 
@@ -1976,6 +1985,8 @@ BOOL PackUnpackOneFile(CFilesWindow* panel, const char* archiveFileName,
             RemoveTemporaryDir(tmpDirNameBuf);
             return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_GENERAL, buffer);
         }
+        // re-convert every record - see the note at the twin loop above
+        SalConvertFindDataW(&foundFileW, &foundFile, foundNameU8, sizeof(foundNameU8), NULL, 0);
     }
     HANDLES(FindClose(found));
 

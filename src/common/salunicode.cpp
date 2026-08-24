@@ -535,6 +535,26 @@ const char* SalU8Next(const char* s)
     return s;
 }
 
+int SalU8ToACP(const char* u8, char* buf, int bufSize)
+{
+    if (buf == NULL || bufSize <= 0)
+        return 0;
+    buf[0] = 0;
+    if (u8 == NULL)
+        return 0;
+    WCHAR* w = SalU8ToWAlloc(u8);
+    if (w == NULL)
+    { // not valid UTF-8: it already is legacy text, hand it over unchanged
+        lstrcpynA(buf, u8, bufSize);
+        return (int)strlen(buf) + 1;
+    }
+    int written = WideCharToMultiByte(CP_ACP, 0, w, -1, buf, bufSize, NULL, NULL);
+    free(w);
+    if (written == 0)
+        buf[0] = 0;
+    return written;
+}
+
 int SalU8ToOEM(const char* u8, char* buf, int bufSize)
 {
     if (buf == NULL || bufSize <= 0)
@@ -546,7 +566,10 @@ int SalU8ToOEM(const char* u8, char* buf, int bufSize)
     if (w == NULL)
         return 0; // not valid UTF-8 (or WTF-8): the caller keeps the legacy path
     BOOL usedDefault = FALSE;
-    int written = WideCharToMultiByte(CP_OEMCP, 0, w, -1, buf, bufSize,
+    // WC_NO_BEST_FIT_CHARS, or the promise above is false: without it the API
+    // silently transliterates (z-caron -> z) and leaves usedDefault FALSE, so
+    // the archiver would be handed a plausible but DIFFERENT name
+    int written = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, w, -1, buf, bufSize,
                                       NULL, &usedDefault);
     free(w);
     if (written == 0 || usedDefault)

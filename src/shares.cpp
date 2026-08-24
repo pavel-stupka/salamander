@@ -94,9 +94,13 @@ void CShares::Refresh()
             p = BufPtr;
             for (i = 1; i <= er; i++)
             {
-                char netname[MAX_PATH];
-                char path[MAX_PATH];
-                char remark[MAX_PATH];
+                // feature 069 (F-P1-27): UTF-8 needs up to 3 bytes per character,
+                // and a remark may be 256 characters - at MAX_PATH both
+                // conversions could fail and the share would vanish from the
+                // list and lose its shared-folder marker
+                char netname[3 * MAX_PATH];
+                char path[3 * MAX_PATH];
+                char remark[3 * MAX_PATH];
                 // we do not want specials because Explorer does not show them
                 BOOL include = p->shi502_type == 0;
                 if (!SubsetOnly && p->shi502_type == 0x80000000) // special share
@@ -111,12 +115,12 @@ void CShares::Refresh()
                 // total, so no failure branch is needed - only the "does it fit"
                 // one, where the legacy conversion still applies.
                 if (include &&
-                    (SalWToU8(p->shi502_netname, -1, netname, MAX_PATH) != 0 ||
-                     WideCharToMultiByte(CP_ACP, 0, p->shi502_netname, -1, netname, MAX_PATH, NULL, NULL)) &&
-                    (SalWToU8(p->shi502_path, -1, path, MAX_PATH) != 0 ||
-                     WideCharToMultiByte(CP_ACP, 0, p->shi502_path, -1, path, MAX_PATH, NULL, NULL)) &&
-                    (SalWToU8(p->shi502_remark, -1, remark, MAX_PATH) != 0 ||
-                     WideCharToMultiByte(CP_ACP, 0, p->shi502_remark, -1, remark, MAX_PATH, NULL, NULL)))
+                    (SalWToU8(p->shi502_netname, -1, netname, sizeof(netname)) != 0 ||
+                     WideCharToMultiByte(CP_ACP, 0, p->shi502_netname, -1, netname, sizeof(netname), NULL, NULL)) &&
+                    (SalWToU8(p->shi502_path, -1, path, sizeof(path)) != 0 ||
+                     WideCharToMultiByte(CP_ACP, 0, p->shi502_path, -1, path, sizeof(path), NULL, NULL)) &&
+                    (SalWToU8(p->shi502_remark, -1, remark, sizeof(remark)) != 0 ||
+                     WideCharToMultiByte(CP_ACP, 0, p->shi502_remark, -1, remark, sizeof(remark), NULL, NULL)))
                 {
                     //              TRACE_I("Share: " << netname << " = " << path);
                     // add the shared path to the Data array

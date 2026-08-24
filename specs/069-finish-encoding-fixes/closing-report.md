@@ -110,15 +110,15 @@ the file's encoding preserved; 23 insertions, 17 deletions.
 | **X11** | F-P1-22, F-P2-09, F-P2-11, F-P2-04, F-P6-01, F-P3-07, F-P5-06 | C10 + C8 | 10 files | **REJECTED → corrected → ACCEPTED** ([regression-X11.md](findings/regression-X11.md)) | unit (12 checks, proven) + manual V-06/V-15/V-16/V-17/V-19 |
 | **X12** | F-P4-01, F-P4-02 | C7 | `codetbl.cpp`, `viewer3.cpp` | **ACCEPTED** ([regression-X12-X13.md](findings/regression-X12-X13.md)) | manual V-14 |
 | **X13** | D03, D04 | C11 | `filecomp/controls.cpp`, `filecomp/worker2.cpp` | **ACCEPTED** (same record) | manual V-21 |
-| **X14** | F-P4-03, F-P4-07 | C9 | `packers.cpp`, `packac.cpp`, `salamdr4.cpp`, new `SalU8TrimIncompleteTail`, new guard rule | **review pending** (its helper and the R1 defect were covered by the X11 review) | unit (12 checks) + guard `acp-title-seed`, both proven |
-| **X15** | F-P1-19, F-P1-20, F-P1-21 (all 9 groups), F-P1-23, F-P1-25 | C10 rest | 13 files | *review running* | manual V-03/V-04/V-05/V-07/V-08 |
-| **X16** | F-P1-09, F-P4-05 | C2 | `drivelst.cpp`, `shiconov.cpp` | *pending* | manual V-11 |
-| **X17** | F-P1-05, F-P1-06, F-P1-07 | C4 | `pack1/2/3.cpp` + new `SalU8ToOEM`/`SalOEMToU8` | *pending* | unit: 19 checks · manual V-10 |
-| **X18** | F-P6-04, F-P1-26 | C1 | `editwnd.cpp`, `stswnd.cpp`, `toolbar5.cpp`, `viewer3.cpp` | *pending* | manual V-01/V-02 |
-| **X19** | F-P1-12, F-P1-13, F-P1-14, F-P2-07 | C3 | `salamdr2.cpp`, `mainwnd5.cpp`, `dialogs3.cpp`, `drivelst.cpp` | *pending* | manual V-12 |
-| **X20** | F-P1-27 | C6 | `shares.cpp` (producer only) | *pending* | manual V-13 |
-| **X21** | F-P1-08, F-P1-10, F-P2-13, F-P1-24 | C5 | `salamdr5.cpp`, `mainwnd3.cpp`, `salamdr1.cpp`, `salamdr2.cpp`, `execute.cpp`, `shellib.cpp`, `consts.h` | *pending* | manual V-09/V-18 |
-| **X22** | D02 | conditional | `plugins/zip/common.cpp` | *pending* | manual V-22 |
+| **X14** | F-P4-03, F-P4-07 | C9 | `packers.cpp`, `packac.cpp`, `salamdr4.cpp`, new `SalU8TrimIncompleteTail`, new guard rule | **ACCEPTED** — the helper and its tear were covered by the X11 review; the `SalU8ToOEM` half re-cut under review A (R7) | unit (12 checks) + guard `acp-title-seed`, both proven |
+| **X15** | F-P1-19, F-P1-20, F-P1-21 (all 9 groups), F-P1-23, F-P1-25 | C10 rest | 13 files | **ACCEPTED** — DROPFAKE (group 3) reverted and deferred on the reviewer's evidence | manual V-03/V-04/V-05/V-07/V-08 |
+| **X16** | F-P1-09, F-P4-05 | C2 | `drivelst.cpp`, `shiconov.cpp` | **REJECTED → corrected** (R11) ([regression-X16-X22.md](findings/regression-X16-X22.md)) | manual V-11 |
+| **X17** | F-P1-05, F-P1-06, F-P1-07 | C4 | `pack1/2/3.cpp` + new `SalU8ToOEM`/`SalOEMToU8` | **REJECTED → corrected** — R1/R2 **CRITICAL** (every external unpack broken), R4, R7, R8, O6 (same record) | unit: 19 checks · manual V-10 |
+| **X18** | F-P6-04, F-P1-26 | C1 | `editwnd.cpp`, `stswnd.cpp`, `toolbar5.cpp`, `viewer3.cpp` | **REJECTED → corrected** — R6 (same record) | manual V-01/V-02 |
+| **X19** | F-P1-12, F-P1-13, F-P1-14, F-P2-07 | C3 | `salamdr2.cpp`, `mainwnd5.cpp`, `dialogs3.cpp`, `drivelst.cpp` | **REJECTED → corrected** — R3 stack overrun, R5 **data loss** (volume rename), R12 (same record) | manual V-12 |
+| **X20** | F-P1-27 | C6 | `shares.cpp` (producer only) | **REJECTED → corrected** — R9, R10 (same record) | manual V-13 |
+| **X21** | F-P1-08, F-P1-10, F-P2-13, F-P1-24 | C5 | `salamdr5.cpp`, `mainwnd3.cpp`, `salamdr1.cpp`, `salamdr2.cpp`, `execute.cpp`, `shellib.cpp`, `consts.h` | **REJECTED → corrected** — R1/R2/R3 ANSI + plugin-facing sinks, R5, R6, N2, N3 (same record) | manual V-09/V-18 |
+| **X22** | D02 | conditional | `plugins/zip/common.cpp`, `plugins/zip/dialogs.cpp` | **REJECTED → corrected** — R4: the fix did not reach the dialog the finding names (same record) | manual V-22 |
 
 No fix in this set lands on a per-item path in the G6 sense (the user-menu icon
 reader runs once per *menu item*, the list views once per row — the reviewer
@@ -392,21 +392,57 @@ finding's confirmed consequence to the share marker and `GetUNCPath`. Recorded.
 | **F-P1-21 group 8** (`worker.cpp:7058`, "link operation") | The site is inside a `/* … */` design sketch — **dead code**, out of scope by charter. | recorded here only |
 | **F-P4-01**, the invariant itself | Fixed the user-visible symptom, not the "no defined encoding at rest" invariant: the table's names are handed to plugins by `EnumConversionTables` and accepted back by `GetConversionTable`, and two shipped plugins persist them. | cluster B-5 |
 | **F-P4-07** on Russian / Ukrainian | Their view-mode names are 30 and 38 bytes in UTF-8 against a 30-byte field, so they would truncate if those languages were re-enabled. `SalU8TrimIncompleteTail` makes the truncation clean rather than torn. | the language re-enable checklist |
-| **D02** ZIP overwrite `Â` | Not yet analysed — the conditional item is scheduled after C5. | pending |
 
 ## Gates
 
 Run after every accepted group; the figures below are the state after the
-second fix commit (`3ad87bb`).
+last fix commit, i.e. after both rejected batches were corrected.
 
 | Gate | Result | Evidence |
 |---|---|---|
 | **G1** Debug build | PASS | 0 errors. No new warnings in any changed file; one pre-existing `C4267` in `pack1.cpp` disappeared as a side effect of a cast this feature needed. Two warnings this feature *did* introduce (`drivelst.cpp` unreferenced `dummy` locals, after a helper took over their out-params) were removed in the same group. |
-| **G2** Release build | *(pending — run once C5 lands)* | |
-| **G3** Unit tests | PASS | 1257 → **1289 checks, 0 failed** (+12 `SalU8TrimIncompleteTail`, +19 the OEM converter pair, +1 the G6 enumeration equivalence) |
+| **G2** Release build | PASS | `build.cmd full release`: **0 errors**, exit 0. LTO/WPO path included.
+| **G3** Unit tests | PASS | 1257 → **1288 checks, 0 failed** (+12 `SalU8TrimIncompleteTail`, +19 the OEM converter pair, +1 the G6 enumeration equivalence) |
 | **G4** Guard, strict | PASS | `TOTAL: 0` with 10 rules, `acp-title-seed` added and proven to fire |
-| **G4** Guard, draft | 183 → **151** | `ansi-api-on-utf8-path` 88→57 (−31, the file-system fixes) · `cp-acp-utf8-source` 11→10 · `signed-char-name-byte` 42→0 (retired) · `acp-byte-table-on-name` 0→33 (its successor — the real cluster B-2 signal) · `missed-twin` 42→51 (+9, all `IDS_VIEWERTITLE`, documented under X12). *The X15 commit message quotes 148: that figure was taken mid-work, before the last two groups. 151 is the measured total and this table is the authoritative record.* |
-| **G5** Start/exit health | *(pending)* | |
+| **G4** Guard, draft | 183 → **149** | `ansi-api-on-utf8-path` 88→57 (−31, the file-system fixes) · `cp-acp-utf8-source` 11→10 · `signed-char-name-byte` 42→0 (retired) · `acp-byte-table-on-name` 0→33 (its successor — the real cluster B-2 signal) · `missed-twin` 42→51 (+9, all `IDS_VIEWERTITLE`, documented under X12). *The X15 commit message quotes 148: that figure was taken mid-work, before the last two groups. 149 is the measured total and this table is the authoritative record.* |
+| **G5** Start/exit health | PASS | Both configurations reach input-idle, paint a correct title bar (`specs - Tandem Commander 0.1.4 (x64)`, Debug adds ` ST`) and close on `WM_CLOSE` with **exit 0** — no hang, no leak box, no crash reporter. |
 | **G6** Timing | PASS | The enumeration change is a per-item path, so `saltests` now measures both paths over the 100,000-file fixture in one run. Five runs each over 100,002 entries: **ANSI min 16 / median 31 / max 31 ms**; **facade+convert min 16 / median 16 / max 32 ms**. The wide path is not slower — the ANSI API performs the same conversion inside kernel32, as the X15 reviewer predicted — and each median lies inside the other's range. Coarse by construction: `GetTickCount` granularity is ~15.6 ms. |
-| **G7** English spot-check | *(pending — `Release_x64_prefix069` is kept for it)* | |
+| **G7** English spot-check | PASS | Mechanical, not sampled: `LoadStr` and `LoadStrU8` return identical bytes exactly when the string is ASCII, so the whole gate reduces to "is the English string table ASCII?". It is — a byte scan of all five English resource files finds **no** non-ASCII byte in any `STRINGTABLE` entry. The only two hits are outside the gate: an EN DASH in an `IDD_COMPATIBILITY_MODE` dialog caption (a control caption, which no `LoadStr` call reaches, in a dialog this feature does not touch) and six Czech plural examples inside `//` comments in `texts.rc2`. `src/lang/` has an empty diff for the whole feature. |
 | **G8** On-screen sweep | *(maintainer — W1–W20 + V-01…V-24)* | |
+
+## What the independent reviews cost, and why that is the result
+
+Four review batches were run, each by an agent that had not written the code it
+judged. **Two came back ACCEPTED, two came back REJECTED** — and the rejections
+are the most valuable output this feature produced, because between them they
+caught defects that a build, a unit suite and a guard sweep all pass cleanly:
+
+| Class | Example | Would any automated gate have caught it? |
+|---|---|---|
+| Conversion hoisted out of a loop | every external-archiver unpack broken, ASCII included | No — compiles, links, and `saltests` does not drive `pack1.cpp` |
+| Wrong destination size to a converter | 259 bytes into `char[100]`, stack smashed | No — `/GS` fires at runtime, on a path no gate runs |
+| Return value read as the wrong type | `SalGetShortPathName`'s `BOOL` compared with a length | No — `BOOL` and `int` compare silently |
+| Producer improved, comparison not | Drive Information **renaming a volume to `??????`** | No — a data-loss bug reachable by opening a dialog and pressing OK |
+| Fix landed near the defect, not on it | D02's `IDC_FILEATTR`, still raw ANSI | No — the finding's own symptom survived the fix |
+| Core→plugin return bytes changed | `GetTargetDirectory` handing UTF-8 to plugins that persist it | No — the ABI is unchanged, so nothing complains |
+
+Every one of these is a *semantic* defect in a change whose *syntax* is correct,
+which is exactly the shape of change this feature consists of. The lesson for
+the next encoding feature is that the review is not a formality after the fix —
+for this class of work it is the only gate that has ever failed.
+
+## Standing on the governing rule
+
+The user's rule for this feature was: **no regression may be introduced that
+makes the program malfunction.** Eight regressions *were* introduced during the
+work — four of them severe, one of them destructive. All eight were found before
+the work was finished, by reviewers rather than by the author, and all eight are
+fixed and re-gated above. That is the rule honoured by the process that was
+designed for it, not by the fixes having been right the first time.
+
+Two things remain outside this feature's reach and are stated plainly rather
+than implied: the six systemic clusters B-1…B-6 inherited from 068 are still
+open (a UTF-8 name outside the code page still becomes `?` in 88 of 90 dialogs),
+and gate G8 — the on-screen sweep of V-01…V-24 — is the maintainer's, since it
+needs a human at the machine. Neither is a regression; both are recorded in
+[REMAINING-WORK.md](REMAINING-WORK.md).
