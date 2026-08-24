@@ -1382,6 +1382,22 @@ void ResolveLocalPathWithReparsePoints(char* resPath, const char* path, BOOL* cu
     }
 }
 
+// feature 069 (F-P1-12): the free-space twin of GetVolumeInformationU8 - the
+// ANSI call cannot address a volume mounted into a directory whose path is not
+// ASCII, and the shortening walk below calls this once per candidate path.
+static BOOL GetDiskFreeSpaceU8(const char* u8Root, LPDWORD sectorsPerCluster,
+                               LPDWORD bytesPerSector, LPDWORD freeClusters,
+                               LPDWORD totalClusters)
+{
+    WCHAR rootW[MAX_PATH];
+    if (SalU8ToW(u8Root, -1, rootW, _countof(rootW)) != 0)
+        return GetDiskFreeSpaceW(rootW, sectorsPerCluster, bytesPerSector,
+                                 freeClusters, totalClusters);
+    // not convertible (transitional): keep the legacy call
+    return GetDiskFreeSpace(u8Root, sectorsPerCluster, bytesPerSector,
+                            freeClusters, totalClusters);
+}
+
 BOOL MyGetDiskFreeSpace(const char* path, LPDWORD lpSectorsPerCluster,
                         LPDWORD lpBytesPerSector, LPDWORD lpNumberOfFreeClusters,
                         LPDWORD lpTotalNumberOfClusters)
@@ -1398,14 +1414,8 @@ BOOL MyGetDiskFreeSpace(const char* path, LPDWORD lpSectorsPerCluster,
         BOOL cutPathIsPossible = TRUE;
         ResolveLocalPathWithReparsePoints(ourPath, path, &cutPathIsPossible, NULL, NULL, NULL, NULL, NULL);
 
-        // feature 069 (F-P1-12): as above - the ANSI call cannot address a
-        // mounted volume under a non-ASCII path
-        WCHAR ourPathW[MAX_PATH];
-        while (SalU8ToW(ourPath, -1, ourPathW, _countof(ourPathW)) == 0
-                   ? !GetDiskFreeSpace(ourPath, lpSectorsPerCluster, lpBytesPerSector,
-                                       lpNumberOfFreeClusters, lpTotalNumberOfClusters)
-                   : !GetDiskFreeSpaceW(ourPathW, lpSectorsPerCluster, lpBytesPerSector,
-                                        lpNumberOfFreeClusters, lpTotalNumberOfClusters))
+        while (!GetDiskFreeSpaceU8(ourPath, lpSectorsPerCluster, lpBytesPerSector,
+                                   lpNumberOfFreeClusters, lpTotalNumberOfClusters))
         {
             if (!cutPathIsPossible || !CutDirectory(ourPath))
                 return FALSE; // we must not cut it or even the root did not succeed; abort with error
@@ -1415,12 +1425,8 @@ BOOL MyGetDiskFreeSpace(const char* path, LPDWORD lpSectorsPerCluster,
     }
     else
     {
-        WCHAR ourPathW[MAX_PATH];
-        if (SalU8ToW(ourPath, -1, ourPathW, _countof(ourPathW)) != 0)
-            return GetDiskFreeSpaceW(ourPathW, lpSectorsPerCluster, lpBytesPerSector,
-                                     lpNumberOfFreeClusters, lpTotalNumberOfClusters);
-        return GetDiskFreeSpace(ourPath, lpSectorsPerCluster, lpBytesPerSector,
-                                lpNumberOfFreeClusters, lpTotalNumberOfClusters);
+        return GetDiskFreeSpaceU8(ourPath, lpSectorsPerCluster, lpBytesPerSector,
+                                  lpNumberOfFreeClusters, lpTotalNumberOfClusters);
     }
 }
 
