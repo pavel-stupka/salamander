@@ -286,6 +286,49 @@ plugin architecture preservation, UI consistency.
   leniently and was the one residual operational site. Contract:
   `specs/066-fix-surrogate-filenames/contracts/name-encoding-wtf8.md`;
   saltests 1221/0 incl. a real-NTFS facade round trip (`TestWtf8FileOps`).
+- 069-finish-encoding-fixes: implemented the contained remainder the 068 review
+  handed off — **31 of its 34 confirmed findings fixed** plus D01–D05, in 11
+  groups, one commit each. Three items were **already fixed** and are recorded
+  verify-closed (F-P1-03 by X06/X07, F-P2-10 by X02 — it is the same site as
+  F-P6-02, found twice by two perspectives — and the jump-list half of F-P1-25
+  by X03), and five site references in the findings proved stale, so every task
+  now begins with a "still defective at HEAD?" check. Highlights: the command
+  line inserts the name you see (six lines at the sink — the control already
+  writes and reads its text through the wide house helpers, so no selection
+  offset, word-break callback or `WM_CHAR` unit moves; a name outside the code
+  page now inserts as `?`, which needs the Unicode control of cluster B-1);
+  Compare Directories, the archive-edit *Copy To…*, Explorer drops, shortcuts,
+  the SFX/link/batch-wrapper operations, help and `config.reg` under an accented
+  install path, `$(SalDir)`, the cloud entries (all three producers — the
+  "OneDrive-specific" framing was refuted), the external archivers (**both**
+  directions of the OEM boundary in one change, because they cancelled each
+  other), volume/subst/label information with the Drive Information template
+  (one commit — two of its rows render correctly *only* while their arguments
+  stay code-page bytes), shares, the viewer's default conversion and caption,
+  and the ZIP overwrite line. Two fixes were made **differently from the
+  finding's own suggestion** after tracing the consumers: `CCodeTablesData::Name`
+  is *not* re-encoded (those bytes reach plugins through
+  `EnumConversionTables`, and `dbviewer`/`filecomp` persist them), so the
+  viewer's stored default is repaired in the lookup instead; and the help chain
+  moves as a whole (producer + search + `HtmlHelpW`), with the wide help call
+  guarded because `dwData` may carry an ANSI topic/keyword/`HH_FTS_QUERY` from a
+  plugin. New shared helpers: `SalU8TrimIncompleteTail` (drops a *torn* trailing
+  UTF-8 sequence and leaves a complete character alone — the obvious version of
+  this eats an accented last character) and `SalU8ToOEM`/`SalOEMToU8` for the
+  archiver console boundary. Guard: `signed-char-name-byte` retired (its premise
+  is void under `/J`) in favour of `acp-byte-table-on-name`, which is now the
+  cluster B-2 work list (33 hits); `acp-title-seed` added and proven; strict
+  stays `TOTAL: 0`, draft 183 → 148. saltests 1257 → **1289**. Plugin ABI
+  untouched (interface 106). **Process**: four independent regression reviews,
+  **two REJECTED** and corrected — a progress title blanked in five languages,
+  and a half-converted chain that would have made the shell copy a stray
+  `DROPFAKE` folder because the ANSI shell extension could not recognise the
+  name. Deferred with written reasons, not dismissed: the five systemic clusters
+  B-1–B-5, nine named sites (incl. `icncache.cpp`'s icon location and the
+  DROPFAKE pair), and six newly found defects — the first of which,
+  `codetbl.cpp:873`, is a one-byte buffer overflow and should be fixed first.
+  Handoff: `specs/069-finish-encoding-fixes/REMAINING-WORK.md`; record:
+  `closing-report.md`.
 - 068-encoding-regression-review: product-wide review of encoding handling
   (the whole core, not one release delta) after feature 067 showed a defect in
   a surface earlier features were believed to cover. Seven charted perspectives

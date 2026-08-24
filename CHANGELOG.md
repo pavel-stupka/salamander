@@ -13,6 +13,89 @@ plugin.
 
 ### Fixed
 
+- **Files and folders with accented names work in the places that still refused
+  them.** Comparing two folders by content no longer reports an error for every
+  accented file, and no longer asks "cannot read directory" once per accented
+  subfolder. Editing a file inside an archive and then using *Copy To…* actually
+  copies it — before, nothing was copied and nothing was said, so the edit was
+  left in a temporary file. Dragging a file from Explorer onto the command line,
+  the status bar, the toolbar or an open viewer window is accepted instead of
+  silently refused. Pressing Enter on a shortcut whose path — or whose target —
+  contains an accent now follows it into the folder instead of treating it as a
+  file. Creating a self-extracting archive, creating a link, listing a typed
+  file mask, and running a user-menu item "through a batch file" or with a
+  `$(DOSFullName)`/`$(DOSPath)` variable all act on the right files.
+
+- **The command line inserts the name you see.** Ctrl+Enter and Ctrl+Space /
+  Ctrl+[ / Ctrl+] used to fill the command line with unreadable characters for
+  any accented name, so pressing Enter ran the command against a file that does
+  not exist. One limitation remains: a name containing characters your Windows
+  code page has no room for (Cyrillic on a Central-European system, say) is now
+  inserted with `?` in their place — wrong, but visibly wrong instead of
+  silently wrong. Making those work needs the command line to become a Unicode
+  control, which is a separate change.
+
+- **The program finds its own files when the account name or install folder is
+  accented.** F1 opens help instead of reporting that help cannot be found; a
+  `config.reg` placed next to the program or in `%APPDATA%\Tandem Commander` is
+  imported again; a user-menu item using `$(SalDir)` or `$(SalPath)` launches;
+  `-C <path>` accepts an accented configuration path; and the "My Documents"
+  entry in the drive bar works. Starting an external archiver no longer fails
+  with a message blaming the archiver for what was the program's own path.
+
+- **Cloud folders open.** Choosing OneDrive — personal or Business — Dropbox or
+  Google Drive from the drive bar or the Change Drive menu now opens that
+  folder. Before, whenever the folder's path contained an accent, the panel
+  silently went to a parent folder instead, so the entry looked as if clicking
+  it did nothing. Google Drive was affected even without an accented account
+  name.
+
+- **External archivers handle accented names.** Packing a file whose name has
+  accents into a RAR/ARJ/LHA/UC2/ACE archive used to fail with the archiver
+  reporting it could not find the file; unpacking into an accented folder, or
+  working with a temporary folder whose path is accented, failed with "cannot
+  create the file list" or a MoveFile error and left the temporary folder
+  behind. Existing archives keep listing and extracting exactly as before.
+
+- **Volume information, `subst` drives and shared folders.** Ctrl+F1 on a
+  network drive or a junction shows the share or link target readably; a volume
+  mounted into an accented folder, or a UNC share with an accented name, reports
+  its file system, label and flags instead of nothing; deleting a junction or
+  symlink on a `subst` drive is confirmed as a link, not as a plain folder; a
+  drive labelled with characters outside your code page shows its label instead
+  of question marks; and a shared folder with an accented share name gets its
+  shared-folder marker.
+
+- **The internal viewer keeps its default character set.** Choosing one of the
+  Central-European conversions (Kameničtí, KOI-8 ČS2) as the default no longer
+  loses it on the next start. The viewer's window title shows accented file
+  names correctly — in Czech, Slovak and Hungarian it was unreadable for every
+  accented name, with or without a conversion selected.
+
+- **Readable text in the remaining dialogs and lists.** The "Reading path…"
+  wait window, the Location column and the *Keyboard Shortcuts* list in the
+  Plugins Manager, the *Save Configuration* overwrite prompt, the directory-line
+  tooltip when the path is very long, the archiver names in the Pack/Unpack
+  dialog, and the ZIP overwrite prompt (which showed a stray `Â` for every file
+  of 1000 bytes or more on a Czech system) all show their text correctly.
+
+- **User-menu icons.** An item whose icon comes from a program stored under an
+  accented path shows that icon instead of the default one — the icon picker had
+  been showing it correctly all along.
+
+- **Markdown Viewer keeps "instant view" after being reloaded.** Unloading and
+  reloading the plugin in the Plugins Manager left the fast-start engine
+  permanently disarmed, so every later view paid the slow first-time start.
+
+- **File Comparator: the window title and the path bar.** A binary comparison
+  showed the uncorrected title, and the path bar could come up empty.
+
+- Environment variables such as `%USERPROFILE%` expand correctly on an accented
+  account name — typing `%USERPROFILE%\Desktop` into Change Directory or the
+  command line no longer reports that the path does not exist, file types whose
+  icon is registered under such a path show their real icon, and programs
+  started from Tandem Commander inherit correctly encoded per-drive folders.
+
 - **A crash when putting a long or non-Latin file name on the command line.**
   Ctrl+Enter (insert the focused name) and Ctrl+Space / Ctrl+[ / Ctrl+] (insert
   the panel path) copied the text into a fixed 260-byte buffer. A name of about

@@ -28,8 +28,10 @@ maintainer with the per-fix scenarios at the end.
 
 ## Fixtures (create once)
 
-`D:\Zkouška\` does **not** exist on this machine — the 068 fixtures must be
-recreated. `tools\create-test-fixtures.ps1` covers only the `%TEMP%` set.
+`D:\Zkouška\` did not exist and was created during implementation by the block below;
+`tools\create-test-fixtures.ps1` covers only the `%TEMP%` set. The 100,000-file
+timing folder `%TEMP%\salamander-test\perf` **has been created** and is what
+gate G6 measures against — do not delete it before the sweep.
 
 ```powershell
 # 1. the %TEMP% set + the 100,000-file timing folder (G6)
@@ -104,7 +106,7 @@ Each is "reproduce on the pre-fix binary, then confirm on the new one".
 | V-01 | F-P6-04 | FX-CS | focus the command line, focus `Přehled.txt`, **Ctrl+Enter**; then **Ctrl+Space**, **Ctrl+[**, **Ctrl+]**; press Enter on a `dir` command | the name/path appears readable (not `PĹ™ehled.txt`) and the command finds the file. Caret/selection behave as before |
 | V-02 | F-P1-26 | FX-CS | drag `Účtenka.pdf` from Explorer onto the command line, the status bar, the toolbar, and an open viewer | each target accepts it and uses the right file |
 | V-03 | F-P1-19 | FX-CS + `D:\Zkouška\Kopie` | Commands ▸ Compare Directories, by content | `Smlouva – kopie.docx` compares; `Účetnictví` is descended; no "Cannot read directory" prompt |
-| V-04 | F-P1-20 | FX-CS + a ZIP containing `příloha.txt` | F4-edit the file in the archive, save, then *Copy To…* in the changed-files dialog | the file is copied; on failure an error appears (never silence) |
+| V-04 | F-P1-20 | FX-CS + a ZIP containing `příloha.txt` | F4-edit the file in the archive, save, then *Copy To…* in the changed-files dialog | the file is copied. **Note**: a genuine shell failure is still only traced, not shown — there is no translated string for it and adding one would touch all eight languages, so the fix removes the *cause* of the silent failure (see `closing-report.md`) |
 | V-05 | F-P1-21 | FX-TEMP + FX-CS | drag out of an archive to Explorer; make an SFX; create a junction; run a user-menu item "through a batch file" and one using `$(DOSFullName)`; type a mask in a dialog that lists files | each acts on the right files; no leftover `SAL*.tmp` |
 | V-06 | F-P1-22 | FX-INST | user-menu item with its icon from an exe under an accented path | the real icon in the User Menu and on the toolbar |
 | V-07 | F-P1-23 | FX-ACCOUNT | type `%USERPROFILE%\Desktop` in Shift+F7 and on the command line | the panel changes there |
@@ -123,8 +125,17 @@ Each is "reproduce on the pre-fix binary, then confirm on the new one".
 | V-20 | F-P4-03 / F-P4-07 | Hungarian UI / Czech UI | Alt+F5 archiver combo; Configuration ▸ Views | titles and view-mode names carry their accents; no `?` persisted |
 | V-21 | D03 / D04 | FX-CS | File Comparator on two accented-name files — **binary** and **text** | the caption is correct in both; the path bar keeps its text |
 | V-22 | D02 (if fixed) | FX-CS, Czech locale | ZIP overwrite prompt for a file ≥ 1000 bytes | no stray `Â` |
-| V-23 | D01 | — | `msbuild src\vcxproj\tserver\tserver.vcxproj` | it builds; the core build is unchanged |
-| V-24 | D05 | — | `powershell -NoProfile -File .specify\extensions\git\scripts\powershell\auto-commit.ps1 -WhatIf` (or parse it) | no `ParserError` |
+| V-23 | D01 | — | `msbuild src\vcxproj\tserver\tserver.vcxproj /p:Configuration=Debug /p:Platform=Win32` | **done during implementation**: `C2535` at `handles.h:541,546,618` before the fix, `tserver.exe` links after |
+| V-24 | D05 | — | parse it with `[System.Management.Automation.Language.Parser]::ParseFile` | **done during implementation**: 1 error at `auto-commit.ps1:149` and at `initialize-repo.ps1:69` before, 0 after |
+
+### Already verified, not left to the sweep
+
+Four of these are automatable and were completed while implementing:
+**V-23** and **V-24** above; the **G6** timing (`saltests` prints the
+measurement — the numbers are in the gate table of `closing-report.md`); and
+the **start/exit health** of both configurations (each launches, shows its main
+window and closes gracefully with exit code 0, leaving no crash report).
+Everything else in the table needs a person in front of the screen.
 
 ## Regression sweep (G8 — Czech UI, then Hungarian UI)
 

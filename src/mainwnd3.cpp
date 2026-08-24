@@ -258,6 +258,17 @@ BOOL OpenHtmlHelp(char* helpFileName, HWND parent, CHtmlHelpCommand command, DWO
 
     HH_FTS_QUERY query;
     DWORD uCommand = 0;
+    // feature 069 (F-P1-10): only the help FILE PATH needs to be wide.  'dwData'
+    // may carry an ANSI payload, and this is a plugin-facing service
+    // (CSalamanderGeneral::OpenHtmlHelp): spl_gen.h documents dwData as a topic
+    // string for HHCDisplayTOC, a keyword for HHCDisplayIndex and an
+    // HH_FTS_QUERY - the A struct in this build - for HHCDisplaySearch.  Handing
+    // any of those to HtmlHelpW would make it read a narrow string as wide, so
+    // the wide call is used only when dwData carries no caller-supplied text.
+    BOOL dwDataIsAnsiPayload = dwData != 0 &&
+                               (command == HHCDisplayTOC ||     // topic string
+                                command == HHCDisplayIndex ||   // keyword string
+                                command == HHCDisplaySearch);   // HH_FTS_QUERYA
     switch (command)
     {
     case HHCDisplayTOC:
@@ -316,12 +327,17 @@ BOOL OpenHtmlHelp(char* helpFileName, HWND parent, CHtmlHelpCommand command, DWO
     if (SalPathAppend(helpPath, helpFileName == NULL ? "salamand.chm" : helpFileName, MAX_PATH) &&
         FileExists(helpPath))
     {
-        // feature 069 (F-P1-10): helpPath is UTF-8 (see the note above), and the
-        // un-suffixed HtmlHelp is the ANSI entry point
+        // feature 069 (F-P1-10): helpPath is UTF-8 (see the note above) and the
+        // un-suffixed HtmlHelp is the ANSI entry point, so a help file under a
+        // non-ASCII install path could not be opened.  The wide call is taken
+        // only when dwData carries no ANSI payload (see dwDataIsAnsiPayload) -
+        // for the zero/self-built HH_FTS_QUERY case the A and W structs are
+        // layout-identical and every string member is NULL, so that one is safe.
         WCHAR helpPathW[MAX_PATH + 50];
-        BOOL helpPathWValid = SalU8ToW(helpPath, -1, helpPathW, _countof(helpPathW)) != 0;
-        if ((helpPathWValid ? HtmlHelpW(NULL, helpPathW, uCommand, dwData)
-                            : HtmlHelp(NULL, helpPath, uCommand, dwData)) == NULL)
+        BOOL useWideHelp = !dwDataIsAnsiPayload &&
+                           SalU8ToW(helpPath, -1, helpPathW, _countof(helpPathW)) != 0;
+        if ((useWideHelp ? HtmlHelpW(NULL, helpPathW, uCommand, dwData)
+                         : HtmlHelp(NULL, helpPath, uCommand, dwData)) == NULL)
         {
             BOOL errorHandled = FALSE;
             HH_LAST_ERROR lasterror;

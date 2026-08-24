@@ -7,6 +7,54 @@ This is the record spec FR-014 requires: every item of the 068 handoff's
 section 1 and section 3 with its disposition, its fix, its independent
 regression verdict and its check.
 
+## Disposition of every item (FR-001, FR-014)
+
+34 items from the 068 handoff's section 1, plus D01–D05 from its section 3.
+**31 fixed · 3 verify-closed · 0 abandoned.** "Check" is the fail-before /
+pass-after evidence required by FR-008; "manual V-nn" points at
+[quickstart.md](quickstart.md), whose scenarios are the maintainer's sweep.
+
+| Item | Disposition | Fix | Check |
+|---|---|---|---|
+| F-P6-04 command line | **fixed** | X18 | manual V-01 (window behaviour; not reachable from `saltests`) |
+| F-P4-01 viewer default coding | **fixed** — in the lookup, *not* at the intake the finding proposed (the names cross the plugin boundary both ways) | X12 | manual V-14 |
+| F-P4-02 viewer caption | **fixed**, both triggers | X12 | manual V-14 |
+| F-P1-08 per-user folders | **fixed**, read and write together | X21 | manual V-09 (account-name-gated; verified at the producer level otherwise) |
+| F-P1-10 install/portable folder | **fixed**, all three consequences, whole chains | X21 | manual V-09 |
+| F-P1-19 Compare Directories | **fixed** | X15 | facade round trips in `saltests` + manual V-03 |
+| F-P1-20 archive-edit *Copy To…* | **fixed** (the copy; the *reporting* of a genuine shell failure is deferred — no translated string exists) | X15 | manual V-04 |
+| F-P6-01 mdview keeper | **fixed**, and not the way the finding suggested (`MdKeeperReleaseAll` also runs mid-session) | X11 | manual V-15 |
+| F-P1-03 startup temp cleanup | **verify-closed** (X06/X07) | — | evidence recorded above |
+| F-P1-09 + F-P4-05 cloud roots | **fixed**, all three producers | X16 | manual V-11 |
+| F-P1-12 volume information | **fixed**, incl. the uninitialised `fileSystem[20]` | X19 | manual V-12 |
+| F-P1-13 `subst` targets | **fixed** | X19 | manual V-12 |
+| F-P1-14 labels / mapped drives | **fixed** | X19 | manual V-12 |
+| F-P1-27 shares | **fixed** (producer-only; the `shellib.cpp` STRRET half deferred) | X20 | manual V-13 |
+| F-P1-05 archiver list files | **fixed**, both directions in one change | X17 | **19 unit checks** on the new converter pair |
+| F-P1-06 archiver file APIs | **fixed** | X17 | manual V-10 (7-Zip as a custom archiver; no RAR on this machine) |
+| F-P1-07 `salspawn.exe` path | **fixed** | X17 | manual V-10 |
+| F-P2-04 wait window | **fixed**, the two confirmed sites (+ a torn-tail trim added on review) | X11 / X15 | manual V-16 |
+| F-P2-07 Drive Information type line | **fixed**, the whole `switch` | X19 | manual V-12 |
+| F-P2-09 Plugins Manager columns | **fixed** | X11 | manual V-17 |
+| F-P2-10 Plugins Manager checkbox | **verify-closed** (X02; the same site as F-P6-02) | — | evidence recorded above |
+| F-P2-11 Keyboard Shortcuts | **fixed** | X11 | **`SalU8TrimIncompleteTail`, 12 unit checks** + manual V-17 |
+| F-P2-13 Save Configuration prompt | **fixed**, after its producer was settled | X21 | manual V-18 |
+| F-P3-07 directory-line tooltip | **fixed** | X11 | manual V-19 |
+| F-P4-03 packer titles | **fixed** | X14 | **guard rule `acp-title-seed`**, proven to fire |
+| F-P4-07 view-mode names | **fixed** (hygiene, as the verdict scoped it) | X14 | same guard rule + the trim's unit checks |
+| F-P1-21 nine site groups | **fixed** — 8 groups; group 3 (DROPFAKE) **reverted on review** and deferred, group 8 is dead code | X15 | manual V-05 |
+| F-P1-22 user-menu icons | **fixed** | X11 | manual V-06 |
+| F-P1-23 environment expansion | **fixed**, 2 of 3 sites; `icncache.cpp` deferred with reason | X15 | manual V-07 |
+| F-P1-24 browse dialogs | **fixed**, the operational half; the ANSI-dialog half analysed as already correct for any code-page-representable path | X21 | manual V-09 |
+| F-P1-25 shell/OLE | **fixed**, 4 sites + the shortcut-target probe; jump-list half **verify-closed** | X15 | manual V-08 |
+| F-P1-26 Explorer drops | **fixed**, 4 sites | X18 | manual V-02 |
+| F-P5-06 FS plugin interface docs | **fixed** (comments only, no ABI) | X11 | inspection: 16 insertions, 0 non-comment lines |
+| **D01** Trace Server build | **fixed** | X10 | `msbuild tserver.vcxproj`: `C2535` before, links after |
+| **D02** ZIP overwrite `Â` | **fixed** — the 068 blocker no longer holds (the plugin *sends* to a tolerant sink; English bytes identical) | X22 | manual V-22 |
+| **D03** filecomp path bar | **fixed** | X13 | manual V-21 |
+| **D04** filecomp title | **fixed** | X13 | manual V-21 |
+| **D05** spec-kit commit hook | **fixed** | X10 | PowerShell parser: 1 error before, 0 after |
+
 ## Baseline (T001, T002)
 
 | What | Value | Evidence |
@@ -69,6 +117,8 @@ the file's encoding preserved; 23 insertions, 17 deletions.
 | **X18** | F-P6-04, F-P1-26 | C1 | `editwnd.cpp`, `stswnd.cpp`, `toolbar5.cpp`, `viewer3.cpp` | *pending* | manual V-01/V-02 |
 | **X19** | F-P1-12, F-P1-13, F-P1-14, F-P2-07 | C3 | `salamdr2.cpp`, `mainwnd5.cpp`, `dialogs3.cpp`, `drivelst.cpp` | *pending* | manual V-12 |
 | **X20** | F-P1-27 | C6 | `shares.cpp` (producer only) | *pending* | manual V-13 |
+| **X21** | F-P1-08, F-P1-10, F-P2-13, F-P1-24 | C5 | `salamdr5.cpp`, `mainwnd3.cpp`, `salamdr1.cpp`, `salamdr2.cpp`, `execute.cpp`, `shellib.cpp`, `consts.h` | *pending* | manual V-09/V-18 |
+| **X22** | D02 | conditional | `plugins/zip/common.cpp` | *pending* | manual V-22 |
 
 No fix in this set lands on a per-item path in the G6 sense (the user-menu icon
 reader runs once per *menu item*, the list views once per row — the reviewer
