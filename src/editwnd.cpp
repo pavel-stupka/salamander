@@ -352,7 +352,26 @@ CEditLine::CEditLine()
 
 void CEditLine::InsertText(const char* s)
 {
-    SendMessage(HWindow, EM_REPLACESEL, TRUE, (LPARAM)s);
+    // feature 069 (F-P6-04): 's' is UTF-8 (a panel name or path).  Sent through
+    // the ANSI SendMessage its bytes landed in the control as individual
+    // code-page characters, so Ctrl+Enter / Ctrl+Space / Ctrl+[ / Ctrl+] filled
+    // the command line with mojibake and Enter then ran the command against a
+    // name that does not exist.  The wide send makes USER32 do the same
+    // down-conversion the rest of this control already relies on
+    // (SalSetWindowTextU8 at the "run a command" site, SalComboAddStringU8 for
+    // the history), so the control keeps holding one consistent encoding and
+    // every selection offset stays exactly where it was.
+    //   A character the code page cannot express becomes '?' - visibly wrong
+    //   instead of invisibly wrong; the complete fix needs a Unicode control
+    //   (cluster B-1, see specs/069-.../research.md R2).
+    WCHAR* w = SalU8ToWAlloc(s);
+    if (w != NULL)
+    {
+        SendMessageW(HWindow, EM_REPLACESEL, TRUE, (LPARAM)w);
+        free(w);
+    }
+    else
+        SendMessage(HWindow, EM_REPLACESEL, TRUE, (LPARAM)s); // legacy fallback
 }
 
 BOOL SkipNextSysCharacter = FALSE;
@@ -1010,7 +1029,9 @@ CEditLine::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     if (shiftPressed) // DOS path
                     {
                         char shortPath[MAX_PATH]; // 8.3 form fits by definition
-                        if (GetShortPathName(s, shortPath, MAX_PATH))
+                        // feature 069 (F-P1-21): 's' is a UTF-8 panel path, so the ANSI call failed
+                        // and the long path was inserted instead
+                        if (SalGetShortPathName(s, shortPath, MAX_PATH))
                             ok = path.Set(shortPath);
                         else
                             ok = path.Set(s);
@@ -1195,7 +1216,16 @@ public:
             if (ImageDragging)
                 ImageDragShow(FALSE);
             SendMessage(EditLine->HWindow, EM_SETSEL, xPos, xPos);
-            SendMessage(EditLine->HWindow, EM_REPLACESEL, TRUE, (LPARAM)start);
+            // feature 069 (F-P6-04): same sink as CEditLine::InsertText - the
+            // internal archive/plugin-FS drag payload is UTF-8
+            WCHAR* startW = SalU8ToWAlloc(start);
+            if (startW != NULL)
+            {
+                SendMessageW(EditLine->HWindow, EM_REPLACESEL, TRUE, (LPARAM)startW);
+                free(startW);
+            }
+            else
+                SendMessage(EditLine->HWindow, EM_REPLACESEL, TRUE, (LPARAM)start);
             UpdateWindow(EditLine->HWindow);
             if (ImageDragging)
                 ImageDragShow(TRUE);
@@ -1270,7 +1300,11 @@ public:
                         {
                             if (path != NULL)
                             {
-                                WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, MAX_PATH, NULL, NULL);
+                                // feature 069 (F-P1-26): the payload is wide (data->fWide), and
+                                // converting it through the code page discarded exactly what it
+                                // carried - the strict path check right after then refused the drop
+                                if (SalWToU8(fileW, l + 1, path, MAX_PATH) == 0)
+                                    WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, MAX_PATH, NULL, NULL);
                                 path[MAX_PATH - 1] = 0;
                             }
                             ret = TRUE;

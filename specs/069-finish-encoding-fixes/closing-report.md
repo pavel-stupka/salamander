@@ -63,6 +63,12 @@ the file's encoding preserved; 23 insertions, 17 deletions.
 | **X12** | F-P4-01, F-P4-02 | C7 | `codetbl.cpp`, `viewer3.cpp` | **ACCEPTED** ([regression-X12-X13.md](findings/regression-X12-X13.md)) | manual V-14 |
 | **X13** | D03, D04 | C11 | `filecomp/controls.cpp`, `filecomp/worker2.cpp` | **ACCEPTED** (same record) | manual V-21 |
 | **X14** | F-P4-03, F-P4-07 | C9 | `packers.cpp`, `packac.cpp`, `salamdr4.cpp`, new `SalU8TrimIncompleteTail`, new guard rule | **review pending** (its helper and the R1 defect were covered by the X11 review) | unit (12 checks) + guard `acp-title-seed`, both proven |
+| **X15** | F-P1-19, F-P1-20, F-P1-21 (all 9 groups), F-P1-23, F-P1-25 | C10 rest | 13 files | *review running* | manual V-03/V-04/V-05/V-07/V-08 |
+| **X16** | F-P1-09, F-P4-05 | C2 | `drivelst.cpp`, `shiconov.cpp` | *pending* | manual V-11 |
+| **X17** | F-P1-05, F-P1-06, F-P1-07 | C4 | `pack1/2/3.cpp` + new `SalU8ToOEM`/`SalOEMToU8` | *pending* | unit: 19 checks · manual V-10 |
+| **X18** | F-P6-04, F-P1-26 | C1 | `editwnd.cpp`, `stswnd.cpp`, `toolbar5.cpp`, `viewer3.cpp` | *pending* | manual V-01/V-02 |
+| **X19** | F-P1-12, F-P1-13, F-P1-14, F-P2-07 | C3 | `salamdr2.cpp`, `mainwnd5.cpp`, `dialogs3.cpp`, `drivelst.cpp` | *pending* | manual V-12 |
+| **X20** | F-P1-27 | C6 | `shares.cpp` (producer only) | *pending* | manual V-13 |
 
 No fix in this set lands on a per-item path in the G6 sense (the user-menu icon
 reader runs once per *menu item*, the list views once per row — the reviewer
@@ -197,11 +203,146 @@ as the fix (the feature-052 pattern, so it never flags code that was still
 correct). Proven: `TOTAL: 0` on the fixed tree; 2 findings (`packers.cpp:240`,
 `salamdr4.cpp:804`) with one seed of each kind reverted.
 
-## Deferred here
+### X15 — file-system and shell operations (the rest of C10)
+
+| Item | Change |
+|---|---|
+| **F-P1-19** Compare Directories | `mainwnd5.cpp`: the by-content pair → `SalCreateFile`; the directory enumeration → `SalFindFirstFile` + `WIN32_FIND_DATAW` + `SalConvertFindDataW`, with every former `data.cFileName` use moved to the UTF-8 buffer (the converter empties that field, so a missed use would have broken the comparison outright). The extension scan moves to the converted name — a byte offset taken in the wide record would not survive. |
+| **F-P1-20** archive-edit *Copy To…* | `salamdr3.cpp`: the double-NUL multi-strings are now built twice, UTF-8 (the legacy fallback) and UTF-16, and `SHFileOperationW` is used when every name converted. The result is no longer discarded — it is traced. **Not fixed**: there is no translated string for "the copy failed" and adding one would touch all eight shipped languages, so the failure is still not *shown*; what this fix removes is the cause of the silent failure. |
+| **F-P1-21** nine site groups | `salshlib.cpp` (archive freshness ×2), `shellsup.cpp` (`CountNumberOfItemsOnPath`, DROPFAKE ×2), `mainwnd4.cpp` (batch wrapper, `$(DOSFullName)` ×2), `packac.cpp` (SFX probe + the SFX enumeration with all 15 name uses moved), `dialogs6.cpp` (drive-accessibility probe), `editwnd.cpp` (`$(DOSPath)`), and group 1 in `zip.cpp`. |
+| **F-P1-21 group 1** (conditional, FR-012) | **Proceeded.** `zip.cpp`'s `ViewFileInPluginViewer` already calls `::SalMoveFile` two lines away, so the three `::DeleteFile` and one `CreateFile` were the inconsistent leftovers; the plugin is handed `fileName`/`fileNameInCache`, which this does not touch, so no plugin-visible byte changes. Under a non-ASCII `%TEMP%` the viewed file's size read as 0 and the temp file was never deleted. |
+| **F-P1-23** environment expansion | `fileswn9.cpp` (the panel path: expand wide, convert back, legacy fallback) and `mainwnd4.cpp` (`SetEnvironmentVariableW` for the per-drive `=A:` values a child process inherits). **`icncache.cpp` deliberately not converted** — its value is read one line earlier through the *old* ANSI `SalRegQueryValueEx` wrapper and flows into the icon cache; converting only the expansion would create exactly the mixed chain that gets fixes rejected. Recorded for the remaining-facade-migration cluster. |
+| **F-P1-25** shell/OLE | `shellsup.cpp` moves to `IShellLinkW` — two defects at one site: the `.lnk` could not be loaded under an accented path, **and** the A interface returned the target in the code page, which the strict `SalGetFileAttributes` then rejected, so a shortcut *to* an accented folder was taken for a file. Plus `mainwnd3.cpp`, `dialogs6.cpp`, `fileswn0.cpp`, `fileswn2.cpp`: try `SalU8ToW` first, keep the code-page widening as the fallback. |
+
+**Scope corrected while doing the work**: the finding lists five sites that were
+already correct and are left alone — `worker.cpp:6212` and `shellib.cpp:2649`
+(feature 062 and 004 had already put the `SalU8ToW`-first pattern there;
+wrapping them again broke the success path in the first attempt and was
+reverted), `shellib.cpp:1628` (that *is* the reference implementation),
+`execute.cpp:854/866` (Windows/system directory, verified ASCII), and
+`worker.cpp:7058` — F-P1-21's "link operation" site, which turns out to sit
+inside a `/* … */` design sketch and is **dead code**, out of scope by charter.
+
+### X16 — cloud roots (C2)
+
+**F-P1-09 + F-P4-05** in one change, because the verifier refuted the
+"OneDrive-specific" framing: `drivelst.cpp` OneDrive personal and Dropbox, and
+`shiconov.cpp` the Google Drive sync root, all took a path Windows hands over
+*wide* and degraded it with `ConvertU2A`, whose default code page is the ACP —
+silently, with no `WC_ERR_INVALID_CHARS` and no `lpUsedDefaultChar`, so the
+caller could not even tell. All three now use `SalWToU8`. The Google Drive site
+is the one that needs no accented account name at all: its sibling fifteen lines
+up already passed `CP_UTF8`, so `IsGoogleDrivePath` could never match a panel
+path like `G:\Můj disk`.
+
+The three OneDrive registry reads (`UserFolder`, and the Business
+`DisplayName`/`UserFolder`) move from the old ANSI `SalRegQueryValueEx` wrapper
+to `SalRegQueryValueExW8`. The three network-drive reads at the top of the same
+file are a different function and a different finding — left alone.
+
+### X17 — external archivers (C4)
+
+**F-P1-05 both directions in one commit.** The verifier's warning was decisive:
+`CharToOem(<UTF-8>)` on the pack side and `OemToCharBuff(<OEM> → <UTF-8 field>)`
+on the list side are both wrong but wrong in *opposite* directions, so an
+ACP-representable name survived a pack → list → extract round trip by accident
+while a *pack* of that same name failed outright. Converting one direction alone
+would have broken the round trip that works today.
+
+New converter pair `SalU8ToOEM` / `SalOEMToU8` (`src/common/salunicode.*`) with
+19 unit checks: ASCII byte-identical both ways, an accented name round-tripping
+exactly while differing in between, a CJK name failing cleanly rather than
+becoming `?` (the archiver must not be handed a name that does not exist),
+invalid UTF-8 in, too-small targets, and NULL. This machine is ACP 1250 /
+**OEM 852**, so the accented case is genuinely exercised here.
+
+Applied at nine call sites across `pack1.cpp` and `pack2.cpp`. On the list side
+the name length is taken from the converted result (the UTF-8 form can be
+longer) and the extension is scanned in the converted name.
+
+**F-P1-06**: 54 mechanical facade substitutions across `pack1/2/3.cpp`
+(`SalDeleteFile`, `SalRemoveDirectory`, `SalGetShortPathName`, `SalCreateFile`),
+the three list-file `fopen` calls → `_wfopen` on the converted path (the narrow
+CRT resolves through the ACP, which is why the packer aborted with "cannot
+create the file list" under a non-ASCII `%TEMP%`), and four enumerations moved
+to the facade. **F-P1-07**: the `salspawn.exe` path taken wide at the source —
+its value is concatenated into a command line that `SalCreateProcess` consumes,
+so one code-page byte discarded the *whole* line and the user was told the
+*archiver* could not be started.
+
+One warning was introduced and removed in the same group: duplicating a
+`NameLen = strlen(...)` statement produced a second C4267, so both halves now
+carry an explicit cast — which also removes the pre-existing warning at the
+line it came from.
+
+### X18 — the command line (C1)
+
+**F-P6-04** is six lines, not a window conversion. `research.md` R2 established
+that the control already has a consistent contract — `SalSetWindowTextU8` and
+`SalComboAddStringU8` write it through a wide call that USER32 down-converts,
+`SalGetWindowTextU8` reads it back wide — and `CEditLine::InsertText` was its
+one violator, pushing raw UTF-8 bytes in. Sending them wide instead moves no
+selection offset, no word-break callback ABI and no `WM_CHAR` unit. The same
+sink on the drop-target path is converted with it.
+
+**Residual limitation, stated in the changelog**: a character the code page
+cannot express now inserts as `?` instead of mojibake — visibly wrong instead of
+invisibly wrong. The complete fix needs a Unicode control, which is cluster B-1;
+its full surface is enumerated in research.md R2 for whoever takes that on.
+
+**F-P1-26**: the `DROPFILES` payload really is wide (all three sites branch on
+`data->fWide`), and converting it through the code page discarded exactly what
+the wide payload carried — `toolbar5.cpp`'s strict `FileExists` one line later
+then refused the drop silently. Four sites; the viewer additionally moves to
+`DragQueryFileW`, since the ANSI form makes the OS itself do the lossy
+conversion.
+
+### X19 — volume, subst, labels and Drive Information (C3)
+
+The four items land together **because two rows of that dialog render correctly
+today only while their arguments stay code-page bytes**. Converting the
+producers without the template would have turned them into mojibake — which is
+precisely why the verifier had refuted the UNC and SUBST halves of F-P2-07.
+
+- **F-P1-12**: new `GetVolumeInformationU8` wrapper in `salamdr2.cpp` (wide
+  call, UTF-8 out, legacy fallback) used by both call sites of
+  `MyGetVolumeInformation`; `MyGetDiskFreeSpace` likewise. Plus the strengthened
+  half the verifier found: `mainwnd5.cpp` read an **uninitialised**
+  `char fileSystem[20]` after ignoring the result, so whether Compare
+  Directories applied the 2-second FAT timestamp tolerance was undefined.
+- **F-P1-13**: `MyQueryDosDevice` takes the wide entry point, so `ResolveSubsts`
+  no longer splices a code-page target in front of a UTF-8 remainder — the
+  delete confirmation can tell a junction from a directory again.
+- **F-P1-14**: two local helpers in `drivelst.cpp` for the volume label and the
+  mapped-drive name (both were `?` per character for anything outside the code
+  page, decided *before* the application saw the string).
+- **F-P2-07**: the **whole** type-line `switch` in `dialogs3.cpp` → `LoadStrU8`,
+  and its two `WNetGetConnection`/`WNetGetUser` producers converted with it.
+
+### X20 — shares (C6)
+
+**F-P1-27** is **producer-only**: `CShares::Search` and `GetUNCPath` compare the
+caller's UTF-8 value against the cached strings, so once `shares.cpp` stops
+degrading the W-only `NetShareEnum` results to the code page, the comparisons
+match and no consumer needs touching. That also means **no G6 timing is owed**:
+the per-item path (`Shares.Search` once per listed directory) is not on the
+diff, and the comparison it performs is the same byte comparison as before.
+
+The `shellib.cpp` STRRET half of this finding is **not** converted: each of
+those six sites needs its own consumer analysis, and the verifier scoped the
+finding's confirmed consequence to the share marker and `GetUNCPath`. Recorded.
+
+## Deferred here, with the reason
 
 | Item | Reason | Recorded for |
 |---|---|---|
-| *(filled as decided)* | | |
+| **F-P1-23**, the `icncache.cpp` icon-location site | Its value is read one line earlier through the *old* ANSI `SalRegQueryValueEx` wrapper and then flows into the icon cache. Converting only the expansion would leave a mixed chain — the exact DC-09 trap that got two of feature 068's fixes rejected — and settling it means converting that registry read plus every consumer of `iconLocation`. The 068 verifier itself handed this read to another perspective ("cross-perspective hand-off N-10"). | the remaining-facade-migration cluster |
+| **F-P1-27**, the `shellib.cpp` STRRET half (6 sites) | Each site needs its own consumer analysis; the verifier scoped the finding's confirmed consequence to the shared-folder marker and `GetUNCPath`, both of which are fixed. | REMAINING-WORK |
+| **F-P1-20**, reporting a failed copy to the user | The encoding cause of the silent failure is fixed and the result is now checked, but there is no translated string for "the copy failed" and adding one would touch all eight shipped languages — out of proportion for a fix feature, and not what the finding is about. | REMAINING-WORK |
+| **F-P1-21 group 8** (`worker.cpp:7058`, "link operation") | The site is inside a `/* … */` design sketch — **dead code**, out of scope by charter. | recorded here only |
+| **F-P4-01**, the invariant itself | Fixed the user-visible symptom, not the "no defined encoding at rest" invariant: the table's names are handed to plugins by `EnumConversionTables` and accepted back by `GetConversionTable`, and two shipped plugins persist them. | cluster B-5 |
+| **F-P4-07** on Russian / Ukrainian | Their view-mode names are 30 and 38 bytes in UTF-8 against a 30-byte field, so they would truncate if those languages were re-enabled. `SalU8TrimIncompleteTail` makes the truncation clean rather than torn. | the language re-enable checklist |
+| **D02** ZIP overwrite `Â` | Not yet analysed — the conditional item is scheduled after C5. | pending |
 
 ## Gates
 

@@ -165,7 +165,11 @@ public:
                         int l = lstrlenW(fileW);
                         if (*(fileW + l + 1) == 0)
                         {
-                            WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, l + 1, NULL, NULL);
+                            // feature 069 (F-P1-26): the payload is wide (data->fWide), and
+                            // converting it through the code page discarded exactly what it
+                            // carried - the strict path check right after then refused the drop
+                            if (SalWToU8(fileW, l + 1, path, MAX_PATH) == 0)
+                                WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, l + 1, NULL, NULL);
                             path[l] = 0;
                             ret = TRUE;
                         }

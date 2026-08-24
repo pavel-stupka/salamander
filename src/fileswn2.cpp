@@ -147,7 +147,12 @@ void CFilesWindow::Execute(int index)
                     return;
                 }
                 OLECHAR oleName[MAX_PATH];
-                MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+                // feature 069 (F-P1-25): the value is UTF-8 - try the strict conversion first
+                // and keep the code-page widening as the fallback (the shape shellib.cpp:1600
+                // already uses); widening a UTF-8 name through the code page hands the shell a
+                // name it cannot resolve.
+                if (SalU8ToW(fullName, -1, oleName, MAX_PATH) == 0)
+                    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
                 oleName[MAX_PATH - 1] = 0;
 
                 HCURSOR oldCur = SetCursor(LoadCursor(NULL, IDC_WAIT));

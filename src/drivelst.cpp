@@ -1327,6 +1327,42 @@ BOOL base64_decode(char* data, int input_length, int* output_length, const char*
 // a path to the local Dropbox directory
 char DropboxPath[MAX_PATH] = "";
 
+// feature 069 (F-P1-14): the UNC name of a mapped drive, shown in the drive
+// menu.  Same defect as the label: the ANSI call cannot carry a share name the
+// code page does not have.
+static BOOL GetMappedDriveNameU8(const char* device, char* volName, LPDWORD size)
+{
+    WCHAR deviceW[MAX_PATH];
+    WCHAR nameW[MAX_PATH];
+    DWORD sizeW = _countof(nameW);
+    if (SalU8ToW(device, -1, deviceW, _countof(deviceW)) != 0 &&
+        WNetGetConnectionW(deviceW, nameW, &sizeW) == NO_ERROR &&
+        SalWToU8(nameW, -1, volName, *size) != 0)
+    {
+        return TRUE;
+    }
+    return WNetGetConnection(device, volName, size) == NO_ERROR; // legacy fallback
+}
+
+// feature 069 (F-P1-14): the volume label for the drive menu and the drive-bar
+// tooltip.  The ANSI GetVolumeInformation substituted "?" for every character
+// outside the active code page before the application ever saw the string.
+static BOOL GetVolumeInformationU8Menu(const char* u8Root, char* volName, DWORD volNameSize,
+                                       LPDWORD fsFlags)
+{
+    WCHAR rootW[MAX_PATH];
+    WCHAR volW[MAX_PATH];
+    DWORD dummy;
+    if (SalU8ToW(u8Root, -1, rootW, _countof(rootW)) != 0 &&
+        GetVolumeInformationW(rootW, volW, _countof(volW), NULL, &dummy, fsFlags, NULL, 0))
+    {
+        if (SalWToU8(volW, -1, volName, volNameSize) != 0)
+            return TRUE;
+    }
+    // not convertible (transitional) or the wide call failed: legacy behaviour
+    return GetVolumeInformation(u8Root, volName, volNameSize, NULL, &dummy, fsFlags, NULL, 0);
+}
+
 void InitDropboxPath()
 {
     static BOOL alreadyCalled = FALSE;
@@ -1380,14 +1416,19 @@ void InitDropboxPath()
                                 {
                                     WCHAR widePath[MAX_PATH]; // we can't do longer paths anyway
                                     char mbPath[MAX_PATH];    // ANSI or UTF8 path
+                                    // feature 069 (F-P1-09): the value is UTF-8
+                                    // in host.db and was widened correctly just
+                                    // above, only to be thrown back down to the
+                                    // code page here - the same defect as the
+                                    // OneDrive and Google Drive producers
                                     if (ConvertA2U(secRow, -1, widePath, _countof(widePath), CP_UTF8) &&
-                                        ConvertU2A(widePath, -1, mbPath, _countof(mbPath)))
+                                        SalWToU8(widePath, -1, mbPath, _countof(mbPath)) != 0)
                                     {
                                         TRACE_I("Dropbox path: " << mbPath);
                                         strcpy_s(DropboxPath, mbPath);
                                     }
                                     else
-                                        TRACE_E("Dropbox path is too big or not convertible to ANSI string.");
+                                        TRACE_E("Dropbox path is too big or not convertible.");
                                 }
                             }
                         }
@@ -1478,7 +1519,12 @@ void InitOneDrivePath()
             {
                 if (path[0] != 0) // FOLDERID_SkyDrive was introduced in Windows 8.1, so it should not be necessary to look it up in the registry
                 {
-                    done = ConvertU2A(path, -1, OneDrivePath, _countof(OneDrivePath)) != 0;
+                    // feature 069 (F-P1-09/F-P4-05): the shell gives the path
+                    // wide; ConvertU2A defaults to CP_ACP and silently degraded
+                    // it (no WC_ERR_INVALID_CHARS, no lpUsedDefaultChar, so the
+                    // caller could not even tell).  SalWToU8 is total and
+                    // WTF-8-safe - the panel consumes this as a UTF-8 path.
+                    done = SalWToU8(path, -1, OneDrivePath, _countof(OneDrivePath)) != 0;
                     if (!done)
                         OneDrivePath[0] = 0; // just to be safe
                                              //else TRACE_I("OneDrive path (FOLDERID_SkyDrive): " << OneDrivePath);
@@ -1500,7 +1546,10 @@ void InitOneDrivePath()
         {
             DWORD size = sizeof(path); // size in bytes
             DWORD type;
-            if (SalRegQueryValueEx(hKey, "UserFolder", 0, &type, (BYTE*)path, &size) == ERROR_SUCCESS &&
+            // feature 069 (F-P1-09): the ANSI wrapper degraded a non-ASCII OneDrive
+            // folder to the code page; the W8 twin returns UTF-8, which is what
+            // the panel and the drive menu consume
+            if (SalRegQueryValueExW8(hKey, "UserFolder", &type, (BYTE*)path, &size) == ERROR_SUCCESS &&
                 type == REG_SZ && size > 1)
             {
                 //TRACE_I("OneDrive path (UserFolder): " << path);
@@ -1530,11 +1579,13 @@ void InitOneDrivePath()
                     char disp[ONEDRIVE_MAXBUSINESSDISPLAYNAME];
                     DWORD size = sizeof(disp); // size in bytes
                     DWORD type;
-                    if (SalRegQueryValueEx(hAccount, "DisplayName", 0, &type, (BYTE*)disp, &size) == ERROR_SUCCESS &&
+                    // feature 069 (F-P1-09): the Business display name is shown in the
+                    // drive menu and its folder is used as a panel path
+                    if (SalRegQueryValueExW8(hAccount, "DisplayName", &type, (BYTE*)disp, &size) == ERROR_SUCCESS &&
                         type == REG_SZ && size > 1)
                     {
                         size = sizeof(path); // size in bytes
-                        if (SalRegQueryValueEx(hAccount, "UserFolder", 0, &type, (BYTE*)path, &size) == ERROR_SUCCESS &&
+                        if (SalRegQueryValueExW8(hAccount, "UserFolder", &type, (BYTE*)path, &size) == ERROR_SUCCESS &&
                             type == REG_SZ && size > 1)
                         { // Collect everything that has DisplayName and UserFolder and offer it to the user as "OneDrive"
                             //TRACE_I("OneDrive Business: DisplayName: " << disp << ", UserFolder: " << path);
@@ -1696,7 +1747,6 @@ BOOL CDrivesList::BuildData(BOOL noTimeout, TDirectArray<CDriveData>* copyDrives
                 drv.Shared = FALSE;
                 drv.Accessible = (mask & i) != 0;
                 char volumeName[MAX_PATH + 50];
-                DWORD dummy;
                 freeSpace = CQuadWord(-1, -1);
                 switch (drv.DriveType)
                 {
@@ -1736,7 +1786,12 @@ BOOL CDrivesList::BuildData(BOOL noTimeout, TDirectArray<CDriveData>* copyDrives
                 case drvtRAMDisk:
                 {
                     DWORD flags;
-                    if (GetVolumeInformation(root, volumeName, MAX_PATH, NULL, &dummy, &flags, NULL, 0))
+                    // feature 069 (F-P1-14): a label with characters the code page
+                    // cannot express arrived as "?" per character, and nothing
+                    // downstream could recover it; the sinks (menu3.cpp,
+                    // dialogs3.cpp) are UTF-8-first with an ANSI fallback, so a
+                    // label that renders correctly today keeps doing so
+                    if (GetVolumeInformationU8Menu(root, volumeName, MAX_PATH, &flags))
                     {
                         CQuadWord t;                              // total disk space
                         freeSpace = MyGetDiskFreeSpace(root, &t); // free disk space
@@ -1766,7 +1821,7 @@ BOOL CDrivesList::BuildData(BOOL noTimeout, TDirectArray<CDriveData>* copyDrives
                         volumeName[l] = 0;
                     }
                     else if (!drv.Accessible ||
-                             WNetGetConnection(device, volumeName, &size) != NO_ERROR)
+                             !GetMappedDriveNameU8(device, volumeName, &size))
                     {
                         if (!GetSubstInformation(drive - 'A', volumeName, MAX_PATH))
                             volumeName[0] = 0;
@@ -2618,8 +2673,9 @@ BOOL CDrivesList::GetDriveBarToolTip(int index, char* text)
     case drvtRAMDisk:
     {
         root[0] = item->DriveText[0];
-        DWORD dummy, flags;
-        if (GetVolumeInformation(root, volumeName, MAX_PATH, NULL, &dummy, &flags, NULL, 0))
+        DWORD flags;
+        // feature 069 (F-P1-14): see the note at the drive-menu site
+        if (GetVolumeInformationU8Menu(root, volumeName, MAX_PATH, &flags))
         {
             CQuadWord t;                              // total disk space
             freeSpace = MyGetDiskFreeSpace(root, &t); // free disk space

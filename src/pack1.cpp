@@ -295,24 +295,58 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
     // and pomptr2 possibly holds the path to it
     newfile.NameLen = tmpfname - pomptr + 1;
 
-    // set the name of the new file or directory
-    newfile.Name = (char*)malloc(newfile.NameLen + 1);
-    if (!newfile.Name)
-        return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_NOMEM);
-    OemToCharBuff(pomptr, newfile.Name, newfile.NameLen); // copy with conversion from OEM to ANSI
-    newfile.Name[newfile.NameLen] = '\0';
+    // feature 069 (F-P1-05): the archiver prints its names in the console (OEM)
+    // code page, and CFileData::Name is UTF-8 - OemToCharBuff produced ANSI
+    // bytes instead, i.e. a name in no defined encoding.  Convert properly; the
+    // UTF-8 form can be longer than the OEM one, so the buffer is sized for it
+    // and NameLen is taken from the result.  The pack side above converts the
+    // other way with the matching helper: both directions move together.
+    char oemName[2 * MAX_PATH];
+    char nameU8[3 * MAX_PATH];
+    int oemLen = newfile.NameLen;
+    if (oemLen > (int)sizeof(oemName) - 1)
+        oemLen = (int)sizeof(oemName) - 1;
+    memcpy(oemName, pomptr, oemLen);
+    oemName[oemLen] = 0;
+    if (SalOEMToU8(oemName, nameU8, sizeof(nameU8)) != 0)
+    {
+        newfile.NameLen = (int)strlen(nameU8);
+        newfile.Name = (char*)malloc(newfile.NameLen + 1);
+        if (!newfile.Name)
+            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_NOMEM);
+        memcpy(newfile.Name, nameU8, newfile.NameLen + 1);
+    }
+    else
+    { // legacy fallback: exactly what this code did before
+        newfile.Name = (char*)malloc(newfile.NameLen + 1);
+        if (!newfile.Name)
+            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_NOMEM);
+        OemToCharBuff(pomptr, newfile.Name, newfile.NameLen); // copy with conversion from OEM to ANSI
+        newfile.Name[newfile.NameLen] = '\0';
+    }
 
     // convert the path from OEM to ANSI as well
     if (pomptr2 != NULL)
-        OemToChar(pomptr2, pomptr2);
+    {
+        char pathU8[3 * MAX_PATH];
+        if (SalOEMToU8(pomptr2, pathU8, sizeof(pathU8)) != 0 &&
+            strlen(pathU8) <= strlen(pomptr2))
+        {
+            strcpy(pomptr2, pathU8); // fits in place
+        }
+        else
+            OemToChar(pomptr2, pomptr2); // legacy fallback
+    }
 
-    // set the extension
-    char* s = tmpfname - 1;
-    while (s >= pomptr && *s != '.')
+    // set the extension - scanned in the CONVERTED name, because a byte offset
+    // taken in the OEM form would not survive the conversion ('.' cannot occur
+    // inside a UTF-8 sequence, so the scan itself is unchanged)
+    char* s = newfile.Name + newfile.NameLen - 1;
+    while (s >= newfile.Name && *s != '.')
         s--;
-    if (s >= pomptr)
-        //  if (s > pomptr)  // ".cvspass" is an extension in Windows...
-        newfile.Ext = newfile.Name + (s - pomptr) + 1;
+    if (s >= newfile.Name)
+        //  if (s > newfile.Name)  // ".cvspass" is an extension in Windows...
+        newfile.Ext = s + 1;
     else
         newfile.Ext = newfile.Name + newfile.NameLen;
 
@@ -1013,7 +1047,7 @@ BOOL PackUC2List(const char* archiveFileName, CPackLineArray& lineArray,
     strncpy(arcPath, archiveFileName, arcName - archiveFileName);
     arcPath[arcName - archiveFileName] = '\0';
     strcat(arcPath, "U$~RESLT.OK");
-    DeleteFile(arcPath);
+    SalDeleteFile(arcPath);
 
     char* txtPtr;         // pointer to the current position in the read line
     char currentDir[256]; // current directory we are exploring
@@ -1056,7 +1090,16 @@ BOOL PackUC2List(const char* archiveFileName, CPackLineArray& lineArray,
                 currentDir[i++] = *txtPtr++;
             // terminate the string
             currentDir[i] = '\0';
-            OemToChar(currentDir, currentDir);
+            // feature 069 (F-P1-05): the archiver prints in the console code page and this path
+            // becomes part of a UTF-8 panel name
+            {
+                char dirU8[3 * MAX_PATH];
+                if (SalOEMToU8(currentDir, dirU8, sizeof(dirU8)) != 0 &&
+                    strlen(dirU8) <= strlen(currentDir))
+                    strcpy(currentDir, dirU8); // fits in place
+                else
+                    OemToChar(currentDir, currentDir); // legacy fallback
+            }
             // one more check
             if (*txtPtr == '\0')
                 return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
@@ -1120,11 +1163,25 @@ BOOL PackUC2List(const char* archiveFileName, CPackLineArray& lineArray,
                     if (*txtPtr == '\0')
                         return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
                     // and store it in the structure
-                    newfile.NameLen = strlen(newName);
-                    newfile.Name = (char*)malloc(newfile.NameLen + 1);
-                    if (!newfile.Name)
-                        return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
-                    OemToChar(newName, newfile.Name);
+                    // feature 069 (F-P1-05): as above - convert, and take the length from the
+                    // result because the UTF-8 form can be longer
+                    char nameU8b[3 * MAX_PATH];
+                    if (SalOEMToU8(newName, nameU8b, sizeof(nameU8b)) != 0)
+                    {
+                        newfile.NameLen = (unsigned)strlen(nameU8b);
+                        newfile.Name = (char*)malloc(newfile.NameLen + 1);
+                        if (!newfile.Name)
+                            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
+                        memcpy(newfile.Name, nameU8b, newfile.NameLen + 1);
+                    }
+                    else
+                    {
+                        newfile.NameLen = (unsigned)strlen(newName);
+                        newfile.Name = (char*)malloc(newfile.NameLen + 1);
+                        if (!newfile.Name)
+                            return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
+                        OemToChar(newName, newfile.Name); // legacy fallback
+                    }
                     newfile.Ext = strrchr(newfile.Name, '.');
                     if (newfile.Ext != NULL) // ".cvspass" is an extension in Windows ...
                                              //          if (newfile.Ext != NULL && newfile.Name != newfile.Ext)
@@ -1474,10 +1531,18 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
 
     // we have the file, now open it
     FILE* listFile;
-    if ((listFile = fopen(tmpListNameBuf, "w")) == NULL)
+    // feature 069 (F-P1-06): the narrow CRT resolves the name through the ANSI
+    // code page, so under a non-ASCII %TEMP% the list file could not be created
+    // at all and the packer aborted with "cannot create the file list"
+    WCHAR* tmpListNameW = SalU8ToWAlloc(tmpListNameBuf);
+    listFile = tmpListNameW != NULL ? _wfopen(tmpListNameW, L"w")
+                                    : fopen(tmpListNameBuf, "w"); // legacy fallback
+    if (tmpListNameW != NULL)
+        free(tmpListNameW);
+    if (listFile == NULL)
     {
-        RemoveDirectory(tmpDirNameBuf);
-        DeleteFile(tmpListNameBuf);
+        SalRemoveDirectory(tmpDirNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
     }
 
@@ -1489,13 +1554,29 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
     CQuadWord totalSize(0, 0);
     int errorOccured;
 
+    // feature 069 (F-P1-05): the names are UTF-8 (CFileData::Name), and
+    // CharToOem read those bytes as if they were in the ANSI code page before
+    // mapping them to OEM - so the list file named a file that does not exist
+    // and the archiver reported it could not find it.  SalU8ToOEM converts
+    // properly; where the name cannot be expressed in the console code page at
+    // all it fails, and the legacy call keeps the previous (failing) behaviour
+    // rather than skipping the file silently.
     if (!needANSIListFile)
-        CharToOem(rootPath, rootPath);
+    {
+        char rootPathOem[2 * MAX_PATH];
+        if (SalU8ToOEM(rootPath, rootPathOem, sizeof(rootPathOem)) != 0)
+            strcpy(rootPath, rootPathOem);
+        else
+            CharToOem(rootPath, rootPath);
+    }
     // pick the name
     while ((name = nextName(parent, 1, &isDir, &size, NULL, param, &errorOccured)) != NULL)
     {
         if (!needANSIListFile)
-            CharToOem(name, namecnv);
+        {
+            if (SalU8ToOEM(name, namecnv, _countof(namecnv)) == 0)
+                CharToOem(name, namecnv); // legacy fallback
+        }
         else
             strcpy(namecnv, name);
         // sum the total size
@@ -1506,8 +1587,8 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
             if (fprintf(listFile, "%s%s\n", rootPath, namecnv) <= 0)
             {
                 fclose(listFile);
-                DeleteFile(tmpListNameBuf);
-                RemoveDirectory(tmpDirNameBuf);
+                SalDeleteFile(tmpListNameBuf);
+                SalRemoveDirectory(tmpDirNameBuf);
                 return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
             }
         }
@@ -1520,8 +1601,8 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
     if (errorOccured == SALENUM_CANCEL ||
         !TestFreeSpace(parent, tmpDirNameBuf, totalSize, LoadStr(IDS_PACKERR_TITLE)))
     {
-        DeleteFile(tmpListNameBuf);
-        RemoveDirectory(tmpDirNameBuf);
+        SalDeleteFile(tmpListNameBuf);
+        SalRemoveDirectory(tmpDirNameBuf);
         return FALSE;
     }
 
@@ -1533,8 +1614,8 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
     if (!PackExpandCmdLine(archiveFileName, tmpDirNameBuf, tmpListNameBuf, NULL,
                            command, cmdLine, PACK_CMDLINE_MAXLEN, NULL))
     {
-        DeleteFile(tmpListNameBuf);
-        RemoveDirectory(tmpDirNameBuf);
+        SalDeleteFile(tmpListNameBuf);
+        SalRemoveDirectory(tmpDirNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_CMDLNERR);
     }
 
@@ -1542,8 +1623,8 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
     if (!supportLongNames && strlen(cmdLine) >= 128)
     {
         char buffer[1000];
-        DeleteFile(tmpListNameBuf);
-        RemoveDirectory(tmpDirNameBuf);
+        SalDeleteFile(tmpListNameBuf);
+        SalRemoveDirectory(tmpDirNameBuf);
         strcpy(buffer, cmdLine);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_CMDLNLEN, buffer);
     }
@@ -1556,8 +1637,8 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
             strcpy(currentDir, initDir);
         else
         {
-            DeleteFile(tmpListNameBuf);
-            RemoveDirectory(tmpDirNameBuf);
+            SalDeleteFile(tmpListNameBuf);
+            SalRemoveDirectory(tmpDirNameBuf);
             return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_IDIRERR);
         }
     }
@@ -1565,8 +1646,8 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
     {
         if (!PackExpandInitDir(archiveFileName, NULL, tmpDirNameBuf, initDir, currentDir, MAX_PATH))
         {
-            DeleteFile(tmpListNameBuf);
-            RemoveDirectory(tmpDirNameBuf);
+            SalDeleteFile(tmpListNameBuf);
+            SalRemoveDirectory(tmpDirNameBuf);
             return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_IDIRERR);
         }
     }
@@ -1574,12 +1655,12 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
     // and run the external program
     if (!PackExecute(NULL, cmdLine, currentDir, errorTable))
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         RemoveTemporaryDir(tmpDirNameBuf);
         return FALSE; // the error message has already been shown
     }
     // the file list is no longer needed
-    DeleteFile(tmpListNameBuf);
+    SalDeleteFile(tmpListNameBuf);
 
     // and now finally move the files where they belong
     char srcDir[MAX_PATH];
@@ -1590,6 +1671,8 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
         // because of the Czech characters and long names :-(
         char* r = rootPath;
         WIN32_FIND_DATA foundFile;
+        WIN32_FIND_DATAW foundFileW; // feature 069 (F-P1-06)
+        char foundNameU8[SAL_FIND_NAME_U8];
         char buffer[1000];
         while (1)
         {
@@ -1601,7 +1684,9 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
                 r++; // skip the backslash in the original rootPath
             strcat(srcDir, "\\*");
 
-            HANDLE found = HANDLES_Q(FindFirstFile(srcDir, &foundFile));
+            // feature 069 (F-P1-06): srcDir is built from SalGetTempFileName output (UTF-8), so
+            // the ANSI enumeration found nothing under a non-ASCII %TEMP%
+            HANDLE found = SalFindFirstFile(srcDir, &foundFileW); // registers with HANDLES itself
             if (found == INVALID_HANDLE_VALUE)
             {
                 strcpy(buffer, "FindFirstFile: ");
@@ -1612,11 +1697,12 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
                 RemoveTemporaryDir(tmpDirNameBuf);
                 return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_GENERAL, buffer);
             }
-            while (foundFile.cFileName[0] == 0 ||
-                   strcmp(foundFile.cFileName, ".") == 0 || // we ignore "." and ".."
-                   strcmp(foundFile.cFileName, "..") == 0)
+            SalConvertFindDataW(&foundFileW, &foundFile, foundNameU8, sizeof(foundNameU8), NULL, 0);
+            while (foundNameU8[0] == 0 ||
+                   strcmp(foundNameU8, ".") == 0 || // we ignore "." and ".."
+                   strcmp(foundNameU8, "..") == 0)
             {
-                if (!FindNextFile(found, &foundFile))
+                if (!SalFindNextFile(found, &foundFileW))
                 {
                     HANDLES(FindClose(found));
                     strcpy(buffer, "FindNextFile: ");
@@ -1628,7 +1714,7 @@ BOOL PackUniversalUncompress(HWND parent, const char* command, TPackErrorTable* 
             if (foundFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
             { // attach another subdirectory on the path
                 srcDir[strlen(srcDir) - 1] = 0;
-                strcat(srcDir, foundFile.cFileName);
+                strcat(srcDir, foundNameU8);
             }
             else
             {
@@ -1858,9 +1944,15 @@ BOOL PackUnpackOneFile(CFilesWindow* panel, const char* archiveFileName,
     // find the extracted file - the name may not match due to the Czech characters and long names :-(
     char* extractedFile = (char*)malloc(strlen(tmpDirNameBuf) + 2 + 1);
     WIN32_FIND_DATA foundFile;
+    WIN32_FIND_DATAW foundFileW; // feature 069 (F-P1-06)
+    char foundNameU8[SAL_FIND_NAME_U8];
     strcpy(extractedFile, tmpDirNameBuf);
     strcat(extractedFile, "\\*");
-    HANDLE found = HANDLES_Q(FindFirstFile(extractedFile, &foundFile));
+    // feature 069 (F-P1-06): extractedFile lives under the UTF-8 temp directory, and the name the
+    // ANSI enumeration returned was then spliced into that UTF-8 path - the
+    // strict SalMoveFile rejected the mixture and the extracted file never
+    // reached the panel ("MoveFile: <error>")
+    HANDLE found = SalFindFirstFile(extractedFile, &foundFileW); // registers with HANDLES itself
     if (found == INVALID_HANDLE_VALUE)
     {
         char buffer[1000];
@@ -1871,10 +1963,11 @@ BOOL PackUnpackOneFile(CFilesWindow* panel, const char* archiveFileName,
         return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_GENERAL, buffer);
     }
     free(extractedFile);
-    while (foundFile.cFileName[0] == 0 ||
-           strcmp(foundFile.cFileName, ".") == 0 || strcmp(foundFile.cFileName, "..") == 0)
+    SalConvertFindDataW(&foundFileW, &foundFile, foundNameU8, sizeof(foundNameU8), NULL, 0);
+    while (foundNameU8[0] == 0 ||
+           strcmp(foundNameU8, ".") == 0 || strcmp(foundNameU8, "..") == 0)
     {
-        if (!FindNextFile(found, &foundFile))
+        if (!SalFindNextFile(found, &foundFileW))
         {
             char buffer[1000];
             strcpy(buffer, "FindNextFile: ");
@@ -1887,10 +1980,10 @@ BOOL PackUnpackOneFile(CFilesWindow* panel, const char* archiveFileName,
     HANDLES(FindClose(found));
 
     // and finally move it where it belongs
-    char* srcName = (char*)malloc(strlen(tmpDirNameBuf) + 1 + strlen(foundFile.cFileName) + 1);
+    char* srcName = (char*)malloc(strlen(tmpDirNameBuf) + 1 + strlen(foundNameU8) + 1);
     strcpy(srcName, tmpDirNameBuf);
     strcat(srcName, "\\");
-    strcat(srcName, foundFile.cFileName);
+    strcat(srcName, foundNameU8);
     const char* onlyName = strrchr(nameInArchive, '\\');
     if (onlyName == NULL)
         onlyName = nameInArchive;

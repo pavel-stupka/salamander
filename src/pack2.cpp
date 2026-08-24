@@ -271,7 +271,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
     char sourceShortName[MAX_PATH];
     if (!supportLongNames)
     {
-        if (!GetShortPathName(sourceDir, sourceShortName, MAX_PATH))
+        if (!SalGetShortPathName(sourceDir, sourceShortName, MAX_PATH))
         {
             char buffer[1000];
             strcpy(buffer, "GetShortPathName: ");
@@ -298,9 +298,17 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
 
     // we have the file, now open it
     FILE* listFile;
-    if ((listFile = fopen(tmpListNameBuf, "w")) == NULL)
+    // feature 069 (F-P1-06): the narrow CRT resolves the name through the ANSI
+    // code page, so under a non-ASCII %TEMP% the list file could not be created
+    // at all and the packer aborted with "cannot create the file list"
+    WCHAR* tmpListNameW = SalU8ToWAlloc(tmpListNameBuf);
+    listFile = tmpListNameW != NULL ? _wfopen(tmpListNameW, L"w")
+                                    : fopen(tmpListNameBuf, "w"); // legacy fallback
+    if (tmpListNameW != NULL)
+        free(tmpListNameW);
+    if (listFile == NULL)
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
     }
 
@@ -314,8 +322,18 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
         maxPath = DOS_MAX_PATH;
     else
         maxPath = MAX_PATH;
+    // feature 069 (F-P1-05): see the note in pack1.cpp - CharToOem read UTF-8 bytes as if they
+    // were in the ANSI code page, so the archiver was given a name that does
+    // not exist; the legacy call stays as the fallback for a name the console
+    // code page cannot express at all
     if (!needANSIListFile)
-        CharToOem(sourceShortName, sourceShortName);
+    {
+        char sourceOem[2 * MAX_PATH];
+        if (SalU8ToOEM(sourceShortName, sourceOem, sizeof(sourceOem)) != 0)
+            strcpy(sourceShortName, sourceOem);
+        else
+            CharToOem(sourceShortName, sourceShortName);
+    }
     int sourceDirLen = (int)strlen(sourceShortName) + 1;
     int errorOccured;
     // pick the name
@@ -324,13 +342,16 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
         if (supportLongNames)
         {
             if (!needANSIListFile)
-                CharToOem(name, namecnv);
+            {
+                if (SalU8ToOEM(name, namecnv, _countof(namecnv)) == 0)
+                    CharToOem(name, namecnv); // legacy fallback
+            }
             else
                 strcpy(namecnv, name);
         }
         else
         {
-            if (GetShortPathName(name, namecnv, MAX_PATH) == 0)
+            if (SalGetShortPathName(name, namecnv, MAX_PATH) == 0)
             {
                 char buffer[1000];
                 strcpy(buffer, "File: ");
@@ -338,11 +359,17 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
                 strcat(buffer, ", GetShortPathName: ");
                 strcat(buffer, GetErrorText(GetLastError()));
                 fclose(listFile);
-                DeleteFile(tmpListNameBuf);
+                SalDeleteFile(tmpListNameBuf);
                 return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_GENERAL, buffer);
             }
             if (!needANSIListFile)
-                CharToOem(namecnv, namecnv);
+            { // 'namecnv' is the 8.3 form here, ASCII in practice
+                char shortOem[MAX_PATH];
+                if (SalU8ToOEM(namecnv, shortOem, sizeof(shortOem)) != 0)
+                    strcpy(namecnv, shortOem);
+                else
+                    CharToOem(namecnv, namecnv);
+            }
         }
 
         // check the length
@@ -350,7 +377,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
         {
             char buffer[1000];
             fclose(listFile);
-            DeleteFile(tmpListNameBuf);
+            SalDeleteFile(tmpListNameBuf);
             sprintf(buffer, "%s\\%s", sourceShortName, namecnv);
             return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_PATH, buffer);
         }
@@ -361,7 +388,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
             if (fprintf(listFile, "%s\n", namecnv) <= 0)
             {
                 fclose(listFile);
-                DeleteFile(tmpListNameBuf);
+                SalDeleteFile(tmpListNameBuf);
                 return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
             }
         }
@@ -372,7 +399,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
     // if an error occurred and the user decided to cancel the operation, end it
     if (errorOccured == SALENUM_CANCEL)
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return FALSE;
     }
 
@@ -387,7 +414,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
     if (!PackExpandCmdLine(archiveFileName, rootPath, tmpListNameBuf, NULL,
                            command, cmdLine, PACK_CMDLINE_MAXLEN, DOSTmpName))
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_CMDLNERR);
     }
 
@@ -413,7 +440,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
     {
         char buffer[1000];
         strcpy(buffer, cmdLine);
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_CMDLNLEN, buffer);
     }
 
@@ -425,7 +452,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
             strcpy(currentDir, initDir);
         else
         {
-            DeleteFile(tmpListNameBuf);
+            SalDeleteFile(tmpListNameBuf);
             return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_IDIRERR);
         }
     }
@@ -434,7 +461,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
         if (!PackExpandInitDir(archiveFileName, sourceDir, rootPath, initDir, currentDir,
                                MAX_PATH))
         {
-            DeleteFile(tmpListNameBuf);
+            SalDeleteFile(tmpListNameBuf);
             return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_IDIRERR);
         }
     }
@@ -442,7 +469,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
     // back up the short archive file name, later we check whether the long name
     // survived -> if the short one remained, rename it back to the original long name
     char DOSArchiveFileName[MAX_PATH];
-    if (!GetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
+    if (!SalGetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
         DOSArchiveFileName[0] = 0;
 
     // and run the external program
@@ -457,12 +484,12 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
     }
     if (!exec)
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return FALSE; // error message has already been displayed
     }
 
     // the file list is no longer needed
-    DeleteFile(tmpListNameBuf);
+    SalDeleteFile(tmpListNameBuf);
 
     // if we used a temporary DOS name, rename all files of that name (name.*) to the desired long name
     if (DOSTmpName[0] != 0)
@@ -494,27 +521,32 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
             ext = path + strlen(path); // for "name" or "path\\name" there is no extension; in Windows ".cvspass" is an extension
         strcpy(ext, ".*");
         WIN32_FIND_DATA findData;
+        WIN32_FIND_DATAW findDataW; // feature 069 (F-P1-06)
+        char findNameU8[SAL_FIND_NAME_U8];
         int i;
         for (i = 0; i < 2; i++)
         {
-            HANDLE find = HANDLES_Q(FindFirstFile(path, &findData));
+            // feature 069 (F-P1-06): 'path' is UTF-8 (panel/temp), so the ANSI enumeration missed
+            // every non-ASCII entry
+            HANDLE find = SalFindFirstFile(path, &findDataW); // registers with HANDLES itself
             if (find != INVALID_HANDLE_VALUE)
             {
                 do
                 {
-                    strcpy(srcName, findData.cFileName);
+                    SalConvertFindDataW(&findDataW, &findData, findNameU8, sizeof(findNameU8), NULL, 0);
+                    strcpy(srcName, findNameU8);
                     const char* dst;
-                    if (StrICmp(tmpOrigName, findData.cFileName) == 0)
+                    if (StrICmp(tmpOrigName, findNameU8) == 0)
                         dst = archiveFileName;
                     else
                     {
-                        char* srcExt = findData.cFileName + strlen(findData.cFileName);
-                        //            while (--srcExt > findData.cFileName && *srcExt != '.');
-                        while (--srcExt >= findData.cFileName && *srcExt != '.')
+                        char* srcExt = findNameU8 + strlen(findNameU8);
+                        //            while (--srcExt > findNameU8 && *srcExt != '.');
+                        while (--srcExt >= findNameU8 && *srcExt != '.')
                             ;
-                        //            if (srcExt == findData.cFileName) srcExt = findData.cFileName + strlen(findData.cFileName);  // ".cvspass" is an extension in Windows ...
-                        if (srcExt < findData.cFileName)
-                            srcExt = findData.cFileName + strlen(findData.cFileName);
+                        //            if (srcExt == findNameU8) srcExt = findNameU8 + strlen(findNameU8);  // ".cvspass" is an extension in Windows ...
+                        if (srcExt < findNameU8)
+                            srcExt = findNameU8 + strlen(findNameU8);
                         strcpy(dstExt, srcExt);
                         dst = dstNameBuf;
                     }
@@ -535,7 +567,7 @@ BOOL PackUniversalCompress(HWND parent, const char* command, TPackErrorTable* co
                             TRACE_E("Error (" << err << ") in SalMoveFile(" << src << ", " << dst << ").");
                         }
                     }
-                } while (FindNextFile(find, &findData));
+                } while (SalFindNextFile(find, &findDataW));
                 HANDLES(FindClose(find)); // this name already exists with some extension, searching further
             }
         }
@@ -638,9 +670,17 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
 
     // we have the file, now open it
     FILE* listFile;
-    if ((listFile = fopen(tmpListNameBuf, "w")) == NULL)
+    // feature 069 (F-P1-06): the narrow CRT resolves the name through the ANSI
+    // code page, so under a non-ASCII %TEMP% the list file could not be created
+    // at all and the packer aborted with "cannot create the file list"
+    WCHAR* tmpListNameW = SalU8ToWAlloc(tmpListNameBuf);
+    listFile = tmpListNameW != NULL ? _wfopen(tmpListNameW, L"w")
+                                    : fopen(tmpListNameBuf, "w"); // legacy fallback
+    if (tmpListNameW != NULL)
+        free(tmpListNameW);
+    if (listFile == NULL)
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
     }
 
@@ -649,13 +689,23 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
     const char* name;
     char namecnv[MAX_PATH];
     int errorOccured;
+    // feature 069 (F-P1-05): see the note in pack1.cpp
     if (!needANSIListFile)
-        CharToOem(rootPath, rootPath);
+    {
+        char rootOem[2 * MAX_PATH];
+        if (SalU8ToOEM(rootPath, rootOem, sizeof(rootOem)) != 0)
+            strcpy(rootPath, rootOem);
+        else
+            CharToOem(rootPath, rootPath);
+    }
     // pick the name
     while ((name = nextName(parent, 1, &isDir, NULL, NULL, param, &errorOccured)) != NULL)
     {
         if (!needANSIListFile)
-            CharToOem(name, namecnv);
+        {
+            if (SalU8ToOEM(name, namecnv, _countof(namecnv)) == 0)
+                CharToOem(name, namecnv); // legacy fallback
+        }
         else
             strcpy(namecnv, name);
         // and put it into the list
@@ -664,7 +714,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
             if (fprintf(listFile, "%s%s\n", rootPath, namecnv) <= 0)
             {
                 fclose(listFile);
-                DeleteFile(tmpListNameBuf);
+                SalDeleteFile(tmpListNameBuf);
                 return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
             }
         }
@@ -675,7 +725,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
                 if (fprintf(listFile, "%s%s\n", rootPath, namecnv) <= 0)
                 {
                     fclose(listFile);
-                    DeleteFile(tmpListNameBuf);
+                    SalDeleteFile(tmpListNameBuf);
                     return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
                 }
             }
@@ -686,7 +736,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
                     if (fprintf(listFile, "%s%s\\*\n", rootPath, namecnv) <= 0)
                     {
                         fclose(listFile);
-                        DeleteFile(tmpListNameBuf);
+                        SalDeleteFile(tmpListNameBuf);
                         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_FILE);
                     }
                 }
@@ -699,7 +749,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
     // if an error occurred and the user decided to cancel the operation, end it
     if (errorOccured == SALENUM_CANCEL)
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return FALSE;
     }
 
@@ -711,7 +761,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
     if (!PackExpandCmdLine(archiveFileName, NULL, tmpListNameBuf, NULL,
                            modifyTable->DeleteCommand, cmdLine, PACK_CMDLINE_MAXLEN, NULL))
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_CMDLNERR);
     }
 
@@ -719,7 +769,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
     if (!modifyTable->SupportLongNames && strlen(cmdLine) >= 128)
     {
         char buffer[1000];
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         strcpy(buffer, cmdLine);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_CMDLNLEN, buffer);
     }
@@ -729,7 +779,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
     if (!PackExpandInitDir(archiveFileName, NULL, NULL, modifyTable->DeleteInitDir,
                            currentDir, MAX_PATH))
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return (*PackErrorHandlerPtr)(parent, IDS_PACKERR_IDIRERR);
     }
 
@@ -741,7 +791,7 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
     // back up the short archive file name, later we check whether the long name
     // survived -> if the short one remained, rename it back to the original long name
     char DOSArchiveFileName[MAX_PATH];
-    if (!GetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
+    if (!SalGetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
         DOSArchiveFileName[0] = 0;
 
     // and run the external program
@@ -756,18 +806,19 @@ BOOL PackDelFromArc(HWND parent, CFilesWindow* panel, const char* archiveFileNam
     }
     if (!exec)
     {
-        DeleteFile(tmpListNameBuf);
+        SalDeleteFile(tmpListNameBuf);
         return FALSE; // error message has already been displayed
     }
 
     // if deleting removed the archive, create a zero-length file
-    HANDLE tmpHandle = HANDLES_Q(CreateFile(archiveFileName, GENERIC_READ, 0, NULL,
-                                            OPEN_ALWAYS, fileAttrs, NULL));
+    // feature 069 (F-P1-06): archiveFileName is a UTF-8 panel path
+    HANDLE tmpHandle = SalCreateFile(archiveFileName, GENERIC_READ, 0, NULL,
+                                     OPEN_ALWAYS, fileAttrs, NULL);
     if (tmpHandle != INVALID_HANDLE_VALUE)
         HANDLES(CloseHandle(tmpHandle));
 
     // the file list is no longer needed
-    DeleteFile(tmpListNameBuf);
+    SalDeleteFile(tmpListNameBuf);
 
     return TRUE;
 }

@@ -535,7 +535,9 @@ BOOL ExpandCommand2(HWND parent,
                 }
                 fileName[l++] = '\\';
                 strcpy(fileName + l, longName);
-                if (GetShortPathName(fileName, dosName, MAX_PATH) == 0)
+                // feature 069 (F-P1-21): fileName is UTF-8; SalGetShortPathName converts and calls
+                // the W API (the 8.3 result itself is ASCII by definition)
+                if (SalGetShortPathName(fileName, dosName, MAX_PATH) == 0)
                 {
                     TRACE_E("GetShortPathName() failed");
                     dosName[0] = 0;
@@ -548,7 +550,8 @@ BOOL ExpandCommand2(HWND parent,
                     fileName[l++] = '\\';
                 }
                 fileName[l] = 0;
-                if (GetShortPathName(fileName, dosName, MAX_PATH) == 0)
+                // feature 069 (F-P1-21): see the note above
+                if (SalGetShortPathName(fileName, dosName, MAX_PATH) == 0)
                 {
                     TRACE_E("GetShortPathName() failed");
                     dosName[0] = 0;
@@ -831,8 +834,11 @@ MENU_TEMPLATE_ITEM MsgBoxButtons[] =
                     }
                     return; // fatal error
                 }
-                file = HANDLES_Q(CreateFile(batName, GENERIC_WRITE, 0, NULL, CREATE_NEW,
-                                            FILE_ATTRIBUTE_TEMPORARY, NULL));
+                // feature 069 (F-P1-21): batName comes from SalGetTempFileName (UTF-8), so under a
+                // non-ASCII %TEMP% the wrapper could not be created and a user-menu
+                // item set to run "through a batch file" failed
+                file = SalCreateFile(batName, GENERIC_WRITE, 0, NULL, CREATE_NEW,
+                                     FILE_ATTRIBUTE_TEMPORARY, NULL);
                 if (file == INVALID_HANDLE_VALUE)
                 {
                     lastErr = GetLastError();
@@ -1055,10 +1061,23 @@ void CMainWindow::SetDefaultDirectories(const char* curPath)
         else
             dir = DefaultDir[d - 'a'];
 
+        // feature 069 (F-P1-23): 'dir' is a UTF-8 panel path, and every process
+        // started from here inherits these "=A:" variables - the ANSI call
+        // stored the bytes re-read through the code page, so a child saw a
+        // mis-encoded current directory.  'name' is ASCII by construction.
         if (dir[1] == ':' && dir[2] == '\\' && dir[3] == 0)
             SetEnvironmentVariable(name, NULL);
         else
-            SetEnvironmentVariable(name, dir);
+        {
+            WCHAR nameW[8];
+            WCHAR* dirW = SalU8ToWAlloc(dir);
+            if (dirW != NULL && SalU8ToW(name, -1, nameW, _countof(nameW)) != 0)
+                SetEnvironmentVariableW(nameW, dirW);
+            else
+                SetEnvironmentVariable(name, dir); // legacy fallback
+            if (dirW != NULL)
+                free(dirW);
+        }
     }
 }
 

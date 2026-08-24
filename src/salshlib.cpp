@@ -649,8 +649,12 @@ void CSalShExtPastedData::DoPasteOperation(BOOL copy, const char* tgtPath)
             BOOL canUseData = FALSE;
             FILETIME archiveDate;  // archive file`s date & time
             CQuadWord archiveSize; // archive file`s size
-            HANDLE file = HANDLES_Q(CreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                               NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL));
+            // feature 069 (F-P1-21): ArchiveFileName is a UTF-8 panel path, so the ANSI call could
+            // not open an archive whose name is outside the code page - the
+            // freshness check then failed every time and the archive was
+            // re-listed on every entry
+            HANDLE file = SalCreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                        NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (file != INVALID_HANDLE_VALUE)
             {
                 GetFileTime(file, NULL, NULL, &archiveDate);
@@ -686,8 +690,12 @@ void CSalShExtPastedData::DoPasteOperation(BOOL copy, const char* tgtPath)
             DWORD err = NO_ERROR;
             FILETIME archiveDate;  // archive file`s date & time
             CQuadWord archiveSize; // archive file`s size
-            HANDLE file = HANDLES_Q(CreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                               NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL));
+            // feature 069 (F-P1-21): ArchiveFileName is a UTF-8 panel path, so the ANSI call could
+            // not open an archive whose name is outside the code page - the
+            // freshness check then failed every time and the archive was
+            // re-listed on every entry
+            HANDLE file = SalCreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                        NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (file != INVALID_HANDLE_VALUE)
             {
                 GetFileTime(file, NULL, NULL, &archiveDate);

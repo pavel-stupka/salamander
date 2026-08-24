@@ -197,6 +197,29 @@ int SalU8CharCount(const char* s, int len = -1);
 
 void SalU8TrimIncompleteTail(char* buf);
 
+//
+// ****************************************************************************
+// SalU8ToOEM / SalOEMToU8
+//
+// The console (OEM) code page boundary of the external-archiver subsystem: a
+// list file handed to RAR/ARJ/LHA/UC2/ACE, and the names parsed back out of the
+// archiver's console output.  These are NOT general-purpose converters - use
+// them only where an external console program is on the other side.
+//
+// The pair must always be used together.  Before feature 069 the two directions
+// were CharToOem(<UTF-8>) and OemToCharBuff(<OEM> -> <UTF-8 field>): both wrong,
+// but wrong in opposite directions, so an ACP-representable name survived a pack
+// -> list -> extract round trip by accident while a pack of that name failed
+// outright.  Converting only one direction would have broken the round trip.
+//
+// Both return the number of bytes written including the terminator, or 0 on
+// failure (and then leave 'buf' empty); a character the OEM code page cannot
+// represent makes SalU8ToOEM fail rather than silently substituting '?', because
+// the result is used to name a file the archiver must find.
+
+int SalU8ToOEM(const char* u8, char* buf, int bufSize);
+int SalOEMToU8(const char* oem, char* u8Buf, int u8BufSize);
+
 //*****************************************************************************
 //
 // SalNameEquivalent

@@ -1611,41 +1611,66 @@ void CDriveInfo::Transfer(CTransferInfo& ti)
             if (buff[0] != 0 && buff[1] == ':' && strlen(buff) <= 3)
                 buff[2] = 0; // "x:\\" -> "x:"
             DWORD l = MAX_PATH;
-            remoteNameValid = (WNetGetConnection(buff, remoteName, &l) == NO_ERROR);
+            // feature 069 (F-P1-14/F-P2-07): the template above is UTF-8 now, so
+            // these two must be as well - the row renders correctly today only
+            // because template and argument were both code-page bytes, and a
+            // share name outside the code page came back as "?" anyway
+            WCHAR buffW[MAX_PATH];
+            WCHAR remoteNameW[MAX_PATH];
+            DWORD lW = _countof(remoteNameW);
+            remoteNameValid = SalU8ToW(buff, -1, buffW, _countof(buffW)) != 0 &&
+                              WNetGetConnectionW(buffW, remoteNameW, &lW) == NO_ERROR &&
+                              SalWToU8(remoteNameW, -1, remoteName, MAX_PATH) != 0;
+            if (!remoteNameValid)
+                remoteNameValid = (WNetGetConnection(buff, remoteName, &l) == NO_ERROR);
             l = 100;
-            userNameValid = (WNetGetUser(buff, userName, &l) == NO_ERROR);
+            WCHAR userNameW[MAX_PATH];
+            DWORD luW = _countof(userNameW);
+            userNameValid = SalU8ToW(buff, -1, buffW, _countof(buffW)) != 0 &&
+                            WNetGetUserW(buffW, userNameW, &luW) == NO_ERROR &&
+                            SalWToU8(userNameW, -1, userName, MAX_PATH) != 0;
+            if (!userNameValid)
+                userNameValid = (WNetGetUser(buff, userName, &l) == NO_ERROR);
         }
         //---  GetDriveType - display
         if (!err)
         {
+            // feature 069 (F-P2-07): the whole switch becomes UTF-8, not just the
+            // junction row the finding named.  The line already ends in a
+            // SalU8ToWAlloc + wide SetWindowText, so one code-page fragment
+            // anywhere in it dropped the ENTIRE line - the link target included -
+            // to the legacy draw.  And it must be the whole switch: this change
+            // also makes the UNC and SUBST arguments UTF-8 (F-P1-13, F-P1-14),
+            // and those two rows render correctly today only because template
+            // and argument were both code-page bytes.
             switch (driveType)
             {
             case DRIVE_REMOVABLE:
-                strcpy(volumeName, LoadStr(IDS_INFODLGTYPE1));
+                strcpy(volumeName, LoadStrU8(IDS_INFODLGTYPE1));
                 break;
             case DRIVE_FIXED:
-                strcpy(volumeName, LoadStr(IDS_INFODLGTYPE2));
+                strcpy(volumeName, LoadStrU8(IDS_INFODLGTYPE2));
                 break;
             case DRIVE_REMOTE:
             {
-                strcpy(volumeName, LoadStr(IDS_INFODLGTYPE3));
+                strcpy(volumeName, LoadStrU8(IDS_INFODLGTYPE3));
                 if (remoteNameValid || userNameValid)
                 {
                     strcat(volumeName, " ");
-                    sprintf(volumeName + strlen(volumeName), LoadStr(IDS_INFODLGTYPE8),
+                    sprintf(volumeName + strlen(volumeName), LoadStrU8(IDS_INFODLGTYPE8),
                             remoteNameValid ? remoteName : "",
                             userNameValid ? userName : "");
                 }
                 break;
             }
             case DRIVE_CDROM:
-                strcpy(volumeName, LoadStr(IDS_INFODLGTYPE4));
+                strcpy(volumeName, LoadStrU8(IDS_INFODLGTYPE4));
                 break;
             case DRIVE_RAMDISK:
-                strcpy(volumeName, LoadStr(IDS_INFODLGTYPE5));
+                strcpy(volumeName, LoadStrU8(IDS_INFODLGTYPE5));
                 break;
             default:
-                sprintf(volumeName, LoadStr(IDS_INFODLGTYPE6), driveType);
+                sprintf(volumeName, LoadStrU8(IDS_INFODLGTYPE6), driveType);
                 break;
             }
             BOOL substInfo = FALSE;
@@ -1656,13 +1681,13 @@ void CDriveInfo::Transfer(CTransferInfo& ti)
                 {
                     substInfo = TRUE;
                     strcat(volumeName, " ");
-                    sprintf(volumeName + strlen(volumeName), LoadStr(IDS_INFODLGTYPE7), buff);
+                    sprintf(volumeName + strlen(volumeName), LoadStrU8(IDS_INFODLGTYPE7), buff);
                 }
             }
             if (!substInfo && junctionOrSymlinkTgt[0] != 0)
             {
                 strcat(volumeName, " ");
-                sprintf(volumeName + strlen(volumeName), LoadStr(linkType == 2 ? IDS_INFODLGTYPE9 : IDS_INFODLGTYPE10),
+                sprintf(volumeName + strlen(volumeName), LoadStrU8(linkType == 2 ? IDS_INFODLGTYPE9 : IDS_INFODLGTYPE10),
                         junctionOrSymlinkTgt);
             }
             WCHAR* driveTypeW = SalU8ToWAlloc(volumeName); // may carry UNC/subst/link target paths (UTF-8, feature 004)

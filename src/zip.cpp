@@ -2496,7 +2496,8 @@ BOOL ViewFileInPluginViewer(const char* pluginSPL,
         {
             TRACE_E("Unexpected value of 'fileNameInCache' in CSalamanderGeneral::ViewFileInPluginViewer!");
             error = 3;
-            ::DeleteFile(pluginData->FileName);
+            if (!::SalDeleteFile(pluginData->FileName))
+                ::DeleteFile(pluginData->FileName); // plugin-authored ANSI path (FR-009)
             return FALSE;
         }
 
@@ -2513,7 +2514,8 @@ BOOL ViewFileInPluginViewer(const char* pluginSPL,
                 else            // fatal error
                 {
                     error = 3;
-                    ::DeleteFile(pluginData->FileName);
+                    if (!::SalDeleteFile(pluginData->FileName))
+                        ::DeleteFile(pluginData->FileName); // plugin-authored ANSI path (FR-009)
                     return FALSE; // fatal error
                 }
             }
@@ -2524,7 +2526,8 @@ BOOL ViewFileInPluginViewer(const char* pluginSPL,
         {
             DWORD err = GetLastError();
             TRACE_E("Unable to move file to disk cache! (error " << ::GetErrorText(err) << ")");
-            ::DeleteFile(pluginData->FileName);
+            if (!::SalDeleteFile(pluginData->FileName))
+                ::DeleteFile(pluginData->FileName); // plugin-authored ANSI path (FR-009)
             DiskCache.ReleaseName(viewUniqueName, FALSE);
             error = 3;
             return FALSE;
@@ -2532,8 +2535,14 @@ BOOL ViewFileInPluginViewer(const char* pluginSPL,
         else // successfully obtained a temp file; we must call NamePrepared()
         {
             CQuadWord size(0, 0);
-            HANDLE file = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                               NULL, OPEN_EXISTING, 0, NULL));
+            // feature 069 (F-P1-21, group 1): the temp path is UTF-8 and
+            // ::SalMoveFile above already treats it as such - these were the
+            // inconsistent leftovers, so under a non-ASCII %TEMP% the viewed
+            // file's size read as 0 and the temp file was never deleted.
+            // Nothing a plugin receives changes: it is handed 'fileName' /
+            // 'fileNameInCache', which this does not touch (FR-012).
+            HANDLE file = SalCreateFile(fileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                        NULL, OPEN_EXISTING, 0, NULL);
             if (file != INVALID_HANDLE_VALUE)
             { // ignore the error; the file size is not that important
                 DWORD err;

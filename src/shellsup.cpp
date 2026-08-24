@@ -524,19 +524,33 @@ const char* GetCurrentDir(POINTL& pt, void* param, DWORD* effect, BOOL rButton, 
             linkTgt[0] = 0;
             if (StrICmp(file->Ext, "lnk") == 0) // is it not a directory shortcut?
             {
-                IShellLink* link;
+                IShellLinkW* link; // feature 069 (F-P1-25): the wide interface
+                // feature 069 (F-P1-25): the wide shell-link interface.  Two
+                // defects met here: 'fullName' is UTF-8 and was widened through
+                // the code page, so a .lnk under an accented path could not be
+                // loaded at all; and IShellLink (the A interface) returned the
+                // TARGET in the code page, which the strict SalGetFileAttributes
+                // below then rejected - so a shortcut TO an accented directory
+                // was taken for a file and Enter did not follow it.  That second
+                // case needs no accented .lnk of its own, which makes it the
+                // more reachable of the two.
                 if (CoCreateInstance(CLSID_ShellLink, NULL,
-                                     CLSCTX_INPROC_SERVER, IID_IShellLink,
+                                     CLSCTX_INPROC_SERVER, IID_IShellLinkW,
                                      (LPVOID*)&link) == S_OK)
                 {
                     IPersistFile* fileInt;
                     if (link->QueryInterface(IID_IPersistFile, (LPVOID*)&fileInt) == S_OK)
                     {
                         OLECHAR oleName[MAX_PATH];
-                        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
-                        oleName[MAX_PATH - 1] = 0;
+                        if (SalU8ToW(fullName, -1, oleName, MAX_PATH) == 0)
+                        { // not valid UTF-8 (transitional): keep the legacy path
+                            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+                            oleName[MAX_PATH - 1] = 0;
+                        }
+                        WCHAR linkTgtW[MAX_PATH];
                         if (fileInt->Load(oleName, STGM_READ) == S_OK &&
-                            link->GetPath(linkTgt, MAX_PATH, NULL, SLGP_UNCPRIORITY) == NOERROR)
+                            link->GetPath(linkTgtW, MAX_PATH, NULL, SLGP_UNCPRIORITY) == NOERROR &&
+                            SalWToU8(linkTgtW, -1, linkTgt, MAX_PATH) != 0)
                         {
                             DWORD attr = SalGetFileAttributes(linkTgt);
                             if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY))
@@ -619,15 +633,19 @@ int CountNumberOfItemsOnPath(const char* path)
     lstrcpyn(s, path, MAX_PATH + 10);
     if (SalPathAppend(s, "*.*", MAX_PATH + 10))
     {
-        WIN32_FIND_DATA fileData;
-        HANDLE search = HANDLES_Q(FindFirstFile(s, &fileData));
+        // feature 069 (F-P1-21): 's' is a UTF-8 panel path, so the ANSI enumeration returned
+        // nothing for every non-ASCII path and the post-operation refresh
+        // decision was made on a count of 0.  Only the count is used, so the
+        // names need no conversion here.
+        WIN32_FIND_DATAW fileData;
+        HANDLE search = SalFindFirstFile(s, &fileData); // registers with HANDLES itself
         if (search != INVALID_HANDLE_VALUE)
         {
             int num = 0;
             do
             {
                 num++;
-            } while (FindNextFile(search, &fileData));
+            } while (SalFindNextFile(search, &fileData));
             HANDLES(FindClose(search));
             return num;
         }
@@ -1001,6 +1019,16 @@ void DoDragFromArchiveOrFS(CFilesWindow* panel, BOOL& dropDone, char* targetPath
             // get rid of the DROPFAKE method
             if (SalPathAppend(fakeRootDir, "DROPFAKE", MAX_PATH))
             {
+                // feature 069 (F-P1-21): deliberately still ANSI.  The name is
+                // published into shared memory (SalShExtSharedMemView->
+                // DragDropFakeDirName, a char[MAX_PATH] ABI field) and compared
+                // by the ANSI-built shell extension (shellext/copyhook.c), which
+                // receives pszSrcFile from ICopyHookA in the code page - so a
+                // UTF-8 name would never match there.  Creating the directory
+                // successfully while the hook cannot recognise it is WORSE than
+                // failing: the shell then really copies the empty DROPFAKE
+                // folder to the drop target.  Deferred under FR-012 with the
+                // shell extension (cluster B-5 shape).
                 if (CreateDirectory(fakeRootDir, NULL))
                 {
                     // create objects for drag&drop
@@ -1413,6 +1441,9 @@ void ShellAction(CFilesWindow* panel, CShellAction action, BOOL useSelection,
                         fakeName = fakeRootDir + strlen(fakeRootDir);
                         if (SalPathAppend(fakeRootDir, "CLIPFAKE", MAX_PATH))
                         {
+                            // feature 069 (F-P1-21): still ANSI on purpose - see the
+                            // note at the drag site (PasteFakeDirName is the same
+                            // shared-memory ABI, copyhook.c the same comparison)
                             if (CreateDirectory(fakeRootDir, NULL))
                             {
                                 DWORD prefferedDropEffect = DROPEFFECT_COPY; // DROPEFFECT_MOVE (we used it for debugging purposes)

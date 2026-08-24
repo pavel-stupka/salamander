@@ -158,7 +158,13 @@ BOOL GetGoogleDrivePath(char* gdPath, int gdPathMax, CSQLite3DynLoadBase** sqlit
                                 int utf8PathLen = sqlite3_Dyn->column_bytes(pStmt, 0);
                                 if (utf8Path != NULL && utf8PathLen > 0 &&
                                     ConvertA2U((const char*)utf8Path, utf8PathLen, widePath, _countof(widePath), CP_UTF8) &&
-                                    ConvertU2A(widePath, -1, mbPath, _countof(mbPath)) &&
+                                    // feature 069 (F-P1-09): the sibling above
+                                    // already reads UTF-8 with CP_UTF8; this
+                                    // conversion back defaulted to CP_ACP, so
+                                    // IsGoogleDrivePath could never match a
+                                    // panel path like "G:\\Muj disk" - and that
+                                    // needs no accented account name at all
+                                    SalWToU8(widePath, -1, mbPath, _countof(mbPath)) != 0 &&
                                     (int)strlen(mbPath) < gdPathMax)
                                 {
                                     if (strnicmp(mbPath, "\\\\?\\UNC\\", 8) == 0)

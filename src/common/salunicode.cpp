@@ -535,6 +535,50 @@ const char* SalU8Next(const char* s)
     return s;
 }
 
+int SalU8ToOEM(const char* u8, char* buf, int bufSize)
+{
+    if (buf == NULL || bufSize <= 0)
+        return 0;
+    buf[0] = 0;
+    if (u8 == NULL)
+        return 0;
+    WCHAR* w = SalU8ToWAlloc(u8);
+    if (w == NULL)
+        return 0; // not valid UTF-8 (or WTF-8): the caller keeps the legacy path
+    BOOL usedDefault = FALSE;
+    int written = WideCharToMultiByte(CP_OEMCP, 0, w, -1, buf, bufSize,
+                                      NULL, &usedDefault);
+    free(w);
+    if (written == 0 || usedDefault)
+    { // the archiver would be given a name that does not exist on disk
+        buf[0] = 0;
+        return 0;
+    }
+    return written;
+}
+
+int SalOEMToU8(const char* oem, char* u8Buf, int u8BufSize)
+{
+    if (u8Buf == NULL || u8BufSize <= 0)
+        return 0;
+    u8Buf[0] = 0;
+    if (oem == NULL)
+        return 0;
+    int wchars = MultiByteToWideChar(CP_OEMCP, 0, oem, -1, NULL, 0);
+    if (wchars <= 0)
+        return 0;
+    WCHAR* w = (WCHAR*)malloc(wchars * sizeof(WCHAR));
+    if (w == NULL)
+        return 0;
+    int ret = 0;
+    if (MultiByteToWideChar(CP_OEMCP, 0, oem, -1, w, wchars) > 0)
+        ret = SalWToU8(w, -1, u8Buf, u8BufSize);
+    free(w);
+    if (ret == 0)
+        u8Buf[0] = 0;
+    return ret;
+}
+
 void SalU8TrimIncompleteTail(char* buf)
 {
     if (buf == NULL)

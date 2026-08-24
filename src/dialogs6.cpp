@@ -551,7 +551,12 @@ int CSharesDialog::GetFocusedIndex()
 void CSharesDialog::DeleteShare(const char* shareName)
 {
     OLECHAR oleShareName[MAX_PATH];
-    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shareName, -1, oleShareName, MAX_PATH);
+    // feature 069 (F-P1-25): the value is UTF-8 - try the strict conversion first
+    // and keep the code-page widening as the fallback (the shape shellib.cpp:1600
+    // already uses); widening a UTF-8 name through the code page hands the shell a
+    // name it cannot resolve.
+    if (SalU8ToW(shareName, -1, oleShareName, MAX_PATH) == 0)
+        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shareName, -1, oleShareName, MAX_PATH);
     oleShareName[MAX_PATH - 1] = 0;
     NetShareDel(NULL, oleShareName, 0);
 }
@@ -2453,9 +2458,11 @@ CDriveSelectErrDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             lstrcpyn(fileName, DrvPath, MAX_PATH + 10);
             if (SalPathAppend(fileName, "*", MAX_PATH + 10))
             {
-                WIN32_FIND_DATA fileData;
+                // feature 069 (F-P1-21): DrvPath is a UTF-8 path, so on a drive whose root path is
+                // not ASCII the ANSI probe reported the drive as inaccessible
+                WIN32_FIND_DATAW fileData;
                 HANDLE search;
-                search = HANDLES_Q(FindFirstFile(fileName, &fileData));
+                search = SalFindFirstFile(fileName, &fileData); // registers with HANDLES itself
                 if (search == INVALID_HANDLE_VALUE)
                 {
                     DWORD err = GetLastError();

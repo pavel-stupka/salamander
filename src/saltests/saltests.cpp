@@ -1496,6 +1496,105 @@ static void TestEncodingFixes069()
     CHECK(SalU8ToW(buf, -1, w, _countof(w)) == 0);
     SalU8TrimIncompleteTail(buf);
     CHECK(SalU8ToW(buf, -1, w, _countof(w)) != 0);
+
+    // ---- F-P1-05: the console (OEM) boundary of the external archivers ------
+    // The pair must round-trip, because the pack side names the file the
+    // archiver has to find and the list side fills CFileData::Name.
+    char oem[64], back[64];
+
+    // (1) ASCII round-trips byte-identically in both directions
+    CHECK(SalU8ToOEM("readme.txt", oem, sizeof(oem)) == 11);
+    CHECK(strcmp(oem, "readme.txt") == 0);
+    CHECK(SalOEMToU8(oem, back, sizeof(back)) == 11);
+    CHECK(strcmp(back, "readme.txt") == 0);
+
+    // (2) a name the OEM code page CAN represent survives the round trip and is
+    //     NOT the same bytes in between - which is the whole point: what the
+    //     archiver receives differs from what we store
+    const char* u8 = "\xC5\xBElu\xC5\xA5ou\xC4\x8Dk\xC3\xBD.txt"; // zlutoucky.txt with carons
+    if (SalU8ToOEM(u8, oem, sizeof(oem)) != 0) // only on a code page that has them
+    {
+        CHECK(strcmp(oem, u8) != 0);
+        CHECK(SalOEMToU8(oem, back, sizeof(back)) != 0);
+        CHECK(strcmp(back, u8) == 0); // exact round trip
+    }
+
+    // (3) a character no single-byte OEM code page can represent fails cleanly
+    //     instead of silently becoming '?' - the archiver must not be handed a
+    //     name that does not exist
+    CHECK(SalU8ToOEM("\xE6\xBC\xA2.txt", oem, sizeof(oem)) == 0); // CJK
+    CHECK(oem[0] == 0);
+
+    // (4) invalid UTF-8 in, no output (the caller keeps the legacy path)
+    CHECK(SalU8ToOEM("\xC4", oem, sizeof(oem)) == 0);
+    CHECK(oem[0] == 0);
+
+    // (5) a too-small target fails and empties, never truncates an identity
+    CHECK(SalU8ToOEM("readme.txt", oem, 4) == 0);
+    CHECK(oem[0] == 0);
+    CHECK(SalOEMToU8("readme.txt", back, 4) == 0);
+    CHECK(back[0] == 0);
+
+    // (6) NULL is tolerated in both directions
+    CHECK(SalU8ToOEM(NULL, oem, sizeof(oem)) == 0);
+    CHECK(SalOEMToU8(NULL, back, sizeof(back)) == 0);
+    CHECK(SalU8ToOEM("x", NULL, 0) == 0);
+    CHECK(SalOEMToU8("x", NULL, 0) == 0);
+    // ---- G6: the per-item enumeration cost, measured not asserted ----------
+    // Feature 069 moves several enumerations from FindFirstFile/FindNextFile (A)
+    // to SalFindFirstFile + SalConvertFindDataW.  That is a per-item path
+    // (Compare Directories walks both trees, the SFX search walks every fixed
+    // drive), so the protocol wants a before/after number rather than a claim.
+    // Both paths are timed in ONE run over the same directory, so the numbers
+    // are directly comparable and cache state is shared.
+    {
+        const char* perf = getenv("TEMP");
+        char pattern[MAX_PATH];
+        if (perf != NULL)
+        {
+            _snprintf_s(pattern, _TRUNCATE, "%s\\salamander-test\\perf\\*", perf);
+            WIN32_FIND_DATAA dataA;
+            HANDLE hA = FindFirstFileA(pattern, &dataA);
+            if (hA != INVALID_HANDLE_VALUE) // fixture present: measure
+            {
+                int countA = 0;
+                DWORD t0 = GetTickCount();
+                do
+                    countA++;
+                while (FindNextFileA(hA, &dataA));
+                DWORD ansiMs = GetTickCount() - t0;
+                FindClose(hA);
+
+                // the feature's path: wide enumeration + per-entry conversion
+                WIN32_FIND_DATAW dataW;
+                WIN32_FIND_DATA legacyView;
+                char nameU8[SAL_FIND_NAME_U8];
+                int countU8 = 0;
+                t0 = GetTickCount();
+                HANDLE hW = SalFindFirstFile(pattern, &dataW);
+                if (hW != INVALID_HANDLE_VALUE)
+                {
+                    do
+                    {
+                        SalConvertFindDataW(&dataW, &legacyView, nameU8, sizeof(nameU8), NULL, 0);
+                        countU8++;
+                    } while (SalFindNextFile(hW, &dataW));
+                    FindClose(hW);
+                }
+                DWORD u8Ms = GetTickCount() - t0;
+
+                printf("  G6 enumeration over %d entries: ANSI %u ms, facade+convert %u ms\n",
+                       countA, ansiMs, u8Ms);
+                CHECK(countU8 == countA); // the same entries are seen
+                // no ratio is asserted: the gate is "within run-to-run noise",
+                // which the recorded numbers are compared against by hand
+            }
+            else
+            {
+                printf("  G6 enumeration: fixture %s absent, skipped\n", pattern);
+            }
+        }
+    }
 }
 
 int main()

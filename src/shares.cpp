@@ -101,10 +101,22 @@ void CShares::Refresh()
                 BOOL include = p->shi502_type == 0;
                 if (!SubsetOnly && p->shi502_type == 0x80000000) // special share
                     include = TRUE;
+                // feature 069 (F-P1-27): NetShareEnum is W-only, so the true name
+                // is right here - and it was degraded to the active code page.
+                // The cache is then compared against UTF-8 panel data
+                // (fileswn3.cpp CFileData::Name, drivelst.cpp the drive root),
+                // so a share whose name is not ASCII could never match and its
+                // folder never got the shared-folder marker; GetUNCPath could
+                // not map such a local path to its UNC form either.  SalWToU8 is
+                // total, so no failure branch is needed - only the "does it fit"
+                // one, where the legacy conversion still applies.
                 if (include &&
-                    WideCharToMultiByte(CP_ACP, 0, p->shi502_netname, -1, netname, MAX_PATH, NULL, NULL) &&
-                    WideCharToMultiByte(CP_ACP, 0, p->shi502_path, -1, path, MAX_PATH, NULL, NULL) &&
-                    WideCharToMultiByte(CP_ACP, 0, p->shi502_remark, -1, remark, MAX_PATH, NULL, NULL))
+                    (SalWToU8(p->shi502_netname, -1, netname, MAX_PATH) != 0 ||
+                     WideCharToMultiByte(CP_ACP, 0, p->shi502_netname, -1, netname, MAX_PATH, NULL, NULL)) &&
+                    (SalWToU8(p->shi502_path, -1, path, MAX_PATH) != 0 ||
+                     WideCharToMultiByte(CP_ACP, 0, p->shi502_path, -1, path, MAX_PATH, NULL, NULL)) &&
+                    (SalWToU8(p->shi502_remark, -1, remark, MAX_PATH) != 0 ||
+                     WideCharToMultiByte(CP_ACP, 0, p->shi502_remark, -1, remark, MAX_PATH, NULL, NULL)))
                 {
                     //              TRACE_I("Share: " << netname << " = " << path);
                     // add the shared path to the Data array

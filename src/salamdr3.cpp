@@ -3248,8 +3248,10 @@ void CFileTimeStamps::CopyFilesTo(HWND parent, int* indexes, int count, const ch
         GetTargetDirectory(parent, parent, LoadStr(IDS_BROWSEARCUPDATE),
                            LoadStr(IDS_BROWSEARCUPDATETEXT), path, FALSE, initPath))
     {
-        CDynamicStringImp fromStr, toStr;
+        CDynamicStringImp fromStr, toStr;   // UTF-8: the legacy fallback
+        CDynamicStringImp fromStrW, toStrW; // UTF-16: the operational pair
         BOOL ok = TRUE;
+        BOOL wideOk = TRUE;
         BOOL tooLongName = FALSE;
         int i;
         for (i = 0; i < count; i++)
@@ -3262,33 +3264,88 @@ void CFileTimeStamps::CopyFilesTo(HWND parent, int* indexes, int count, const ch
                 strcpy(name, item->SourcePath);
                 tooLongName |= !SalPathAppend(name, item->FileName, MAX_PATH);
                 ok &= fromStr.Add(name, (int)strlen(name) + 1);
+                // feature 069 (F-P1-20): the names come from SalGetTempFileName
+                // and CFileData, i.e. UTF-8, and the ANSI SHFileOperation
+                // re-read those bytes through the code page - the copy silently
+                // did nothing and the edit stayed in the temporary file.  Build
+                // the wide multi-string alongside; CDynamicStringImp is a byte
+                // buffer, so the UTF-16 elements are appended as their bytes.
+                WCHAR nameW[MAX_PATH];
+                if (SalU8ToW(name, -1, nameW, _countof(nameW)) != 0)
+                    wideOk &= fromStrW.Add((char*)nameW, (int)(wcslen(nameW) + 1) * (int)sizeof(WCHAR));
+                else
+                    wideOk = FALSE;
 
                 strcpy(name, path);
                 tooLongName |= !SalPathAppend(name, item->ZIPRoot, MAX_PATH);
                 tooLongName |= !SalPathAppend(name, item->FileName, MAX_PATH);
                 ok &= toStr.Add(name, (int)strlen(name) + 1);
+                if (SalU8ToW(name, -1, nameW, _countof(nameW)) != 0)
+                    wideOk &= toStrW.Add((char*)nameW, (int)(wcslen(nameW) + 1) * (int)sizeof(WCHAR));
+                else
+                    wideOk = FALSE;
             }
         }
         fromStr.Add("\0", 2); // append two extra nulls just in case (no Add call needed, this works too)
         toStr.Add("\0", 2);   // append two extra nulls just in case (no Add call needed, this works too)
+        if (wideOk)
+        {                                          // the wide multi-string ends
+            wideOk &= fromStrW.Add("\0\0\0", 4); // with two WCHAR NULs
+            wideOk &= toStrW.Add("\0\0\0", 4);
+        }
 
         if (ok && !tooLongName)
         {
             CShellExecuteWnd shellExecuteWnd;
-            SHFILEOPSTRUCT fo;
-            fo.hwnd = shellExecuteWnd.Create(parent, "SEW: CFileTimeStamps::CopyFilesTo");
-            fo.wFunc = FO_COPY;
-            fo.pFrom = fromStr.Text;
-            fo.pTo = toStr.Text;
-            fo.fFlags = FOF_SIMPLEPROGRESS | FOF_NOCONFIRMMKDIR | FOF_MULTIDESTFILES;
-            fo.fAnyOperationsAborted = FALSE;
-            fo.hNameMappings = NULL;
+            HWND hSEW = shellExecuteWnd.Create(parent, "SEW: CFileTimeStamps::CopyFilesTo");
             char title[100];
             lstrcpyn(title, LoadStr(IDS_BROWSEARCUPDATE), 100); // make a copy; LoadStr is used by other threads as well
-            fo.lpszProgressTitle = title;
-            // perform the actual copying — it is wonderfully easy, though it does crash for some users now and then ;-)
+            // perform the actual copying - it is wonderfully easy, though it does crash for some users now and then ;-)
             CALL_STACK_MESSAGE1("CFileTimeStamps::CopyFilesTo::SHFileOperation");
-            SHFileOperation(&fo);
+            int foRes;
+            BOOL foAborted;
+            if (wideOk) // feature 069 (F-P1-20): the wide call addresses the real
+            {           // names, exactly as fileswn8.cpp does for the Recycle Bin
+                WCHAR titleW[100];
+                SHFILEOPSTRUCTW fow;
+                fow.hwnd = hSEW;
+                fow.wFunc = FO_COPY;
+                fow.pFrom = (LPCWSTR)fromStrW.Text;
+                fow.pTo = (LPCWSTR)toStrW.Text;
+                fow.fFlags = FOF_SIMPLEPROGRESS | FOF_NOCONFIRMMKDIR | FOF_MULTIDESTFILES;
+                fow.fAnyOperationsAborted = FALSE;
+                fow.hNameMappings = NULL;
+                // 'title' comes from LoadStr, i.e. ANSI - not UTF-8 - so the
+                // strict decoder fails on any accented character.  Widen through
+                // the code page in that case; blanking it would lose the
+                // operation description in five shipped languages.
+                if (SalU8ToW(title, -1, titleW, _countof(titleW)) == 0)
+                    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, title, -1, titleW, _countof(titleW));
+                titleW[_countof(titleW) - 1] = 0;
+                fow.lpszProgressTitle = titleW;
+                foRes = SHFileOperationW(&fow);
+                foAborted = fow.fAnyOperationsAborted;
+            }
+            else // conversion failed: the legacy call with the original bytes
+            {
+                SHFILEOPSTRUCT fo;
+                fo.hwnd = hSEW;
+                fo.wFunc = FO_COPY;
+                fo.pFrom = fromStr.Text;
+                fo.pTo = toStr.Text;
+                fo.fFlags = FOF_SIMPLEPROGRESS | FOF_NOCONFIRMMKDIR | FOF_MULTIDESTFILES;
+                fo.fAnyOperationsAborted = FALSE;
+                fo.hNameMappings = NULL;
+                fo.lpszProgressTitle = title;
+                foRes = SHFileOperation(&fo);
+                foAborted = fo.fAnyOperationsAborted;
+            }
+            // the result used to be discarded outright.  There is no translated
+            // string for "the copy failed" and inventing one would touch all
+            // eight shipped languages, so it is traced rather than shown - what
+            // this fix removes is the CAUSE of the silent failure (the encoding)
+            if (foRes != 0 || foAborted)
+                TRACE_E("CFileTimeStamps::CopyFilesTo: SHFileOperation failed, res=" << foRes << ", aborted=" << foAborted);
         }
         else
         {

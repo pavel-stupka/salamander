@@ -616,7 +616,15 @@ CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         drag = DragQueryFile((HDROP)wParam, 0xFFFFFFFF, NULL, 0); // how many files were dropped on us
         if (drag > 0)
         {
-            DragQueryFile((HDROP)wParam, 0, path, MAX_PATH);
+            // feature 069 (F-P1-26): the ANSI DragQueryFile makes the OS itself
+            // convert through the code page, so an accented name arrived
+            // mangled and OpenFile() reported the file does not exist
+            WCHAR pathW[MAX_PATH];
+            if (DragQueryFileW((HDROP)wParam, 0, pathW, MAX_PATH) == 0 ||
+                SalWToU8(pathW, -1, path, MAX_PATH) == 0)
+            {
+                DragQueryFile((HDROP)wParam, 0, path, MAX_PATH); // legacy fallback
+            }
             if (SalGetFullName(path))
             {
                 if (Lock != NULL)

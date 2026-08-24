@@ -360,7 +360,18 @@ BOOL InitSpawnName(HWND parent)
     CALL_STACK_MESSAGE1("InitSpawnName()");
     if (!SpawnExeInitialised)
     {
-        if (GetModuleFileName(NULL, SpawnExe, MAX_PATH) == 0)
+        // feature 069 (F-P1-07): the ANSI GetModuleFileName returned the install
+        // path in the code page, and this value is then concatenated into the
+        // command line of SalCreateProcess, which is a UTF-8 consumer - so on an
+        // install path with a non-ASCII character the WHOLE command line was
+        // discarded (ERROR_INVALID_NAME) and the user was told the ARCHIVER
+        // could not be started, correctly encoded archive name and all
+        WCHAR spawnExeW[MAX_PATH];
+        DWORD spawnLen = GetModuleFileNameW(NULL, spawnExeW, MAX_PATH);
+        if (spawnLen == 0 || spawnLen >= MAX_PATH ||
+            SalWToU8(spawnExeW, -1, SpawnExe, MAX_PATH) == 0)
+            spawnLen = GetModuleFileName(NULL, SpawnExe, MAX_PATH); // legacy fallback
+        if (spawnLen == 0)
         {
             char buffer[1000];
             strcpy(buffer, "GetModuleFileName: ");
@@ -1209,11 +1220,11 @@ const char* WINAPI PackExpArcDosName(HWND msgParent, void* param)
 
     if (data->ArcNameFilePossible)
     {
-        if (!GetShortPathName(data->ArcName, buff2, MAX_PATH))
+        if (!SalGetShortPathName(data->ArcName, buff2, MAX_PATH))
         {
             if (!data->DOSTmpFilePossible)
             {
-                TRACE_E("Error (1) in GetShortPathName() in PackExpArcDosName().");
+                TRACE_E("Error (1) in SalGetShortPathName() in PackExpArcDosName().");
                 return NULL;
             }
             data->ArcNameFilePossible = FALSE; // from now on only DOSTmpName
@@ -1247,8 +1258,9 @@ const char* WINAPI PackExpArcDosName(HWND msgParent, void* param)
                 while (1)
                 {
                     sprintf(s, "%X.*", randNum);
-                    WIN32_FIND_DATA findData;
-                    HANDLE find = HANDLES_Q(FindFirstFile(path, &findData));
+                    WIN32_FIND_DATAW findDataW; // feature 069 (F-P1-06)
+                    // feature 069 (F-P1-06): 'path' comes from SalGetTempFileName (UTF-8)
+                    HANDLE find = SalFindFirstFile(path, &findDataW); // registers with HANDLES itself
                     if (find != INVALID_HANDLE_VALUE)
                         HANDLES(FindClose(find)); // this name already exists with some extension, searching again
                     else
@@ -1275,17 +1287,18 @@ const char* WINAPI PackExpArcDosName(HWND msgParent, void* param)
                     randNum++;
                 }
 
-                HANDLE h = HANDLES_Q(CreateFile(path, GENERIC_WRITE, 0, NULL, CREATE_NEW,
-                                                FILE_ATTRIBUTE_NORMAL, NULL));
+                // feature 069 (F-P1-06): 'path' comes from SalGetTempFileName
+                HANDLE h = SalCreateFile(path, GENERIC_WRITE, 0, NULL, CREATE_NEW,
+                                         FILE_ATTRIBUTE_NORMAL, NULL);
                 if (h != INVALID_HANDLE_VALUE)
                 {
                     HANDLES(CloseHandle(h));
                     strcpy(data->DOSTmpFile, path);
-                    BOOL ok = GetShortPathName(data->DOSTmpFile, buff2, MAX_PATH);
-                    DeleteFile(data->DOSTmpFile); // we no longer need the file (let the archiver create it)
+                    BOOL ok = SalGetShortPathName(data->DOSTmpFile, buff2, MAX_PATH);
+                    SalDeleteFile(data->DOSTmpFile); // we no longer need the file (let the archiver create it)
                     if (!ok)
                     {
-                        TRACE_E("Error (2) in GetShortPathName() in PackExpArcDosName().");
+                        TRACE_E("Error (2) in SalGetShortPathName() in PackExpArcDosName().");
                         return NULL;
                     }
                     strcpy(data->DOSTmpFile, buff2); // we obtained a substitute name
@@ -1361,9 +1374,9 @@ const char* WINAPI PackExpTgtDosPath(HWND msgParent, void* param)
         TRACE_E("Unexpected call to PackExpTgtDosPath().");
         return NULL;
     }
-    if (!GetShortPathName(data->TgtDir, data->Buffer, MAX_PATH))
+    if (!SalGetShortPathName(data->TgtDir, data->Buffer, MAX_PATH))
     {
-        TRACE_E("Error in GetShortPathName() in PackExpTgtDosPath().");
+        TRACE_E("Error in SalGetShortPathName() in PackExpTgtDosPath().");
         return NULL;
     }
     return data->Buffer;
@@ -1387,9 +1400,9 @@ const char* WINAPI PackExpLstDosName(HWND msgParent, void* param)
         TRACE_E("Unexpected call to PackExpLstDosName().");
         return NULL;
     }
-    if (!GetShortPathName(data->LstName, data->Buffer, MAX_PATH))
+    if (!SalGetShortPathName(data->LstName, data->Buffer, MAX_PATH))
     {
-        TRACE_E("Error in GetShortPathName() in PackExpLstDosName().");
+        TRACE_E("Error in SalGetShortPathName() in PackExpLstDosName().");
         return NULL;
     }
     return data->Buffer;
@@ -1428,7 +1441,7 @@ PackExpExeName(unsigned int index, BOOL unpacker = FALSE)
         // on older Windows it was impossible to redirect output from a DOS program in a directory
         // with a long name; I no longer feel like patching and risking this that it won't work
         buff[0] = '\0';
-        DWORD len = GetShortPathName(exe, buff, MAX_PATH);
+        DWORD len = SalGetShortPathName(exe, buff, MAX_PATH);
         // if the path was shortened successfully, return the short name
         if (len == strlen(buff) && len > 0)
         {

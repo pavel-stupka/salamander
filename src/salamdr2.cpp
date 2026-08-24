@@ -1398,8 +1398,14 @@ BOOL MyGetDiskFreeSpace(const char* path, LPDWORD lpSectorsPerCluster,
         BOOL cutPathIsPossible = TRUE;
         ResolveLocalPathWithReparsePoints(ourPath, path, &cutPathIsPossible, NULL, NULL, NULL, NULL, NULL);
 
-        while (!GetDiskFreeSpace(ourPath, lpSectorsPerCluster, lpBytesPerSector,
-                                 lpNumberOfFreeClusters, lpTotalNumberOfClusters))
+        // feature 069 (F-P1-12): as above - the ANSI call cannot address a
+        // mounted volume under a non-ASCII path
+        WCHAR ourPathW[MAX_PATH];
+        while (SalU8ToW(ourPath, -1, ourPathW, _countof(ourPathW)) == 0
+                   ? !GetDiskFreeSpace(ourPath, lpSectorsPerCluster, lpBytesPerSector,
+                                       lpNumberOfFreeClusters, lpTotalNumberOfClusters)
+                   : !GetDiskFreeSpaceW(ourPathW, lpSectorsPerCluster, lpBytesPerSector,
+                                        lpNumberOfFreeClusters, lpTotalNumberOfClusters))
         {
             if (!cutPathIsPossible || !CutDirectory(ourPath))
                 return FALSE; // we must not cut it or even the root did not succeed; abort with error
@@ -1409,9 +1415,50 @@ BOOL MyGetDiskFreeSpace(const char* path, LPDWORD lpSectorsPerCluster,
     }
     else
     {
+        WCHAR ourPathW[MAX_PATH];
+        if (SalU8ToW(ourPath, -1, ourPathW, _countof(ourPathW)) != 0)
+            return GetDiskFreeSpaceW(ourPathW, lpSectorsPerCluster, lpBytesPerSector,
+                                     lpNumberOfFreeClusters, lpTotalNumberOfClusters);
         return GetDiskFreeSpace(ourPath, lpSectorsPerCluster, lpBytesPerSector,
                                 lpNumberOfFreeClusters, lpTotalNumberOfClusters);
     }
+}
+
+// feature 069 (F-P1-12): the ANSI GetVolumeInformation fails outright on a UNC
+// path whose share name is outside the code page, and on a volume mounted into
+// a directory whose path is not ASCII - the caller then has no file-system
+// name, no label, no flags and no maximum component length at all.  The wide
+// call takes the UTF-8 path; the strings come back as UTF-8, which is what the
+// consumers already expect (dialogs3.cpp draws them through SalSetWindowTextU8,
+// menu3.cpp through SalU8ToWAlloc).
+static BOOL GetVolumeInformationU8(const char* u8Root,
+                                   char* volName, DWORD volNameSize,
+                                   LPDWORD serial, LPDWORD maxComponent, LPDWORD fsFlags,
+                                   char* fsName, DWORD fsNameSize)
+{
+    WCHAR rootW[MAX_PATH];
+    if (SalU8ToW(u8Root, -1, rootW, _countof(rootW)) == 0)
+    { // not convertible (transitional): keep the legacy call
+        return GetVolumeInformation(u8Root, volName, volNameSize, serial,
+                                    maxComponent, fsFlags, fsName, fsNameSize);
+    }
+    WCHAR volW[MAX_PATH];
+    WCHAR fsW[MAX_PATH];
+    if (!GetVolumeInformationW(rootW,
+                               volName != NULL ? volW : NULL,
+                               volName != NULL ? _countof(volW) : 0,
+                               serial, maxComponent, fsFlags,
+                               fsName != NULL ? fsW : NULL,
+                               fsName != NULL ? _countof(fsW) : 0))
+    {
+        return FALSE;
+    }
+    // an unconvertible label is emptied rather than left indeterminate
+    if (volName != NULL && volNameSize > 0 && SalWToU8(volW, -1, volName, volNameSize) == 0)
+        volName[0] = 0;
+    if (fsName != NULL && fsNameSize > 0 && SalWToU8(fsW, -1, fsName, fsNameSize) == 0)
+        fsName[0] = 0;
+    return TRUE;
 }
 
 BOOL MyGetVolumeInformation(const char* path, char* rootOrCurReparsePoint, char* junctionOrSymlinkTgt, int* linkType,
@@ -1437,10 +1484,10 @@ BOOL MyGetVolumeInformation(const char* path, char* rootOrCurReparsePoint, char*
         ResolveLocalPathWithReparsePoints(ourPath, path, &cutPathIsPossible, &rootOrCurReparsePointSet,
                                           rootOrCurReparsePoint, junctionOrSymlinkTgt, linkType, NULL);
 
-        while (!GetVolumeInformation(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
-                                     lpVolumeSerialNumber, lpMaximumComponentLength,
-                                     lpFileSystemFlags, lpFileSystemNameBuffer,
-                                     nFileSystemNameSize))
+        while (!GetVolumeInformationU8(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
+                                      lpVolumeSerialNumber, lpMaximumComponentLength,
+                                      lpFileSystemFlags, lpFileSystemNameBuffer,
+                                      nFileSystemNameSize))
         {
             if (!cutPathIsPossible || !CutDirectory(ourPath))
             {
@@ -1479,10 +1526,10 @@ BOOL MyGetVolumeInformation(const char* path, char* rootOrCurReparsePoint, char*
     }
     else
     {
-        ret = GetVolumeInformation(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
-                                   lpVolumeSerialNumber, lpMaximumComponentLength,
-                                   lpFileSystemFlags, lpFileSystemNameBuffer,
-                                   nFileSystemNameSize);
+        ret = GetVolumeInformationU8(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
+                                     lpVolumeSerialNumber, lpMaximumComponentLength,
+                                     lpFileSystemFlags, lpFileSystemNameBuffer,
+                                     nFileSystemNameSize);
         if (rootOrCurReparsePoint != NULL)
         {
             GetRootPath(rootOrCurReparsePoint, path);
@@ -1778,7 +1825,20 @@ BOOL MyQueryDosDevice(BYTE driveNum, char* target, int maxTarget)
     deviceName[0] = driveNum + 'A';
     deviceName[1] = ':';
     deviceName[2] = 0;
-    return QueryDosDevice(deviceName, target, MAX_PATH);
+    // feature 069 (F-P1-13): the ANSI QueryDosDevice returned the subst target
+    // in the code page, and ResolveSubsts splices it in front of the UTF-8
+    // remainder of the path - a path in neither encoding.  The delete
+    // confirmation for a reparse point on such a drive then could not tell it
+    // was a link at all (GetFileAttributesW found nothing), so it offered to
+    // delete a "directory" and left deleteLink FALSE.
+    WCHAR deviceNameW[3] = {(WCHAR)deviceName[0], L':', 0};
+    WCHAR targetW[MAX_PATH];
+    if (QueryDosDeviceW(deviceNameW, targetW, MAX_PATH) &&
+        SalWToU8(targetW, -1, target, maxTarget) != 0)
+    {
+        return TRUE;
+    }
+    return QueryDosDevice(deviceName, target, maxTarget); // legacy fallback
 }
 
 BOOL GetSubstInformation(BYTE driveNum, char* path, int pathMax)

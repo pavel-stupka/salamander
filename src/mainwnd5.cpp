@@ -289,10 +289,14 @@ BOOL CompareFilesByContent(HWND hWindow, CCmpDirProgressDialog* progressDlg,
 
     //  DWORD totalTi = GetTickCount();
 
-    HANDLE hFile1 = HANDLES_Q(CreateFile(file1, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                         NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL));
-    HANDLE hFile2 = hFile1 != INVALID_HANDLE_VALUE ? HANDLES_Q(CreateFile(file2, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                                                          NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL))
+    // feature 069 (F-P1-19): both names are UTF-8 panel paths, so the ANSI
+    // CreateFile could not open a file whose name is outside the code page and
+    // the pair was reported as an error or as different.  SalCreateFile wraps
+    // HANDLES_Q(CreateFileW(...)) - same tracker behaviour as before.
+    HANDLE hFile1 = SalCreateFile(file1, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                  NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    HANDLE hFile2 = hFile1 != INVALID_HANDLE_VALUE ? SalCreateFile(file2, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                                                   NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL)
                                                    : INVALID_HANDLE_VALUE;
     DWORD err = GetLastError();
 
@@ -567,9 +571,17 @@ BOOL ReadDirsAndFilesAux(HWND hWindow, DWORD flags, CCmpDirProgressDialog* progr
         }
 
         DWORD counter = 0;
+        // feature 069 (F-P1-19): the ANSI FindFirstFile failed with
+        // ERROR_PATH_NOT_FOUND on a subdirectory whose name is outside the code
+        // page, so the user got a "cannot read directory" prompt for every such
+        // subdirectory and the comparison was unusable.  The facade enumerates
+        // wide; SalConvertFindDataW fills the legacy-shaped record the loop
+        // below already works with, plus the name as UTF-8.
         WIN32_FIND_DATA data;
+        WIN32_FIND_DATAW dataW;
+        char nameU8[SAL_FIND_NAME_U8];
         HANDLE hFind;
-        hFind = HANDLES_Q(FindFirstFile(path, &data));
+        hFind = SalFindFirstFile(path, &dataW); // registers with HANDLES itself
         if (hFind == INVALID_HANDLE_VALUE)
         {
             DWORD err = GetLastError();
@@ -590,9 +602,10 @@ BOOL ReadDirsAndFilesAux(HWND hWindow, DWORD flags, CCmpDirProgressDialog* progr
         }
         do
         {
-            if (data.cFileName[0] != 0 &&
-                (data.cFileName[0] != '.' ||
-                 (data.cFileName[1] != 0 && (data.cFileName[1] != '.' || data.cFileName[2] != 0))))
+            SalConvertFindDataW(&dataW, &data, nameU8, sizeof(nameU8), NULL, 0);
+            if (nameU8[0] != 0 &&
+                (nameU8[0] != '.' ||
+                 (nameU8[1] != 0 && (nameU8[1] != '.' || nameU8[2] != 0))))
             {
                 if (counter++ > 200) // after reading 200 items
                 {
@@ -622,7 +635,7 @@ BOOL ReadDirsAndFilesAux(HWND hWindow, DWORD flags, CCmpDirProgressDialog* progr
                 file.IsLink = 0;
                 file.IsOffline = 0;
 
-                int nameLen = (int)strlen(data.cFileName);
+                int nameLen = (int)strlen(nameU8);
 
                 //--- name
                 file.Name = (char*)malloc(nameLen + 1); // allocation
@@ -633,7 +646,7 @@ BOOL ReadDirsAndFilesAux(HWND hWindow, DWORD flags, CCmpDirProgressDialog* progr
                     *canceled = TRUE;
                     return FALSE;
                 }
-                memmove(file.Name, data.cFileName, nameLen + 1); // copy text
+                memmove(file.Name, nameU8, nameLen + 1); // copy text
                 file.NameLen = nameLen;
 
                 //--- extension
@@ -643,12 +656,12 @@ BOOL ReadDirsAndFilesAux(HWND hWindow, DWORD flags, CCmpDirProgressDialog* progr
                 }
                 else
                 {
-                    const char* s = data.cFileName + nameLen;
-                    while (--s >= data.cFileName && *s != '.')
+                    const char* s = nameU8 + nameLen;
+                    while (--s >= nameU8 && *s != '.')
                         ;
-                    //          if (s > data.cFileName) file.Ext = file.Name + (s - data.cFileName + 1); // ".cvspass" in Windows counts as an extension ...
-                    if (s >= data.cFileName)
-                        file.Ext = file.Name + (s - data.cFileName + 1);
+                    //          if (s > nameU8) file.Ext = file.Name + (s - nameU8 + 1); // ".cvspass" in Windows counts as an extension ...
+                    if (s >= nameU8)
+                        file.Ext = file.Name + (s - nameU8 + 1);
                     else
                         file.Ext = file.Name + file.NameLen;
                 }
@@ -693,7 +706,7 @@ BOOL ReadDirsAndFilesAux(HWND hWindow, DWORD flags, CCmpDirProgressDialog* progr
                         free(file.Name);
                 }
             }
-        } while (FindNextFile(hFind, &data));
+        } while (SalFindNextFile(hFind, &dataW));
         DWORD err = GetLastError();
         if (err != ERROR_NO_MORE_FILES)
         {
@@ -1223,13 +1236,21 @@ void CMainWindow::CompareDirectories(DWORD flags)
         BOOL rightFAT = FALSE;
         if (LeftPanel->Is(ptDisk))
         {
-            char fileSystem[20];
+            // feature 069 (F-P1-12): initialised, and the result below is honoured -
+            // this buffer used to be read even when MyGetVolumeInformation
+            // failed, so whether Compare Directories applied the 2-second FAT
+            // timestamp tolerance was undefined
+            char fileSystem[20] = "";
             MyGetVolumeInformation(LeftPanel->GetPath(), NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, fileSystem, 20);
             leftFAT = StrNICmp(fileSystem, "FAT", 3) == 0; // FAT and FAT32 use DOS time (precision only 2 seconds)
         }
         if (RightPanel->Is(ptDisk))
         {
-            char fileSystem[20];
+            // feature 069 (F-P1-12): initialised, and the result below is honoured -
+            // this buffer used to be read even when MyGetVolumeInformation
+            // failed, so whether Compare Directories applied the 2-second FAT
+            // timestamp tolerance was undefined
+            char fileSystem[20] = "";
             MyGetVolumeInformation(RightPanel->GetPath(), NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, fileSystem, 20);
             rightFAT = StrNICmp(fileSystem, "FAT", 3) == 0; // FAT and FAT32 use DOS time (precision only 2 seconds)
         }

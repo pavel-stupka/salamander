@@ -657,23 +657,51 @@ BOOL CFilesWindow::PostProcessPathFromUser(HWND parent, char* buff, int buffSize
 
     // expand ENV variables (as frequently requested on the forum and for internal use)
     // if an ENV variable does not exist, a directory with the same name gets a chance to be expanded
+    // feature 069 (F-P1-23): the ANSI expansion substitutes the variable's value
+    // through the code page, so on an account whose name is not ASCII
+    // %USERPROFILE% came back as legacy bytes spliced into a UTF-8 path and the
+    // panel reported that the path does not exist.  Expand wide and convert the
+    // result back; on any conversion failure fall back to the legacy call so a
+    // path that expanded before still expands.
     char* expandedBuff = (char*)malloc(buffSize + 1); // 'buff' may be a long path (feature 004)
     if (expandedBuff == NULL)
     {
         TRACE_E(LOW_MEMORY);
         return FALSE;
     }
-    DWORD auxRes = ExpandEnvironmentStrings(buff, expandedBuff, buffSize + 1);
-    if (auxRes == 0 || auxRes > (DWORD)buffSize)
+    BOOL expanded = FALSE;
+    WCHAR* buffW = SalU8ToWAlloc(buff);
+    if (buffW != NULL)
     {
-        TRACE_E("ExpandEnvironmentStrings failed.");
-        free(expandedBuff);
-        return FALSE;
+        WCHAR* expandedW = (WCHAR*)malloc((buffSize + 1) * sizeof(WCHAR));
+        if (expandedW != NULL)
+        {
+            DWORD auxResW = ExpandEnvironmentStringsW(buffW, expandedW, buffSize + 1);
+            if (auxResW != 0 && auxResW <= (DWORD)buffSize &&
+                // buffSize, not buffSize + 1: the lstrcpyn below keeps only
+                // buffSize - 1 bytes, and a byte dropped there could tear a
+                // multi-byte character
+                SalWToU8(expandedW, -1, expandedBuff, buffSize) != 0)
+            {
+                expanded = TRUE; // the UTF-8 form fits as well
+            }
+            free(expandedW);
+        }
+        else
+            TRACE_E(LOW_MEMORY);
+        free(buffW);
     }
-    else
+    if (!expanded)
     {
-        lstrcpyn(buff, expandedBuff, buffSize);
+        DWORD auxRes = ExpandEnvironmentStrings(buff, expandedBuff, buffSize + 1);
+        if (auxRes == 0 || auxRes > (DWORD)buffSize)
+        {
+            TRACE_E("ExpandEnvironmentStrings failed.");
+            free(expandedBuff);
+            return FALSE;
+        }
     }
+    lstrcpyn(buff, expandedBuff, buffSize);
     free(expandedBuff);
 
     return TRUE;
