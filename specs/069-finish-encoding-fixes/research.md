@@ -131,7 +131,7 @@ regression review (FR-006).
 | **C4** | External archivers | F-P1-05, F-P1-06, F-P1-07 | the pack (`CharToOem`) and list (`OemToCharBuff`) defects cancel today: fixing one direction alone breaks the working extract round trip |
 | **C5** | Application locations | F-P1-08, F-P1-10, F-P2-13 | `ConfigurationName` and the help/`$(SalDir)` buffers have several producers; the Save Configuration prompt can only become `LoadStrU8` once its producer encoding is settled |
 | **C6** | Shares | F-P1-27 | producer + the two consumers (per-directory marker, UNC mapping) in one commit; per-item path ⇒ timing |
-| **C7** | Viewer | F-P4-01, F-P4-02 | the conversion-name intake removes F-P4-02's second trigger; the caption's first trigger is independent (`LoadStrU8`) |
+| **C7** | Viewer | F-P4-01, F-P4-02 | ~~the conversion-name intake removes F-P4-02's second trigger~~ **superseded during implementation**: normalizing the intake would have changed bytes plugins receive (`EnumConversionTables`, and names `dbviewer`/`filecomp` persist), so F-P4-01 was fixed in the lookup instead and F-P4-02's second trigger needed its own display-only conversion. Still one group: both touch the same caption. |
 | **C8** | Plugin-manager lists | F-P2-09, F-P2-11 | same dialog file, same sink swap, one review |
 | **C9** | Configuration seeds | F-P4-03, F-P4-07 | same shape (`LoadStr` seed persisted into a UTF-8 field); the guard rule for it must land with them (R8) |
 | **C10** | Singles | F-P1-19, F-P1-20, F-P1-21, F-P1-22, F-P1-23, F-P1-25, F-P2-04, F-P3-07, F-P6-01, F-P5-06 | independent; F-P1-21's nine site groups may be split further, one commit per group |

@@ -996,7 +996,7 @@ void CPackACDialog::AddToCustom(int foundIndex, int packerIndex, CPackACPacker* 
     {
         TRACE_I("Adding custom packer " << LoadStr(CustomPackers[packerIndex].Title[0]));
         int idx = PackerConfig.AddPacker();
-        PackerConfig.SetPacker(idx, 0, LoadStr(CustomPackers[packerIndex].Title[0]), CustomPackers[packerIndex].Ext,
+        PackerConfig.SetPacker(idx, 0, LoadStrU8(CustomPackers[packerIndex].Title[0]), CustomPackers[packerIndex].Ext,
                                FALSE, CustomPackers[packerIndex].SupLN, TRUE, variable, CustomPackers[packerIndex].CopyArgs[0],
                                variable, CustomPackers[packerIndex].MoveArgs[0], CustomPackers[packerIndex].Ansi);
     }
@@ -1004,7 +1004,7 @@ void CPackACDialog::AddToCustom(int foundIndex, int packerIndex, CPackACPacker* 
     {
         TRACE_I("Adding custom packer " << LoadStr(CustomPackers[packerIndex].Title[1]));
         int idx = PackerConfig.AddPacker();
-        PackerConfig.SetPacker(idx, 0, LoadStr(CustomPackers[packerIndex].Title[1]), CustomPackers[packerIndex].Ext,
+        PackerConfig.SetPacker(idx, 0, LoadStrU8(CustomPackers[packerIndex].Title[1]), CustomPackers[packerIndex].Ext,
                                FALSE, CustomPackers[packerIndex].SupLN, TRUE, variable,
                                CustomPackers[packerIndex].CopyArgs[1], variable, CustomPackers[packerIndex].MoveArgs[1],
                                CustomPackers[packerIndex].Ansi);
@@ -1030,7 +1030,7 @@ void CPackACDialog::AddToCustom(int foundIndex, int packerIndex, CPackACPacker* 
     {
         TRACE_I("Adding custom unpacker " << LoadStr(CustomUnpackers[packerIndex].Title));
         int idx = UnpackerConfig.AddUnpacker();
-        UnpackerConfig.SetUnpacker(idx, 0, LoadStr(CustomUnpackers[packerIndex].Title), CustomUnpackers[packerIndex].Ext,
+        UnpackerConfig.SetUnpacker(idx, 0, LoadStrU8(CustomUnpackers[packerIndex].Title), CustomUnpackers[packerIndex].Ext,
                                    FALSE, CustomUnpackers[packerIndex].SupLN, variable, CustomUnpackers[packerIndex].Args,
                                    CustomUnpackers[packerIndex].Ansi);
     }

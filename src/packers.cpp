@@ -237,7 +237,7 @@ void CPackerConfig::AddDefault(int SalamVersion)
             int idx = CustomOrder[i];
             if ((index = AddPacker()) == -1)
                 return;
-            SetPacker(index, 1, LoadStr(CustomPackers[idx].Title[0]), CustomPackers[idx].Ext, TRUE,
+            SetPacker(index, 1, LoadStrU8(CustomPackers[idx].Title[0]), CustomPackers[idx].Ext, TRUE,
                       CustomPackers[idx].SupLN, TRUE,
                       CustomPackers[idx].Exe, CustomPackers[idx].CopyArgs[0],
                       CustomPackers[idx].Exe, CustomPackers[idx].MoveArgs[0],
@@ -246,7 +246,7 @@ void CPackerConfig::AddDefault(int SalamVersion)
             {
                 if ((index = AddPacker()) == -1)
                     return;
-                SetPacker(index, 1, LoadStr(CustomPackers[idx].Title[1]), CustomPackers[idx].Ext, TRUE,
+                SetPacker(index, 1, LoadStrU8(CustomPackers[idx].Title[1]), CustomPackers[idx].Ext, TRUE,
                           CustomPackers[idx].SupLN, TRUE,
                           CustomPackers[idx].Exe, CustomPackers[idx].CopyArgs[1],
                           CustomPackers[idx].Exe, CustomPackers[idx].MoveArgs[1],
@@ -259,7 +259,7 @@ void CPackerConfig::AddDefault(int SalamVersion)
             int idx = CustomOrder[i];
             if ((index = AddPacker()) == -1)
                 return;
-            SetPacker(index, 1, LoadStr(CustomPackers[idx].Title[0]), CustomPackers[idx].Ext, TRUE,
+            SetPacker(index, 1, LoadStrU8(CustomPackers[idx].Title[0]), CustomPackers[idx].Ext, TRUE,
                       CustomPackers[idx].SupLN, TRUE,
                       CustomPackers[idx].Exe, CustomPackers[idx].CopyArgs[0],
                       CustomPackers[idx].Exe, CustomPackers[idx].MoveArgs[0],
@@ -268,7 +268,7 @@ void CPackerConfig::AddDefault(int SalamVersion)
             {
                 if ((index = AddPacker()) == -1)
                     return;
-                SetPacker(index, 1, LoadStr(CustomPackers[idx].Title[1]), CustomPackers[idx].Ext, TRUE,
+                SetPacker(index, 1, LoadStrU8(CustomPackers[idx].Title[1]), CustomPackers[idx].Ext, TRUE,
                           CustomPackers[idx].SupLN, TRUE,
                           CustomPackers[idx].Exe, CustomPackers[idx].CopyArgs[1],
                           CustomPackers[idx].Exe, CustomPackers[idx].MoveArgs[1],
@@ -731,6 +731,13 @@ BOOL CPackerConfig::SetPacker(int index, int type, const char* title, const char
     data->Destroy();
     data->Type = type;
     data->OldType = old;
+    // feature 069 (F-P4-03): 'Title' is UTF-8.  Its consumers already are -
+    // the archiver combos use SalComboAddStringU8 (dialogs3.cpp) and the
+    // Options list edits it through SalSetWindowTextU8/SalGetWindowTextU8
+    // (edtlbwnd.cpp) - so a user-edited title was stored as UTF-8 while a
+    // seeded one carried the bytes of the ANSI LoadStr: on a Hungarian UI over
+    // a Western code page the seed lost the characters the ACP cannot express
+    // ("kulso" for "kulso" with the double acute) and persisted the loss.
     data->Title = DupStr(title);
     data->Ext = DupStr(ext);
     if (old && data->Type == 1 ||
@@ -1055,7 +1062,7 @@ void CUnpackerConfig::AddDefault(int SalamVersion)
             int idx = CustomOrder[i];
             if ((index = AddUnpacker()) == -1)
                 return;
-            SetUnpacker(index, 1, LoadStr(CustomUnpackers[idx].Title), CustomUnpackers[idx].Ext, TRUE,
+            SetUnpacker(index, 1, LoadStrU8(CustomUnpackers[idx].Title), CustomUnpackers[idx].Ext, TRUE,
                         CustomUnpackers[idx].SupLN, CustomUnpackers[idx].Exe,
                         CustomUnpackers[idx].Args, CustomUnpackers[idx].Ansi);
         }
@@ -1065,7 +1072,7 @@ void CUnpackerConfig::AddDefault(int SalamVersion)
             int idx = CustomOrder[i];
             if ((index = AddUnpacker()) == -1)
                 return;
-            SetUnpacker(index, 1, LoadStr(CustomUnpackers[idx].Title), CustomUnpackers[idx].Ext, TRUE,
+            SetUnpacker(index, 1, LoadStrU8(CustomUnpackers[idx].Title), CustomUnpackers[idx].Ext, TRUE,
                         CustomUnpackers[idx].SupLN, CustomUnpackers[idx].Exe,
                         CustomUnpackers[idx].Args, CustomUnpackers[idx].Ansi);
         }

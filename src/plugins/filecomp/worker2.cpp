@@ -97,7 +97,21 @@ void CFilecompWorker::CompareBinaryFiles()
                     _stprintf(buf, LoadStr(IDS_MAINWNDHEADERTOOMANY),
                               SG->SalPathFindFileName(Files[0].Name), SG->SalPathFindFileName(Files[1].Name));
                 }
-                SetWindowText(MainWindow, buf);
+                // feature 069 (D04): the fourth window-title site, and the one
+                // that runs last on the WN_BINARY_FILES_DIFFER path - it
+                // overwrote the caption F-P5-09 had just corrected, so a binary
+                // comparison still showed the unconverted title.  Same shape as
+                // F-P5-09: wide when the buffer converts (an ASCII template plus
+                // UTF-8 names, i.e. en/nl/ro, now renders accented names right),
+                // legacy narrow call otherwise - never a blanked title.
+                WCHAR* wBuf = SplU8ToWAlloc(buf);
+                if (wBuf != NULL)
+                {
+                    SetWindowTextW(MainWindow, wBuf);
+                    free(wBuf);
+                }
+                else
+                    SetWindowTextA(MainWindow, buf);
                 PostMessage(MainWindow, WM_USER_WORKERNOTIFIES, WN_CBINIT_FINISHED, 0);
             }
         }

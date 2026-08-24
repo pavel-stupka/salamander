@@ -108,6 +108,14 @@ acp-byte-table-on-name
                  a premise that is void - the product compiles with /J, so
                  plain char is unsigned (feature 068, ledger L07).
 
+acp-title-seed    A translated string seeded through the ANSI LoadStr into a
+                 configuration field whose consumers read it as UTF-8: the
+                 packer/unpacker titles (SetPacker/SetUnpacker) and the built-in
+                 view-mode names (CViewTemplates::Set).  LoadStr substitutes "?"
+                 for every character the active code page cannot express, and the
+                 damaged value is then persisted (feature 069, F-P4-03/F-P4-07).
+                 Use LoadStrU8 at the seed.
+
 missed-twin      LoadStr(IDS_X) where IDS_X is already loaded with LoadStrU8
                  somewhere else.  The remaining ANSI twin is either composed
                  with UTF-8 (the feature 067 zip.cpp defect) or genuinely
@@ -219,13 +227,18 @@ RULES = ("cp-acp-display", "mixed-composition", "dead-dispinfow",
          # promoted by feature 068 after the review classified every hit:
          "strict-probe-rejects-wtf8",  # 0 hits - pure forward guard for the 066 invariant
          "lossy-lenient-at-intake",    # 2 hits, both annotated fail-safes
-         "ansi-tooltip-handler")       # 1 hit, annotated (deferred ledger L06)
+         "ansi-tooltip-handler",       # 1 hit, annotated (deferred ledger L06)
+         # added by feature 069 together with the F-P4-03/F-P4-07 fix, as the
+         # 052 pattern requires: the rule and the fix land in one change, so it
+         # never flags code that was still correct
+         "acp-title-seed")
 
 # Rules that live in scan_draft() but are now enforced: main() must merge them
 # into the strict run, otherwise they would be listed and never executed - the
 # dead-dispinfow shape, in the guard itself.
 PROMOTED_FROM_DRAFT = ("strict-probe-rejects-wtf8", "lossy-lenient-at-intake",
-                       "ansi-tooltip-handler")
+                       "ansi-tooltip-handler",
+                       "acp-title-seed") # feature 069
 
 # --- feature 068 draft rules (report-only until promoted) ------------------
 # Un-suffixed Win32 calls that TAKE a name or path.  Output-side calls
@@ -265,6 +278,7 @@ OPERATIONAL_SINK = re.compile(
 BYTE_TABLE = re.compile(r'\b(?:IsNotAlphaNorNum|IsAlpha|LowerCase|UpperCase)\s*\[')
 LOADSTRU8_ID = re.compile(r'\bLoadStrU8\s*\(\s*(IDS_\w+)')
 LOADSTR_ID = re.compile(r'(?<![A-Za-z_])LoadStr\s*\(\s*(IDS_\w+)')
+TITLE_SEED_SINK = re.compile(r'\b(?:SetPacker|SetUnpacker)\s*\(|\bSet\s*\(\s*\d+\s*,\s*VIEW_MODE_')
 
 # Still report-only: each is blocked on a fix deferred to its own feature (the
 # 068 review report; specs/069-finish-encoding-fixes/research.md R8).
@@ -508,6 +522,13 @@ def scan_draft(only=None):
                 if BYTE_TABLE.search(ln) and UTF8_IDENT.search(ln):
                     if not suppressed(lines, i, "acp-byte-table-on-name"):
                         findings.append(Finding("acp-byte-table-on-name", rel, i + 1, ln))
+
+            # --- acp-title-seed (feature 069) -----------------------------
+            if only in (None, "acp-title-seed") and TITLE_SEED_SINK.search(ln):
+                stmt = call_text(lines, i, TITLE_SEED_SINK) or ln
+                if LOADSTR_ID.search(stmt) or re.search(r'(?<![A-Za-z_])LoadStr\s*\(', stmt):
+                    if not suppressed(lines, i, "acp-title-seed"):
+                        findings.append(Finding("acp-title-seed", rel, i + 1, ln))
 
             # --- missed-twin -------------------------------------------
             if only in (None, "missed-twin"):

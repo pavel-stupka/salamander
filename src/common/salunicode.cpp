@@ -535,6 +535,26 @@ const char* SalU8Next(const char* s)
     return s;
 }
 
+void SalU8TrimIncompleteTail(char* buf)
+{
+    if (buf == NULL)
+        return;
+    int len = (int)strlen(buf);
+    int i = len;
+    while (i > 0 && ((unsigned char)buf[i - 1] & 0xC0) == 0x80)
+        i--; // walk back over the continuation bytes
+    if (i > 0)
+    {
+        unsigned char lead = (unsigned char)buf[i - 1];
+        if (lead >= 0xC0) // a lead byte: check whether its sequence is complete
+        {
+            int seqLen = lead >= 0xF0 ? 4 : (lead >= 0xE0 ? 3 : 2);
+            if (len - (i - 1) < seqLen) // fewer bytes present than promised
+                buf[i - 1] = 0;         // the sequence was cut: drop it whole
+        }
+    }
+}
+
 int SalU8CharCount(const char* s, int len)
 {
     if (len < 0)

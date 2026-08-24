@@ -861,12 +861,38 @@ void MdKeeperArm()
         MdKeeperReleaseAll(); // silent; the next view may try again
 }
 
+// feature 069 (F-P6-01): the keeper window class was registered with the
+// plugin's own DLLInstance and never unregistered, so it outlived a Plugins
+// Manager Unload.  After a reload the DLL usually lands on the same base, the
+// atom is still there, RegisterClassW fails with ERROR_CLASS_ALREADY_EXISTS
+// and MdKeeperArm returns silently - "instant view" never armed again for the
+// rest of the session and every later view paid the cold browser start that
+// feature 065 exists to remove.  (Accepting ERROR_CLASS_ALREADY_EXISTS instead
+// would create a window on a window procedure in unmapped memory: a crash.)
+static void MdKeeperUnregisterClass()
+{
+    if (!g_keeperClassRegistered)
+        return;
+    if (UnregisterClassW(kKeeperClass, DLLInstance))
+        g_keeperClassRegistered = false;
+    else // a window of the class still exists - keep the flag so we do not
+        TRACE_E("mdview keeper: UnregisterClassW failed"); // register twice
+}
+
 void MdKeeperDisarm()
 {
-    if (g_keeper.state == MdKeeperState::kUnarmed)
-        return;
-    TRACE_I("mdview keeper: disarmed");
-    MdKeeperReleaseAll();
+    if (g_keeper.state != MdKeeperState::kUnarmed)
+    {
+        TRACE_I("mdview keeper: disarmed");
+        MdKeeperReleaseAll();
+    }
+    // the class is released here and not in MdKeeperReleaseAll: that function
+    // also runs when the shared browser process dies mid-session, and there the
+    // class must stay so the next view can re-arm without re-registering.  This
+    // is the unload path (CPluginInterface::Release), and it must run even when
+    // the keeper is already unarmed - otherwise a keeper that was torn down by
+    // a browser death would leave the class behind exactly as before.
+    MdKeeperUnregisterClass();
 }
 
 bool MdKeeperArmed()

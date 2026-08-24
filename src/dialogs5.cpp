@@ -1071,6 +1071,10 @@ void CPluginKeys::RefreshListView(BOOL setOnly)
         // command name
         char buff[500];
         lstrcpyn(buff, item->Name, 500);
+        // feature 069 (F-P2-11): 'Name' is UTF-8 (metadata contract, feature
+        // 052) and the clamp above counts bytes, so a cut inside a multi-byte
+        // character would make the whole cell fall back to the legacy draw
+        SalU8TrimIncompleteTail(buff);
         RemoveAmpersands(buff);
 
         // remove the hint from the text if present
@@ -1088,7 +1092,11 @@ void CPluginKeys::RefreshListView(BOOL setOnly)
             }
         }
 
-        ListView_SetItemText(HListView, row, 0, buff);
+        // feature 069 (F-P2-11): the command name is UTF-8, so the ANSI call
+        // rendered every accented plugin command as mojibake (cs/de/fr/hu/sk/es
+        // .slg).  The shortcut column below stays ANSI: it carries
+        // GetKeyNameText output, i.e. the keyboard layout's own ANSI text.
+        SalListViewSetItemTextU8(HListView, row, 0, buff);
         // shortcut key
         GetHotKeyText(LOWORD(HotKeys[i]), buff);
         ListView_SetItemText(HListView, row, 1, buff);

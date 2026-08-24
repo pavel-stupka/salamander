@@ -2309,6 +2309,21 @@ CUserMenuIconBkgndReader::~CUserMenuIconBkgndReader()
     HANDLES(DeleteCriticalSection(&CS));
 }
 
+// feature 069 (F-P1-22): a user-menu icon location is a UTF-8 configuration
+// value (CUserMenuItem::FileName / the "file,index" form of Icon), so the ANSI
+// ExtractIconEx re-read those bytes through the legacy code page and returned
+// no icon for every executable under a non-ASCII path - while the icon PICKER
+// in the very same feature already did it correctly (dialogs3.cpp:2317).  Same
+// idiom as there: extract via the W API, keep the legacy A call for the
+// conversion-failure case (never lose the icon we could still load).
+static UINT ExtractOneIconU8(const char* fileName, int iconIndex, HICON* icon)
+{
+    WCHAR fileNameW[MAX_PATH];
+    if (SalU8ToW(fileName, -1, fileNameW, _countof(fileNameW)) != 0)
+        return ExtractIconExW(fileNameW, iconIndex, NULL, icon, 1);
+    return ExtractIconEx(fileName, iconIndex, NULL, icon, 1);
+}
+
 unsigned BkgndReadingIconsThreadBody(void* param)
 {
     CALL_STACK_MESSAGE1("BkgndReadingIconsThreadBody()");
@@ -2327,7 +2342,7 @@ unsigned BkgndReadingIconsThreadBody(void* param)
         HICON umIcon;
         if (item->FileName[0] != 0 &&
             SalGetFileAttributes(item->FileName) != INVALID_FILE_ATTRIBUTES && // accessibility check (instead of CheckPath)
-            ExtractIconEx(item->FileName, item->IconIndex, NULL, &umIcon, 1) == 1)
+            ExtractOneIconU8(item->FileName, item->IconIndex, &umIcon) == 1)
         {
             HANDLES_ADD(__htIcon, __hoLoadImage, umIcon); // add the 'umIcon' handle to HANDLES
         }
@@ -2710,7 +2725,7 @@ BOOL CUserMenuItem::GetIconHandle(CUserMenuIconDataArr* bkgndReaderData, BOOL ge
     if (bkgndReaderData == NULL && fileName[0] != 0 && // we have to load icons right here
         MainWindow->GetActivePanel() != NULL &&
         MainWindow->GetActivePanel()->CheckPath(FALSE, fileName) == ERROR_SUCCESS &&
-        ExtractIconEx(fileName, iconIndex, NULL, &UMIcon, 1) == 1)
+        ExtractOneIconU8(fileName, iconIndex, &UMIcon) == 1)
     {
         HANDLES_ADD(__htIcon, __hoLoadImage, UMIcon); // add the 'UMIcon' handle to HANDLES
         return TRUE;

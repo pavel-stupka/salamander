@@ -12,6 +12,7 @@
 #include "fileswnd.h"
 #include "shellib.h"
 #include "svg.h"
+#include "gui.h" // feature 069 (F-P3-07): CopyToolTipAnswer
 
 //
 // ****************************************************************************
@@ -1851,7 +1852,13 @@ CStatusWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (str == NULL)
                 text[0] = 0;
             else
-                lstrcpyn(text, str, TOOLTIP_TEXT_MAX); // a long path may exceed the tooltip buffer (feature 010)
+                // feature 069 (F-P3-07): a long path may exceed the tooltip
+                // buffer (feature 010) and the plain byte clamp used here could
+                // cut inside a multi-byte character; CToolTip::GetText then
+                // rejects the whole buffer and re-reads it through the legacy
+                // code page, so one torn character turned every accented
+                // character in the hint into mojibake
+                CopyToolTipAnswer(str, text);
             break;
         }
 

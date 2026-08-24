@@ -796,13 +796,13 @@ const char* SALAMANDER_VIEWTEMPLATE_RIGHTSMARTMODE = "Right Smart Mode";
 CViewTemplates::CViewTemplates()
 {
     // default values
-    Set(0, VIEW_MODE_TREE, LoadStr(IDS_TREE_VIEW), 0, TRUE, TRUE);
-    Set(1, VIEW_MODE_BRIEF, LoadStr(IDS_BRIEF_VIEW), 0, TRUE, TRUE);
-    Set(2, VIEW_MODE_DETAILED, LoadStr(IDS_DETAILED_VIEW), VIEW_SHOW_SIZE | VIEW_SHOW_DATE | VIEW_SHOW_TIME | VIEW_SHOW_ATTRIBUTES, TRUE, TRUE);
-    Set(3, VIEW_MODE_ICONS, LoadStr(IDS_ICONS_VIEW), 0, TRUE, TRUE);
-    Set(4, VIEW_MODE_THUMBNAILS, LoadStr(IDS_THUMBNAILS_VIEW), 0, TRUE, TRUE);
-    Set(5, VIEW_MODE_TILES, LoadStr(IDS_TILES_VIEW), 0, TRUE, TRUE);
-    Set(6, VIEW_MODE_DETAILED, LoadStr(IDS_TYPES_VIEW), VIEW_SHOW_SIZE | VIEW_SHOW_TYPE | VIEW_SHOW_DATE | VIEW_SHOW_TIME | VIEW_SHOW_ATTRIBUTES, TRUE, TRUE);
+    Set(0, VIEW_MODE_TREE, LoadStrU8(IDS_TREE_VIEW), 0, TRUE, TRUE);
+    Set(1, VIEW_MODE_BRIEF, LoadStrU8(IDS_BRIEF_VIEW), 0, TRUE, TRUE);
+    Set(2, VIEW_MODE_DETAILED, LoadStrU8(IDS_DETAILED_VIEW), VIEW_SHOW_SIZE | VIEW_SHOW_DATE | VIEW_SHOW_TIME | VIEW_SHOW_ATTRIBUTES, TRUE, TRUE);
+    Set(3, VIEW_MODE_ICONS, LoadStrU8(IDS_ICONS_VIEW), 0, TRUE, TRUE);
+    Set(4, VIEW_MODE_THUMBNAILS, LoadStrU8(IDS_THUMBNAILS_VIEW), 0, TRUE, TRUE);
+    Set(5, VIEW_MODE_TILES, LoadStrU8(IDS_TILES_VIEW), 0, TRUE, TRUE);
+    Set(6, VIEW_MODE_DETAILED, LoadStrU8(IDS_TYPES_VIEW), VIEW_SHOW_SIZE | VIEW_SHOW_TYPE | VIEW_SHOW_DATE | VIEW_SHOW_TIME | VIEW_SHOW_ATTRIBUTES, TRUE, TRUE);
     //  Set(4, VIEW_MODE_DETAILED, LoadStr(IDS_DESCRIPTIONS_VIEW), VIEW_SHOW_SIZE | VIEW_SHOW_DESCRIPTION, TRUE, TRUE);
     int i;
     for (i = 7; i < VIEW_TEMPLATES_COUNT; i++)
@@ -816,6 +816,12 @@ void CViewTemplates::Set(DWORD index, const char* name, DWORD flags, BOOL leftSm
     if (lstrlen(name) >= VIEW_NAME_MAX)
         TRACE_E("String is too long");
     lstrcpyn(Items[index].Name, name, VIEW_NAME_MAX);
+    // feature 069 (F-P4-07): VIEW_NAME_MAX is a BYTE limit and the names are
+    // UTF-8, so a clamp could leave a torn multi-byte character behind, which
+    // would send the whole cell through the legacy draw.  No shipped language
+    // comes close (16 bytes is the longest of the eight), but Russian (30) and
+    // Ukrainian (38) would - see the language re-enable checklist.
+    SalU8TrimIncompleteTail(Items[index].Name);
     Items[index].Flags = flags;
     Items[index].LeftSmartMode = leftSmartMode;
     Items[index].RightSmartMode = rightSmartMode;
@@ -1006,7 +1012,13 @@ BOOL CViewTemplates::Load(HKEY hKey)
                     break;
                 }
                 if (resID != -1)
-                    strcpy(name, LoadStr(resID));
+                    // feature 069 (F-P4-07): the seven built-in names are
+                    // re-seeded on every load and are consumed as UTF-8
+                    // (dialogs4.cpp SalListViewSetItemTextU8, the view-mode
+                    // menu) - the ANSI LoadStr put a "?" in place of every
+                    // character the code page could not express, next to
+                    // user-defined names that were correct
+                    strcpy(name, LoadStrU8(resID));
 
                 Set(i, name, flags, leftSM, rightSM);
             }

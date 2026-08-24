@@ -184,6 +184,19 @@ BOOL SalIsASCII(const char* s, int len = -1);
 const char* SalU8Next(const char* s);
 int SalU8CharCount(const char* s, int len = -1);
 
+//
+// ****************************************************************************
+// SalU8TrimIncompleteTail
+//
+// Drops a trailing INCOMPLETE UTF-8 sequence, in place.  A byte-count clamp
+// (lstrcpyn, _snprintf_s, a fixed-size field) can cut a multi-byte character in
+// half; the torn tail then makes every strict probe fail, and the whole string
+// is re-read through the legacy code page - one torn character turns the entire
+// text into mojibake.  A COMPLETE character at the end is left alone, so this
+// is safe to call unconditionally on any UTF-8 buffer (feature 069).
+
+void SalU8TrimIncompleteTail(char* buf);
+
 //*****************************************************************************
 //
 // SalNameEquivalent

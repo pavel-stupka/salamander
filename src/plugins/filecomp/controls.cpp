@@ -88,11 +88,23 @@ CFileHeaderWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         // 'Text' is a UTF-8 path (interface 104) -> render with the W text API so
         // non-ASCII names are not misread through the ANSI code page
         WCHAR buff[2 * MAX_PATH];
-        if (SplU8ToW(Text, buff, _countof(buff)) <= 0)
-            buff[0] = 0;
-        PathCompactPathW(dc, buff, r.right - r.left);
-
-        DrawTextW(dc, buff, -1, &r, /*DT_PATH_ELLIPSIS | */ DT_SINGLELINE | DT_NOPREFIX);
+        if (SplU8ToW(Text, buff, _countof(buff)) > 0)
+        {
+            PathCompactPathW(dc, buff, r.right - r.left);
+            DrawTextW(dc, buff, -1, &r, /*DT_PATH_ELLIPSIS | */ DT_SINGLELINE | DT_NOPREFIX);
+        }
+        else
+        {
+            // feature 069 (D03): on a conversion failure fall back to the legacy
+            // narrow draw instead of blanking the bar - dropping the text is a
+            // regression, not a fallback (contract B2/B3-C2; the same shape the
+            // window title needed in F-P5-09).  PathCompactPath edits in place,
+            // so it gets a copy: 'Text' must stay as it is.
+            char narrow[MAX_PATH];
+            lstrcpynA(narrow, Text, _countof(narrow));
+            PathCompactPathA(dc, narrow, r.right - r.left);
+            DrawTextA(dc, narrow, -1, &r, /*DT_PATH_ELLIPSIS | */ DT_SINGLELINE | DT_NOPREFIX);
+        }
         SetBkColor(dc, oldBkColor);
         SetTextColor(dc, oldTexColor);
         SelectObject(dc, oldFont);

@@ -38,7 +38,12 @@ void CViewerWindow::SetViewerCaption()
     {
         if (caption[0] != 0)
             strcat(caption, " - ");
-        strcat(caption, LoadStr(IDS_VIEWERTITLE));
+        // feature 069 (F-P4-02, T1): the caption already carries a UTF-8 file
+        // name, so the translated part must be UTF-8 too - with the ANSI
+        // LoadStr the buffer was invalid UTF-8 in cs/sk/hu (Prohlizec /
+        // Prehliadac / Nezo are non-ASCII) and the whole title, file name
+        // included, was drawn through the legacy code page
+        strcat(caption, LoadStrU8(IDS_VIEWERTITLE));
         if (ContentEncoding != VCE_LEGACY)
         {
             // feature 015 (viewer.md): report the Unicode encoding actually used
@@ -52,6 +57,21 @@ void CViewerWindow::SetViewerCaption()
             char codeName[200];
             CodeTables.GetCodeName(CodeType, codeName, 200);
             RemoveAmpersands(codeName);
+            // feature 069 (F-P4-02, T2): the conversion name carries the bytes
+            // of convert.cfg, which is legacy-encoded for the Central-European
+            // set (Kamenicti, KOI-8 CS2), and it is appended to a UTF-8 caption
+            // - the mixture made the strict conversion below fail and dropped
+            // the whole title to the legacy draw.  Normalized for display only:
+            // the table's own bytes stay as they are because plugins receive
+            // them through EnumConversionTables (see codetbl.cpp, F-P4-01).
+            // the maxBytes clamp cuts only on a UTF-8 boundary, so the copy
+            // back can never truncate and never leaves a torn character
+            char* codeNameU8 = SalLegacyToU8Alloc(codeName, _countof(codeName) - 1);
+            if (codeNameU8 != NULL)
+            {
+                lstrcpyn(codeName, codeNameU8, _countof(codeName));
+                free(codeNameU8);
+            }
             char* s = codeName + strlen(codeName);
             while (s > codeName && *(s - 1) == ' ')
                 s--;

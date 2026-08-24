@@ -393,7 +393,10 @@ RETRY:
                 {
                     // after 3 seconds display the "ESC to cancel" window
                     char buf[MAX_PATH + 100];
-                    _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_CHECKINGPATHESC), path); // path may exceed the buffer (long paths, feature 010)
+                    // feature 069 (F-P2-04): UTF-8 path in the message, so the
+                    // template must be UTF-8 as well (see fileswn3.cpp)
+                    _snprintf_s(buf, _TRUNCATE, LoadStrU8(IDS_CHECKINGPATHESC), path); // path may exceed the buffer (long paths, feature 010)
+                    SalU8TrimIncompleteTail(buf); // see the note in fileswn3.cpp
                     CreateSafeWaitWindow(buf, NULL, 4800 + 200, TRUE, NULL);
 
                     while (1)

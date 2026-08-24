@@ -1051,9 +1051,20 @@ void CPlugins::AddNamesToListView(HWND hListView, BOOL setOnly, int* numOfLoaded
         ListView_SetItemText(hListView, i, 1,
                              LoadStr(plugin->GetLoaded() ? IDS_PLUGINS_LOADED_YES : IDS_PLUGINS_LOADED_NO));
         // version
-        ListView_SetItemText(hListView, i, 2, plugin->Version);
+        // feature 069 (F-P2-09): Version is UTF-8 by the same metadata contract
+        // as Name (plugins.h; feature 052).  Every shipped plugin passes an
+        // ASCII literal, so this is a no-op today and a correct sink tomorrow.
+        SalListViewSetItemTextU8(hListView, i, 2, plugin->Version);
         // location
-        ListView_SetItemText(hListView, i, 3, plugin->DLLName);
+        // feature 069 (F-P2-09): the location of a plugin added by hand from a
+        // non-ASCII directory rendered as mojibake here, in the row whose Name
+        // column right beside it was already correct.  DLLName is not
+        // normalized at intake (it must stay loadable by the ANSI LoadLibrary):
+        // it carries ACP bytes in the session it was added and comes back from
+        // the registry facade as UTF-8 after a restart - which is exactly what
+        // this sink handles, wide when the value converts and the legacy call
+        // when it does not.
+        SalListViewSetItemTextU8(hListView, i, 3, plugin->DLLName);
     }
     *numOfLoaded = loaded;
 }
@@ -2999,6 +3010,13 @@ BOOL CPlugins::ReadPluginsVer(HWND parent, BOOL importFromOldConfig)
                 int index;
                 if (!Plugins.FindDLL(pluginName, index))
                 {
+                    // feature 069 (F-P2-04): these plugin-loading messages stay
+                    // ANSI on purpose.  The second half is a plugin path that is
+                    // deliberately NOT normalized - plugins.h's metadata contract
+                    // lists DLLName as not-normalized and plugins1.cpp loads the
+                    // plugin with the ANSI LoadLibrary on it - so pairing it with
+                    // a UTF-8 template would make the buffer invalid UTF-8 and
+                    // drop the translated half to the legacy draw as well.
                     _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), pluginName);
                     analysing.SetText(textProgress);
 

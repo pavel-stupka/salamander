@@ -282,7 +282,15 @@ BOOL CFilesWindow::ReadDirectory(HWND parent, BOOL isRefresh)
 
         // after 2000 ms we will show a window with a cancel prompt
         char buf[2 * MAX_PATH + 100];
-        _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_READINGPATHESC), GetPath()); // path may exceed the buffer (long paths, feature 010)
+        // feature 069 (F-P2-04): the template is composed with a UTF-8 panel
+        // path, so it must be UTF-8 too - with the ANSI LoadStr the buffer was
+        // invalid UTF-8 and CWaitWindow::PaintText dropped the whole line to
+        // the legacy draw, showing the path as mojibake in cs/de/fr/hu/sk.
+        _snprintf_s(buf, _TRUNCATE, LoadStrU8(IDS_READINGPATHESC), GetPath()); // path may exceed the buffer (long paths, feature 010)
+        // feature 069: _TRUNCATE counts bytes, so a very long path can be cut
+        // inside a character; without this the whole line - the translated part
+        // included - would fall back to the legacy draw
+        SalU8TrimIncompleteTail(buf);
         CreateSafeWaitWindow(buf, NULL, 2000, TRUE, MainWindow->HWindow);
 
         DWORD lastEscCheckTime;

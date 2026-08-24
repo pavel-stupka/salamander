@@ -982,7 +982,9 @@ BOOL CStaticText::ShowHint()
 // copies the UTF-8 ToolTipText into the TOOLTIP_TEXT_MAX-byte answer buffer of
 // WM_USER_TTGETTEXT; when the clamp truncates, it never leaves a torn multi-byte
 // sequence at the end (feature 063, contract C3)
-static void CopyToolTipAnswer(const char* toolTipText, char* dst)
+// feature 069 (F-P3-07): shared (declared in gui.h) because the directory-line
+// tooltip in stswnd.cpp did its own plain byte clamp and lost the whole hint
+void CopyToolTipAnswer(const char* toolTipText, char* dst)
 {
     lstrcpyn(dst, toolTipText, TOOLTIP_TEXT_MAX);
     if ((int)strlen(toolTipText) >= TOOLTIP_TEXT_MAX)

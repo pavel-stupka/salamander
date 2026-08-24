@@ -241,12 +241,18 @@ public:
 
     // vraci user-part aktualni cesty v tomto FS, 'userPart' je buffer o velikosti MAX_PATH
     // pro cestu, vraci uspech
+    // the path text is UTF-8 since plugin interface 104 (see CFileData::Name in
+    // spl_com.h and specs/004-long-paths-unicode/contracts/plugin-interface-vnext.md);
+    // the buffer size is a BYTE count, so one character may take up to 4 bytes
     virtual BOOL WINAPI GetCurrentPath(char* userPart) = 0;
 
     // vraci user-part plneho jmena souboru/adresare/up-diru 'file' ('isDir' je 0/1/2) na aktualni
     // ceste v tomto FS; pro up-dir adresar (prvni v seznamu adresaru a zaroven pojmenovany ".."),
     // je 'isDir'==2 a metoda by mela vracet aktualni cestu zkracenou o posledni komponentu; 'buf'
     // je buffer o velikosti 'bufSize' pro vysledne plne jmeno, vraci uspech
+    // the path text is UTF-8 since plugin interface 104 (see CFileData::Name in
+    // spl_com.h and specs/004-long-paths-unicode/contracts/plugin-interface-vnext.md);
+    // the buffer size is a BYTE count, so one character may take up to 4 bytes
     virtual BOOL WINAPI GetFullName(CFileData& file, int isDir, char* buf, int bufSize) = 0;
 
     // vraci absolutni cestu (vcetne fs-name) odpovidajici relativni ceste 'path' na tomto FS;
@@ -257,11 +263,17 @@ public:
     // (ma se pouzit retezec v 'path' - jinak se ignoruje) - nasleduje zmena cesty (jde-li
     // o cestu na toto FS, vola se ChangePath()); pokud vrati v 'success' FALSE, predpoklada
     // se, ze uzivatel jiz videl chybove hlaseni
+    // the path text is UTF-8 since plugin interface 104 (see CFileData::Name in
+    // spl_com.h and specs/004-long-paths-unicode/contracts/plugin-interface-vnext.md);
+    // the buffer size is a BYTE count, so one character may take up to 4 bytes
     virtual BOOL WINAPI GetFullFSPath(HWND parent, const char* fsName, char* path, int pathSize,
                                       BOOL& success) = 0;
 
     // vraci user-part rootu aktualni cesty v tomto FS, 'userPart' je buffer o velikosti MAX_PATH
     // pro cestu (pouziti ve funkci "goto root"), vraci uspech
+    // the path text is UTF-8 since plugin interface 104 (see CFileData::Name in
+    // spl_com.h and specs/004-long-paths-unicode/contracts/plugin-interface-vnext.md);
+    // the buffer size is a BYTE count, so one character may take up to 4 bytes
     virtual BOOL WINAPI GetRootPath(char* userPart) = 0;
 
     // porovna aktualni cestu v tomto FS a cestu zadanou pres 'fsNameIndex' a 'userPart'
@@ -327,6 +339,10 @@ public:
     // nebo vrati FALSE, po uspesnem volani ChangePath se bude opakovat volani ListCurrentPath;
     // pokud vrati FALSE, navratova hodnota 'pluginData' se ignoruje (data v 'dir' je potreba
     // uvolnit pomoci 'dir.Clear(pluginData)', jinak se uvolni jen Salamanderovska cast dat);
+    // the names reported into 'dir' are UTF-8 since plugin interface 104 (the
+    // CFileData::Name contract in spl_com.h); the core does not normalize them,
+    // so a plugin that fills them from a legacy-code-page source poisons the
+    // panel path
     virtual BOOL WINAPI ListCurrentPath(CSalamanderDirectoryAbstract* dir,
                                         CPluginDataInterfaceAbstract*& pluginData,
                                         int& iconsType, BOOL forceRefresh) = 0;

@@ -771,6 +771,24 @@ BOOL CCodeTables::GetCode(char* table, int& codeType)
     return TRUE;
 }
 
+// compares a conversion name with a candidate, ignoring spaces, dashes and the
+// menu accelerator '&' (extracted unchanged from GetCodeType, feature 069)
+static BOOL CodingNameEqual(const char* n, const char* c)
+{
+    while (1)
+    {
+        while (*n != 0 && (*n <= ' ' || *n == '-' || *n == '&'))
+            n++;
+        while (*c != 0 && (*c <= ' ' || *c == '-') || *c == '&')
+            c++;
+        if (LowerCase[*n] != LowerCase[*c] || *n == 0)
+            break;
+        n++;
+        c++;
+    }
+    return *n == 0 && *c == 0;
+}
+
 BOOL CCodeTables::GetCodeType(const char* coding, int& codeType)
 {
     CALL_STACK_MESSAGE2("CCodeTables::GetCode(%s, )", coding);
@@ -779,25 +797,40 @@ BOOL CCodeTables::GetCodeType(const char* coding, int& codeType)
         TRACE_E("CCodeTables::GetCodeType: Table is not loaded");
         return FALSE;
     }
+    // feature 069 (F-P4-01): the viewer's default conversion was silently lost
+    // on every restart whenever its name is not plain ASCII (the eight
+    // Kamenicti / KOI-8 CS2 entries of convert\centeuro).  The name is written
+    // to the registry as the bytes of convert.cfg - legacy-encoded - and the
+    // registry facade stores it as text and hands it back as UTF-8, so this
+    // byte comparison could never match again and the default fell back to
+    // "none".
+    //   The table's own names are deliberately NOT re-encoded: they are handed
+    // to plugins by CSalamanderGeneral::EnumConversionTables and are accepted
+    // back through GetConversionTable(), and dbviewer and filecomp store them
+    // in their own configuration - changing those bytes would break their saved
+    // settings and the plugin-facing freeze.  Instead the lookup accepts both
+    // spellings of the caller's string, which is purely additive: a name that
+    // matched before still matches.
+    char legacy[512];
+    const char* codingAlt = NULL;
+    WCHAR codingW[512];
+    if (SalU8ToW(coding, -1, codingW, _countof(codingW)) != 0 &&
+        // WC_NO_BEST_FIT_CHARS: no transliteration, so the alternate spelling
+        // cannot match a name it only resembles
+        WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, codingW, -1, legacy,
+                            _countof(legacy), NULL, NULL) != 0 &&
+        strcmp(legacy, coding) != 0) // only when the two spellings really differ
+    {
+        codingAlt = legacy;
+    }
     int i;
     for (i = 0; i < Table->Data.Count; i++)
     {
         const char* n = Table->Data[i]->Name;
         if (n != NULL) // not a separator
         {
-            const char* c = coding;
-            while (1)
-            {
-                while (*n != 0 && (*n <= ' ' || *n == '-' || *n == '&'))
-                    n++;
-                while (*c != 0 && (*c <= ' ' || *c == '-') || *c == '&')
-                    c++;
-                if (LowerCase[*n] != LowerCase[*c] || *n == 0)
-                    break;
-                n++;
-                c++;
-            }
-            if (*n == 0 && *c == 0)
+            if (CodingNameEqual(n, coding) ||
+                (codingAlt != NULL && CodingNameEqual(n, codingAlt)))
             {
                 codeType = i + 1;
                 return TRUE;

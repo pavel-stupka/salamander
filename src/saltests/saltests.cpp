@@ -1430,6 +1430,72 @@ static void TestEncodingReview068()
 
 static void TestEncodingFixes069()
 {
+    // ---- F-P2-11 / F-P4-07: SalU8TrimIncompleteTail -----------------------
+    // A byte-count clamp (lstrcpyn into a fixed field) can cut a multi-byte
+    // character in half; the torn tail then fails every strict probe and the
+    // whole string is drawn through the legacy code page.  Hex escapes are used
+    // deliberately: this file has no BOM, so a literal non-ASCII character
+    // would be read through the compiler's default code page.
+    char buf[32];
+
+    // (1) a COMPLETE character at the end must survive untouched.  This is the
+    //     case a naive "strip trailing continuation bytes" loop gets wrong: the
+    //     last byte of y-acute (C3 BD) IS a continuation byte.
+    strcpy(buf, "Stru\xC4\x8D" "n\xC3\xBD"); // "Strucny" with caron and acute
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "Stru\xC4\x8D" "n\xC3\xBD") == 0);
+
+    // (2) a cut 2-byte sequence (lead byte only) is dropped whole
+    strcpy(buf, "Stru\xC4\x8D" "n\xC3");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "Stru\xC4\x8D" "n") == 0);
+
+    // (3) a cut 3-byte sequence, one byte short (EUR needs E2 82 AC)
+    strcpy(buf, "ab\xE2\x82");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "ab") == 0);
+
+    // (4) a cut 4-byte sequence, one and two bytes short (emoji F0 9F 93 81)
+    strcpy(buf, "ab\xF0\x9F\x93");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "ab") == 0);
+    strcpy(buf, "ab\xF0\x9F");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "ab") == 0);
+
+    // (5) the complete 3- and 4-byte forms survive
+    strcpy(buf, "ab\xE2\x82\xAC");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "ab\xE2\x82\xAC") == 0);
+    strcpy(buf, "ab\xF0\x9F\x93\x81");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "ab\xF0\x9F\x93\x81") == 0);
+
+    // (6) ASCII and the empty string are untouched (the English no-op case)
+    strcpy(buf, "Detailed");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "Detailed") == 0);
+    strcpy(buf, "");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(buf[0] == 0);
+
+    // (7) a lone surrogate in WTF-8 (feature 066) is a complete 3-byte
+    //     sequence and must survive - internal names carry them
+    strcpy(buf, "a\xED\xA0\x80");
+    SalU8TrimIncompleteTail(buf);
+    CHECK(strcmp(buf, "a\xED\xA0\x80") == 0);
+
+    // (8) NULL is tolerated
+    SalU8TrimIncompleteTail(NULL);
+
+    // (9) the point of the helper: a torn tail is rejected by the strict
+    //     decoder (so the sink falls back to the legacy draw and the whole
+    //     string turns to mojibake), and after trimming it decodes again
+    WCHAR w[32];
+    strcpy(buf, "Stru\xC4\x8D" "n\xC3");
+    CHECK(SalU8ToW(buf, -1, w, _countof(w)) == 0);
+    SalU8TrimIncompleteTail(buf);
+    CHECK(SalU8ToW(buf, -1, w, _countof(w)) != 0);
 }
 
 int main()

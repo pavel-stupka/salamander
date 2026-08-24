@@ -453,6 +453,19 @@ void ArrangeHorizontalLines(HWND hWindow);
 int GetWindowFontHeight(HWND hWindow);
 
 //
+// ****************************************************************************
+// CopyToolTipAnswer
+//
+// Copies a UTF-8 tooltip text into the TOOLTIP_TEXT_MAX-byte answer buffer of
+// WM_USER_TTGETTEXT.  When the text is longer than the buffer the copy is
+// clamped on a character boundary, never inside a multi-byte sequence - a torn
+// sequence makes CToolTip::GetText's strict probe fail, and the whole hint is
+// then re-read through the legacy code page (feature 063 contract C3;
+// feature 069, F-P3-07).
+
+void CopyToolTipAnswer(const char* toolTipText, char* dst);
+
+//
 //  ****************************************************************************
 // GetWindowFontHeight
 //
