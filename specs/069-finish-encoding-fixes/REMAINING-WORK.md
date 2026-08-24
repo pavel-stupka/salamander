@@ -16,9 +16,9 @@ what is left, and it is self-contained: nothing here needs the 069 conversation.
 | **Fixed** | **31** findings + D01, D02, D03, D04, D05 |
 | Verify-closed | 3 — F-P1-03 (X06/X07), F-P2-10 (X02, a duplicate of F-P6-02), the jump-list half of F-P1-25 (X03) |
 | Fix groups | 11, each its own commit, each independently regression-reviewed |
-| Reviews | 4 batches; **2 REJECTED** first and corrected (see below) |
-| Tests | `saltests` 1257 → **1289**, 0 failed |
-| Guard | strict `TOTAL: 0` with **10** rules (`acp-title-seed` added, `signed-char-name-byte` retired in favour of `acp-byte-table-on-name`); draft 183 → 148 |
+| Reviews | 4 batches; **2 REJECTED** first — eight regressions the fixes themselves introduced, four severe and one destructive, all corrected and re-gated ([regression-X16-X22.md](findings/regression-X16-X22.md)) |
+| Tests | `saltests` 1257 → **1288**, 0 failed |
+| Guard | strict `TOTAL: 0` with **10** rules (`acp-title-seed` added, `signed-char-name-byte` retired in favour of `acp-byte-table-on-name`); draft 183 → 149 |
 | Plugin ABI | untouched — interface 106, no forwarder change, `src/plugins/shared/` diff is comments only |
 
 **Do not re-open**: the fix list is in `closing-report.md` with a per-item
