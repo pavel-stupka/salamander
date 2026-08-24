@@ -1,0 +1,462 @@
+src/usermenu.h:16:    char FileName[MAX_PATH];  // jmeno souboru, ze ktereho mame cist ikonu z indexu IconIndex (pres ExtractIconEx())
+src/viewer.h:144:    void OpenFile(const char* file, const char* caption, BOOL wholeCaption); // does not manage Lock
+src/cache.h:56:    BOOL OwnDelete;                            // FALSE = delete the tmp-file using DeleteFile(), TRUE = delete using DeleteManager (the plugin OwnDeletePlugin deletes)
+src/viewer2.cpp:311:            view->OpenFile(name, caption, wholeCaption);
+src/viewer2.cpp:866:void CViewerWindow::OpenFile(const char* file, const char* caption, BOOL wholeCaption)
+src/viewer2.cpp:868:    CALL_STACK_MESSAGE3("CViewerWindow::OpenFile(%s, %s)", file, caption);
+src/viewer3.cpp:596:        drag = DragQueryFile((HDROP)wParam, 0xFFFFFFFF, NULL, 0); // how many files were dropped on us
+src/viewer3.cpp:599:            DragQueryFile((HDROP)wParam, 0, path, MAX_PATH);
+src/viewer3.cpp:607:                OpenFile(path, NULL, FALSE);
+src/viewer3.cpp:923:                    OpenFile(file, NULL, FALSE);
+src/viewer3.cpp:986:                OpenFile(fileName, NULL, FALSE);
+src/svg.cpp:56:    HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ,
+src/svg.cpp:108:    GetModuleFileName(NULL, svgFile, _countof(svgFile));
+src/shiconov.cpp:54:    if (!GetModuleFileName(NULL, path, pathSize))
+src/shiconov.cpp:89:        SQLite3DLL = HANDLES(LoadLibrary(sqlitePath));
+src/shiconov.cpp:120:    if (SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, sDbPath) == S_OK)
+src/shiconov.cpp:204:        if (SHGetFolderPath(NULL, WindowsVistaAndLater ? CSIDL_PROFILE : CSIDL_MYDOCUMENTS,
+src/shiconov.cpp:400:    if ((errRet = HANDLES_Q(RegOpenKeyEx(HKEY_CLASSES_ROOT, "CLSID",
+src/shiconov.cpp:408:    if ((errRet = HANDLES_Q(RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+src/shiconov.cpp:419:            if ((errRet = RegEnumKeyEx(key, i, name, &nameLen, NULL, NULL, NULL, &dummy)) == ERROR_SUCCESS)
+src/shiconov.cpp:439:            if ((errRet = HANDLES_Q(RegOpenKeyEx(key, keyNames[s], 0, KEY_QUERY_VALUE, &handler))) == ERROR_SUCCESS)
+src/shiconov.cpp:461:                                if ((errRet = HANDLES_Q(RegOpenKeyEx(clsIDKey, txtClsId, 0, KEY_QUERY_VALUE, &classKey))) == ERROR_SUCCESS)
+src/shiconov.cpp:908:        return SHGetFileInfo(pszPath, dwFileAttributes, psfi, cbFileInfo, uFlags);
+src/shiconov.cpp:1192:        HINSTANCE cldapiDLL = NOHANDLES(LoadLibrary("cldapi.dll"));
+src/zip.cpp:2499:            ::DeleteFile(pluginData->FileName);
+src/zip.cpp:2516:                    ::DeleteFile(pluginData->FileName);
+src/zip.cpp:2527:            ::DeleteFile(pluginData->FileName);
+src/zip.cpp:2535:            HANDLE file = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+src/salamdr6.cpp:1627:    if (GetVolumeInformation(root, NULL, 0, NULL, &dummy1, &flags, fsName, MAX_PATH))
+src/salamdr6.cpp:1701:    BOOL ret = GetOpenFileName(lpofn);
+src/salamdr6.cpp:1712:        ret = GetOpenFileName(lpofn);
+src/salamdr6.cpp:1722:    BOOL ret = GetSaveFileName(lpofn);
+src/salamdr6.cpp:1733:        ret = GetSaveFileName(lpofn);
+src/salamdr6.cpp:1771:            if (GetWindowsDirectory(winPath, MAX_PATH) != 0)
+src/salamdr6.cpp:2223:    LONG ret = RegQueryValue(hKey, lpSubKey, lpData, lpcbData);
+src/salamdr6.cpp:2253:    LONG ret = RegQueryValueEx(hKey, lpValueName, lpReserved, &type, lpData, lpcbData);
+src/salamdr6.cpp:2474:        HINSTANCE hDLL = NOHANDLES(LoadLibrary("kernel32.dll"));
+src/salamdr6.cpp:2507:        HINSTANCE hDLL = NOHANDLES(LoadLibrary("ntdll.dll"));
+src/versinfo.cpp:563:                    HANDLE file = CreateFile(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+src/olespy.cpp:951:                    SHGetPathFromIDList((LPCITEMIDLIST)pvRequest, szTemp);
+src/olespy.cpp:969:                        if (SHGetPathFromIDList((LPCITEMIDLIST)pvRequest, szTemp) && szTemp[0] != 0)
+src/snooper.cpp:55:    res = HANDLES_Q(RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+src/salamdr7.cpp:296:            SetEnvironmentVariable(var->Name, var->Type == ENVVARTYPE_ADD ? var->Value : NULL);
+src/salamdr7.cpp:301:    SetEnvironmentVariable("PROCESSOR_ARCHITECTURE", "x86");
+src/salamdr7.cpp:364:    HANDLE hVolume = HANDLES(CreateFile(volume, FILE_READ_ATTRIBUTES, FILE_SHARE_READ, NULL,
+src/salamdr7.cpp:394:    HANDLE hVolume = HANDLES(CreateFile(volume, FILE_READ_ATTRIBUTES, FILE_SHARE_READ, NULL,
+src/salamdr7.cpp:425:    HANDLE hVolume = HANDLES_Q(CreateFile(volume, GENERIC_READ | GENERIC_WRITE,
+src/salamdr7.cpp:510:    if (!IsUNCPath(rootPath) && GetDriveType(rootPath) == DRIVE_FIXED) // it only makes sense to look for reparse points on fixed disks
+src/salamdr4.cpp:1923:        if (GetModuleFileName(NULL, cmdline + 1, MAX_PATH - 1) == 0)
+src/salamdr4.cpp:1945:            if (!HANDLES_Q(CreateProcess(NULL, cmdline, NULL, NULL, FALSE,
+src/salshlib.cpp:652:            HANDLE file = HANDLES_Q(CreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+src/salshlib.cpp:689:            HANDLE file = HANDLES_Q(CreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+src/mainwnd4.cpp:538:                if (GetShortPathName(fileName, dosName, MAX_PATH) == 0)
+src/mainwnd4.cpp:540:                    TRACE_E("GetShortPathName() failed");
+src/mainwnd4.cpp:551:                if (GetShortPathName(fileName, dosName, MAX_PATH) == 0)
+src/mainwnd4.cpp:553:                    TRACE_E("GetShortPathName() failed");
+src/mainwnd4.cpp:834:                file = HANDLES_Q(CreateFile(batName, GENERIC_WRITE, 0, NULL, CREATE_NEW,
+src/mainwnd4.cpp:987:                        GetEnvironmentVariable("COMSPEC", cmdLine, USRMNUCMDLINE_MAXLEN - 20);
+src/mainwnd4.cpp:1059:            SetEnvironmentVariable(name, NULL);
+src/mainwnd4.cpp:1061:            SetEnvironmentVariable(name, dir);
+src/salmoncl.cpp:49:    LONG res = NOHANDLES(RegOpenKeyEx(HKEY_CURRENT_USER, BUG_REPORTER_KEY, 0, KEY_READ, &hKey));
+src/salmoncl.cpp:55:        res = RegQueryValueEx(hKey, BUG_REPORTER_UID, 0, &gettedType, (BYTE*)uid, &bufferSize);
+src/salmoncl.cpp:72:            LONG res2 = NOHANDLES(RegCreateKeyEx(HKEY_CURRENT_USER, BUG_REPORTER_KEY, 0, NULL, REG_OPTION_NON_VOLATILE,
+src/salmoncl.cpp:76:                res2 = RegSetValueEx(hKey, BUG_REPORTER_UID, 0, REG_QWORD, (BYTE*)uid, sizeof(*uid));
+src/salmoncl.cpp:112:    if (SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, mem->BugPath) == S_OK)
+src/salmoncl.cpp:137:    LONG res = NOHANDLES(RegOpenKeyEx(HKEY_CURRENT_USER, keyName, 0, KEY_READ, &hKey));
+src/salmoncl.cpp:163:    GetModuleFileName(NULL, cmd, MAX_PATH);
+src/salmoncl.cpp:172:    GetModuleFileName(NULL, rtlDir, MAX_PATH);
+src/salmoncl.cpp:174:    GetCurrentDirectory(MAX_PATH, oldCurDir);
+src/salmoncl.cpp:178:    if (GetEnvironmentVariable("PATH", envPATH, MAX_ENV_PATH) != 0)
+src/salmoncl.cpp:186:            SetEnvironmentVariable("PATH", newPATH);
+src/salmoncl.cpp:198:    SetCurrentDirectory(rtlDir);
+src/salmoncl.cpp:205:    if (NOHANDLES(CreateProcess(NULL, cmd, NULL, NULL, TRUE, // bInheritHandles == TRUE, the event handles must be passed on!
+src/salmoncl.cpp:215:    SetCurrentDirectory(oldCurDir);
+src/salmoncl.cpp:217:        SetEnvironmentVariable("PATH", envPATH);
+src/salmoncl.cpp:242:    HINSTANCE hDLL = LoadLibrary("KERNEL32.DLL");
+src/salamdr1.cpp:1036:            if (GetWindowsDirectory(win, MAX_PATH) && win[1] == ':' && win[0] == root[0])
+src/salamdr1.cpp:1225:        if (!IsUNCPath(root) && GetDriveType(root) == DRIVE_FIXED) // reparse pointy ma smysl hledat jen na fixed discich
+src/salamdr1.cpp:1298:        UINT drvType1 = GetDriveType(root1);
+src/salamdr1.cpp:1299:        UINT drvType2 = GetDriveType(root2);
+src/salamdr1.cpp:2118:    if (NOHANDLES(RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+src/salamdr1.cpp:2329:        ImageResDLL = HANDLES(LoadLibraryEx("imageres.dll", NULL, LOAD_LIBRARY_AS_DATAFILE));
+src/salamdr1.cpp:2336:        Shell32DLL = HANDLES(LoadLibraryEx("shell32.dll", NULL, LOAD_LIBRARY_AS_DATAFILE));
+src/salamdr1.cpp:2505:        GetSystemDirectory(systemDir, MAX_PATH);
+src/salamdr1.cpp:3058:    hComCtl = HANDLES(LoadLibrary(TEXT("comctl32.dll")));
+src/salamdr1.cpp:3438:    GetSystemDirectory(buf, MAX_PATH); // dame mu systemovy adresar, at neblokuje mazani soucasneho pracovniho adresare
+src/salamdr1.cpp:3566:    GetModuleFileName(HInstance, ConfigurationName, MAX_PATH);
+src/salamdr1.cpp:3669:                        GetModuleFileName(HInstance, ConfigurationName, MAX_PATH);
+src/salamdr1.cpp:3843:    User32DLL = NOHANDLES(LoadLibrary("user32.dll"));
+src/salamdr1.cpp:3849:    NtDLL = HANDLES(LoadLibrary("NTDLL.DLL"));
+src/salamdr1.cpp:3921:    if (!GetWindowsDirectory(WindowsDirectory, MAX_PATH))
+src/salamdr1.cpp:4052:    GetModuleFileName(NULL, path, MAX_PATH);
+src/salamdr1.cpp:4054:    HLanguage = HANDLES(LoadLibrary(path));
+src/salamdr1.cpp:4352:    GetModuleFileName(HInstance, shellExtPath, MAX_PATH);
+src/regwork.cpp:49:    LONG res = HANDLES(RegCreateKeyEx(hKey, name, 0, NULL, REG_OPTION_NON_VOLATILE,
+src/regwork.cpp:77:    LONG res = HANDLES_Q(RegOpenKeyEx(hKey, name, 0, KEY_READ, &openedKey));
+src/regwork.cpp:110:    return RegDeleteKey(hKey, name) == ERROR_SUCCESS;
+src/regwork.cpp:242:    return RegDeleteValue(hKey, name) == ERROR_SUCCESS;
+src/salamdr5.cpp:171:        if (GetDriveType(root) == DRIVE_FIXED)
+src/salamdr5.cpp:329:                runAsMainThread = (GetDriveType(drive) != DRIVE_REMOTE);
+src/salamdr5.cpp:1293:        DWORD res = RegQueryInfoKey(hKey, NULL, 0, 0, NULL, NULL, NULL, &values, NULL,
+src/salamdr5.cpp:1305:                res = RegEnumValue(hKey, i, valueName, &valueNameLen, 0, &type, (BYTE*)data, &dataLen);
+src/salamdr5.cpp:1562:        if (GetDriveType(lastLantasticCheckRoot) != DRIVE_REMOTE)
+src/salamdr5.cpp:1575:        return GetDriveType(root) == DRIVE_REMOTE;
+src/salamdr5.cpp:1855:    return SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, buf) == S_OK &&
+src/salamdr5.cpp:1864:    if (SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, path) == S_OK)
+src/salamdr5.cpp:1868:            CreateDirectory(path, NULL); // if it fails (e.g. already exists), we do not care...
+src/finddlg2.cpp:205:        SHFileOperation(&fo);
+src/shellsup.cpp:623:        HANDLE search = HANDLES_Q(FindFirstFile(s, &fileData));
+src/shellsup.cpp:630:            } while (FindNextFile(search, &fileData));
+src/shellsup.cpp:1004:                if (CreateDirectory(fakeRootDir, NULL))
+src/shellsup.cpp:1246:    HINSTANCE hModule = LoadLibraryEx("aclui.dll", NULL, LOAD_LIBRARY_AS_DATAFILE);
+src/shellsup.cpp:1416:                            if (CreateDirectory(fakeRootDir, NULL))
+src/shellsup.cpp:2364:                                        SetCurrentDirectory(panel->GetPath()); // for files whose names contain spaces: to make Open With work even for Microsoft Paint (under W2K it failed – reported "d:\documents.bmp was not found" for the file "D:\Documents and Settings\petr\My Documents\example.bmp")
+src/shellsup.cpp:2726:      HANDLE hFind = FindFirstFile(name, &findData);
+src/plugins2.cpp:143:        LONG res = RegSetValueEx(hKey, valueName, 0, REG_BINARY, rawPNG, rawPNGSize);
+src/plugins2.cpp:216:  LONG res = RegSetValueEx(hKey, valueName, 0, REG_BINARY, buff, sizeof(CDIBHeader) + compressed);
+src/plugins2.cpp:1271:        GetModuleFileName(HInstance, pluginsDir, MAX_PATH);
+src/plugins2.cpp:1923:        GetModuleFileName(HInstance, fullDLLName, MAX_PATH);
+src/plugins2.cpp:2799:    HANDLE find = HANDLES_Q(FindFirstFile(buf, &data));
+src/plugins2.cpp:2833:        } while (FindNextFile(find, &data));
+src/plugins2.cpp:2841:    HANDLE file = HANDLES_Q(CreateFile(buf, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+src/plugins2.cpp:2950:    GetModuleFileName(HInstance, buf, MAX_PATH);
+src/plugins2.cpp:3235:    GetModuleFileName(HInstance, buf, MAX_PATH);
+src/plugins2.cpp:3378:    GetModuleFileName(HInstance, buf, MAX_PATH);
+src/plugins2.cpp:3475:        GetModuleFileName(HInstance, module, MAX_PATH);
+src/plugins2.cpp:3494:                GetModuleFileName(HInstance, module, MAX_PATH);
+src/pack3.cpp:363:        if (GetModuleFileName(NULL, SpawnExe, MAX_PATH) == 0)
+src/pack3.cpp:1212:        if (!GetShortPathName(data->ArcName, buff2, MAX_PATH))
+src/pack3.cpp:1216:                TRACE_E("Error (1) in GetShortPathName() in PackExpArcDosName().");
+src/pack3.cpp:1251:                    HANDLE find = HANDLES_Q(FindFirstFile(path, &findData));
+src/pack3.cpp:1278:                HANDLE h = HANDLES_Q(CreateFile(path, GENERIC_WRITE, 0, NULL, CREATE_NEW,
+src/pack3.cpp:1284:                    BOOL ok = GetShortPathName(data->DOSTmpFile, buff2, MAX_PATH);
+src/pack3.cpp:1285:                    DeleteFile(data->DOSTmpFile); // we no longer need the file (let the archiver create it)
+src/pack3.cpp:1288:                        TRACE_E("Error (2) in GetShortPathName() in PackExpArcDosName().");
+src/pack3.cpp:1364:    if (!GetShortPathName(data->TgtDir, data->Buffer, MAX_PATH))
+src/pack3.cpp:1366:        TRACE_E("Error in GetShortPathName() in PackExpTgtDosPath().");
+src/pack3.cpp:1390:    if (!GetShortPathName(data->LstName, data->Buffer, MAX_PATH))
+src/pack3.cpp:1392:        TRACE_E("Error in GetShortPathName() in PackExpLstDosName().");
+src/pack3.cpp:1431:        DWORD len = GetShortPathName(exe, buff, MAX_PATH);
+src/packac.cpp:467:    HANDLE hfile = HANDLES_Q(CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL));
+src/packac.cpp:656:    HANDLE fileFind = HANDLES_Q(FindFirstFile(fileName, &findData));
+src/packac.cpp:722:        } while (FindNextFile(fileFind, &findData) && !mustStop);
+src/packac.cpp:2018:    DWORD size = GetLogicalDriveStrings(0, NULL);
+src/packac.cpp:2031:        DWORD newSize = GetLogicalDriveStrings(size, sysDrives);
+src/packac.cpp:2042:                if (GetDriveType(srcDrive) == DRIVE_FIXED)
+src/pack2.cpp:274:        if (!GetShortPathName(sourceDir, sourceShortName, MAX_PATH))
+src/pack2.cpp:301:    if ((listFile = fopen(tmpListNameBuf, "w")) == NULL)
+src/pack2.cpp:303:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:333:            if (GetShortPathName(name, namecnv, MAX_PATH) == 0)
+src/pack2.cpp:341:                DeleteFile(tmpListNameBuf);
+src/pack2.cpp:353:            DeleteFile(tmpListNameBuf);
+src/pack2.cpp:364:                DeleteFile(tmpListNameBuf);
+src/pack2.cpp:375:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:390:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:416:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:428:            DeleteFile(tmpListNameBuf);
+src/pack2.cpp:437:            DeleteFile(tmpListNameBuf);
+src/pack2.cpp:445:    if (!GetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
+src/pack2.cpp:460:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:465:    DeleteFile(tmpListNameBuf);
+src/pack2.cpp:500:            HANDLE find = HANDLES_Q(FindFirstFile(path, &findData));
+src/pack2.cpp:538:                } while (FindNextFile(find, &findData));
+src/pack2.cpp:641:    if ((listFile = fopen(tmpListNameBuf, "w")) == NULL)
+src/pack2.cpp:643:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:667:                DeleteFile(tmpListNameBuf);
+src/pack2.cpp:678:                    DeleteFile(tmpListNameBuf);
+src/pack2.cpp:689:                        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:702:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:714:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:722:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:732:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:744:    if (!GetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
+src/pack2.cpp:759:        DeleteFile(tmpListNameBuf);
+src/pack2.cpp:764:    HANDLE tmpHandle = HANDLES_Q(CreateFile(archiveFileName, GENERIC_READ, 0, NULL,
+src/pack2.cpp:770:    DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1016:    DeleteFile(arcPath);
+src/pack1.cpp:1477:    if ((listFile = fopen(tmpListNameBuf, "w")) == NULL)
+src/pack1.cpp:1479:        RemoveDirectory(tmpDirNameBuf);
+src/pack1.cpp:1480:        DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1509:                DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1510:                RemoveDirectory(tmpDirNameBuf);
+src/pack1.cpp:1523:        DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1524:        RemoveDirectory(tmpDirNameBuf);
+src/pack1.cpp:1536:        DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1537:        RemoveDirectory(tmpDirNameBuf);
+src/pack1.cpp:1545:        DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1546:        RemoveDirectory(tmpDirNameBuf);
+src/pack1.cpp:1559:            DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1560:            RemoveDirectory(tmpDirNameBuf);
+src/pack1.cpp:1568:            DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1569:            RemoveDirectory(tmpDirNameBuf);
+src/pack1.cpp:1577:        DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1582:    DeleteFile(tmpListNameBuf);
+src/pack1.cpp:1604:            HANDLE found = HANDLES_Q(FindFirstFile(srcDir, &foundFile));
+src/pack1.cpp:1619:                if (!FindNextFile(found, &foundFile))
+src/pack1.cpp:1863:    HANDLE found = HANDLES_Q(FindFirstFile(extractedFile, &foundFile));
+src/pack1.cpp:1877:        if (!FindNextFile(found, &foundFile))
+src/mapi.cpp:28:        HLibrary = HANDLES_Q(LoadLibrary("mapi32.dll"));
+src/mapi.cpp:34:            HLibrary = HANDLES_Q(LoadLibrary("msoemapi.dll"));
+src/fileswn3.cpp:128:        SetCurrentDirectory(GetPath()); // so that it works better
+src/fileswn3.cpp:1770:            h = HANDLES_Q(FindFirstFile(winDir, &find));
+src/fileswn3.cpp:1779:        h = HANDLES_Q(FindFirstFile(winDir, &find));
+src/fileswn3.cpp:1874:            h = HANDLES_Q(FindFirstFile(findPath, fileData)); // find-data for redirected-dir can be obtained from the "." directory in the listing of redirected-dir
+src/fileswn3.cpp:1886:                } while (FindNextFile(h, fileData));
+src/fileswn3.cpp:1898:                        h = HANDLES_Q(FindFirstFile(findPath, &fd));
+src/mainwnd2.cpp:653:    if (HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, SalamanderConfigurationRoots[0], 0,
+src/mainwnd2.cpp:666:                HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, autoImportConfigFromKey, 0, KEY_READ, // the key stored in AutoImportConfig can be opened (otherwise it doesn't exist?)
+src/mainwnd2.cpp:678:                    HANDLES_Q(RegOpenKeyEx(oldCfgKey, SALAMANDER_CONFIG_REG, 0, KEY_READ, &cfgKey)) == ERROR_SUCCESS)
+src/mainwnd2.cpp:691:                HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, oldKeyName, 0, KEY_READ, &cfgKey)) == ERROR_SUCCESS)
+src/mainwnd2.cpp:746:                    HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, SalamanderConfigurationRoots[0], 0,
+src/mainwnd2.cpp:763:        HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, SalamanderConfigurationRoots[0], 0,
+src/mainwnd2.cpp:766:        RegDeleteValue(rootKey, SALAMANDER_AUTO_IMPORT_CONFIG);
+src/mainwnd2.cpp:796:        BOOL rootFound = HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, root, 0, KEY_READ, &hRootKey)) == ERROR_SUCCESS;
+src/mainwnd2.cpp:797:        BOOL cfgFound = rootFound && HANDLES_Q(RegOpenKeyEx(hRootKey, SALAMANDER_CONFIG_REG, 0,
+src/mainwnd2.cpp:808:            if (HANDLES_Q(RegOpenKeyEx(hRootKey, SALAMANDER_VERSION_REG, 0, KEY_READ, &actKey) == ERROR_SUCCESS))
+src/mainwnd2.cpp:1035:                if (HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, root, 0, KEY_READ | KEY_WRITE, &hRootKey)) == ERROR_SUCCESS)
+src/mainwnd2.cpp:1149:            if (HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, SalamanderConfigurationRoots[0], 0,
+src/mainwnd2.cpp:1152:                if (RegDeleteValue(cfgKey, SALAMANDER_AUTO_IMPORT_CONFIG) == ERROR_SUCCESS)
+src/mainwnd2.cpp:1166:                    if (HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, autoImportConfigFromKey, 0,
+src/mainwnd2.cpp:2617:            DWORD res = RegQueryInfoKey(actKey, NULL, 0, 0, NULL, NULL, NULL, &values, NULL,
+src/mainwnd2.cpp:2638:                    res = RegEnumValue(actKey, i, name, &nameLen, 0, &type, path, &dataLen);
+src/mainwnd2.cpp:3670:        GetSystemDirectory(leftPanelPath, MAX_PATH);
+src/salamdr3.cpp:982:    GetSystemDirectory(buf, MAX_PATH);
+src/salamdr3.cpp:983:    SetCurrentDirectory(buf);
+src/salamdr3.cpp:997:    HANDLE find = HANDLES_Q(FindFirstFile(path, &file));
+src/salamdr3.cpp:1010:                    DeleteFile(path);
+src/salamdr3.cpp:1012:        } while (FindNextFile(find, &file));
+src/salamdr3.cpp:1016:    RemoveDirectory(path);
+src/salamdr3.cpp:1022:    SetCurrentDirectory(dir); // so it runs faster (the system prefers the current directory)
+src/salamdr3.cpp:1028:    RemoveDirectory(dir);
+src/salamdr3.cpp:1042:    HANDLE find = HANDLES_Q(FindFirstFile(path, &file));
+src/salamdr3.cpp:1057:        } while (FindNextFile(find, &file));
+src/salamdr3.cpp:1061:    RemoveDirectory(path);
+src/salamdr3.cpp:1067:    SetCurrentDirectory(dir); // so it runs faster (the system prefers the current directory)
+src/salamdr3.cpp:1073:    RemoveDirectory(dir);
+src/salamdr3.cpp:2308:            ExtractIconEx(item->FileName, item->IconIndex, NULL, &umIcon, 1) == 1)
+src/salamdr3.cpp:2691:        ExtractIconEx(fileName, iconIndex, NULL, &UMIcon, 1) == 1)
+src/salamdr3.cpp:3254:            SHFileOperation(&fo);
+src/salamdr3.cpp:3283:        HANDLE find = HANDLES_Q(FindFirstFile(buf, &data));
+src/salamdr3.cpp:3353:                            SetCurrentDirectory(s1);
+src/fileswna.cpp:577:                    SetCurrentDirectory(data->Data->SrcPath);
+src/mainwnd3.cpp:171:        if (GetModuleFileName(HInstance, CurrentHelpDir, MAX_PATH) != 0 &&
+src/mainwnd3.cpp:189:                        HANDLE find = HANDLES_Q(FindFirstFile(helpPath, &data));
+src/mainwnd3.cpp:204:                            } while (FindNextFile(find, &data));
+src/mainwnd3.cpp:874:    if (HANDLES(RegOpenKeyEx(HKEY_CURRENT_USER, "Control Panel\\Desktop\\WindowMetrics", 0, KEY_READ | KEY_WRITE, &hKey)) == ERROR_SUCCESS)
+src/mainwnd3.cpp:912:                RegDeleteValue(hKey, "Shell Icon Size"); // clean up after ourselves
+src/mainwnd3.cpp:927:  HIMAGELIST systemIL = (HIMAGELIST)SHGetFileInfo("C:\\TEST.QWE", 0, &shi, sizeof(shi),
+src/mainwnd3.cpp:2503:                SetCurrentDirectory(activePanel->GetPath());
+src/mainwnd3.cpp:2608:          ShellExecute(HWindow, "open", "https://www.altap.cz/salam_en/features/keyboard.html", NULL, NULL, SW_SHOWNORMAL);
+src/mainwnd3.cpp:2614:            ShellExecute(HWindow, "open", "https://github.com/tandemcommander/tandemcommander/issues", NULL, NULL, SW_SHOWNORMAL);
+src/mainwnd3.cpp:2903:                GetModuleFileName(HInstance, defDir, MAX_PATH);
+src/mainwnd3.cpp:2937:                        DeleteFile(file);
+src/mainwnd3.cpp:4238:            if (!GetEnvironmentVariable("COMSPEC", cmd, MAX_PATH))
+src/icncache.cpp:699:    GetSystemDirectory(systemDir, MAX_PATH);
+src/icncache.cpp:709:        if (SHGetFileInfo(systemDir, 0, &shi, sizeof(shi), SHGFI_TYPENAME) != 0)
+src/icncache.cpp:742:        if (HANDLES_Q(RegOpenKey(root, keyNameBuf, &openKey)) == ERROR_SUCCESS)
+src/icncache.cpp:754:        if (HANDLES_Q(RegOpenKey(root, keyNameBuf, &openKey)) == ERROR_SUCCESS)
+src/icncache.cpp:757:            if (RegQueryInfoKey(openKey, NULL, NULL, NULL, &keys, NULL,
+src/icncache.cpp:771:        if (HANDLES_Q(RegOpenKey(root, keyNameBuf, &openKey)) == ERROR_SUCCESS)
+src/icncache.cpp:783:        if (HANDLES_Q(RegOpenKey(root, keyNameBuf, &openKey)) == ERROR_SUCCESS)
+src/icncache.cpp:796:                    DWORD auxRes = ExpandEnvironmentStrings(buf, iconLocation, MAX_PATH + 10);
+src/icncache.cpp:1160:    if (HANDLES_Q(RegOpenKey(HKEY_CLASSES_ROOT, "SystemFileAssociations", &systemFileAssoc)) != ERROR_SUCCESS)
+src/icncache.cpp:1168:    if (HANDLES_Q(RegOpenKey(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts",
+src/icncache.cpp:1180:        if ((enumRet = RegEnumKeyEx(HKEY_CLASSES_ROOT, i, ext, &extS, NULL, NULL, NULL, &ft)) == ERROR_SUCCESS)
+src/icncache.cpp:1182:            if (ext[0] == '.' && HANDLES_Q(RegOpenKey(HKEY_CLASSES_ROOT, ext, &extKey)) == ERROR_SUCCESS)
+src/icncache.cpp:1257:            if ((enumRet = RegEnumKeyEx(systemFileAssoc, i, ext, &extS, NULL, NULL, NULL, &ft)) == ERROR_SUCCESS)
+src/icncache.cpp:1301:            if (RegEnumKeyEx(explorerFileExts, i, ext, &extS, NULL, NULL, NULL, &ft) == ERROR_SUCCESS)
+src/icncache.cpp:1303:                if (ext[0] == '.' && HANDLES_Q(RegOpenKey(explorerFileExts, ext, &extKey)) == ERROR_SUCCESS)
+src/icncache.cpp:1313:                    if (WindowsVistaAndLater && HANDLES_Q(RegOpenKey(extKey, "UserChoice", &openKey)) == ERROR_SUCCESS)
+src/icncache.cpp:1330:                        if (WindowsVistaAndLater && HANDLES_Q(RegOpenKey(extKey, "OpenWithProgids", &openKey)) == ERROR_SUCCESS)
+src/icncache.cpp:1334:                            while (RegEnumValue(openKey, j++, extType, (DWORD*)&size, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+src/fileswn7.cpp:1537:                SetCurrentDirectory(GetPath());
+src/fileswn7.cpp:1622:                SetCurrentDirectory(GetPath());
+src/mainwnd5.cpp:292:    HANDLE hFile1 = HANDLES_Q(CreateFile(file1, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+src/mainwnd5.cpp:294:    HANDLE hFile2 = hFile1 != INVALID_HANDLE_VALUE ? HANDLES_Q(CreateFile(file2, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+src/mainwnd5.cpp:572:        hFind = HANDLES_Q(FindFirstFile(path, &data));
+src/mainwnd5.cpp:696:        } while (FindNextFile(hFind, &data));
+src/gui.cpp:1364:            err = (int)(INT_PTR)ShellExecute(HWindow, "open", File, NULL, NULL, SW_SHOWNORMAL);
+src/dialogs2.cpp:832:        GetModuleFileName(HInstance, path, MAX_PATH);
+src/dialogs2.cpp:834:        hTmpLanguage = HANDLES(LoadLibrary(path));
+src/dialogs2.cpp:959:        GetModuleFileName(NULL, path, MAX_PATH);
+src/dialogs2.cpp:966:    HANDLE hFind = HANDLES_Q(FindFirstFile(path, &file));
+src/dialogs2.cpp:986:        } while (FindNextFile(hFind, &file));
+src/dialogs2.cpp:1112:            ShellExecute(HWindow, "open", "https://github.com/tandemcommander/tandemcommander", NULL, NULL, SW_SHOWNORMAL);
+src/geticon.cpp:77:        return SHGetFileInfo(u8path, attrs, sfi, sizeof(SHFILEINFO), flags);
+src/plugins1.cpp:1728:        GetModuleFileName(HInstance, path, MAX_PATH);
+src/plugins1.cpp:1742:    lang = HANDLES_Q(LoadLibrary(path));
+src/plugins1.cpp:1769:            lang = HANDLES_Q(LoadLibrary(path));
+src/plugins1.cpp:1818:                lang = HANDLES_Q(LoadLibrary(path));
+src/plugins1.cpp:2166:            GetModuleFileName(HInstance, buf, MAX_PATH);
+src/plugins1.cpp:2177:        DLL = HANDLES(LoadLibrary(s));
+src/codetbl.cpp:21:    HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ,
+src/codetbl.cpp:319:    GetModuleFileName(HInstance, fileName, MAX_PATH);
+src/codetbl.cpp:325:    HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ,
+src/codetbl.cpp:455:    GetModuleFileName(NULL, path, MAX_PATH);
+src/codetbl.cpp:459:    HANDLE hFind = HANDLES_Q(FindFirstFile(path, &find));
+src/codetbl.cpp:489:        } while (FindNextFile(hFind, &find));
+src/bugreprt.cpp:442:    GetSystemDirectory(avbuf, MAX_PATH);
+src/bugreprt.cpp:445:    GetWindowsDirectory(avbuf, MAX_PATH);
+src/bugreprt.cpp:1720:        GetModuleFileName(HInstance, buf + strlen(buf), 1000);
+src/bugreprt.cpp:1723:        const char* cmdline = GetCommandLine();
+src/bugreprt.cpp:1773:        if (NOHANDLES(RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Internet Explorer", 0,
+src/bugreprt.cpp:1815:        if (NOHANDLES(RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+src/bugreprt.cpp:1913:        if (NOHANDLES(RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Hardware\\Description\\System\\CentralProcessor\\0", 0,
+src/bugreprt.cpp:1977:        if (NOHANDLES(RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Hardware\\Description\\System", 0,
+src/bugreprt.cpp:2493:                        if (GetDiskFreeSpaceEx(root, &availBytes, &totalBytes, &freeBytes))
+src/bugreprt.cpp:2532:            driveType = GetDriveType(root);
+src/fileswn1.cpp:52:    GetSystemDirectory(buf, MAX_PATH);
+src/dialogs3.cpp:1492:        if (GetDiskFreeSpaceEx(volumePathWithBackslash, &availBytes, &totalBytes, &freeBytes))
+src/dialogs3.cpp:1614:            remoteNameValid = (WNetGetConnection(buff, remoteName, &l) == NO_ERROR);
+src/dialogs3.cpp:2251:    GetSystemDirectory(fileName, MAX_PATH);
+src/dialogs3.cpp:2318:    int iconsCount = fileNameWValid ? ExtractIconExW(fileNameW, -1, NULL, NULL, 0) : ExtractIconEx(fileName, -1, NULL, NULL, 0);
+src/dialogs3.cpp:2324:            IconsCount = fileNameWValid ? ExtractIconExW(fileNameW, 0, Icons, NULL, iconsCount) : ExtractIconEx(fileName, 0, Icons, NULL, iconsCount);
+src/finddlg1.cpp:2835:            DWORD driveType = GetDriveType(root);
+src/dialogs5.cpp:736:            GetModuleFileName(HInstance, buf, MAX_PATH);
+src/dialogs5.cpp:884:                    GetModuleFileName(HInstance, buf, MAX_PATH);
+src/fileswn6.cpp:257:        SetCurrentDirectory(source); // for a faster move (the system prefers it)
+src/fileswn6.cpp:303:                sourceType = GetDriveType(root);
+src/fileswn6.cpp:563:                SetCurrentDirectory(root);
+src/fileswn6.cpp:566:                SetCurrentDirectory(targetDir);
+src/fileswn6.cpp:585:                    if (GetVolumeInformation(root, NULL, 0, NULL, &dummy, &flags, fsName, MAX_PATH) &&
+src/fileswn6.cpp:606:        UINT targetType = GetDriveType(root2);
+src/fileswn6.cpp:1206:            SetCurrentDirectory(GetPath());
+src/fileswn6.cpp:1209:            SetCurrentDirectory(targetPath);
+src/fileswn6.cpp:1230:                if (GetVolumeInformation(root, NULL, 0, NULL, &dummy, &flags, fsName, MAX_PATH) &&
+src/fileswn6.cpp:1249:            UINT targetType = GetDriveType(root2);
+src/fileswn6.cpp:1268:        SetCurrentDirectory(GetPath());
+src/fileswn6.cpp:2575:            op.OpFlags |= OPFL_AS_ENCRYPTED; // if a rename (move within the same volume) is enough, we clear this flag again
+src/fileswn4.cpp:590:    HIMAGELIST hl = (HIMAGELIST)SHGetFileInfo("c:\\z\\cross_i.cur", 0, &shi, sizeof(shi),
+src/common\handles.h:307:    BOOL CreateProcess(LPCTSTR lpApplicationName, LPTSTR lpCommandLine,
+src/common\handles.h:350:    HANDLE CreateFileA(LPCSTR lpFileName, DWORD dwDesiredAccess,
+src/common\handles.h:529:    LONG RegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
+src/common\handles.h:531:    LONG RegCreateKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD Reserved,
+src/common\handles.h:536:    LONG RegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
+src/common\handles.h:538:    LONG RegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD ulOptions,
+src/common\handles.h:581:    HANDLE FindFirstFileA(LPCSTR lpFileName, LPWIN32_FIND_DATAA lpFindFileData);
+src/common\handles.h:597:    HINSTANCE LoadLibrary(LPCTSTR lpLibFileName);
+src/common\handles.h:599:    HINSTANCE LoadLibraryEx(LPCTSTR lpLibFileName, HANDLE hFile, DWORD dwFlags);
+src/common\handles.h:615:    HANDLE FindFirstChangeNotification(LPCTSTR lpPathName, BOOL bWatchSubtree,
+src/common\handles.h:639:    HFILE OpenFile(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle);
+src/cache.cpp:117:                    SetFileAttributes(TmpName, FILE_ATTRIBUTE_ARCHIVE);
+src/cache.cpp:119:                DeleteFile(TmpName);
+src/cache.cpp:188:          if (!CreateDirectory(dir, NULL))
+src/cache.cpp:349:    SetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
+src/cache.cpp:350:    RemoveDirectory(Path);
+src/cache.cpp:384:                HANDLE find = HANDLES_Q(FindFirstFile(tmpFullName, &data));
+src/cache.cpp:472:    SetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
+src/cache.cpp:474:    RemoveDirectory(Path);
+src/cache.cpp:1152:        if (!GetTempPath(MAX_PATH, sysTmpDir))
+src/cache.cpp:1192:        RemoveDirectory(newDirPath);
+src/cache.cpp:1204:        RemoveDirectory(newDirPath);
+src/cache.cpp:1461:    if (GetTempPath(2 * MAX_PATH, tmpDir))
+src/cache.cpp:1470:            HANDLE find = HANDLES_Q(FindFirstFile(tmpDir, &data));
+src/cache.cpp:1495:                } while (FindNextFile(find, &data));
+src/dialogs6.cpp:207:  GetModuleFileName(HInstance, fileName, MAX_PATH);
+src/dialogs6.cpp:210:  HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ |
+src/dialogs6.cpp:2400:            switch (GetDriveType(root))
+src/dialogs6.cpp:2458:                search = HANDLES_Q(FindFirstFile(fileName, &fileData));
+src/jumplist.cpp:164:            GetModuleFileName(NULL, pathName, sizeof(pathName) - 1);
+src/callstk.cpp:78:    HMODULE hKernel32 = LoadLibrary(_T("kernel32.dll"));
+src/callstk.cpp:742:            file = NOHANDLES(CreateFile(bugReportFileName, GENERIC_WRITE, 0, NULL, CREATE_NEW,
+src/drivelst.cpp:93:    LONG res = HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, "Network", 0, KEY_READ, &network));
+src/drivelst.cpp:104:    if (HANDLES_Q(RegOpenKeyEx(network, keyName, 0, KEY_READ, &driveKey)) == ERROR_SUCCESS)
+src/drivelst.cpp:513:    HMODULE credUIDLL = !Windows7AndLater ? HANDLES(LoadLibrary("CREDUI.DLL")) : NULL;
+src/drivelst.cpp:640:                err = WNetAddConnection2(ns, passwd, userName, 0);
+src/drivelst.cpp:875:    if ((h = HANDLES_Q(FindFirstFile(root, &data))) != INVALID_HANDLE_VALUE)
+src/drivelst.cpp:953:    h = HANDLES_Q(CreateFile(tsz, 0, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0));
+src/drivelst.cpp:1086:    UINT dt = GetDriveType(rootPath);
+src/drivelst.cpp:1115:    if (SHGetFileInfo(root, 0, &fi, sizeof(fi), SHGFI_DISPLAYNAME))
+src/drivelst.cpp:1150:        if (!GetVolumeInformation(root, buf, MAX_PATH, NULL, &dummy, &dummy, fileSystem, 10))
+src/drivelst.cpp:1338:        if (SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, sDbPath) == S_OK)
+src/drivelst.cpp:1346:            SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0 /* SHGFP_TYPE_CURRENT */, sDbPath) == S_OK)
+src/drivelst.cpp:1351:                HANDLE hFile = HANDLES_Q(CreateFile(sDbPath, GENERIC_READ,
+src/drivelst.cpp:1495:        if (HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER,
+src/drivelst.cpp:1516:    if (HANDLES_Q(RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\OneDrive\\Accounts",
+src/drivelst.cpp:1524:            if (RegEnumKeyEx(hKey, i, keyName, &keyNameLen, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+src/drivelst.cpp:1528:                    HANDLES_Q(RegOpenKeyEx(hKey, keyName, 0, KEY_READ, &hAccount)) == ERROR_SUCCESS)
+src/drivelst.cpp:1648:                int driveType = (mask & i) ? GetDriveType(root) : DRIVE_REMOTE;
+src/drivelst.cpp:1689:                    driveType = GetDriveType(root);
+src/drivelst.cpp:1739:                    if (GetVolumeInformation(root, volumeName, MAX_PATH, NULL, &dummy, &flags, NULL, 0))
+src/drivelst.cpp:1769:                             WNetGetConnection(device, volumeName, &size) != NO_ERROR)
+src/drivelst.cpp:2622:        if (GetVolumeInformation(root, volumeName, MAX_PATH, NULL, &dummy, &flags, NULL, 0))
+src/editwnd.cpp:332:        if (!GetEnvironmentVariable("COMSPEC", cmd, MAX_PATH))
+src/editwnd.cpp:426:                    if (!GetEnvironmentVariable("COMSPEC", cmd, SALCMDLINE_MAXLEN + MAX_PATH))
+src/editwnd.cpp:493:                        CALL_STACK_MESSAGE3("CEditLine::WindowProc::CreateProcess(, %s, , , , , , %s, ,)",
+src/editwnd.cpp:996:                        if (!GetShortPathName(s, path, MAX_PATH))
+src/common\handles.cpp:913:C__Handles::CreateFileA(LPCSTR lpFileName, DWORD dwDesiredAccess,
+src/common\handles.cpp:919:    HANDLE ret = ::CreateFileA(lpFileName, dwDesiredAccess, dwShareMode,
+src/common\handles.cpp:1343:LONG C__Handles::RegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult)
+src/common\handles.cpp:1345:    LONG ret = ::RegCreateKey(hKey, lpSubKey, phkResult);
+src/common\handles.cpp:1351:LONG C__Handles::RegCreateKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD Reserved,
+src/common\handles.cpp:1356:    LONG ret = ::RegCreateKeyEx(hKey, lpSubKey, Reserved, lpClass, dwOptions,
+src/common\handles.cpp:1364:LONG C__Handles::RegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult)
+src/common\handles.cpp:1366:    LONG ret = ::RegOpenKey(hKey, lpSubKey, phkResult);
+src/common\handles.cpp:1372:LONG C__Handles::RegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD ulOptions,
+src/common\handles.cpp:1375:    LONG ret = ::RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+src/common\handles.cpp:1610:BOOL C__Handles::CreateProcess(LPCTSTR lpApplicationName, LPTSTR lpCommandLine,
+src/common\handles.cpp:1618:    BOOL ret = ::CreateProcess(lpApplicationName, lpCommandLine,
+src/common\handles.cpp:2057:C__Handles::FindFirstFileA(LPCSTR lpFileName, LPWIN32_FIND_DATAA lpFindFileData)
+src/common\handles.cpp:2059:    HANDLE ret = ::FindFirstFileA(lpFileName, lpFindFileData);
+src/common\handles.cpp:2115:C__Handles::LoadLibrary(LPCTSTR lpLibFileName)
+src/common\handles.cpp:2117:    HINSTANCE ret = ::LoadLibrary(lpLibFileName);
+src/common\handles.cpp:2123:C__Handles::LoadLibraryEx(LPCTSTR lpLibFileName, HANDLE hFile, DWORD dwFlags)
+src/common\handles.cpp:2125:    HINSTANCE ret = ::LoadLibraryEx(lpLibFileName, hFile, dwFlags);
+src/common\handles.cpp:2226:C__Handles::FindFirstChangeNotification(LPCTSTR lpPathName, BOOL bWatchSubtree,
+src/common\handles.cpp:2229:    HANDLE ret = ::FindFirstChangeNotification(lpPathName, bWatchSubtree,
+src/common\handles.cpp:2379:C__Handles::OpenFile(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle)
+src/common\handles.cpp:2381:    HFILE ret = ::OpenFile(lpFileName, lpReOpenBuff, uStyle);
+src/fileswn2.cpp:729:    if (GetWindowsDirectory(sysDir, MAX_PATH) != 0 && sysDir[0] != 0 && sysDir[1] == ':')
+src/fileswn2.cpp:732:        if (GetDriveType(root) == DRIVE_FIXED)
+src/fileswn2.cpp:747:            if (GetDriveType(root) == DRIVE_FIXED)
+src/fileswn2.cpp:1887:                        if (GetWindowsDirectory(sysDir, MAX_PATH) != 0 && sysDir[0] != 0 && sysDir[1] == ':')
+src/fileswn2.cpp:1890:                            if (GetDriveType(root) == DRIVE_FIXED)
+src/fileswn2.cpp:1903:                                    if (GetDriveType(root) == DRIVE_FIXED)
+src/fileswn8.cpp:26:        return SHFileOperation(fo);
+src/fileswn8.cpp:125:    SetCurrentDirectory(GetPath()); // for faster operation
+src/fileswn8.cpp:666:                                SetCurrentDirectory(GetPath());
+src/execute.cpp:808:    GetWindowsDirectory(data->Buffer, _countof(data->Buffer));
+src/execute.cpp:818:    GetSystemDirectory(data->Buffer, _countof(data->Buffer));
+src/execute.cpp:828:    GetModuleFileName(HInstance, data->Buffer, _countof(data->Buffer));
+src/execute.cpp:853:    GetWindowsDirectory(path, MAX_PATH);
+src/execute.cpp:854:    GetShortPathName(path, data->Buffer, _countof(data->Buffer));
+src/execute.cpp:865:    GetSystemDirectory(path, MAX_PATH);
+src/execute.cpp:866:    GetShortPathName(path, data->Buffer, _countof(data->Buffer));
+src/execute.cpp:899:    GetWindowsDirectory(data->Buffer, _countof(data->Buffer));
+src/execute.cpp:909:    GetSystemDirectory(data->Buffer, _countof(data->Buffer));
+src/execute.cpp:919:    GetModuleFileName(HInstance, data->Buffer, _countof(data->Buffer));
+src/execute.cpp:1213:    if (!GetShortPathName(data->Path, dosPath, MAX_PATH))
+src/execute.cpp:2152:    if (GetOpenFileName(&ofn))
+src/fileswn9.cpp:666:    DWORD auxRes = ExpandEnvironmentStrings(buff, expandedBuff, buffSize + 1);
+src/common\strutils.cpp:327:  HANDLE file = CreateFile(s1, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+src/shellib.cpp:2385:            HMODULE hShell32 = LoadLibrary("shell32.dll");
+src/shellib.cpp:2503:            BOOL ret = SHGetPathFromIDList((ITEMIDLIST*)lParam, path);
+src/shellib.cpp:2543:        LPITEMIDLIST res = SHBrowseForFolder(&bi);
+src/shellib.cpp:2547:            SHGetPathFromIDList(res, path);
+src/shellib.cpp:2576:    if (GetDriveType(name) != DRIVE_FIXED)
+src/shellib.cpp:2943:        if (SHGetPathFromIDList(pidl, buff))
+src/shellib.cpp:2954:        if (SHGetPathFromIDList(pidl, buff))
+src/common\heap.cpp:102:                hUsedModules[i] = LoadLibraryEx(UsedModules[i], NULL, DONT_RESOLVE_DLL_REFERENCES);
+src/salamdr2.cpp:702:  HANDLE hFile = HANDLES_Q(CreateFile(fileName, 0, FILE_SHARE_READ | FILE_SHARE_WRITE,
+src/salamdr2.cpp:944:                            DWORD res = GetEnvironmentVariable(envVar, buf, MAX_PATH);
+src/salamdr2.cpp:1182:    if (GetDiskFreeSpaceEx(ourPath, &availBytes, &totalBytes, &freeBytes))
+src/salamdr2.cpp:1207:    return GetDriveType(root);
+src/salamdr2.cpp:1395:    if (!IsUNCPath(ourPath) && GetDriveType(ourPath) == DRIVE_FIXED) // reparse points only make sense to look for on fixed disks
+src/salamdr2.cpp:1432:    if (!IsUNCPath(ourPath) && GetDriveType(ourPath) == DRIVE_FIXED) // reparse points only make sense to look for on fixed disks
+src/salamdr2.cpp:1440:        while (!GetVolumeInformation(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
+src/salamdr2.cpp:1482:        ret = GetVolumeInformation(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
+src/salamdr2.cpp:1781:    return QueryDosDevice(deviceName, target, MAX_PATH);
+src/salamdr2.cpp:2868:    HANDLE file = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL,
+src/salamdr2.cpp:3130:        GetModuleFileName(hSLG, path, MAX_PATH);
+src/salamdr2.cpp:3136:        GetModuleFileName(hModule, path, MAX_PATH);
+src/salamdr2.cpp:3157:        GetModuleFileName(hModule, path, MAX_PATH);
+src/salamdr2.cpp:3159:        GetModuleFileName(hSLG, path, MAX_PATH);
+src/salamdr2.cpp:3169:            GetModuleFileName(hSLG, path, MAX_PATH);
+src/salamdr2.cpp:3178:        GetModuleFileName(hSLG, path, MAX_PATH);
+src/salamdr2.cpp:3194:    GetModuleFileName(modul, path, MAX_PATH);
+src/salamdr2.cpp:3197:    HINSTANCE hLib = HANDLES(LoadLibrary(path));
+src/worker.cpp:1454:struct CSrcSecurity // helper structure for keeping security info for MoveFile (the source disappears after the operation, its security info must be stored beforehand)
+src/worker.cpp:7058:  HANDLE srcDir = HANDLES_Q(CreateFile(name, GENERIC_READ, 0, 0, OPEN_EXISTING,
+src/worker.cpp:7062:    HANDLE tgtDir = HANDLES_Q(CreateFile("D:\\ZUMPA\\link", GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING,
+src/worker.cpp:7984:    BOOL novellRenamePatch = FALSE; // TRUE when the read-only attribute must be cleared before MoveFile (required on Novell)

@@ -13,6 +13,44 @@ plugin.
 
 ### Fixed
 
+- **A crash when putting a long or non-Latin file name on the command line.**
+  Ctrl+Enter (insert the focused name) and Ctrl+Space / Ctrl+[ / Ctrl+] (insert
+  the panel path) copied the text into a fixed 260-byte buffer. A name of about
+  87 Chinese/Japanese characters, or 130 accented ones, or any long path,
+  overflowed it and Windows terminated the program on the spot — losing the
+  panel state and selection. Found by review, not from a report.
+
+- **The Windows taskbar jump list now works for hot paths with accented names.**
+  Right-clicking the taskbar icon showed such entries as mojibake, and clicking
+  one did nothing at all, because the entry was built with the legacy text API
+  while the launched program reads its arguments as Unicode.
+
+- **A remembered directory with accented characters survives a restart.** The
+  per-drive "return to this directory" value was saved correctly but read back
+  through the legacy code page, so on the next start the panel silently fell
+  back to an ancestor directory.
+
+- **Leftover temporary files are cleaned up on profiles whose name or TEMP path
+  contains accented characters.** Viewing files from archives or plugins left
+  `SAL*.tmp` directories behind forever, a new one was created for every cached
+  file instead of reusing the existing one, and the "delete leftover temporary
+  directories?" prompt at startup either deleted nothing or never appeared. The
+  same repair applies to the temporary-directory cleanup offered to plugins.
+
+- **Rubber-band selection matches what is drawn.** Dragging a selection
+  rectangle over files with accented names selected too many, because the
+  panel measured the name's bytes rather than its characters.
+
+- **Plugins Manager: the "Show in Change Drive menu" label is no longer
+  mojibake** in Czech, Slovak, Hungarian, German and Spanish. This was a
+  regression introduced by the 0.1.2 fix that repaired the plugin *name* on the
+  same screen and left the label beside it unconverted.
+
+- **ZIP: the overwrite confirmation shows the file name correctly**, and the
+  **File Comparison window no longer loses its title** in Czech, French,
+  Hungarian and Slovak (it was blank whenever a compared file had an accented
+  name).
+
 - **Byte counts no longer show a stray "Â" before every digit group** in
   languages whose word for "bytes" carries accents (Czech "bajtů", Hungarian
   "bájt"). The Drive Information dialog (Ctrl+F1) showed

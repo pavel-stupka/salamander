@@ -1,0 +1,4 @@
+src/fileswn5.cpp:2764:        // encoding-check: allow utf8-to-legacy-sink - documented legacy fallback, reached only when the name is NOT valid UTF-8; the wide path above covers the normal case
+src/dialogs2.cpp:909:        // encoding-check: allow utf8-to-legacy-sink - the .slg file name comes from the ANSI
+src/mainwnd3.cpp:2842:                // encoding-check: allow mixed-composition - configuration name chosen in-app, not a file name
+src/dialogs6.cpp:645:                    // encoding-check: allow mixed-composition - network share name from the OS enumeration, not a

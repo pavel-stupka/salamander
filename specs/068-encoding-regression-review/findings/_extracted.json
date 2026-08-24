@@ -1,0 +1,570 @@
+[
+ {
+  "id": "F-P1-01",
+  "persp": "P1",
+  "claim": "Disk-cache temp files and directories are deleted through ANSI APIs, so nothing is cleaned up when `%TEMP%` is non-ASCII",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-02",
+  "persp": "P1",
+  "claim": "The disk cache never reuses a temp directory when `%TEMP%` is non-ASCII",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-03",
+  "persp": "P1",
+  "claim": "Startup cleanup of leftover `SAL*.tmp` directories misses them under a non-ACP `%TEMP%`, and hands an ACP path to a UTF-8 consumer",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-04",
+  "persp": "P1",
+  "claim": "`RemoveTemporaryDir` / `RemoveEmptyDirs` are ANSI end to end, so no non-ASCII temp tree is ever removed (also a plugin-facing service)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-05",
+  "persp": "P1",
+  "claim": "External-archiver list files are written in the wrong encoding (`CharToOem` on UTF-8), and archiver output is parsed as OEM into UTF-8 name fields",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-06",
+  "persp": "P1",
+  "claim": "The external-packer subsystem uses ANSI file APIs on UTF-8 temp/archive paths throughout",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-07",
+  "persp": "P1",
+  "claim": "`salspawn.exe` path taken with `GetModuleFileName` (A)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-08",
+  "persp": "P1",
+  "claim": "`SHGetFolderPath` (A) results are fed to the strict UTF-8 facade, so per-user data under a non-ASCII account name is never found",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-09",
+  "persp": "P1",
+  "claim": "OneDrive / Dropbox root paths are stored as CP_ACP and then used as panel paths (ledger L02)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-10",
+  "persp": "P1",
+  "claim": "Install-directory paths obtained with `GetModuleFileName` (A) are consumed by strict UTF-8 helpers",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-11",
+  "persp": "P1",
+  "claim": "WITHDRAWN by the author before submission (`SetCurrentDirectory` on the panel path, ledger L01)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-12",
+  "persp": "P1",
+  "claim": "`MyGetVolumeInformation`/`MyGetDiskFreeSpace` degrade silently on non-ASCII and UNC paths (ledger L03)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-13",
+  "persp": "P1",
+  "claim": "`subst` targets are resolved through the ANSI `QueryDosDevice`, producing mixed-encoding paths (ledger L04)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-14",
+  "persp": "P1",
+  "claim": "Volume labels, drive display names and mapped-drive UNC paths are acquired in CP_ACP (ledger L05)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-15",
+  "persp": "P1",
+  "claim": "`GetDriveType` called on a full path instead of a root",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-16",
+  "persp": "P1",
+  "claim": "`snooper.cpp` uses an indeterminate stack buffer when both conversions fail (ledger L08/L09)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-17",
+  "persp": "P1",
+  "claim": "`MakeCopyWithBackslashIfNeeded` result is never used in `snooper.cpp` (pre-existing, not a regression)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-18",
+  "persp": "P1",
+  "claim": "`SHILCreateFromPath` passes an uninitialised buffer to `ParseDisplayName` when both conversions fail (ledger L10/L11)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-19",
+  "persp": "P1",
+  "claim": "Compare Directories cannot read files or subdirectories with non-ASCII names",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-20",
+  "persp": "P1",
+  "claim": "Writing an edited file back into an archive uses the ANSI `SHFileOperation`",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-21",
+  "persp": "P1",
+  "claim": "Assorted ANSI file APIs on UTF-8 paths outside the main copy/move engine",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-22",
+  "persp": "P1",
+  "claim": "User-menu icons are loaded with the ANSI `ExtractIconEx`",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-23",
+  "persp": "P1",
+  "claim": "Environment-variable expansion mixes ACP values into UTF-8 paths",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-24",
+  "persp": "P1",
+  "claim": "Common file/folder dialogs return CP_ACP paths into UTF-8 fields",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-25",
+  "persp": "P1",
+  "claim": "UTF-8 names widened through CP_ACP before being handed to the shell/OLE",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-26",
+  "persp": "P1",
+  "claim": "Dropped files are read through CP_ACP even when the payload is wide",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-27",
+  "persp": "P1",
+  "claim": "Shell/network strings degraded to CP_ACP at intake",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P1-28",
+  "persp": "P1",
+  "claim": "Icon-overlay and icon-location paths degraded to CP_ACP (058 twins)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-01",
+  "persp": "P2",
+  "claim": "Copy/Move error message boxes mix an ANSI template with a UTF-8 path and error text",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-02",
+  "persp": "P2",
+  "claim": "\"cannot execute viewer/editor\" and user-menu execute errors mix template + command line + error text",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-03",
+  "persp": "P2",
+  "claim": "Find: the Errors/Info log garbles error text, and the window caption garbles the mask",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-04",
+  "persp": "P2",
+  "claim": "The safe-wait window (\"Reading path …\", \"Checking path …\", plugin loading) mixes template + path",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-05",
+  "persp": "P2",
+  "claim": "Copy/Move progress dialog subject (`CTruncatedString`) mixes an ANSI title template with the UTF-8 file name",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-06",
+  "persp": "P2",
+  "claim": "Send-by-email, plugin-load errors, icon-overlay crash box, env/UNC/viewer boxes",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-07",
+  "persp": "P2",
+  "claim": "Drive Information: the \"type\" line mixes ANSI templates with UNC / SUBST / link-target paths",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-08",
+  "persp": "P2",
+  "claim": "WITHDRAWN (refuted by the sink's per-item probe)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-09",
+  "persp": "P2",
+  "claim": "Plugin Manager: only the Name column was converted; Location (and Version) stayed ANSI",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-10",
+  "persp": "P2",
+  "claim": "Plugin Manager: the \"Change Drive menu\" checkbox mixes an ANSI template read from the dialog with a UTF-8 FS item name",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-11",
+  "persp": "P2",
+  "claim": "Plugin \"Keyboard Shortcuts\" dialog lists command names through the ANSI list-view call",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-13",
+  "persp": "P2",
+  "claim": "\"Save Configuration\" export-exists box mixes an ANSI template with a UTF-8 configuration path",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P2-12",
+  "persp": "P2",
+  "claim": "Custom Packers / Unpackers / Viewers-Editors config pages show UTF-8 command paths through ANSI `WM_SETTEXT`/`WM_GETTEXT`",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-01",
+  "persp": "P3",
+  "claim": "`SalU8ToW` conflates \"invalid input\" with \"buffer too small\" (DC-20)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-02",
+  "persp": "P3",
+  "claim": "`srcLen == 0` is reported as conversion failure (DC-20)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-03",
+  "persp": "P3",
+  "claim": "the file facade fails operations on ANSI-producer paths instead of falling back (DC-09)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-04",
+  "persp": "P3",
+  "claim": "`EM_LIMITTEXT` is set in bytes but enforced in characters; overflow silently degrades to a CP_ACP read (DC-12 + DC-09)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-05",
+  "persp": "P3",
+  "claim": "wide setters on ANSI dialogs: every character outside the ACP becomes `?` (DC-16)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-06",
+  "persp": "P3",
+  "claim": "ACP byte tables applied to UTF-8 names: `StrICmp` / `IsAlpha` give wrong answers (DC-15, seed C-f)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-07",
+  "persp": "P3",
+  "claim": "status-bar tooltip truncates a UTF-8 path mid-sequence, costing the whole hint (DC-12)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-08",
+  "persp": "P3",
+  "claim": "status-window hot-track path is rebuilt from a LENIENT conversion and then used operationally (DC-14)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P3-09",
+  "persp": "P3",
+  "claim": "Find → Delete never takes the wide shell path for an all-ASCII selection (off-by-one)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P4-01",
+  "persp": "P4",
+  "claim": "the viewer's default character-set conversion is silently lost on every restart when its name is non-ASCII (Kamenické / KOI-8 ČS2)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P4-02",
+  "persp": "P4",
+  "claim": "a non-ASCII coding name poisons the whole viewer window caption, mojibaking the file name",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P4-03",
+  "persp": "P4",
+  "claim": "custom packer/unpacker titles have no defined encoding at rest (the class L17 names)",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P4-04",
+  "persp": "P4",
+  "claim": "the per-drive \"remembered directory\" is read back from the registry through the ANSI API although it was written UTF-8: a non-ASCII remembered path is lost on e",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P4-05",
+  "persp": "P4",
+  "claim": "the OneDrive folder path is obtained in CP_ACP and then used as a UTF-8 panel path",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P4-06",
+  "persp": "P4",
+  "claim": "the Windows Jump List is built through the ANSI `IShellLink`: a non-ASCII hot path shows as mojibake in the taskbar and does not open when clicked",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P4-07",
+  "persp": "P4",
+  "claim": "configuration fields documented as UTF-8 are seeded from ANSI `LoadStr`",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-01",
+  "persp": "P5",
+  "claim": "plugin \"Copy Name/Full Name\" puts CP1250-mojibake on the clipboard",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-02",
+  "persp": "P5",
+  "claim": "exported ACP case tables corrupt UTF-8 names passed by plugins",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-03",
+  "persp": "P5",
+  "claim": "the plugin-facing browse dialogs are ANSI; paths outside the ACP are lost",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-04",
+  "persp": "P5",
+  "claim": "plugin-shared converters reject the WTF-8 names the core hands them",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-05",
+  "persp": "P5",
+  "claim": "custom packer/unpacker titles bypass the 052 normalization",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-06",
+  "persp": "P5",
+  "claim": "the FS plugin interface states no encoding for any path method",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-07",
+  "persp": "P5",
+  "claim": "`PrintDiskSize`/`NumberToStr` across the plugin boundary produce a mixed-encoding buffer",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-08",
+  "persp": "P5",
+  "claim": "ZIP overwrite dialogs show file names through an ANSI `WM_SETTEXT`",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-09",
+  "persp": "P5",
+  "claim": "filecomp blanks its own window title in every non-English UI",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-10",
+  "persp": "P5",
+  "claim": "the Registry Editor Find results list has no live `LVN_GETDISPINFO` handler",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-11",
+  "persp": "P5",
+  "claim": "sftp converts local paths leniently and never uses the extended-length form",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-12",
+  "persp": "P5",
+  "claim": "`GetErrorText` is UTF-8 but the SDK does not say so; 127 plugin sites compose it with ANSI text",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P5-13",
+  "persp": "P5",
+  "claim": "`AlterFileName` byte-folds UTF-8 names for the panel name-format option",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ },
+ {
+  "id": "F-P6-01",
+  "persp": "P6",
+  "claim": "mdview's keeper window class is never unregistered, so after a Plugins Manager Unload the \"instant view\" engine keeper silently never arms again",
+  "dc": "",
+  "sites": "",
+  "scen": ""
+ }
+]

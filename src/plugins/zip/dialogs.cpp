@@ -1836,7 +1836,19 @@ BOOL COverwriteDialog::OnInit(WPARAM wParam, LPARAM lParam)
 {
     CALL_STACK_MESSAGE3("COverwriteDialog::OnInit(0x%IX, 0x%IX)", wParam, lParam);
     SubClassStatic(IDC_FILE, true);
-    SendDlgItemMessage(Dlg, IDC_FILE, WM_SETTEXT, 0, (LPARAM)File);
+    // feature 068 (F-P5-08): File is a UTF-8 path, so the ANSI WM_SETTEXT drew
+    // its bytes as legacy text (mojibake). The plugin's own helper converts -
+    // but it is all-or-nothing (SplU8ToWAlloc is a strict UTF-8 decoder with no
+    // WTF-8 extension), so on failure we MUST fall back to the legacy call
+    // rather than leave this control empty: it names the file in a destructive
+    // overwrite confirmation, and feature 066 ships names with unpaired
+    // surrogates that the strict decoder rejects.
+    // NOTE: the text still cannot show characters outside the system code page
+    // - TextControlProc (see SubClassStatic) paints with the ANSI GetWindowText
+    // and DrawText, which caps the result at CP_ACP whatever we store. Lifting
+    // that belongs to the deferred group B-1 work.
+    if (!SetDlgItemTextU8(Dlg, IDC_FILE, File))
+        SendDlgItemMessage(Dlg, IDC_FILE, WM_SETTEXT, 0, (LPARAM)File);
     SendDlgItemMessage(Dlg, IDC_FILEATTR, WM_SETTEXT, 0, (LPARAM)Attr);
     CenterDlgToParent();
     return TRUE;
@@ -1922,7 +1934,9 @@ BOOL COverwriteDialog2::OnInit(WPARAM wParam, LPARAM lParam)
 {
     CALL_STACK_MESSAGE3("COverwriteDialog2::OnInit(0x%IX, 0x%IX)", wParam, lParam);
     SubClassStatic(IDC_FILE, true);
-    SendDlgItemMessage(Dlg, IDC_FILE, WM_SETTEXT, 0, (LPARAM)File);
+    // feature 068 (F-P5-08): see the note in COverwriteDialog::OnInit
+    if (!SetDlgItemTextU8(Dlg, IDC_FILE, File))
+        SendDlgItemMessage(Dlg, IDC_FILE, WM_SETTEXT, 0, (LPARAM)File);
     SendDlgItemMessage(Dlg, IDC_FILEATTR, WM_SETTEXT, 0, (LPARAM)Attr);
     CenterDlgToParent();
     return TRUE;

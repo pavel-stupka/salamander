@@ -2635,14 +2635,25 @@ BOOL CMainWindow::LoadConfig(BOOL importingOldConfig, const CCommandLineParams* 
                 {
                     nameLen = 2;
                     dataLen = MAX_PATH;
-                    res = RegEnumValue(actKey, i, name, &nameLen, 0, &type, path, &dataLen);
+                    // feature 068 (F-P4-04): the value is WRITTEN through the
+                    // UTF-8 registry facade (SetValue, see SaveConfig), so it
+                    // must be READ back through it as well. RegEnumValue is the
+                    // ANSI call and returned the stored path in the legacy code
+                    // page; the strict UTF-8 path facade then rejected it, so a
+                    // remembered directory containing non-ASCII characters was
+                    // silently lost on every restart. The value NAME is a single
+                    // ASCII drive letter, so enumerating the name narrow is
+                    // fine - only the DATA needs the facade.
+                    res = RegEnumValue(actKey, i, name, &nameLen, 0, &type, NULL, NULL);
                     if (res == ERROR_SUCCESS)
                         if (type == REG_SZ)
                         {
                             char d2 = LowerCase[name[0]];
                             if (d2 >= 'a' && d2 <= 'z')
                             {
-                                if (dataLen > 2 && LowerCase[path[0]] == d2 &&
+                                BOOL got = GetValue(actKey, name, REG_SZ, path, MAX_PATH);
+                                dataLen = got ? (DWORD)strlen((char*)path) + 1 : 0;
+                                if (got && dataLen > 2 && LowerCase[path[0]] == d2 &&
                                     path[1] == ':' && path[2] == '\\')
                                     memmove(DefaultDir[d2 - 'a'], path, dataLen);
                                 else

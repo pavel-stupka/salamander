@@ -1,0 +1,34 @@
+src/plugins.h:2315:    virtual LONG WINAPI SalRegQueryValue(HKEY hKey, LPCSTR lpSubKey, LPSTR lpData, PLONG lpcbData);
+src/plugins.h:2316:    virtual LONG WINAPI SalRegQueryValueEx(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved,
+src/consts.h:2501:    LONG SalRegQueryValue(HKEY hKey, LPCSTR lpSubKey, LPSTR lpData, PLONG lpcbData);
+src/consts.h:2502:    LONG SalRegQueryValueEx(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved,
+src/zip.cpp:5116:LONG CSalamanderGeneral::SalRegQueryValue(HKEY hKey, LPCSTR lpSubKey, LPSTR lpData, PLONG lpcbData)
+src/zip.cpp:5118:    CALL_STACK_MESSAGE1("CSalamanderGeneral::SalRegQueryValue(, , ,)");
+src/zip.cpp:5119:    return ::SalRegQueryValue(hKey, lpSubKey, lpData, lpcbData);
+src/zip.cpp:5122:LONG CSalamanderGeneral::SalRegQueryValueEx(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved,
+src/zip.cpp:5125:    CALL_STACK_MESSAGE1("CSalamanderGeneral::SalRegQueryValueEx(, , , , ,)");
+src/zip.cpp:5126:    return ::SalRegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+src/shiconov.cpp:444:                if ((errRet = SalRegQueryValueEx(handler, NULL, NULL, &type, (BYTE*)txtClsId, &size)) == ERROR_SUCCESS)
+src/shiconov.cpp:465:                                    if ((errRet = SalRegQueryValueEx(classKey, NULL, NULL, &descrType, (BYTE*)descr, &descrSize)) == ERROR_SUCCESS)
+src/salamdr1.cpp:2125:        SalRegQueryValueEx(hKey, "29", NULL, NULL, (LPBYTE)buff, &buffLen);
+src/salmoncl.cpp:141:        res = SalRegQueryValueEx(hKey, CONFIG_LANGUAGE_REG, 0, &gettedType, (BYTE*)slgName, &slgNameMax);
+src/salamdr6.cpp:2220:LONG SalRegQueryValue(HKEY hKey, LPCSTR lpSubKey, LPSTR lpData, PLONG lpcbData)
+src/salamdr6.cpp:2248:LONG SalRegQueryValueEx(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved,
+src/icncache.cpp:745:            if (SalRegQueryValue(openKey, "", type, &typeSize) != ERROR_SUCCESS)
+src/icncache.cpp:788:            DWORD err = SalRegQueryValueEx(openKey, "", 0, &type2,
+src/icncache.cpp:1190:                BOOL addExt = (SalRegQueryValue(extKey, "", extType, &size) == ERROR_SUCCESS && size > 1);
+src/icncache.cpp:1206:                        if (SalRegQueryValueEx(extKey, "PerceivedType", NULL, NULL, (BYTE*)extType, (DWORD*)&size) == ERROR_SUCCESS && size > 1)
+src/icncache.cpp:1316:                        if (SalRegQueryValueEx(openKey, "Progid", NULL, NULL, (BYTE*)extType, (DWORD*)&size) == ERROR_SUCCESS && size > 1)
+src/icncache.cpp:1353:                    if (SalRegQueryValueEx(extKey, "Application", NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+src/plugins2.cpp:155:    LONG res = SalRegQueryValueEx(hKey, valueName, 0, &gettedType, NULL, &bufferSize);
+src/plugins2.cpp:162:    res = SalRegQueryValueEx(hKey, valueName, 0, &gettedType, buff, &bufferSize2);
+src/plugins2.cpp:227:  LONG res = SalRegQueryValueEx(hKey, valueName, 0, &gettedType, NULL, &bufferSize);
+src/plugins2.cpp:239:  res = SalRegQueryValueEx(hKey, valueName, 0, &gettedType, buff, &bufferSize2);
+src/drivelst.cpp:108:        res = SalRegQueryValueEx(driveKey, "RemotePath", 0, &type,
+src/drivelst.cpp:116:            res = SalRegQueryValueEx(driveKey, "UserName", 0, &type,
+src/drivelst.cpp:125:            res = SalRegQueryValueEx(driveKey, "ProviderName", 0, &type,
+src/drivelst.cpp:1503:            if (SalRegQueryValueEx(hKey, "UserFolder", 0, &type, (BYTE*)path, &size) == ERROR_SUCCESS &&
+src/drivelst.cpp:1533:                    if (SalRegQueryValueEx(hAccount, "DisplayName", 0, &type, (BYTE*)disp, &size) == ERROR_SUCCESS &&
+src/drivelst.cpp:1537:                        if (SalRegQueryValueEx(hAccount, "UserFolder", 0, &type, (BYTE*)path, &size) == ERROR_SUCCESS &&
+src/bugreprt.cpp:1984:            SalRegQueryValueEx(hKey, "SystemBiosVersion", NULL, NULL, (BYTE*)bios, &bufferSize);
+src/bugreprt.cpp:1994:            SalRegQueryValueEx(hKey, "SystemBiosDate", NULL, NULL, (BYTE*)bios, &bufferSize);

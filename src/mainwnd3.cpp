@@ -5317,6 +5317,9 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
         if (HasLockedUI())
             break;
         LPNMHDR lphdr = (LPNMHDR)lParam;
+        // encoding-check: allow ansi-tooltip-handler - deferred, ledger L06:
+        // the split-bar percentage uses the decimal separator, which is ASCII in
+        // every shipped locale, so this ANSI handler is latent (feature 068)
         if (lphdr->code == TTN_NEEDTEXT && lphdr->hwndFrom == ToolTipWindow.HWindow)
         {
             char* text = ((LPTOOLTIPTEXT)lParam)->szText;

@@ -1,0 +1,6 @@
+src/mainwnd3.cpp:5160:                TOOLINFO ti;
+src/mainwnd3.cpp:5161:                ti.cbSize = sizeof(TOOLINFO);
+src/mainwnd3.cpp:5168:                SendMessage(ToolTipWindow.HWindow, TTM_ADDTOOL, 0, (LPARAM)&ti);
+src/mainwnd3.cpp:5237:            TOOLINFO ti;
+src/mainwnd3.cpp:5238:            ti.cbSize = sizeof(TOOLINFO);
+src/mainwnd3.cpp:5320:        if (lphdr->code == TTN_NEEDTEXT && lphdr->hwndFrom == ToolTipWindow.HWindow)

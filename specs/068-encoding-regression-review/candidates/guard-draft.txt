@@ -1,0 +1,199 @@
+cache.cpp:349: [ansi-api-on-utf8-path] SetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
+cache.cpp:350: [ansi-api-on-utf8-path] RemoveDirectory(Path);
+cache.cpp:384: [ansi-api-on-utf8-path] HANDLE find = HANDLES_Q(FindFirstFile(tmpFullName, &data));
+cache.cpp:472: [ansi-api-on-utf8-path] SetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
+cache.cpp:474: [ansi-api-on-utf8-path] RemoveDirectory(Path);
+cache.cpp:1192: [ansi-api-on-utf8-path] RemoveDirectory(newDirPath);
+cache.cpp:1204: [ansi-api-on-utf8-path] RemoveDirectory(newDirPath);
+cache.cpp:1514: [missed-twin] LoadStr(IDS_QUESTION), buf, NULL, NULL, NULL,
+callstk.cpp:742: [ansi-api-on-utf8-path] file = NOHANDLES(CreateFile(bugReportFileName, GENERIC_WRITE, 0, NULL, CREATE_NEW,
+codetbl.cpp:21: [ansi-api-on-utf8-path] HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ,
+codetbl.cpp:325: [ansi-api-on-utf8-path] HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ,
+codetbl.cpp:459: [ansi-api-on-utf8-path] HANDLE hFind = HANDLES_Q(FindFirstFile(path, &find));
+common/salfileio.cpp:66: [lossy-lenient-at-intake] WideCharToMultiByte(CP_UTF8, 0, w->cFileName, -1, nameU8, nameU8Size, NULL, NULL) == 0)
+common/salfileio.cpp:70: [lossy-lenient-at-intake] WideCharToMultiByte(CP_UTF8, 0, w->cAlternateFileName, -1, dosNameU8, dosNameU8Size, NULL, NULL) == 0)
+dialogs.cpp:1354: [missed-twin] LoadStr(IDS_QUESTION),
+dialogs.cpp:1952: [missed-twin] if (SalMessageBox(HWindow, text, LoadStr(IDS_QUESTION),
+dialogs2.cpp:834: [ansi-api-on-utf8-path] hTmpLanguage = HANDLES(LoadLibrary(path));
+dialogs2.cpp:966: [ansi-api-on-utf8-path] HANDLE hFind = HANDLES_Q(FindFirstFile(path, &file));
+dialogs3.cpp:1492: [ansi-api-on-utf8-path] if (GetDiskFreeSpaceEx(volumePathWithBackslash, &availBytes, &totalBytes, &freeBytes))
+dialogs3.cpp:2318: [ansi-api-on-utf8-path] int iconsCount = fileNameWValid ? ExtractIconExW(fileNameW, -1, NULL, NULL, 0) : ExtractIconEx(fileName, -1, N
+dialogs3.cpp:2324: [ansi-api-on-utf8-path] IconsCount = fileNameWValid ? ExtractIconExW(fileNameW, 0, Icons, NULL, iconsCount) : ExtractIconEx(fileName, 
+dialogs5.cpp:836: [missed-twin] if (SalMessageBox(HWindow, buf, LoadStr(IDS_QUESTION),
+dialogs6.cpp:210: [ansi-api-on-utf8-path] HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ |
+dialogs6.cpp:648: [missed-twin] if (SalMessageBox(HWindow, buff, LoadStr(IDS_QUESTION),
+dialogs6.cpp:2458: [ansi-api-on-utf8-path] search = HANDLES_Q(FindFirstFile(fileName, &fileData));
+drivelst.cpp:833: [signed-char-name-byte] if (GetLogicalDrives() & (1 << (LowerCase[drive] - 'a'))) // theoretically there is nothing to do, it is acces
+drivelst.cpp:838: [signed-char-name-byte] char* netPath = netRemotePath[LowerCase[drive] - 'a'];
+drivelst.cpp:851: [signed-char-name-byte] pathInvalid = !RestoreNetworkConnection(parent, name, netRemotePath[LowerCase[drive] - 'a']);
+drivelst.cpp:1086: [ansi-api-on-utf8-path] UINT dt = GetDriveType(rootPath);
+drivelst.cpp:1351: [ansi-api-on-utf8-path] HANDLE hFile = HANDLES_Q(CreateFile(sDbPath, GENERIC_READ,
+drivelst.cpp:2771: [signed-char-name-byte] if (LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' && path[1] == ':' && (path[2] == '\\' || path[2] ==
+drivelst.cpp:3188: [signed-char-name-byte] if (LowerCase[path[0]] == LowerCase[item->DriveText[0]])
+editwnd.cpp:503: [missed-twin] SalMessageBox(HWindow, cmdTooLong ? LoadStr(IDS_TOOLONGPATH) : GetErrorText(err),
+editwnd.cpp:996: [ansi-api-on-utf8-path] if (!GetShortPathName(s, path, MAX_PATH))
+execute.cpp:854: [ansi-api-on-utf8-path] GetShortPathName(path, data->Buffer, _countof(data->Buffer));
+execute.cpp:866: [ansi-api-on-utf8-path] GetShortPathName(path, data->Buffer, _countof(data->Buffer));
+execute.cpp:1213: [ansi-api-on-utf8-path] if (!GetShortPathName(data->Path, dosPath, MAX_PATH))
+execute.cpp:2152: [ansi-api-on-utf8-path] if (GetOpenFileName(&ofn))
+fileswn0.cpp:341: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+fileswn0.cpp:3075: [signed-char-name-byte] while (l > 0 && NextFocusName[l - 1] <= ' ')
+fileswn0.cpp:3079: [signed-char-name-byte] while (off < l && NextFocusName[off] <= ' ')
+fileswn1.cpp:259: [signed-char-name-byte] int drv = UpperCase[Path[0]] - 'A' + 1;
+fileswn1.cpp:503: [cp-acp-utf8-source] wl = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, path, l, wPath, MAX_PATH + 10 - 1);
+fileswn2.cpp:150: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+fileswn2.cpp:1319: [missed-twin] if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+fileswn2.cpp:1346: [missed-twin] if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+fileswn2.cpp:1387: [missed-twin] if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+fileswn2.cpp:1914: [signed-char-name-byte] if (LowerCase[root[0]] != LowerCase[changedPath[0]]) // prevention againts an infinite loop
+fileswn2.cpp:2768: [missed-twin] SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH), LoadStr(IDS_ERRORTITLE), MB_OK | MB_ICONEXCLAMATION); // them
+fileswn3.cpp:128: [ansi-api-on-utf8-path] SetCurrentDirectory(GetPath()); // so that it works better
+fileswn3.cpp:161: [signed-char-name-byte] int drv = UpperCase[fileName[0]] - 'A' + 1;
+fileswn3.cpp:1874: [ansi-api-on-utf8-path] h = HANDLES_Q(FindFirstFile(findPath, fileData)); // find-data for redirected-dir can be obtained from the "."
+fileswn3.cpp:1898: [ansi-api-on-utf8-path] h = HANDLES_Q(FindFirstFile(findPath, &fd));
+fileswn3.cpp:2236: [signed-char-name-byte] path[0] = UpperCase[path[0]]; // "c:" path will be "C:"
+fileswn3.cpp:2423: [missed-twin] _snprintf_s(errBuf, _countof(errBuf), _TRUNCATE, LoadStr(IDS_PATHINARCHIVENOTFOUND), end);
+fileswn3.cpp:2749: [signed-char-name-byte] ChangePathToDisk(HWindow, DefaultDir[LowerCase[drive] - 'a'], -1, NULL,
+fileswn5.cpp:1882: [signed-char-name-byte] return nameLen > 0 && (*name <= ' ' || name[nameLen - 1] <= ' ' || name[nameLen - 1] == '.');
+fileswn6.cpp:236: [signed-char-name-byte] else if (drvType == DRIVE_REMOVABLE && UpperCase[path[0]] >= 'A' && UpperCase[path[0]] <= 'Z' && path[1] == ':
+fileswn6.cpp:237: [signed-char-name-byte] GetDriveFormFactor(UpperCase[path[0]] - 'A' + 1) == 0 /* not a floppy */)
+fileswn6.cpp:1206: [ansi-api-on-utf8-path] SetCurrentDirectory(GetPath());
+fileswn6.cpp:1209: [ansi-api-on-utf8-path] SetCurrentDirectory(targetPath);
+fileswn6.cpp:1244: [signed-char-name-byte] if (LowerCase[*targetPath] >= 'a' && LowerCase[*targetPath] <= 'z' &&
+fileswn6.cpp:1268: [ansi-api-on-utf8-path] SetCurrentDirectory(GetPath());
+fileswn6.cpp:1590: [missed-twin] _snprintf_s(text, _TRUNCATE, LoadStr(IDS_NAMEISTOOLONG), dirName, sourcePath);
+fileswn6.cpp:1736: [missed-twin] int res = SalMessageBox(MainWindow->HWindow, text, LoadStr(IDS_QUESTION),
+fileswn6.cpp:1943: [missed-twin] _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed th
+fileswn6.cpp:2161: [missed-twin] _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed th
+fileswn6.cpp:2228: [missed-twin] int res = SalMessageBox(MainWindow->HWindow, text, LoadStr(IDS_QUESTION),
+fileswn6.cpp:2252: [missed-twin] LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION);
+fileswn6.cpp:2318: [missed-twin] _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed th
+fileswn6.cpp:3154: [missed-twin] LoadStr(IDS_QUESTION), MB_YESNO | MB_DEFBUTTON2 | MB_ICONQUESTION) != IDYES)
+fileswn7.cpp:518: [signed-char-name-byte] BOOL mustBePath = (len == 2 && LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+fileswn7.cpp:765: [missed-twin] int res = SalMessageBox(HWindow, text, LoadStr(IDS_QUESTION),
+fileswn7.cpp:1537: [ansi-api-on-utf8-path] SetCurrentDirectory(GetPath());
+fileswn7.cpp:1594: [missed-twin] LoadStr(IDS_QUESTION),
+fileswn7.cpp:1622: [ansi-api-on-utf8-path] SetCurrentDirectory(GetPath());
+fileswn8.cpp:110: [signed-char-name-byte] if (oneFile->Name[oneFile->NameLen - 1] <= ' ' || oneFile->Name[oneFile->NameLen - 1] == '.')
+fileswn8.cpp:125: [ansi-api-on-utf8-path] SetCurrentDirectory(GetPath()); // for faster operation
+fileswn8.cpp:543: [signed-char-name-byte] BOOL mustBePath = (len == 2 && LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+fileswn8.cpp:559: [missed-twin] SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH),
+fileswn8.cpp:587: [missed-twin] SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH),
+fileswn8.cpp:666: [ansi-api-on-utf8-path] SetCurrentDirectory(GetPath());
+fileswn8.cpp:756: [missed-twin] SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH),
+fileswn8.cpp:1410: [missed-twin] params.Caption = LoadStr(IDS_QUESTION);
+fileswna.cpp:169: [signed-char-name-byte] BOOL mustBePath = (len == 2 && LowerCase[targetPath[0]] >= 'a' && LowerCase[targetPath[0]] <= 'z' &&
+fileswna.cpp:577: [ansi-api-on-utf8-path] SetCurrentDirectory(data->Data->SrcPath);
+find.cpp:465: [signed-char-name-byte] LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' && path[1] == ':')
+geticon.cpp:77: [ansi-api-on-utf8-path] return SHGetFileInfo(u8path, attrs, sfi, sizeof(SHFILEINFO), flags);
+geticon.cpp:365: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, 0, pszPath, -1, wszPathBuf, MAX_PATH);
+mainwnd1.cpp:539: [signed-char-name-byte] char* row = DefaultDir[LowerCase[pathActive[0]] - 'a'];
+mainwnd1.cpp:548: [signed-char-name-byte] char* row = DefaultDir[LowerCase[pathPasive[0]] - 'a'];
+mainwnd2.cpp:2638: [ansi-api-on-utf8-path] res = RegEnumValue(actKey, i, name, &nameLen, 0, &type, path, &dataLen);
+mainwnd2.cpp:2645: [signed-char-name-byte] if (dataLen > 2 && LowerCase[path[0]] == d2 &&
+mainwnd2.cpp:3673: [signed-char-name-byte] lstrcpyn(sysDefDir, DefaultDir[LowerCase[leftPanelPath[0]] - 'a'], MAX_PATH);
+mainwnd3.cpp:189: [ansi-api-on-utf8-path] HANDLE find = HANDLES_Q(FindFirstFile(helpPath, &data));
+mainwnd3.cpp:2503: [ansi-api-on-utf8-path] SetCurrentDirectory(activePanel->GetPath());
+mainwnd3.cpp:2868: [missed-twin] LoadStr(IDS_QUESTION), MB_YESNOCANCEL | MB_ICONQUESTION);
+mainwnd3.cpp:5320: [ansi-tooltip-handler] if (lphdr->code == TTN_NEEDTEXT && lphdr->hwndFrom == ToolTipWindow.HWindow)
+mainwnd3.cpp:6321: [missed-twin] params.Caption = LoadStr(IDS_QUESTION);
+mainwnd4.cpp:143: [missed-twin] if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+mainwnd4.cpp:538: [ansi-api-on-utf8-path] if (GetShortPathName(fileName, dosName, MAX_PATH) == 0)
+mainwnd4.cpp:540: [ansi-api-on-utf8-path] TRACE_E("GetShortPathName() failed");
+mainwnd4.cpp:551: [ansi-api-on-utf8-path] if (GetShortPathName(fileName, dosName, MAX_PATH) == 0)
+mainwnd4.cpp:553: [ansi-api-on-utf8-path] TRACE_E("GetShortPathName() failed");
+mainwnd4.cpp:708: [missed-twin] params.Caption = LoadStr(IDS_QUESTION);
+mainwnd4.cpp:1053: [signed-char-name-byte] if (curPath != NULL && d == LowerCase[curPath[0]]) // UNC paths are ignored
+mainwnd5.cpp:572: [ansi-api-on-utf8-path] hFind = HANDLES_Q(FindFirstFile(path, &data));
+masks.cpp:49: [signed-char-name-byte] agree = (LowerCase[*filename] == LowerCase[*mask] || *mask == '?' || // match or '?' represents any character 
+masks.cpp:52: [signed-char-name-byte] agree = (LowerCase[*filename] == LowerCase[*mask] || *mask == '?'); // match or '?' represents any character
+masks.cpp:327: [signed-char-name-byte] if (LowerCase[*filename] == LowerCase[*mask])
+pack1.cpp:1016: [ansi-api-on-utf8-path] DeleteFile(arcPath);
+pack2.cpp:274: [ansi-api-on-utf8-path] if (!GetShortPathName(sourceDir, sourceShortName, MAX_PATH))
+pack2.cpp:333: [ansi-api-on-utf8-path] if (GetShortPathName(name, namecnv, MAX_PATH) == 0)
+pack2.cpp:445: [ansi-api-on-utf8-path] if (!GetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
+pack2.cpp:500: [ansi-api-on-utf8-path] HANDLE find = HANDLES_Q(FindFirstFile(path, &findData));
+pack2.cpp:744: [ansi-api-on-utf8-path] if (!GetShortPathName(archiveFileName, DOSArchiveFileName, MAX_PATH))
+pack2.cpp:764: [ansi-api-on-utf8-path] HANDLE tmpHandle = HANDLES_Q(CreateFile(archiveFileName, GENERIC_READ, 0, NULL,
+pack3.cpp:598: [signed-char-name-byte] CStringArray* array = &Extensions[LowerCase[archiveName[idx]]];
+pack3.cpp:1212: [ansi-api-on-utf8-path] if (!GetShortPathName(data->ArcName, buff2, MAX_PATH))
+pack3.cpp:1216: [ansi-api-on-utf8-path] TRACE_E("Error (1) in GetShortPathName() in PackExpArcDosName().");
+pack3.cpp:1251: [ansi-api-on-utf8-path] HANDLE find = HANDLES_Q(FindFirstFile(path, &findData));
+pack3.cpp:1278: [ansi-api-on-utf8-path] HANDLE h = HANDLES_Q(CreateFile(path, GENERIC_WRITE, 0, NULL, CREATE_NEW,
+pack3.cpp:1284: [ansi-api-on-utf8-path] BOOL ok = GetShortPathName(data->DOSTmpFile, buff2, MAX_PATH);
+pack3.cpp:1288: [ansi-api-on-utf8-path] TRACE_E("Error (2) in GetShortPathName() in PackExpArcDosName().");
+pack3.cpp:1364: [ansi-api-on-utf8-path] if (!GetShortPathName(data->TgtDir, data->Buffer, MAX_PATH))
+pack3.cpp:1366: [ansi-api-on-utf8-path] TRACE_E("Error in GetShortPathName() in PackExpTgtDosPath().");
+pack3.cpp:1390: [ansi-api-on-utf8-path] if (!GetShortPathName(data->LstName, data->Buffer, MAX_PATH))
+pack3.cpp:1392: [ansi-api-on-utf8-path] TRACE_E("Error in GetShortPathName() in PackExpLstDosName().");
+pack3.cpp:1431: [ansi-api-on-utf8-path] DWORD len = GetShortPathName(exe, buff, MAX_PATH);
+packac.cpp:467: [ansi-api-on-utf8-path] HANDLE hfile = HANDLES_Q(CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL));
+packac.cpp:656: [ansi-api-on-utf8-path] HANDLE fileFind = HANDLES_Q(FindFirstFile(fileName, &findData));
+plugins1.cpp:1742: [ansi-api-on-utf8-path] lang = HANDLES_Q(LoadLibrary(path));
+plugins1.cpp:1769: [ansi-api-on-utf8-path] lang = HANDLES_Q(LoadLibrary(path));
+plugins1.cpp:1818: [ansi-api-on-utf8-path] lang = HANDLES_Q(LoadLibrary(path));
+plugins1.cpp:2631: [missed-twin] if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES)
+plugins1.cpp:3045: [missed-twin] if (!ask || SalMessageBox(parent, buf, LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES)
+plugins1.cpp:3101: [missed-twin] skipUnload = SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+plugins1.cpp:3121: [missed-twin] if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES)
+safefile.cpp:586: [signed-char-name-byte] if (namecpy2[len - 1] <= ' ' || namecpy2[len - 1] == '.')
+salamdr1.cpp:1097: [missed-twin] _snprintf_s(text, _TRUNCATE, LoadStr(IDS_NAMEISTOOLONG), name, path);
+salamdr1.cpp:4054: [ansi-api-on-utf8-path] HLanguage = HANDLES(LoadLibrary(path));
+salamdr2.cpp:702: [ansi-api-on-utf8-path] HANDLE hFile = HANDLES_Q(CreateFile(fileName, 0, FILE_SHARE_READ | FILE_SHARE_WRITE,
+salamdr2.cpp:1182: [ansi-api-on-utf8-path] if (GetDiskFreeSpaceEx(ourPath, &availBytes, &totalBytes, &freeBytes))
+salamdr2.cpp:1265: [signed-char-name-byte] if (GetSubstInformation(LowerCase[resPath[0]] - 'a', tgt, MAX_PATH) && tgt[0] != '\\' /* mapped network disks 
+salamdr2.cpp:1395: [ansi-api-on-utf8-path] if (!IsUNCPath(ourPath) && GetDriveType(ourPath) == DRIVE_FIXED) // reparse points only make sense to look for
+salamdr2.cpp:1432: [ansi-api-on-utf8-path] if (!IsUNCPath(ourPath) && GetDriveType(ourPath) == DRIVE_FIXED) // reparse points only make sense to look for
+salamdr2.cpp:1440: [ansi-api-on-utf8-path] while (!GetVolumeInformation(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
+salamdr2.cpp:1482: [ansi-api-on-utf8-path] ret = GetVolumeInformation(ourPath, lpVolumeNameBuffer, nVolumeNameSize,
+salamdr2.cpp:1721: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, u8Path, -1, wPath, _countof(wPath)) == 0)
+salamdr2.cpp:2868: [ansi-api-on-utf8-path] HANDLE file = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL,
+salamdr2.cpp:2953: [missed-twin] if (SalMessageBox(hParent, text, LoadStr(IDS_QUESTION),
+salamdr2.cpp:3197: [ansi-api-on-utf8-path] HINSTANCE hLib = HANDLES(LoadLibrary(path));
+salamdr3.cpp:997: [ansi-api-on-utf8-path] HANDLE find = HANDLES_Q(FindFirstFile(path, &file));
+salamdr3.cpp:1010: [ansi-api-on-utf8-path] DeleteFile(path);
+salamdr3.cpp:1016: [ansi-api-on-utf8-path] RemoveDirectory(path);
+salamdr3.cpp:1042: [ansi-api-on-utf8-path] HANDLE find = HANDLES_Q(FindFirstFile(path, &file));
+salamdr3.cpp:1061: [ansi-api-on-utf8-path] RemoveDirectory(path);
+salamdr3.cpp:1122: [missed-twin] sprintf(title, LoadStr(IDS_QUESTION));
+salamdr3.cpp:1213: [signed-char-name-byte] if (name[len - 1] <= ' ' || name[len - 1] == '.')
+salamdr3.cpp:1219: [missed-twin] _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_CREATEDIRFAILED), name);
+salamdr3.cpp:2308: [ansi-api-on-utf8-path] ExtractIconEx(item->FileName, item->IconIndex, NULL, &umIcon, 1) == 1)
+salamdr3.cpp:2691: [ansi-api-on-utf8-path] ExtractIconEx(fileName, iconIndex, NULL, &UMIcon, 1) == 1)
+salamdr3.cpp:3360: [missed-twin] LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES;
+salamdr5.cpp:552: [signed-char-name-byte] if (LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+salamdr5.cpp:627: [signed-char-name-byte] if (LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+salamdr5.cpp:702: [signed-char-name-byte] BOOL mustBePath = (len == 2 && LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+salamdr5.cpp:1199: [signed-char-name-byte] if (nameLen > 0 && (name[nameLen - 1] <= ' ' || name[nameLen - 1] == '.') &&
+salamdr5.cpp:1227: [signed-char-name-byte] return nameLen > 0 && (name[nameLen - 1] <= ' ' || name[nameLen - 1] == '.');
+salamdr5.cpp:1519: [signed-char-name-byte] LowerCase[path[0]] == LowerCase[netSource->lpLocalName[0]])
+salamdr5.cpp:1868: [ansi-api-on-utf8-path] CreateDirectory(path, NULL); // if it fails (e.g. already exists), we do not care...
+salamdr6.cpp:1701: [ansi-api-on-utf8-path] BOOL ret = GetOpenFileName(lpofn);
+salamdr6.cpp:1712: [ansi-api-on-utf8-path] ret = GetOpenFileName(lpofn);
+salamdr6.cpp:1722: [ansi-api-on-utf8-path] BOOL ret = GetSaveFileName(lpofn);
+salamdr6.cpp:1733: [ansi-api-on-utf8-path] ret = GetSaveFileName(lpofn);
+salamdr6.cpp:1782: [signed-char-name-byte] path[0] = UpperCase[path[0]];
+salamdr7.cpp:510: [ansi-api-on-utf8-path] if (!IsUNCPath(rootPath) && GetDriveType(rootPath) == DRIVE_FIXED) // it only makes sense to look for reparse 
+salshlib.cpp:652: [ansi-api-on-utf8-path] HANDLE file = HANDLES_Q(CreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+salshlib.cpp:689: [ansi-api-on-utf8-path] HANDLE file = HANDLES_Q(CreateFile(ArchiveFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+shellib.cpp:1318: [missed-twin] SalMessageBox(OwnerWindow, LoadStr(IDS_TOOLONGPATH), LoadStr(IDS_ERRORTITLE),
+shellib.cpp:1414: [missed-twin] SalMessageBox(OwnerWindow, LoadStr(IDS_TOOLONGPATH), LoadStr(IDS_ERRORTITLE),
+shellib.cpp:1524: [signed-char-name-byte] if (len > 0 && (fileName[len - 1] <= ' ' || fileName[len - 1] == '.'))
+shellib.cpp:1628: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fileName, -1, olePath + (addUNCPrefix ? 2 : 0),
+shellsup.cpp:536: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+shellsup.cpp:2364: [ansi-api-on-utf8-path] SetCurrentDirectory(panel->GetPath()); // for files whose names contain spaces: to make Open With work even fo
+shiconov.cpp:89: [ansi-api-on-utf8-path] SQLite3DLL = HANDLES(LoadLibrary(sqlitePath));
+shiconov.cpp:908: [ansi-api-on-utf8-path] return SHGetFileInfo(pszPath, dwFileAttributes, psfi, cbFileInfo, uFlags);
+shiconov.cpp:932: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name, -1, wName, MAX_PATH - (int)(wName - wPath));
+snooper.cpp:584: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, path, -1, wPath, _countof(wPath));
+snooper.cpp:733: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, newPath, -1, wNewPath, _countof(wNewPath));
+snooper.cpp:770: [cp-acp-utf8-source] MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, newPath, -1, wNewPath, _countof(wNewPath));
+svg.cpp:56: [ansi-api-on-utf8-path] HANDLE hFile = HANDLES_Q(CreateFile(fileName, GENERIC_READ,
+toolbar6.cpp:188: [signed-char-name-byte] panel->ChangePathToDisk(HWindow, DefaultDir[LowerCase[drive] - 'a'], -1, NULL,
+versinfo.cpp:563: [ansi-api-on-utf8-path] HANDLE file = CreateFile(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+zip.cpp:716: [missed-twin] int res = (int)CHiddenOrSystemDlg(parent, title != NULL ? title : ::LoadStr(IDS_QUESTION), fileName,
+zip.cpp:1548: [missed-twin] s = ::LoadStr(IDS_TOOLONGPATH);
+zip.cpp:2499: [ansi-api-on-utf8-path] ::DeleteFile(pluginData->FileName);
+zip.cpp:2516: [ansi-api-on-utf8-path] ::DeleteFile(pluginData->FileName);
+zip.cpp:2527: [ansi-api-on-utf8-path] ::DeleteFile(pluginData->FileName);
+zip.cpp:2535: [ansi-api-on-utf8-path] HANDLE file = HANDLES_Q(CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,

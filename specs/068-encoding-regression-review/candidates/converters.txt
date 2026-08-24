@@ -1,0 +1,250 @@
+src/tooltip.cpp:309:        int lenW = SalU8ToW(Text, TextLen, TextW, TOOLTIP_TEXT_MAX);
+src/viewer3.cpp:62:    WCHAR* captionW = SalU8ToWAlloc(caption); // the title carries a UTF-8 file name (feature 004)
+src/viewer3.cpp:3137:                SalU8ToW(u8, -1, ptr->szText, _countof(ptr->szText));
+src/safefile.cpp:149:                if (SalWToU8(dataW.cFileName, -1, foundName, sizeof(foundName)) == 0)
+src/safefile.cpp:151:                if (SalWToU8(dataW.cAlternateFileName, -1, foundDosName, sizeof(foundDosName)) == 0)
+src/toolbar4.cpp:1429:            WCHAR* textW = textLen > 0 ? SalU8ToWAlloc(text, textLen) : NULL;
+src/zip.cpp:1593:        if (SalWToU8(wmsg, -1, u8msg, sizeof(u8msg)) != 0)
+src/salamdr6.cpp:1752:        if (!GetMyDocumentsOrDesktopPath(initDir, MAX_PATH) || SalU8ToW(initDir, -1, initDirW, MAX_PATH) == 0)
+src/salamdr6.cpp:2314:    if (lpValueName != NULL && SalU8ToW(lpValueName, -1, nameW, _countof(nameW)) == 0)
+src/salamdr6.cpp:2352:        int needed = SalWToU8(wbuf, wlen + terminators, NULL, 0) - 1;
+src/salamdr6.cpp:2378:        if (SalWToU8(wbuf, wlen + terminators, u8, needed + 1) == 0)
+src/salamdr6.cpp:2405:    if (lpValueName != NULL && SalU8ToW(lpValueName, -1, nameW, _countof(nameW)) == 0)
+src/salamdr6.cpp:2416:        int wlen = SalU8ToW((const char*)lpData, cbData, NULL, 0); // converted units + 1
+src/salamdr6.cpp:2422:            if (SalU8ToW((const char*)lpData, cbData, wbuf, wlen) == 0)
+src/stswnd.cpp:164:    TextW = SalU8ToWDisplayAlloc(Text);
+src/stswnd.cpp:621:        SizeW = SalU8ToWAlloc(Size);
+src/stswnd.cpp:704:        if (SalWToU8(TextW + item->Offset, item->Chars, buffer, bufSize) != 0)
+src/stswnd.cpp:706:        char* u8 = SalWToU8Alloc(TextW + item->Offset, item->Chars); // buffer too small: truncate (legacy semantics)
+src/stswnd.cpp:2384:    WCHAR* textW = SalU8ToWAlloc(text);
+src/snooper.cpp:582:    if (SalU8ToW(path, -1, wPath, _countof(wPath)) == 0)
+src/snooper.cpp:731:            if (SalU8ToW(newPath, -1, wNewPath, _countof(wNewPath)) == 0)
+src/snooper.cpp:768:        if (SalU8ToW(newPath, -1, wNewPath, _countof(wNewPath)) == 0)
+src/masks.cpp:131:    WCHAR* fw = SalU8ToWAlloc(filename);
+src/masks.cpp:132:    WCHAR* mw = SalU8ToWAlloc(mask);
+src/msgbox.cpp:407:            if (SalWToU8(btnTextW, -1, btnText, 3 * 100) == 0)
+src/msgbox.cpp:433:        if (SalWToU8(chkTextW, -1, chkText, 3 * 300) == 0)
+src/msgbox.cpp:678:        WCHAR* bodyW = SalU8ToWAlloc(Text.Get());
+src/msgbox.cpp:935:                            WCHAR* btnText2W = SalU8ToWAlloc(btnText2);
+src/shiconov.cpp:931:    if (SalU8ToW(name, -1, wName, MAX_PATH - (int)(wName - wPath)) == 0) // name is UTF-8 (feature 004)
+src/toolbar3.cpp:500:        WCHAR* textW = SalU8ToWAlloc(text);
+src/salamdr1.cpp:3518:        WCHAR* argvW = SalU8ToWAlloc(argv, -1);
+src/salamdr1.cpp:3528:                        SalWToU8(expW, -1, target, targetSize) != 0)
+src/salamdr1.cpp:3548:            SalWToU8(curDirW, -1, curDir, MAX_PATH) != 0)
+src/salamdr1.cpp:3602:        cmdLineU8 = SalWToU8Alloc(argsW, -1);
+src/pluglegacy.cpp:15:    WCHAR* w = SalU8ToWAlloc(u8);
+src/pluglegacy.cpp:37:    BOOL ret = SalWToU8(w, -1, buf, bufSize) != 0;
+src/pluglegacy.cpp:53:    char* u8 = SalWToU8Alloc(w, -1);
+src/finddlg2.cpp:170:    if (listW != NULL && SalU8ToW(list, (int)listSize, listW, (int)listSize) == 0)
+src/finddlg2.cpp:1900:            WCHAR* pathW = SalU8ToWAlloc(item->Path);        // paths are UTF-8: set the column wide (feature 004)
+src/menubar.cpp:196:    WCHAR* stringW = SalU8ToWAlloc(string, stringLen);
+src/menubar.cpp:267:        WCHAR* stringW = SalU8ToWAlloc(item->String, item->ColumnL1Len);
+src/gui.cpp:626:    int resW = SalU8ToW(Text, TextLen, TextW, Allocated);
+src/gui.cpp:896:    char* newText = SalLegacyToU8Alloc(text);
+src/gui.cpp:1357:        WCHAR* fileW = SalU8ToWAlloc(File, -1);
+src/gui.cpp:2020:    char* newText = SalLegacyToU8Alloc(text);
+src/salamdr4.cpp:177:    WCHAR* textW = SalU8ToWAlloc(Text);
+src/salamdr4.cpp:178:    int subStrIndexW = SubStrIndex > 0 ? SalU8ToW(Text, SubStrIndex, NULL, 0) - 1 : 0;
+src/salamdr4.cpp:179:    int subStrLenW = SubStrLen > 0 ? SalU8ToW(Text + SubStrIndex, SubStrLen, NULL, 0) - 1 : 0;
+src/salamdr4.cpp:256:            if (SalWToU8(truncatedW, -1, truncated, textLen + 1 + 3) != 0)
+src/salamdr4.cpp:1210:    int wideLen = SalU8ToW(u8Text, textLen, NULL, 0); // converted units + 1
+src/salamdr4.cpp:1216:            if (SalU8ToW(u8Text, textLen, wide, wideLen) > 0)
+src/packac.cpp:236:                    if (SalU8ToW(s, -1, info->item.pszText, info->item.cchTextMax) == 0)
+src/packac.cpp:1531:        WCHAR* headerW = SalU8ToWAlloc(lvc.pszText);
+src/geticon.cpp:75:    WCHAR* w = SalU8ToWAlloc(u8path);
+src/geticon.cpp:362:        WCHAR* wszPath = SalU8ToWAlloc(pszPath);
+src/shellsup.cpp:761:        WCHAR* w = SalU8ToWAlloc(full);
+src/shellsup.cpp:2357:                                    WCHAR* cwdW = SalU8ToWAlloc(panel->GetPath());
+src/shellsup.cpp:2371:                                WCHAR* iciDirW = SalU8ToWAlloc(panel->GetPath());
+src/shellsup.cpp:2640:                    WCHAR* dirW = SalU8ToWAlloc(path);
+src/mainwnd3.cpp:1408:                    if (SalWToU8(wszPath, -1, szPath, _countof(szPath)) == 0 &&
+src/fileswn5.cpp:2369:    WCHAR* nameW = SalU8ToWAlloc(formatedFileName);
+src/fileswn5.cpp:2375:            if (SalWToU8(nfcW, -1, editName, SAL_FIND_NAME_U8) == 0)
+src/fileswn5.cpp:2427:                        int w = SalU8ToW(editName, (int)(dot - editName), NULL, 0);
+src/fileswn5.cpp:2620:    if (SalWToU8(buffW, -1, buff, _countof(buff)) == 0) // UTF-8 does not fit: keep the legacy A call
+src/fileswn5.cpp:2739:    BOOL fileNameWValid = SalU8ToW(formatedFileName, -1, fileNameW, _countof(fileNameW)) != 0;
+src/fileswn5.cpp:2745:        int selEndW = SalU8ToW(formatedFileName, selectionEnd, NULL, 0);
+src/fileswn5.cpp:2830:    if (SalWToU8(newNameW, -1, newName, MAX_PATH) == 0) // UTF-8 does not fit: keep the legacy A call
+src/fileswn5.cpp:2857:            if (SalU8ToW(newName, -1, newNameW, _countof(newNameW)) != 0) // the name is UTF-8 (feature 004)
+src/mainwnd1.cpp:1971:    WCHAR* textW = SalU8ToWAlloc(text);
+src/fileswn4.cpp:711:                wNameLen = SalU8ToW(TransferBuffer, nameLen, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/fileswn4.cpp:908:                        wColLen = SalU8ToW(TransferBuffer, TransferLen, wbuf, _countof(wbuf)) - 1;
+src/fileswn4.cpp:1627:        wlen = SalU8ToW(out1, out1Len, wbuf, _countof(wbuf)) - 1; // -1 = empty or invalid UTF-8
+src/fileswn4.cpp:1640:            wlen = SalU8ToW(out2, out2Len, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/fileswn4.cpp:2045:        wlen = SalU8ToW(out0, out0Len, wbuf, _countof(wbuf)) - 1; // -1 = empty or invalid UTF-8
+src/fileswn4.cpp:2064:            wlen = SalU8ToW(out1, out1Len, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/fileswn4.cpp:2079:            wlen = SalU8ToW(out2, out2Len, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/menu3.cpp:927:                WCHAR* columnW = SalU8ToWAlloc(item->ColumnL1, item->ColumnL1Len);
+src/menu3.cpp:970:                WCHAR* columnW = SalU8ToWAlloc(item->ColumnL2, item->ColumnL2Len);
+src/menu3.cpp:1018:                WCHAR* columnW = SalU8ToWAlloc(item->ColumnR, item->ColumnRLen);
+src/salamdr3.cpp:227:            SalWToU8(tmpDirW, -1, tmpDir, MAX_PATH + 10) == 0)
+src/salamdr3.cpp:238:                SalWToU8(tmpDirW, -1, tmpDir, MAX_PATH + 10) == 0)
+src/editwnd.cpp:1583:            int msgWLen = SalU8ToW(Message, -1, NULL, 0);
+src/editwnd.cpp:1586:            if (msgW != NULL && SalU8ToW(Message, -1, msgW, msgWLen + MAX_PATH) > 0)
+src/finddlg1.cpp:3934:            WCHAR* buffW = SalU8ToWAlloc(buff); // UTF-8 -> wide for correct display (feature 004)
+src/finddlg1.cpp:4028:                    if (u8 == NULL || SalU8ToWDisplay(u8, -1, FoundFilesDataTextBufferW,
+src/finddlg1.cpp:4045:                    if (SalWToU8(findW->lvfi.psz, -1, u8, sizeof(u8)) != 0)
+src/finddlg1.cpp:4186:                        int pathWLen = SalU8ToW(item2->Path, -1, NULL, 0);
+src/finddlg1.cpp:4189:                        if (pathW != NULL && SalU8ToW(item2->Path, -1, pathW, pathWLen + MAX_PATH) > 0)
+src/fileswn1.cpp:500:                        int wl = SalU8ToW(path, l, wPath, MAX_PATH + 10); // includes the null terminator
+src/fileswn0.cpp:1014:        if (SalWToU8(wbuf, wlen, u8, sizeof(u8)) == 0)
+src/fileswn0.cpp:3307:    int wlen = qsLen > 0 ? SalU8ToW(ss, qsLen, wbuf, _countof(wbuf)) - 1 : 0;
+src/edtlbwnd.cpp:699:                WCHAR* bufferW = SalU8ToWAlloc(Buffer);
+src/dialogs3.cpp:472:            WCHAR* subjectW = SalU8ToWAlloc(Subject->Get()); // the subject carries a UTF-8 file name (feature 004)
+src/dialogs3.cpp:979:            WCHAR* buffW = SalU8ToWAlloc(buff); // the subject carries a UTF-8 file name (feature 004)
+src/dialogs3.cpp:1325:            WCHAR* volumeNameW = SalU8ToWAlloc(volumeName); // the volume label may carry Unicode (feature 004)
+src/dialogs3.cpp:1341:                WCHAR* pathW = SalU8ToWAlloc(mountPoint); // paths are UTF-8 (feature 004)
+src/dialogs3.cpp:1349:                pathW = SalU8ToWAlloc(guidPath);
+src/dialogs3.cpp:1367:            if (SalWToU8(titleW, -1, buff + strlen(buff), (int)(sizeof(buff) - strlen(buff))) == 0)
+src/dialogs3.cpp:1370:            WCHAR* buffW = SalU8ToWAlloc(buff);
+src/dialogs3.cpp:1668:            WCHAR* driveTypeW = SalU8ToWAlloc(volumeName); // may carry UNC/subst/link target paths (UTF-8, feature 004)
+src/dialogs3.cpp:1813:        WCHAR* pathW = SalU8ToWAlloc(Path); // the path is UTF-8 (feature 004)
+src/dialogs3.cpp:1981:            WCHAR* subjectW = SalU8ToWAlloc(Subject->Get()); // the subject carries a UTF-8 file name (feature 004)
+src/dialogs3.cpp:2014:                    if (SalWToU8(name2W, -1, name2, MAX_PATH) == 0) // UTF-8 does not fit: keep the legacy A call
+src/dialogs3.cpp:2048:                        WCHAR* name2W = SalU8ToWAlloc(name2); // the path is UTF-8 (feature 004)
+src/dialogs3.cpp:2161:            WCHAR* subjectW = SalU8ToWAlloc(Subject->Get()); // the subject carries a UTF-8 file name (feature 004)
+src/dialogs3.cpp:2253:    WCHAR* fileNameW = SalU8ToWAlloc(fileName); // the name is UTF-8 (feature 004)
+src/dialogs3.cpp:2295:    if (SalWToU8(fileNameW, -1, fileName, MAX_PATH) == 0) // UTF-8 does not fit: keep the legacy A call
+src/dialogs3.cpp:2317:    BOOL fileNameWValid = SalU8ToW(fileName, -1, fileNameW, _countof(fileNameW)) != 0;
+src/dialogs3.cpp:2571:        WCHAR* textW = SalU8ToWAlloc(Text);
+src/dialogs3.cpp:2735:        WCHAR* textW = SalU8ToWAlloc(Text);
+src/menu1.cpp:333:        WCHAR* columnW = SalU8ToWAlloc(ColumnL1, ColumnL1Len);
+src/menu1.cpp:348:        WCHAR* columnW = SalU8ToWAlloc(ColumnL2, ColumnL2Len);
+src/menu1.cpp:363:        WCHAR* columnW = SalU8ToWAlloc(ColumnR, ColumnRLen);
+src/dialogs5.cpp:3377:            SalWToU8(oldSelectedW, -1, oldSelected, 250) == 0)
+src/fileswn2.cpp:3593:            wlen = SalU8ToW(formatedFileName, f->NameLen, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/fileswn2.cpp:3606:            wlen = SalU8ToW(formatedFileName, f->NameLen, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/fileswn2.cpp:3723:            wlen = SalU8ToW(DirColumnStr, DirColumnStrLen, wbuf, _countof(wbuf)) - 1; // localized text may be non-ASCII UTF-8
+src/fileswn2.cpp:3764:                    wlen = SalU8ToW(text, -1, wbuf, _countof(wbuf)) - 1; // locale date is UTF-8 (feature 041)
+src/fileswn2.cpp:3798:                    wlen = SalU8ToW(formatedFileName, nameLen, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/fileswn2.cpp:3814:                wlen = SalU8ToW(formatedFileName + (int)(f->Ext - f->Name), (int)(f->NameLen - (f->Ext - f->Name)), wbuf, _countof(wbuf)) - 1;
+src/fileswn2.cpp:3826:                wlen = SalU8ToW(f->DosName, -1, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+src/fileswn2.cpp:3859:                wlen = SalU8ToW(text, len, wbuf, _countof(wbuf)) - 1; // locale date is UTF-8 (feature 041)
+src/fileswn2.cpp:3925:                                wlen = SalU8ToW(src, -1, wbuf, _countof(wbuf)) - 1; // file-type text may be non-ASCII UTF-8
+src/fileswn2.cpp:3940:                        wlen = SalU8ToW(buf, resLen, wbuf, _countof(wbuf)) - 1; // localized text may be non-ASCII UTF-8
+src/fileswn2.cpp:3956:                            wlen = SalU8ToW(UpDirTypeName, UpDirTypeNameLen, wbuf, _countof(wbuf)) - 1; // localized text may be non-ASCII UTF-8
+src/fileswn2.cpp:3965:                            wlen = SalU8ToW(FolderTypeName, FolderTypeNameLen, wbuf, _countof(wbuf)) - 1; // localized text may be non-ASCII UTF-8
+src/fileswn2.cpp:4005:            wlen = SalU8ToW(text, numLen, wbuf, _countof(wbuf)) - 1; // thousands separator may be non-ASCII UTF-8
+src/fileswn2.cpp:4028:            wlen = SalU8ToW(text, -1, wbuf, _countof(wbuf)) - 1; // locale time is UTF-8 (feature 041)
+src/fileswn2.cpp:4039:            wlen = SalU8ToW(text, -1, wbuf, _countof(wbuf)) - 1; // locale time is UTF-8 (feature 041)
+src/fileswn2.cpp:4124:                            wlen = SalU8ToW(TransferBuffer, TransferLen, wbuf, _countof(wbuf)) - 1; // plugin text may be non-ASCII UTF-8
+src/plugins1.cpp:1244:            p->ChDrvMenuFSItemName = SalLegacyToU8Alloc(title, MAX_PATH - 1);
+src/plugins1.cpp:1605:    char* s = SalLegacyToU8Alloc(pluginName, MAX_PATH - 1);
+src/plugins1.cpp:1611:    s = SalLegacyToU8Alloc(version, MAX_PATH - 1);
+src/plugins1.cpp:1619:    s = SalLegacyToU8Alloc(copyright, MAX_PATH - 1);
+src/plugins1.cpp:1625:    s = SalLegacyToU8Alloc((supportPanelView || supportPanelEdit) ? extensions : "", MAX_PATH - 1);
+src/plugins1.cpp:1631:    s = SalLegacyToU8Alloc(description, MAX_PATH - 1);
+src/plugins1.cpp:1919:        Name = SalLegacyToU8Alloc(name); // on error we will become a separator ;-)
+src/shellib.cpp:47:    char* u8 = SalWToU8Alloc(w);
+src/shellib.cpp:106:    char* newName = SalWToU8Alloc(name);
+src/shellib.cpp:499:                                            char* prefixU8 = SalWToU8Alloc(prefix);
+src/shellib.cpp:575:                                            if (SalWToU8(lastBackslash + 1, (int)(s - (lastBackslash + 1)),
+src/shellib.cpp:1563:                                if (SalWToU8(str.pOleStr, -1, buf, 3 * MAX_PATH) == 0)
+src/shellib.cpp:1610:    WCHAR* nameW = SalU8ToWAlloc(fileName);
+src/shellib.cpp:1846:                                                    if (SalWToU8(str.pOleStr, -1, buf, 3 * MAX_PATH) == 0)
+src/shellib.cpp:1952:                                                                    if (SalWToU8(str.pOleStr, -1, buf, 3 * MAX_PATH) == 0)
+src/shellib.cpp:2648:                        if (SalU8ToW(name, -1, oleName, MAX_PATH) == 0)
+src/shellib.cpp:2656:                                SalWToU8(tgtW, -1, tgt, 3 * MAX_PATH) != 0 &&
+src/shellib.cpp:2884:                    int len = SalU8ToW(ptr2, -1, NULL, 0);
+src/shellib.cpp:2898:                                if (isUTF8 ? SalU8ToW(ptr2, -1, ptr1, len) != 0 : ConvertA2U(ptr2, -1, ptr1, len) != 0)
+src/fileswn8.cpp:133:    int wchars = SalU8ToW(names.Text, names.Length, NULL, 0); // converted units + 1
+src/fileswn8.cpp:140:    SalU8ToW(names.Text, names.Length, fromW, wchars);
+src/toolbar2.cpp:301:                WCHAR* textW = SalU8ToWAlloc(item->Text, item->TextLen);
+src/toolbar2.cpp:639:            WCHAR* textW = SalU8ToWAlloc(item->Text, item->TextLen);
+src/dialogs4.cpp:2842:    WCHAR* nameW = SalU8ToWAlloc(name); // the name is UTF-8 (feature 005)
+src/dialogs4.cpp:2852:    WCHAR* pathW = SalU8ToWAlloc(path); // the path is UTF-8 (feature 004)
+src/dialogs4.cpp:2895:        if (SalWToU8(buffW, -1, buff, HOTPATHITEM_MAXPATH) == 0) // UTF-8 does not fit: keep the legacy A call
+src/dialogs4.cpp:2911:        if (SalWToU8(buffW, -1, buff, MAX_PATH) == 0) // UTF-8 does not fit: keep the legacy A call
+src/salamdr2.cpp:108:        size = SalWToU8(wide, wideLen, act, 10000 - (int)(act - buffer));
+src/salamdr2.cpp:220:        if (SalWToU8(wmsg, -1, u8msg, sizeof(u8msg)) != 0)
+src/salamdr2.cpp:1532:    if (SalU8ToW(repPointDirCrFile, -1, repPointDirW, _countof(repPointDirW)) == 0 &&
+src/salamdr2.cpp:1627:                if (SalU8ToW(repPointDir + 2, -1, symlinkAbsPath + 2, 1000 - 2) == 0 &&
+src/salamdr2.cpp:1653:        if (SalWToU8(s, -1, repPointDstBuf, repPointDstBufSize) == 0 &&
+src/salamdr2.cpp:1720:    if (SalU8ToW(u8Path, -1, wPath, _countof(wPath)) == 0 &&
+src/salamdr2.cpp:2579:                if (SalU8ToW(history[i], -1, NULL, 0) == 0)
+src/worker.cpp:2076:                        WCHAR* fileNameW = SalPathToWExtAlloc(fileName); // UTF-8 -> \\?\ wide (long-path capable)
+src/worker.cpp:2344:    WCHAR* base = SalPathToWExtAlloc(u8Name);
+src/worker.cpp:2559:                                        if (!SalWToU8(tgtName, -1, nameBuf, sizeof(nameBuf)))
+src/worker.cpp:2675:                                    if (!SalWToU8(srcName, -1, nameBuf, sizeof(nameBuf)))
+src/worker.cpp:2797:                            if (!SalWToU8(tgtName, -1, nameBuf, sizeof(nameBuf)))
+src/worker.cpp:2870:                    if (!SalWToU8(srcName, -1, nameBuf, sizeof(nameBuf)))
+src/worker.cpp:3206:            if (!SalWToU8(dataW.cFileName, -1, nameU8, sizeof(nameU8)))
+src/worker.cpp:6210:    int wl = SalU8ToW(name, -1, nameListW, MAX_PATH);
+src/fileswn9.cpp:258:                    WCHAR* w = SalU8ToWAlloc(tgtPath);
+src/fileswn9.cpp:1664:    WCHAR* buffW = SalU8ToWDisplayAlloc(buff);
+src/fileswn9.cpp:1885:        SalWToU8(uncPathW, -1, uncPath, 2 * MAX_PATH) != 0)
+src/dialogs.cpp:1820:    if (SalU8ToW(name, -1, file, MAX_PATH) == 0)
+src/dialogs.cpp:1824:    if (SalU8ToW(LoadStr(IDS_ALLFILTER), -1, filterW, _countof(filterW)) == 0)
+src/dialogs.cpp:1843:        if (SalWToU8(file, -1, fileU8, sizeof(fileU8)) != 0 && SalGetFullName(fileU8))
+src/common\salpath.cpp:256:WCHAR* SalPathToWExtAlloc(const char* u8path)
+src/common\salpath.cpp:261:    WCHAR* w = SalU8ToWAlloc(u8path, -1);
+src/common\salpath.cpp:362:char* SalPathFromWAlloc(const WCHAR* wpath)
+src/common\salpath.cpp:376:        char* res = SalWToU8Alloc(tmp, -1);
+src/common\salpath.cpp:382:    return SalWToU8Alloc(wpath, -1);
+src/common\salunicode.h:49:int SalU8ToW(const char* src, int srcLen, WCHAR* buf, int bufSize);
+src/common\salunicode.h:50:int SalWToU8(const WCHAR* src, int srcLen, char* buf, int bufSize);
+src/common\salunicode.h:53:WCHAR* SalU8ToWAlloc(const char* src, int srcLen = -1);
+src/common\salunicode.h:54:char* SalWToU8Alloc(const WCHAR* src, int srcLen = -1);
+src/common\salunicode.h:76:char* SalLegacyToU8Alloc(const char* src, int maxBytes = -1);
+src/common\salunicode.h:103:int SalU8ToWDisplay(const char* src, int srcLen, WCHAR* buf, int bufSize);
+src/common\salunicode.h:107:WCHAR* SalU8ToWDisplayAlloc(const char* src, int srcLen = -1);
+src/common\salpath.h:87:WCHAR* SalPathToWExtAlloc(const char* u8path);
+src/common\salpath.h:97:char* SalPathFromWAlloc(const WCHAR* wpath);
+src/common\salunicode.cpp:237:int SalU8ToW(const char* src, int srcLen, WCHAR* buf, int bufSize)
+src/common\salunicode.cpp:278:int SalWToU8(const WCHAR* src, int srcLen, char* buf, int bufSize)
+src/common\salunicode.cpp:317:WCHAR* SalU8ToWAlloc(const char* src, int srcLen)
+src/common\salunicode.cpp:319:    int size = SalU8ToW(src, srcLen, NULL, 0);
+src/common\salunicode.cpp:325:    if (SalU8ToW(src, srcLen, buf, size) == 0)
+src/common\salunicode.cpp:333:char* SalWToU8Alloc(const WCHAR* src, int srcLen)
+src/common\salunicode.cpp:335:    int size = SalWToU8(src, srcLen, NULL, 0);
+src/common\salunicode.cpp:341:    if (SalWToU8(src, srcLen, buf, size) == 0)
+src/common\salunicode.cpp:354:char* SalLegacyToU8Alloc(const char* src, int maxBytes)
+src/common\salunicode.cpp:360:    if (SalU8ToW(src, -1, NULL, 0) > 0) // WTF-8-aware probe (feature 066)
+src/common\salunicode.cpp:379:        u8 = SalWToU8Alloc(w, -1);
+src/common\salunicode.cpp:557:    WCHAR* w = SalU8ToWAlloc(u8, len);
+src/common\salunicode.cpp:652:int SalU8ToWDisplay(const char* src, int srcLen, WCHAR* buf, int bufSize)
+src/common\salunicode.cpp:664:    int strict = SalU8ToW(src, srcLen, buf, bufSize);
+src/common\salunicode.cpp:688:WCHAR* SalU8ToWDisplayAlloc(const char* src, int srcLen)
+src/common\salunicode.cpp:692:    int need = SalU8ToWDisplay(src, srcLen, NULL, 0);
+src/common\salunicode.cpp:700:    if (SalU8ToWDisplay(src, srcLen, buf, need) == 0)
+src/common\salunicode.cpp:737:    int res = SalWToU8(wide, wideLen - 1, u8Buf, u8BufSize);
+src/common\salunicode.cpp:757:        if (SalU8ToW(u8Format, -1, wideFormat, _countof(wideFormat)) == 0)
+src/common\salunicode.cpp:773:        if (SalU8ToW(u8Format, -1, wideFormat, _countof(wideFormat)) == 0)
+src/common\salfileio.cpp:29:    WCHAR* w = SalPathToWExtAlloc(u8pattern);
+src/common\salfileio.cpp:65:        SalWToU8(w->cFileName, -1, nameU8, nameU8Size) == 0 &&
+src/common\salfileio.cpp:69:        SalWToU8(w->cAlternateFileName, -1, dosNameU8, dosNameU8Size) == 0 &&
+src/common\salfileio.cpp:83:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:99:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:121:    WCHAR* appW = u8AppName == NULL ? NULL : SalU8ToWAlloc(u8AppName, -1);
+src/common\salfileio.cpp:122:    WCHAR* cmdW = u8CmdLine == NULL ? NULL : SalU8ToWAlloc(u8CmdLine, -1); // CreateProcessW may modify it
+src/common\salfileio.cpp:123:    WCHAR* dirW = u8CurrentDir == NULL ? NULL : SalU8ToWAlloc(u8CurrentDir, -1);
+src/common\salfileio.cpp:180:    WCHAR* verbW = seiA->lpVerb == NULL ? NULL : SalU8ToWAlloc(seiA->lpVerb, -1);
+src/common\salfileio.cpp:181:    WCHAR* fileW = seiA->lpFile == NULL ? NULL : SalU8ToWAlloc(seiA->lpFile, -1);
+src/common\salfileio.cpp:182:    WCHAR* paramsW = seiA->lpParameters == NULL ? NULL : SalU8ToWAlloc(seiA->lpParameters, -1);
+src/common\salfileio.cpp:183:    WCHAR* dirW = seiA->lpDirectory == NULL ? NULL : SalU8ToWAlloc(seiA->lpDirectory, -1);
+src/common\salfileio.cpp:184:    WCHAR* classW = (seiA->fMask & SEE_MASK_CLASSNAME) && seiA->lpClass != NULL ? SalU8ToWAlloc(seiA->lpClass, -1) : NULL;
+src/common\salfileio.cpp:239:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:262:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:306:    WCHAR* wf = SalPathToWExtAlloc(u8from);
+src/common\salfileio.cpp:307:    WCHAR* wt = SalPathToWExtAlloc(u8to);
+src/common\salfileio.cpp:322:    WCHAR* wf = SalPathToWExtAlloc(u8from);
+src/common\salfileio.cpp:323:    WCHAR* wt = SalPathToWExtAlloc(u8to);
+src/common\salfileio.cpp:346:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:357:    char* u8 = SalPathFromWAlloc(shortW); // strips the \\?\ prefix
+src/common\salfileio.cpp:374:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:387:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:400:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:415:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:426:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:436:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salfileio.cpp:449:    WCHAR* w = SalPathToWExtAlloc(u8path);
+src/common\salclip.cpp:26:        wide[i] = SalU8ToWAlloc(utf8Paths[i]);
+src/common\winlib.cpp:1054:            WCHAR* w = SalU8ToWAlloc(buffer);
+src/common\winlib.cpp:1083:                if (SalWToU8(w, -1, buffer, bufferSizeInChars) != 0)
+src/common\winlib.cpp:1106:    WCHAR* w = SalU8ToWAlloc(u8Text);
+src/common\winlib.cpp:1126:        int len = SalWToU8(w, -1, u8Buf, u8BufSize);
+src/common\winlib.cpp:1159:    WCHAR* w = SalU8ToWAlloc(u8Text);
+src/common\winlib.cpp:1173:    WCHAR* w = SalU8ToWAlloc(u8Text);
+src/common\winlib.cpp:1192:    WCHAR* w = SalU8ToWAlloc(u8Text);
+src/common\winlib.cpp:1206:    WCHAR* w = SalU8ToWAlloc(u8Text);
+src/common\winlib.cpp:1226:    WCHAR* w = SalU8ToWAlloc(u8Text);

@@ -987,45 +987,58 @@ void SetCurrentDirectoryToSystem()
 
 void _RemoveTemporaryDir(const char* dir)
 {
+    // feature 068 (F-P1-04): 'dir' is UTF-8 (SalGetTempFileName / plugin
+    // service RemoveTemporaryDir), but the enumeration and the deletes were the
+    // ANSI calls, so under a non-ASCII %TEMP% nothing was ever found or removed
+    // - while ClearReadOnlyAttr on the same line already used the UTF-8 facade.
+    // The whole walk now goes through the facade.
     char path[MAX_PATH + 2];
-    WIN32_FIND_DATA file;
+    WIN32_FIND_DATAW fileW;
+    char nameU8[SAL_FIND_NAME_U8];
     strcpy(path, dir);
     char* end = path + strlen(path);
     if (*(end - 1) != '\\')
         *end++ = '\\';
     strcpy(end, "*");
-    HANDLE find = HANDLES_Q(FindFirstFile(path, &file));
+    HANDLE find = SalFindFirstFile(path, &fileW); // registers with HANDLES itself
     if (find != INVALID_HANDLE_VALUE)
     {
         do
         {
-            if (file.cFileName[0] != 0 && strcmp(file.cFileName, "..") && strcmp(file.cFileName, ".") &&
-                (end - path) + strlen(file.cFileName) < MAX_PATH)
+            SalConvertFindDataW(&fileW, NULL, nameU8, sizeof(nameU8), NULL, 0);
+            if (nameU8[0] != 0 && strcmp(nameU8, "..") && strcmp(nameU8, ".") &&
+                (end - path) + strlen(nameU8) < MAX_PATH)
             {
-                strcpy(end, file.cFileName);
-                ClearReadOnlyAttr(path, file.dwFileAttributes);
-                if (file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                strcpy(end, nameU8);
+                ClearReadOnlyAttr(path, fileW.dwFileAttributes);
+                if (fileW.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
                     _RemoveTemporaryDir(path);
                 else
-                    DeleteFile(path);
+                    SalDeleteFile(path);
             }
-        } while (FindNextFile(find, &file));
+        } while (SalFindNextFile(find, &fileW));
         HANDLES(FindClose(find));
     }
     *(end - 1) = 0;
-    RemoveDirectory(path);
+    SalRemoveDirectory(path);
 }
 
 void RemoveTemporaryDir(const char* dir)
 {
     CALL_STACK_MESSAGE2("RemoveTemporaryDir(%s)", dir);
-    SetCurrentDirectory(dir); // so it runs faster (the system prefers the current directory)
+    // feature 068 (F-P1-04): 'dir' is UTF-8 - convert for the wide call and keep
+    // the ANSI call as the transitional fallback (house pattern)
+    WCHAR wDir[MAX_PATH];
+    if (SalU8ToW(dir, -1, wDir, _countof(wDir)) != 0)
+        SetCurrentDirectoryW(wDir); // so it runs faster (the system prefers the current directory)
+    else
+        SetCurrentDirectory(dir);
     if (strlen(dir) < MAX_PATH)
         _RemoveTemporaryDir(dir);
     SetCurrentDirectoryToSystem(); // we must leave it, otherwise it cannot be deleted
 
     ClearReadOnlyAttr(dir);
-    RemoveDirectory(dir);
+    SalRemoveDirectory(dir);
 }
 
 // ****************************************************************************
@@ -1033,44 +1046,53 @@ void RemoveTemporaryDir(const char* dir)
 void _RemoveEmptyDirs(const char* dir)
 {
     char path[MAX_PATH + 2];
-    WIN32_FIND_DATA file;
+    // feature 068 (F-P1-04): the ANSI twin of _RemoveTemporaryDir - converted
+    // with it so both walks agree on the encoding of 'dir'
+    WIN32_FIND_DATAW fileW;
+    char nameU8[SAL_FIND_NAME_U8];
     strcpy(path, dir);
     char* end = path + strlen(path);
     if (*(end - 1) != '\\')
         *end++ = '\\';
     strcpy(end, "*");
-    HANDLE find = HANDLES_Q(FindFirstFile(path, &file));
+    HANDLE find = SalFindFirstFile(path, &fileW); // registers with HANDLES itself
     if (find != INVALID_HANDLE_VALUE)
     {
         do
         {
-            if (file.cFileName[0] != 0 && strcmp(file.cFileName, "..") && strcmp(file.cFileName, "."))
+            SalConvertFindDataW(&fileW, NULL, nameU8, sizeof(nameU8), NULL, 0);
+            if (nameU8[0] != 0 && strcmp(nameU8, "..") && strcmp(nameU8, "."))
             {
-                if ((file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
-                    (end - path) + strlen(file.cFileName) < MAX_PATH)
+                if ((fileW.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+                    (end - path) + strlen(nameU8) < MAX_PATH)
                 {
-                    strcpy(end, file.cFileName);
-                    ClearReadOnlyAttr(path, file.dwFileAttributes);
+                    strcpy(end, nameU8);
+                    ClearReadOnlyAttr(path, fileW.dwFileAttributes);
                     _RemoveEmptyDirs(path);
                 }
             }
-        } while (FindNextFile(find, &file));
+        } while (SalFindNextFile(find, &fileW));
         HANDLES(FindClose(find));
     }
     *(end - 1) = 0;
-    RemoveDirectory(path);
+    SalRemoveDirectory(path);
 }
 
 void RemoveEmptyDirs(const char* dir)
 {
     CALL_STACK_MESSAGE2("RemoveEmptyDirs(%s)", dir);
-    SetCurrentDirectory(dir); // so it runs faster (the system prefers the current directory)
+    // feature 068 (F-P1-04): 'dir' is UTF-8 - see RemoveTemporaryDir
+    WCHAR wDir[MAX_PATH];
+    if (SalU8ToW(dir, -1, wDir, _countof(wDir)) != 0)
+        SetCurrentDirectoryW(wDir); // so it runs faster (the system prefers the current directory)
+    else
+        SetCurrentDirectory(dir);
     if (strlen(dir) < MAX_PATH)
         _RemoveEmptyDirs(dir);
     SetCurrentDirectoryToSystem(); // we must leave it, otherwise it cannot be deleted
 
     ClearReadOnlyAttr(dir);
-    RemoveDirectory(dir);
+    SalRemoveDirectory(dir);
 }
 
 // ****************************************************************************

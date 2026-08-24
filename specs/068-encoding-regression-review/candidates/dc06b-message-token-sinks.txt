@@ -1,0 +1,133 @@
+src/viewer.cpp:177:    SendMessage(edit, WM_GETTEXT, textLen, (LPARAM)text);
+src/viewer.cpp:267:    SendMessage(edit, WM_SETTEXT, 0, (LPARAM)text);
+src/viewer.cpp:361:                SendMessage(GetDlgItem(HWindow, IDC_FINDTEXT), WM_SETTEXT, 0, (LPARAM)buf);
+src/toolbar3.cpp:145:            int ret = (int)SendMessage(HAvailableLB, LB_ADDSTRING, 0, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:162:        int ret = (int)SendMessage(HCurrentLB, LB_ADDSTRING, 0, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:167:    SendMessage(HCurrentLB, LB_ADDSTRING, 0, (LPARAM)-1);
+src/toolbar3.cpp:211:        int ret = (int)SendMessage(HCurrentLB, LB_INSERTSTRING, cIndex, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:247:            int ret = (int)SendMessage(HAvailableLB, LB_INSERTSTRING, index, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:268:    int ret = (int)SendMessage(HCurrentLB, LB_INSERTSTRING, tgtIndex - delta, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/plugins2.cpp:1031:            LVITEM lvi;
+src/plugins2.cpp:1040:        LVITEM lvi;
+src/packac.cpp:205:            case LVN_GETDISPINFO:
+src/packac.cpp:209:                LV_DISPINFO* info = (LV_DISPINFO*)lParam;
+src/packac.cpp:1181:        LV_ITEM item;
+src/gui.cpp:527:    CWindow::WindowProc(WM_GETTEXT, 4096, (LPARAM)buff);
+src/gui.cpp:1096:    case WM_SETTEXT:
+src/gui.cpp:1101:    case WM_GETTEXT:
+src/gui.cpp:2107:    case WM_SETTEXT:
+src/filter.cpp:846:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)_ui64toa(value.Value, buff, 10));
+src/filter.cpp:852:            SendMessage(HWindow, WM_GETTEXT, 22, (LPARAM)buff);
+src/filter.cpp:915:    SendMessage(hEdit, WM_GETTEXT, 22, (LPARAM)buff);
+src/filter.cpp:938:        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)buff);
+src/filter.cpp:948:            SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)LoadStr(sizes[i]));
+src/finddlg2.cpp:291:        SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM) "");
+src/finddlg2.cpp:1877:        LVITEM lvi;
+src/finddlg1.cpp:824:    LV_ITEM item;
+src/finddlg1.cpp:1596:        SendMessage(HStatusBar, SB_SETTEXT, 0 | SBT_NOBORDERS, (LPARAM) "");
+src/finddlg1.cpp:1597:        SendMessage(HStatusBar, SB_SETTEXT, 2 | SBT_NOBORDERS, (LPARAM) "");
+src/finddlg1.cpp:2223:            SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM)LoadStr(msgID));
+src/finddlg1.cpp:2233:        SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM)LoadStr(IDS_STOPPED));
+src/finddlg1.cpp:3041:        SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM)LoadStr(IDS_FIND_INIT_HINT));
+src/finddlg1.cpp:3124:                SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS | SBT_OWNERDRAW, 0);
+src/finddlg1.cpp:3664:                    SendMessage(EditLine->HWindow, WM_GETTEXT, (WPARAM)1024, (LPARAM)buff);
+src/finddlg1.cpp:4312:            case LVN_GETDISPINFO:
+src/finddlg1.cpp:4314:                LV_DISPINFO* info = (LV_DISPINFO*)lParam;
+src/dialogsp.cpp:130:    SendDlgItemMessage(HWindow, IDC_P1_EXT, WM_SETTEXT, 0,
+src/dialogsp.cpp:156:    SendDlgItemMessage(HWindow, IDC_P1_CPCMD, WM_SETTEXT, 0,
+src/dialogsp.cpp:159:    SendDlgItemMessage(HWindow, IDC_P1_CPARG, WM_SETTEXT, 0,
+src/dialogsp.cpp:166:    SendDlgItemMessage(HWindow, IDC_P1_MVCMD, WM_SETTEXT, 0,
+src/dialogsp.cpp:168:    SendDlgItemMessage(HWindow, IDC_P1_MVARG, WM_SETTEXT, 0,
+src/dialogsp.cpp:189:        SendDlgItemMessage(HWindow, IDC_P1_EXT, WM_GETTEXT, len, (LPARAM)ext);
+src/dialogsp.cpp:225:            SendDlgItemMessage(HWindow, IDC_P1_CPCMD, WM_GETTEXT, len, (LPARAM)execcopy);
+src/dialogsp.cpp:226:            SendDlgItemMessage(HWindow, IDC_P1_CPARG, WM_GETTEXT, len, (LPARAM)argscopy);
+src/dialogsp.cpp:230:                SendDlgItemMessage(HWindow, IDC_P1_MVCMD, WM_GETTEXT, len, (LPARAM)execmove);
+src/dialogsp.cpp:231:                SendDlgItemMessage(HWindow, IDC_P1_MVARG, WM_GETTEXT, len, (LPARAM)argsmove);
+src/dialogsp.cpp:578:    SendDlgItemMessage(HWindow, IDC_P2_EXT, WM_SETTEXT, 0,
+src/dialogsp.cpp:604:    SendDlgItemMessage(HWindow, IDC_P2_EXCMD, WM_SETTEXT, 0,
+src/dialogsp.cpp:606:    SendDlgItemMessage(HWindow, IDC_P2_EXARG, WM_SETTEXT, 0,
+src/dialogsp.cpp:627:        SendDlgItemMessage(HWindow, IDC_P2_EXT, WM_GETTEXT, len, (LPARAM)ext);
+src/dialogsp.cpp:658:            SendDlgItemMessage(HWindow, IDC_P2_EXCMD, WM_GETTEXT, len, (LPARAM)execcopy);
+src/dialogsp.cpp:659:            SendDlgItemMessage(HWindow, IDC_P2_EXARG, WM_GETTEXT, len, (LPARAM)argscopy);
+src/dialogsp.cpp:947:    SendDlgItemMessage(HWindow, IDC_P3_VIEW, WM_SETTEXT, 0,
+src/dialogsp.cpp:950:    SendDlgItemMessage(HWindow, IDC_P3_EDIT, WM_SETTEXT, 0,
+src/dialogsp.cpp:969:        SendDlgItemMessage(HWindow, IDC_P3_VIEW, WM_GETTEXT, len, (LPARAM)view);
+src/dialogsp.cpp:972:            SendDlgItemMessage(HWindow, IDC_P3_EDIT, WM_GETTEXT, len, (LPARAM)edit);
+src/dialogsp.cpp:1043:                        SendDlgItemMessage(HWindow, IDC_P3_VIEW, WM_GETTEXT, MAX_PATH, (LPARAM)edit);
+src/dialogsp.cpp:1046:                        SendDlgItemMessage(HWindow, IDC_P3_EDIT, WM_SETTEXT, 0, (LPARAM)edit);
+src/dialogs3.cpp:77:            SendMessage(hWnd, WM_GETTEXT, MAX_PATH, (LPARAM)buf);
+src/dialogs3.cpp:756:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_B_per_s));
+src/dialogs3.cpp:757:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_KB_per_s));
+src/dialogs3.cpp:758:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_MB_per_s));
+src/dialogs3.cpp:759:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_GB_per_s));
+src/dialogs3.cpp:2899:            LVITEM lvi;
+src/editwnd.cpp:219:                SendMessage(hwnd, WM_GETTEXT, 10000, (LPARAM)buff);
+src/editwnd.cpp:224:                SendMessage(hwnd, EM_REPLACESEL, TRUE, (LPARAM) "");
+src/editwnd.cpp:355:    SendMessage(HWindow, EM_REPLACESEL, TRUE, (LPARAM)s);
+src/editwnd.cpp:1176:            SendMessage(EditLine->HWindow, EM_REPLACESEL, TRUE, (LPARAM)start);
+src/dialogs2.cpp:394:    SendDlgItemMessage(HWindow, IDC_EST_CLUSTER, WM_GETTEXT, 11, (LPARAM)buf);
+src/dialogs2.cpp:523:            SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)buf);
+src/dialogs2.cpp:533:            SendMessage(hCombo, WM_SETTEXT, 0, (LPARAM)buf);
+src/dialogs2.cpp:662:        SendDlgItemMessage(HWindow, IDC_IMPORTCONFIG, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_IMPORTCFG_DEFCFG));
+src/dialogs2.cpp:676:                SendDlgItemMessage(HWindow, IDC_IMPORTCONFIG, CB_ADDSTRING, 0, (LPARAM)buff);
+src/dialogs2.cpp:695:                LVITEM lvi;
+src/dialogs2.cpp:894:        LVITEM lvi;
+src/edtlbwnd.cpp:169:    LRESULT res = SendMessage(HWindow, LB_INSERTSTRING, ItemsCount, 1); // 1 is a dummy value, we are working around a WinXP bug
+src/edtlbwnd.cpp:185:    LRESULT res = SendMessage(HWindow, LB_INSERTSTRING, index, 1); // 1 is a dummy value, we are working around a WinXP bug
+src/edtlbwnd.cpp:196:    int index = (int)SendMessage(HWindow, LB_ADDSTRING, 0, -1);
+src/edtlbwnd.cpp:227:    int ret = (int)SendMessage(HWindow, LB_ADDSTRING, 0, -1);
+src/dialogs4.cpp:1016:            LVITEM lvi;
+src/dialogs4.cpp:1102:            LVITEM lvi;
+src/dialogs4.cpp:1487:            case LVN_BEGINLABELEDIT:
+src/dialogs4.cpp:1505:            case LVN_ENDLABELEDIT:
+src/dialogs4.cpp:1507:                NMLVDISPINFO* nmhd = (NMLVDISPINFO*)nmh;
+src/dialogs4.cpp:2779:            LVITEM lvi;
+src/dialogs4.cpp:2878:    LVITEM lvi;
+src/dialogs4.cpp:3081:            SendMessage(hIconCombo, CB_ADDSTRING, 0, (LPARAM)i);
+src/dialogs4.cpp:3188:            case LVN_BEGINLABELEDIT:
+src/dialogs4.cpp:3198:            case LVN_ENDLABELEDIT:
+src/dialogs4.cpp:3200:                NMLVDISPINFO* nmhd = (NMLVDISPINFO*)nmh;
+src/dialogs4.cpp:3499:            SendMessage(HScheme, CB_ADDSTRING, 0, (LPARAM)LoadStr(schemes[i]));
+src/dialogs4.cpp:3502:            SendMessage(HItem, CB_ADDSTRING, 0, (LPARAM)LoadStr(Page7Data[i].ItemLabel));
+src/dialogs5.cpp:1055:            LVITEM lvi;
+src/dialogs5.cpp:1108:    LVITEM lvi;
+src/dialogs5.cpp:1127:        LVITEM lvi;
+src/dialogs5.cpp:1561:    TVITEM item;
+src/dialogs5.cpp:1602:    TVINSERTSTRUCT tvis;
+src/dialogs5.cpp:2875:        SendMessage(hWnd, WM_GETTEXT, MAX_PATH, (LPARAM)buff);
+src/dialogs6.cpp:500:            LVITEM lvi;
+src/dialogs6.cpp:541:        LVITEM lvi;
+src/dialogs6.cpp:1292:        LVITEM lvi;
+src/dialogs6.cpp:1370:                    LVITEM lvi;
+src/dialogs6.cpp:2527:            LVITEM lvi;
+src/execute.cpp:37:    case EM_REPLACESEL:
+src/execute.cpp:62:    SendMessage(HWindow, EM_REPLACESEL, TRUE, (LPARAM)text);
+src/execute.cpp:1705:    SendMessage(GetDlgItem(hParent, editlineResID), WM_GETTEXT,
+src/execute.cpp:1712:        SendMessage(GetDlgItem(hParent, editlineResID), WM_SETTEXT, 0, (LPARAM)path);
+src/execute.cpp:2065:            SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)buff);
+src/execute.cpp:2073:                SendMessage(hEdit, EM_REPLACESEL, TRUE, (LPARAM)buff);
+src/execute.cpp:2130:    SendMessage(GetDlgItem(hParent, editlineResID), WM_GETTEXT,
+src/execute.cpp:2157:            SendMessage(GetDlgItem(hParent, editlineResID), WM_SETTEXT, 0, (LPARAM)file);
+src/dialogs.cpp:2193:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_B_per_s));
+src/dialogs.cpp:2194:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_KB_per_s));
+src/dialogs.cpp:2195:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_MB_per_s));
+src/dialogs.cpp:2196:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_GB_per_s));
+src/common\sheets.cpp:1059:        TVINSERTSTRUCT tvis;
+src/common\sheets.cpp:1419:    TVITEM item;
+src/common\winlib.h:338:LRESULT SalComboAddStringU8(HWND combo, const char* u8Text);     // CB_ADDSTRING result
+src/common\winlib.h:339:LRESULT SalListBoxAddStringU8(HWND listbox, const char* u8Text); // LB_ADDSTRING result
+src/common\winlib.cpp:1058:                SendMessageW(HWindow, WM_SETTEXT, 0, (LPARAM)w);
+src/common\winlib.cpp:1066:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buffer);
+src/common\winlib.cpp:1091:            SendMessage(HWindow, WM_GETTEXT, bufferSizeInChars, (LPARAM)buffer);
+src/common\winlib.cpp:1162:        LRESULT ret = SendMessageW(combo, CB_ADDSTRING, 0, (LPARAM)w);
+src/common\winlib.cpp:1166:    return SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)u8Text); // not valid UTF-8: legacy path
+src/common\winlib.cpp:1195:        LRESULT ret = SendMessageW(listbox, LB_ADDSTRING, 0, (LPARAM)w);
+src/common\winlib.cpp:1199:    return SendMessage(listbox, LB_ADDSTRING, 0, (LPARAM)u8Text); // not valid UTF-8: legacy path
+src/common\winlib.cpp:1249:            SendMessageW(HWindow, WM_SETTEXT, 0, (LPARAM)buffer);
+src/common\winlib.cpp:1257:            SendMessageW(HWindow, WM_GETTEXT, bufferSizeInChars, (LPARAM)buffer);
+src/common\winlib.cpp:1277:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buff);
+src/common\winlib.cpp:1285:            SendMessage(HWindow, WM_GETTEXT, 31, (LPARAM)buff);
+src/common\winlib.cpp:1344:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buff);
+src/common\winlib.cpp:1352:            SendMessage(HWindow, WM_GETTEXT, 16, (LPARAM)buff);
+src/common\winlib.cpp:1396:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buff);
+src/common\winlib.cpp:1404:            SendMessage(HWindow, WM_GETTEXT, 26, (LPARAM)buff);

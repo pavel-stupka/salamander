@@ -1,0 +1,75 @@
+src/tooltip.cpp:313:            TextLenW = MultiByteToWideChar(CP_ACP, 0, Text, TextLen, TextW, TOOLTIP_TEXT_MAX - 1);
+src/versinfo.cpp:295:        MultiByteToWideChar(CP_ACP, 0, token, -1, wideToken, sizeof(wideToken) / sizeof(WCHAR));
+src/versinfo.cpp:366:            WideCharToMultiByte(CP_ACP, 0, (WCHAR*)bf, sz, buffer, maxSize, NULL, NULL);
+src/versinfo.cpp:402:    MultiByteToWideChar(CP_ACP, 0, buffer, len + 1, str, len + 1);
+src/toolbar5.cpp:168:                            WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, l + 1, NULL, NULL);
+src/olespy.cpp:838:            int chars = WideCharToMultiByte(CP_ACP, 0, pszStr,
+src/shiconov.cpp:263:                WideCharToMultiByte(CP_ACP, 0, (wchar_t*)iconFile, -1, iconFileMB, MAX_PATH, NULL, NULL);
+src/shiconov.cpp:450:                        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, txtClsId, -1, oleTxtClsId, 100);
+src/shiconov.cpp:932:        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name, -1, wName, MAX_PATH - (int)(wName - wPath));
+src/shiconov.cpp:1017:            WideCharToMultiByte(CP_ACP, 0, (wchar_t*)iconFile, -1, iconFileMB, MAX_PATH, NULL, NULL);
+src/snooper.cpp:584:        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, path, -1, wPath, _countof(wPath));
+src/snooper.cpp:733:                MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, newPath, -1, wNewPath, _countof(wNewPath));
+src/snooper.cpp:770:            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, newPath, -1, wNewPath, _countof(wNewPath));
+src/shellsup.cpp:536:                        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+src/shellsup.cpp:1235:    WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, buff, (int)wcslen(buff) + 1, name, nameMax, NULL, NULL);
+src/stswnd.cpp:1465:                            WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, l + 1, NULL, NULL);
+src/shares.cpp:105:                    WideCharToMultiByte(CP_ACP, 0, p->shi502_netname, -1, netname, MAX_PATH, NULL, NULL) &&
+src/shares.cpp:106:                    WideCharToMultiByte(CP_ACP, 0, p->shi502_path, -1, path, MAX_PATH, NULL, NULL) &&
+src/shares.cpp:107:                    WideCharToMultiByte(CP_ACP, 0, p->shi502_remark, -1, remark, MAX_PATH, NULL, NULL))
+src/salamdr6.cpp:2433:            int alen = MultiByteToWideChar(CP_ACP, 0, (const char*)lpData, cbData, NULL, 0);
+src/salamdr6.cpp:2439:            MultiByteToWideChar(CP_ACP, 0, (const char*)lpData, cbData, wbuf, alen);
+src/salamdr4.cpp:1027:        unicodeLen = MultiByteToWideChar(CP_ACP, 0, str, textLen, NULL, 0);
+src/salamdr4.cpp:1039:                if (textLen > 0 && MultiByteToWideChar(CP_ACP, 0, str, textLen, unicodeStr, unicodeLen + 1) == 0)
+src/salamdr4.cpp:1064:    int mbLen = textLen == 0 ? 0 : WideCharToMultiByte(CP_ACP, 0, str, textLen, NULL, 0, NULL, NULL);
+src/salamdr4.cpp:1073:                if (textLen > 0 && WideCharToMultiByte(CP_ACP, 0, str, textLen, multibyteStr, mbLen + 1, NULL, NULL) == 0)
+src/salamdr4.cpp:1225:        wideLen = MultiByteToWideChar(CP_ACP, 0, u8Text, textLen, NULL, 0);
+src/salamdr4.cpp:1231:                if (MultiByteToWideChar(CP_ACP, 0, u8Text, textLen, wide, wideLen) > 0)
+src/salamdr1.cpp:3297:    WideCharToMultiByte(CP_ACP, 0, buffw, -1, buff, buffSize, NULL, NULL);
+src/salamdr1.cpp:3304:    MultiByteToWideChar(CP_ACP, 0, buff, -1, buffw, 64);
+src/salamdr1.cpp:3357:    WideCharToMultiByte(CP_ACP, 0, buf, -1, bufA, RTC_ERROR_DESCRIPTION_SIZE, NULL, NULL);
+src/pluglegacy.cpp:30:    int wlen = MultiByteToWideChar(CP_ACP, 0, acp, -1, NULL, 0);
+src/pluglegacy.cpp:36:    MultiByteToWideChar(CP_ACP, 0, acp, -1, w, wlen);
+src/pluglegacy.cpp:46:    int wlen = MultiByteToWideChar(CP_ACP, 0, acp, -1, NULL, 0);
+src/pluglegacy.cpp:52:    MultiByteToWideChar(CP_ACP, 0, acp, -1, w, wlen);
+src/fileswn6.cpp:1495:            if ((wr = WideCharToMultiByte(CP_ACP, 0, str, (int)(end - str), s, size, NULL, NULL)) == 0)
+src/gui.cpp:629:        TextLenW = MultiByteToWideChar(CP_ACP, 0, Text, TextLen, TextW, Allocated);
+src/geticon.cpp:126:                WideCharToMultiByte(CP_ACP, 0, iconFileW, -1, iconFile, MAX_PATH, NULL, NULL);
+src/geticon.cpp:365:            MultiByteToWideChar(CP_ACP, 0, pszPath, -1, wszPathBuf, MAX_PATH);
+src/packac.cpp:238:                        MultiByteToWideChar(CP_ACP, 0, s, -1, info->item.pszText, info->item.cchTextMax);
+src/menu2.cpp:179:                    MultiByteToWideChar(CP_ACP, MB_COMPOSITE, buffa, -1, buffw, 10); // "á" -> "a´"
+src/editwnd.cpp:108:    WideCharToMultiByte(CP_ACP, 0, (wchar_t*)text, textLen, buff, 10000, NULL, NULL);
+src/editwnd.cpp:1251:                                WideCharToMultiByte(CP_ACP, 0, fileW, l + 1, path, MAX_PATH, NULL, NULL);
+src/mainwnd3.cpp:311:                            WideCharToMultiByte(CP_ACP, 0, lasterror.description, -1, buff, 5000, NULL, NULL);
+src/mainwnd3.cpp:1409:                        WideCharToMultiByte(CP_ACP, 0, wszPath, -1, szPath, _countof(szPath), NULL, NULL) == 0)
+src/mainwnd3.cpp:7121:        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buff, -1, fs->szName, sizeof(fs->szName) / 2);
+src/fileswn0.cpp:341:                    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+src/fileswn1.cpp:503:                            wl = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, path, l, wPath, MAX_PATH + 10 - 1);
+src/dialogs6.cpp:554:    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shareName, -1, oleShareName, MAX_PATH);
+src/fileswn2.cpp:150:                MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fullName, -1, oleName, MAX_PATH);
+src/worker.cpp:6212:        wl = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name, -1, nameListW, MAX_PATH);
+src/shellib.cpp:113:            WideCharToMultiByte(CP_ACP, 0, name, l + 1, newName, l + 1, NULL, NULL);
+src/shellib.cpp:510:                                                if (WideCharToMultiByte(CP_ACP, 0, prefix, prefixLen + 1, mulbyteName, MAX_PATH, NULL, NULL) == 0)
+src/shellib.cpp:579:                                                if ((len = WideCharToMultiByte(CP_ACP, 0, lastBackslash + 1,
+src/shellib.cpp:1565:                                    WideCharToMultiByte(CP_ACP, 0, str.pOleStr, -1, buf, MAX_PATH, NULL, NULL);
+src/shellib.cpp:1628:        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, fileName, -1, olePath + (addUNCPrefix ? 2 : 0),
+src/shellib.cpp:1848:                                                        WideCharToMultiByte(CP_ACP, 0, str.pOleStr, -1, buf, MAX_PATH, NULL, NULL);
+src/shellib.cpp:1954:                                                                        WideCharToMultiByte(CP_ACP, 0, str.pOleStr, -1, buf, MAX_PATH, NULL, NULL);
+src/shellib.cpp:2649:                            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name, -1, oleName, MAX_PATH);
+src/shellib.cpp:2888:                        len = MultiByteToWideChar(CP_ACP, 0, ptr2, -1, NULL, 0);
+src/shellib.cpp:3039:                        if (WideCharToMultiByte(CP_ACP, 0, str.pOleStr, -1, name, nameSize, NULL, NULL) == 0)
+src/salamdr2.cpp:1533:        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, repPointDirCrFile, -1, repPointDirW, _countof(repPointDirW)) == 0)
+src/salamdr2.cpp:1628:                    MultiByteToWideChar(CP_ACP, 0, repPointDir + 2, -1, symlinkAbsPath + 2, 1000 - 2) == 0)
+src/salamdr2.cpp:1654:            WideCharToMultiByte(CP_ACP, 0, s, -1, repPointDstBuf, repPointDstBufSize, NULL, NULL) == 0)
+src/salamdr2.cpp:1721:        MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, u8Path, -1, wPath, _countof(wPath)) == 0)
+src/common\messages.cpp:617:    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, __MessagesTitleBuf, -1,
+src/common\messages.cpp:627:    WideCharToMultiByte(CP_ACP, 0, __MessagesTitleBufW, -1,
+src/common\salunicode.cpp:372:        int wlen = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
+src/common\salunicode.cpp:378:        MultiByteToWideChar(CP_ACP, 0, src, -1, w, wlen);
+src/common\salunicode.cpp:405:    int res = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, src, srcLen,
+src/common\sheets.cpp:1204:    return MultiByteToWideChar(CP_ACP, 0, text, -1, buf, bufLen);
+src/common\sheets.cpp:1303:                    len += WideCharToMultiByte(CP_ACP, 0, dlgTitle, -1, NULL, 0, NULL, NULL);
+src/common\sheets.cpp:1312:                    WideCharToMultiByte(CP_ACP, 0, dlgTitle, -1, At(i)->Title, len, NULL, NULL);
+src/common\trace.cpp:342:        int len = MultiByteToWideChar(CP_ACP, 0, s, -1, NULL, 0);
+src/common\trace.cpp:350:                int res = MultiByteToWideChar(CP_ACP, 0, s, -1, AllocBuf, len);
+src/common\trace.cpp:1014:                MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, TraceStringBuf.c_str(),

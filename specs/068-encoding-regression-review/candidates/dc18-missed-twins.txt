@@ -1,0 +1,58 @@
+src/zip.cpp:430:                Cancel = (SalMessageBox(HWindow, LoadStr(IDS_CANCELOPERATION), LoadStr(IDS_QUESTION),
+src/zip.cpp:716:    int res = (int)CHiddenOrSystemDlg(parent, title != NULL ? title : ::LoadStr(IDS_QUESTION), fileName,
+src/zip.cpp:1548:        s = ::LoadStr(IDS_TOOLONGPATH);
+src/mainwnd4.cpp:143:        if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+src/mainwnd4.cpp:708:                    params.Caption = LoadStr(IDS_QUESTION);
+src/salamdr1.cpp:1097:        _snprintf_s(text, _TRUNCATE, LoadStr(IDS_NAMEISTOOLONG), name, path);
+src/finddlg2.cpp:1103:            if (SalMessageBox(HWindow, LoadStr(IDS_FINDIGNORE_RESET), LoadStr(IDS_QUESTION),
+src/shellib.cpp:1318:                    SalMessageBox(OwnerWindow, LoadStr(IDS_TOOLONGPATH), LoadStr(IDS_ERRORTITLE),
+src/shellib.cpp:1414:                            SalMessageBox(OwnerWindow, LoadStr(IDS_TOOLONGPATH), LoadStr(IDS_ERRORTITLE),
+src/packac.cpp:113:                if (SalMessageBox(HWindow, LoadStr(IDS_WANTTOSTOP), LoadStr(IDS_QUESTION),
+src/packac.cpp:166:                if (SalMessageBox(HWindow, LoadStr(IDS_CANCELOPERATION), LoadStr(IDS_QUESTION),
+src/fileswn3.cpp:414:                        int resBut = SalMessageBox(parent, LoadStr(IDS_READDIRTERMINATED), LoadStr(IDS_QUESTION),
+src/fileswn3.cpp:2423:                                            _snprintf_s(errBuf, _countof(errBuf), _TRUNCATE, LoadStr(IDS_PATHINARCHIVENOTFOUND), end);
+src/fileswn5.cpp:1557:                    if (SalMessageBox(HWindow, LoadStr(IDS_EDITNEWALREADYEX), LoadStr(IDS_QUESTION),
+src/salamdr3.cpp:1122:                sprintf(title, LoadStr(IDS_QUESTION));
+src/salamdr3.cpp:1219:                    _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_CREATEDIRFAILED), name);
+src/salamdr3.cpp:3360:                                                     LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES;
+src/salamdr2.cpp:2170:          return SalMessageBox(NULL, LoadStr(IDS_SALAMANDBUSY), LoadStr(IDS_QUESTION),
+src/salamdr2.cpp:2953:                if (SalMessageBox(hParent, text, LoadStr(IDS_QUESTION),
+src/cache.cpp:1514:                                      LoadStr(IDS_QUESTION), buf, NULL, NULL, NULL,
+src/fileswn6.cpp:1308:                    int res = SalMessageBox(HWindow, LoadStr(IDS_ACLNOTSUPPORTEDONTGTPATH), LoadStr(IDS_QUESTION),
+src/fileswn6.cpp:1590:        _snprintf_s(text, _TRUNCATE, LoadStr(IDS_NAMEISTOOLONG), dirName, sourcePath);
+src/fileswn6.cpp:1736:        int res = SalMessageBox(MainWindow->HWindow, text, LoadStr(IDS_QUESTION),
+src/fileswn6.cpp:1943:                                        _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed the message buffer (feature 012)
+src/fileswn6.cpp:2161:                _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed the message buffer (feature 012)
+src/fileswn6.cpp:2228:                    int res = SalMessageBox(MainWindow->HWindow, text, LoadStr(IDS_QUESTION),
+src/fileswn6.cpp:2252:                                                LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION);
+src/fileswn6.cpp:2318:                _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed the message buffer (feature 012)
+src/fileswn6.cpp:3154:                                  LoadStr(IDS_QUESTION), MB_YESNO | MB_DEFBUTTON2 | MB_ICONQUESTION) != IDYES)
+src/mainwnd3.cpp:2868:                                    LoadStr(IDS_QUESTION), MB_YESNOCANCEL | MB_ICONQUESTION);
+src/mainwnd3.cpp:6321:            params.Caption = LoadStr(IDS_QUESTION);
+src/fileswn7.cpp:765:                            int res = SalMessageBox(HWindow, text, LoadStr(IDS_QUESTION),
+src/fileswn7.cpp:1594:                                   LoadStr(IDS_QUESTION),
+src/editwnd.cpp:503:                        SalMessageBox(HWindow, cmdTooLong ? LoadStr(IDS_TOOLONGPATH) : GetErrorText(err),
+src/fileswn8.cpp:559:                            SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH),
+src/fileswn8.cpp:587:                                SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH),
+src/fileswn8.cpp:756:                                    SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH),
+src/fileswn8.cpp:1410:                        params.Caption = LoadStr(IDS_QUESTION);
+src/dialogs4.cpp:4265:            if (SalMessageBox(HWindow, LoadStr(IDS_CLEARHISTORY_CNFRM), LoadStr(IDS_QUESTION),
+src/plugins1.cpp:2631:                if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES)
+src/plugins1.cpp:3045:                if (!ask || SalMessageBox(parent, buf, LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES)
+src/plugins1.cpp:3101:                        skipUnload = SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+src/plugins1.cpp:3121:                    if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION), MB_YESNO | MB_ICONQUESTION) == IDYES)
+src/dialogs5.cpp:836:                if (SalMessageBox(HWindow, buf, LoadStr(IDS_QUESTION),
+src/dialogs5.cpp:1445:                if (SalMessageBox(HWindow, LoadStr(IDS_ARCREALLYIGNOREALL), LoadStr(IDS_QUESTION),
+src/dialogs5.cpp:1493:                if (SalMessageBox(HWindow, LoadStr(IDS_ARCREALLYIGNORESEL), LoadStr(IDS_QUESTION),
+src/dialogs5.cpp:3481:                if (SalMessageBox(HWindow, LoadStr(IDS_CONFIRM_BREAK), LoadStr(IDS_QUESTION),
+src/dialogs5.cpp:3498:                if (SalMessageBox(HWindow, LoadStr(IDS_CURRENTPROCESSTERMINATE), LoadStr(IDS_QUESTION),
+src/dialogs5.cpp:3509:                if (SalMessageBox(HWindow, LoadStr(IDS_CONFIRM_TERMINATE), LoadStr(IDS_QUESTION),
+src/fileswna.cpp:520:            if (SalMessageBox(HWindow, LoadStr(IDS_SRCFILESNOTFOUND), LoadStr(IDS_QUESTION),
+src/dialogs6.cpp:648:                    if (SalMessageBox(HWindow, buff, LoadStr(IDS_QUESTION),
+src/dialogs6.cpp:1887:                Cancel = (SalMessageBox(HWindow, LoadStr(IDS_CANCELOPERATION), LoadStr(IDS_QUESTION),
+src/dialogs.cpp:1354:                                        LoadStr(IDS_QUESTION),
+src/dialogs.cpp:1952:                if (SalMessageBox(HWindow, text, LoadStr(IDS_QUESTION),
+src/fileswn2.cpp:1319:                                if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+src/fileswn2.cpp:1346:                                        if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+src/fileswn2.cpp:1387:                        if (SalMessageBox(parent, buf, LoadStr(IDS_QUESTION),
+src/fileswn2.cpp:2768:        SalMessageBox(HWindow, LoadStr(IDS_TOOLONGPATH), LoadStr(IDS_ERRORTITLE), MB_OK | MB_ICONEXCLAMATION); // themed (feature 049)

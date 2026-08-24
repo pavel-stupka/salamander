@@ -18,7 +18,7 @@ protected:
 public:
     CEditLine();
 
-    void InsertText(char* s);
+    void InsertText(const char* s);
 
     void RegisterDragDrop();
     void RevokeDragDrop();

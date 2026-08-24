@@ -142,8 +142,18 @@ BOOL CFilesMap::CreateMap()
                     }
 
                     // measure the actual text length
+                    // the name is UTF-8, so measuring its BYTES made every
+                    // non-ASCII name too wide and over-sized the rubber-band
+                    // selection region this map drives. Convert and use the
+                    // wide call, exactly as the panel's own drawing path does
+                    // (fileswn4.cpp:711/738) - feature 068, F-MC-01.
                     SIZE sz;
-                    GetTextExtentPoint32(dc, s, len, &sz);
+                    WCHAR wbuf[SAL_FIND_NAME_U8];
+                    int wLen = SalU8ToW(s, len, wbuf, _countof(wbuf)) - 1; // -1 = invalid UTF-8
+                    if (wLen >= 0)
+                        GetTextExtentPoint32W(dc, wbuf, wLen, &sz);
+                    else // invalid UTF-8 or s == NULL: keep the byte-wise call
+                        GetTextExtentPoint32(dc, s, len, &sz);
                     width += sz.cx + 4;
 
                     if (Panel->GetViewMode() == vmDetailed && width > (int)Panel->Columns[0].Width - 1)

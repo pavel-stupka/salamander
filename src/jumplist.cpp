@@ -147,43 +147,61 @@ DEFINE_PROPERTYKEY(PKEY_AppUserModel_IsDestListSeparator, 0x9F4C2855, 0x9F79, 0x
 //    return hr;
 //}
 
-HRESULT CreateShellLink(const char* path, const char* name, IShellLink** psl)
+// feature 068 (F-P4-06): hot-path names and paths are UTF-8, but this function
+// used the ANSI IShellLink (the project defines no UNICODE, so IShellLink and
+// IID_PPV_ARGS both resolved to the A variant) and a VT_LPSTR title. A hot path
+// with non-ASCII characters therefore showed as mojibake in the taskbar jump
+// list AND did not open: the launched instance receives the arguments wide
+// (GetCommandLineW), so the ACP-mangled path never matched. Wide throughout.
+HRESULT CreateShellLink(const char* path, const char* name, IShellLinkW** psl)
 {
     char params[HOTPATHITEM_MAXPATH + 100];
     sprintf(params, "-AJ \"%s\"", path);
     if (strlen(params) < INFOTIPSIZE) // length limit for W2K+ when using SetArguments
     {
         HRESULT hres;
-        IShellLink* ret;
+        IShellLinkW* ret;
         hres = CoCreateInstance(CLSID_ShellLink, NULL,
                                 CLSCTX_INPROC_SERVER,
-                                IID_PPV_ARGS(&ret));
+                                IID_PPV_ARGS(&ret)); // IShellLinkW => IID_IShellLinkW
         if (SUCCEEDED(hres))
         {
-            char pathName[MAX_PATH];
-            GetModuleFileName(NULL, pathName, sizeof(pathName) - 1);
+            WCHAR pathName[MAX_PATH];
+            GetModuleFileNameW(NULL, pathName, _countof(pathName) - 1);
 
             // Set path, parameters, icon and description.
             ret->SetPath(pathName);
-            ret->SetArguments(params);
-            char desc[MAX_PATH];
-            lstrcpyn(desc, path, _countof(desc));
-            if (strlen(path) >= _countof(desc))
-                strcpy(desc + _countof(desc) - 4, "..."); // indicates the path has been truncated
-            ret->SetDescription(desc);                    // MAX_PATH+1 is the limit (at least on Windows 7 where I'm testing now); longer = the jump list won't show at all
-            ret->SetIconLocation("shell32.dll", -319);    // this icon exists from Windows XP onwards
+            WCHAR paramsW[HOTPATHITEM_MAXPATH + 100];
+            if (SalU8ToW(params, -1, paramsW, _countof(paramsW)) != 0)
+                ret->SetArguments(paramsW);
+            WCHAR desc[MAX_PATH];
+            WCHAR* wPath = SalU8ToWAlloc(path);
+            if (wPath != NULL)
+            {
+                lstrcpynW(desc, wPath, _countof(desc));
+                if ((int)wcslen(wPath) >= _countof(desc))
+                    wcscpy(desc + _countof(desc) - 4, L"..."); // indicates the path has been truncated
+                free(wPath);
+                ret->SetDescription(desc); // MAX_PATH+1 is the limit (at least on Windows 7 where I'm testing now); longer = the jump list won't show at all
+            }
+            ret->SetIconLocation(L"shell32.dll", -319); // this icon exists from Windows XP onwards
 
             // To set the link title, we require the property store of the link.
             IPropertyStore* pPS;
             hres = ret->QueryInterface(IID_PPV_ARGS(&pPS));
             if (SUCCEEDED(hres))
             {
-                PROPVARIANT pv;
-                PropVariantInit(&pv);
-                pv.vt = VT_LPSTR;
-                pv.pszVal = (LPSTR)name;
-                pPS->SetValue(PKEY_Title, pv);
-                pPS->Commit();
+                WCHAR* wName = SalU8ToWAlloc(name);
+                if (wName != NULL)
+                {
+                    PROPVARIANT pv;
+                    PropVariantInit(&pv);
+                    pv.vt = VT_LPWSTR;
+                    pv.pwszVal = wName;
+                    pPS->SetValue(PKEY_Title, pv);
+                    pPS->Commit();
+                    free(wName); // pv holds our buffer; no PropVariantClear (as before)
+                }
                 pPS->Release();
             }
             else
@@ -211,7 +229,7 @@ HRESULT AddTasksToList(ICustomDestinationList* pcdl)
     HRESULT hr = CoCreateInstance(CLSID_EnumerableObjectCollection, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&poc));
     if (SUCCEEDED(hr))
     {
-        IShellLink* psl;
+        IShellLinkW* psl;
 
         int count = 0;
         for (int i = 0; i < HOT_PATHS_COUNT; i++)

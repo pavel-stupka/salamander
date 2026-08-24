@@ -492,7 +492,12 @@ CPluginsDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         SalGetDlgItemTextU8(HWindow, IDC_PLUGINSHOWINBAR, ShowInBarText, 200);
 
         // copy the Show In Change Drive Menu checkbox text into our buffer
-        GetDlgItemText(HWindow, IDC_PLUGINSHOWINCHDRV, ShowInChDrvText, 200);
+        // read as UTF-8 for the same reason as the sibling above: the label is
+        // composed with the UTF-8 ChDrvMenuFSItemName and drawn through
+        // SalSetWindowTextU8. Feature 052 converted the plugin-name half and
+        // left this one ANSI, which made the composed text invalid UTF-8 and
+        // sent the whole line down the legacy path (feature 068, F-P6-02).
+        SalGetDlgItemTextU8(HWindow, IDC_PLUGINSHOWINCHDRV, ShowInChDrvText, 200);
 
         // copy the "Installed Plugins:" text into our buffer
         GetDlgItemText(HWindow, IDC_PLUGINHEADER, InstalledPluginsText, 200);

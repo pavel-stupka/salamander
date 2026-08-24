@@ -55,6 +55,58 @@ dead-dispinfow   A dialog handles LVN_GETDISPINFOW but never sends NF_REQUERY.
                  This rule would have caught the reported Find defect on the day
                  the handler was written.
 
+Draft rules (feature 068, report-only, `--draft`)
+-------------------------------------------------
+The product-wide encoding review (specs/068-encoding-regression-review)
+found fourteen defect classes with no guard at all.  The rules below describe
+the ones a regex can see.  They run ONLY with --draft, never in the strict
+build gate, until the review has classified their hits and annotated the
+legitimate ones; a rule is then promoted into RULES (see the review report).
+
+ansi-api-on-utf8-path
+                 A UTF-8 name or path (an identifier that holds one by
+                 convention, or the result of a known UTF-8 producer) passed
+                 to an un-suffixed - i.e. ANSI - Win32 file/shell/process/
+                 registry call.  The core is built without UNICODE, so
+                 CreateFile( is CreateFileA(.  Features 058, 062 and 063 each
+                 fixed instances of this shape; nothing enforced it.  Use the
+                 Sal* facade (src/common/salfileio.h) or SalU8ToW + the W call.
+
+cp-acp-utf8-source
+                 MultiByteToWideChar(CP_ACP, ...) applied to a UTF-8 value -
+                 the narrow-to-wide mirror of cp-acp-display (features 058 and
+                 062).  The else-branch of a SalU8ToW attempt is not flagged.
+
+ansi-tooltip-handler
+                 An ANSI TTN_NEEDTEXT / TTN_GETDISPINFO handler that composes
+                 UTF-8 text into its ANSI szText (feature 067, viewer offset
+                 tooltip).  Register the tool with TOOLINFOW/TTM_ADDTOOLW and
+                 handle the W notification.
+
+strict-probe-rejects-wtf8
+                 A raw MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, ...)
+                 probe outside salunicode.cpp.  Since feature 066 internal names
+                 are WTF-8; a raw strict probe misroutes a surrogate-bearing
+                 name into the ANSI branch.  Probe with SalU8ToW instead, or
+                 mark a non-name site as reviewed.
+
+lossy-lenient-at-intake
+                 A lenient WideCharToMultiByte(CP_UTF8, 0, ...) conversion, or
+                 a SalU8ToWDisplay result handed to an operational call (file,
+                 registry, process).  U+FFFD baked into a name destroys its
+                 identity (feature 066).
+
+signed-char-name-byte
+                 A name byte compared as a control character (<= ' ', < 32)
+                 through a signed char, or a 256-entry byte table indexed by a
+                 name byte: every byte >= 0x80 - all of UTF-8 - is misjudged
+                 (feature 005 D4; still open at the Recycle Bin guard).
+
+missed-twin      LoadStr(IDS_X) where IDS_X is already loaded with LoadStrU8
+                 somewhere else.  The remaining ANSI twin is either composed
+                 with UTF-8 (the feature 067 zip.cpp defect) or genuinely
+                 ANSI-only - either way it must be decided, not overlooked.
+
 Suppressing a finding
 ---------------------
 Put a marker on the offending line or the line above it:
@@ -70,6 +122,8 @@ Usage
     python tools/check_encoding.py --strict     # exit 1 if anything is found
     python tools/check_encoding.py --rule mixed-composition
     python tools/check_encoding.py --format list   # machine-readable
+    python tools/check_encoding.py --draft         # report-only draft rules (068)
+    python tools/check_encoding.py --draft --rule missed-twin
 """
 
 import argparse
@@ -155,7 +209,65 @@ SINK_COMBO = re.compile(r'\bCB_ADDSTRING\b(?!W)')
 SINK_CLIPBOARD = re.compile(r'\bCopyTextToClipboard\s*\(')
 
 RULES = ("cp-acp-display", "mixed-composition", "dead-dispinfow",
-         "utf8-to-legacy-sink", "ansi-template-caption", "ansi-template-number")
+         "utf8-to-legacy-sink", "ansi-template-caption", "ansi-template-number",
+         # promoted by feature 068 after the review classified every hit:
+         "strict-probe-rejects-wtf8",  # 0 hits - pure forward guard for the 066 invariant
+         "lossy-lenient-at-intake",    # 2 hits, both annotated fail-safes
+         "ansi-tooltip-handler")       # 1 hit, annotated (deferred ledger L06)
+
+# Rules that live in scan_draft() but are now enforced: main() must merge them
+# into the strict run, otherwise they would be listed and never executed - the
+# dead-dispinfow shape, in the guard itself.
+PROMOTED_FROM_DRAFT = ("strict-probe-rejects-wtf8", "lossy-lenient-at-intake",
+                       "ansi-tooltip-handler")
+
+# --- feature 068 draft rules (report-only until promoted) ------------------
+# Un-suffixed Win32 calls that TAKE a name or path.  Output-side calls
+# (GetModuleFileName, GetTempPath, GetCurrentDirectory, ...) are producers of
+# ANSI text and are reviewed by hand, not by this rule.
+ANSI_NAME_API = re.compile(
+    r'(?<![A-Za-z_])(?:'
+    r'CreateFile|FindFirstFile|FindFirstFileEx|GetFileAttributes|GetFileAttributesEx|'
+    r'SetFileAttributes|DeleteFile|MoveFile|MoveFileEx|CopyFile|CopyFileEx|'
+    r'CreateDirectory|RemoveDirectory|SetCurrentDirectory|GetFullPathName|'
+    r'GetLongPathName|GetShortPathName|GetTempFileName|GetVolumeInformation|'
+    r'GetDiskFreeSpaceEx|GetDriveType|ExpandEnvironmentStrings|SearchPath|'
+    r'FindFirstChangeNotification|CreateHardLink|GetFileVersionInfo|'
+    r'GetFileVersionInfoSize|LoadLibrary|LoadLibraryEx|SHFileOperation|'
+    r'SHGetFileInfo|ShellExecute|ShellExecuteEx|SHBrowseForFolder|'
+    r'GetOpenFileName|GetSaveFileName|ExtractIconEx|CreateProcess|'
+    r'SetEnvironmentVariable|QueryDosDevice|WNetGetConnection|WNetAddConnection2|'
+    r'RegOpenKeyEx|RegCreateKeyEx|RegQueryValueEx|RegSetValueEx|RegDeleteValue|'
+    r'RegDeleteKey|RegEnumKeyEx|RegEnumValue|_access|_stat|fopen|_mkdir|_rmdir|'
+    r'_unlink|remove|rename'
+    r')A?\s*\(')
+# the debug handle-tracking shims wrap every API once; they are one boundary,
+# reviewed by hand, not a finding per wrapper
+SHIM_FILES = ("common/handles.cpp",)
+CP_ACP_A2W = re.compile(r'\bMultiByteToWideChar\s*\(\s*CP_ACP\b')
+TOOLTIP_ANSI = re.compile(r'\b(?:TTN_NEEDTEXT|TTN_GETDISPINFO)\b(?!W)')
+MB2WC_CALL = re.compile(r'\bMultiByteToWideChar\s*\(')
+LENIENT_W2U8 = re.compile(r'\bWideCharToMultiByte\s*\(\s*CP_UTF8\s*,\s*0\b')
+DISPLAY_CONV = re.compile(r'\bSalU8ToWDisplay\w*\s*\(')
+OPERATIONAL_SINK = re.compile(
+    r'\b(?:Sal(?:CreateFile|CreateFileNH|DeleteFile|MoveFile|MoveFileEx|CopyFile|'
+    r'GetFileAttributes|SetFileAttributes|FindFirstFile|CreateDirectory|'
+    r'RemoveDirectory|RegSetValueExW8|CreateProcess|ShellExecuteEx)|'
+    r'CreateFileW|DeleteFileW|MoveFileW|MoveFileExW|CopyFileW|SHFileOperationW|'
+    r'CreateProcessW|ShellExecuteW|ShellExecuteExW|SetCurrentDirectoryW|'
+    r'RegSetValueExW)\s*\(')
+SIGNED_CHAR_TEST = re.compile(
+    r'\b\w*(?:[Nn]ame|[Pp]ath|[Ff]ile)\w*\s*\[[^\]]*\]\s*(?:<=|<|>=|>)\s*(?:\'\s\'|32\b|0x20\b)')
+BYTE_TABLE = re.compile(r'\b(?:IsNotAlphaNorNum|IsAlpha|LowerCase|UpperCase)\s*\[')
+LOADSTRU8_ID = re.compile(r'\bLoadStrU8\s*\(\s*(IDS_\w+)')
+LOADSTR_ID = re.compile(r'(?<![A-Za-z_])LoadStr\s*\(\s*(IDS_\w+)')
+
+# Still report-only: each is blocked on a fix this feature deferred (see the
+# review report). signed-char-name-byte's premise is VOID - the product compiles
+# with /J so plain char is unsigned - and it is kept only until its replacement
+# (acp-byte-table-on-name) lands with the group B-2 work.
+DRAFT_RULES = ("ansi-api-on-utf8-path", "cp-acp-utf8-source",
+               "signed-char-name-byte", "missed-twin")
 
 
 class Finding:
@@ -326,16 +438,105 @@ def scan(only=None):
     return findings
 
 
+def scan_draft(only=None):
+    """Feature 068 draft rules.  Separate from scan() on purpose: the strict
+    build gate must not change while these are being tuned on the inventory.
+    Same suppression marker, same Finding shape."""
+    findings = []
+
+    # missed-twin needs a whole-tree pre-pass: which ids are loaded as UTF-8?
+    u8_ids = set()
+    if only in (None, "missed-twin"):
+        for path, rel in sources():
+            u8_ids.update(LOADSTRU8_ID.findall(
+                path.read_text(encoding="utf-8", errors="replace")))
+
+    for path, rel in sources():
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        shim = rel in SHIM_FILES
+        for i, ln in enumerate(lines):
+            if ln.lstrip().startswith(("//", "*", "/*")):
+                continue
+
+            # --- ansi-api-on-utf8-path ---------------------------------
+            if only in (None, "ansi-api-on-utf8-path") and not shim and ANSI_NAME_API.search(ln):
+                stmt = call_text(lines, i, ANSI_NAME_API) or ln
+                if UTF8_IDENT.search(stmt) or UTF8_SOURCE.search(stmt):
+                    if not suppressed(lines, i, "ansi-api-on-utf8-path"):
+                        findings.append(Finding("ansi-api-on-utf8-path", rel, i + 1, ln))
+
+            # --- cp-acp-utf8-source ------------------------------------
+            if only in (None, "cp-acp-utf8-source") and CP_ACP_A2W.search(ln):
+                stmt = call_text(lines, i, CP_ACP_A2W) or ln
+                if ((UTF8_IDENT.search(stmt) or UTF8_SOURCE.search(stmt)) and
+                        not wide_fallback(lines, i)):
+                    if not suppressed(lines, i, "cp-acp-utf8-source"):
+                        findings.append(Finding("cp-acp-utf8-source", rel, i + 1, ln))
+
+            # --- ansi-tooltip-handler ----------------------------------
+            if only in (None, "ansi-tooltip-handler") and TOOLTIP_ANSI.search(ln):
+                window = " ".join(lines[i:i + 40])
+                if UTF8_SOURCE.search(window) or UTF8_IDENT.search(window):
+                    if not suppressed(lines, i, "ansi-tooltip-handler"):
+                        findings.append(Finding("ansi-tooltip-handler", rel, i + 1, ln))
+
+            # --- strict-probe-rejects-wtf8 -----------------------------
+            if (only in (None, "strict-probe-rejects-wtf8") and
+                    rel != "common/salunicode.cpp" and MB2WC_CALL.search(ln)):
+                stmt = call_text(lines, i, MB2WC_CALL) or ln
+                if "MB_ERR_INVALID_CHARS" in stmt:
+                    if not suppressed(lines, i, "strict-probe-rejects-wtf8"):
+                        findings.append(Finding("strict-probe-rejects-wtf8", rel, i + 1, ln))
+
+            # --- lossy-lenient-at-intake -------------------------------
+            if only in (None, "lossy-lenient-at-intake") and rel != "common/salunicode.cpp":
+                if LENIENT_W2U8.search(ln):
+                    if not suppressed(lines, i, "lossy-lenient-at-intake"):
+                        findings.append(Finding("lossy-lenient-at-intake", rel, i + 1, ln))
+                elif DISPLAY_CONV.search(ln) and OPERATIONAL_SINK.search(" ".join(lines[i:i + 6])):
+                    if not suppressed(lines, i, "lossy-lenient-at-intake"):
+                        findings.append(Finding("lossy-lenient-at-intake", rel, i + 1, ln))
+
+            # --- signed-char-name-byte ---------------------------------
+            if only in (None, "signed-char-name-byte") and "unsigned" not in ln:
+                if SIGNED_CHAR_TEST.search(ln) or (BYTE_TABLE.search(ln) and UTF8_IDENT.search(ln)):
+                    if not suppressed(lines, i, "signed-char-name-byte"):
+                        findings.append(Finding("signed-char-name-byte", rel, i + 1, ln))
+
+            # --- missed-twin -------------------------------------------
+            if only in (None, "missed-twin"):
+                m = LOADSTR_ID.search(ln)
+                if m and m.group(1) in u8_ids:
+                    if not suppressed(lines, i, "missed-twin"):
+                        findings.append(Finding("missed-twin", rel, i + 1, ln))
+
+    return findings
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--strict", action="store_true",
                     help="exit 1 when anything is found (used by build.cmd)")
-    ap.add_argument("--rule", choices=RULES, help="scan a single rule")
+    ap.add_argument("--rule", choices=RULES + DRAFT_RULES, help="scan a single rule")
     ap.add_argument("--format", choices=("report", "list"), default="report")
+    ap.add_argument("--draft", action="store_true",
+                    help="run the report-only draft rules (feature 068); "
+                         "never exits 1, never used by build.cmd")
     args = ap.parse_args()
+    if args.rule in DRAFT_RULES:
+        args.draft = True
 
-    findings = scan(args.rule)
+    if args.draft:
+        findings = scan_draft(args.rule)
+        rules = DRAFT_RULES
+    else:
+        findings = scan(args.rule)
+        # the promoted rules are implemented in scan_draft(); run them too
+        if args.rule is None or args.rule in PROMOTED_FROM_DRAFT:
+            findings += [f for f in scan_draft(args.rule)
+                         if f.rule in PROMOTED_FROM_DRAFT]
+        rules = RULES
 
     if args.format == "list":
         for f in findings:
@@ -345,9 +546,10 @@ def main():
         for f in findings:
             by_rule.setdefault(f.rule, []).append(f)
         print("=" * 72)
-        print(" check_encoding.py - file-name display-encoding guard (feature 042)")
+        print(" check_encoding.py - file-name display-encoding guard (feature 042)"
+              + (" - DRAFT rules (feature 068)" if args.draft else ""))
         print("=" * 72)
-        for rule in RULES:
+        for rule in rules:
             if args.rule and rule != args.rule:
                 continue
             hits = by_rule.get(rule, [])
@@ -355,12 +557,12 @@ def main():
             for f in hits:
                 print(f"  {f}")
         print(f"\nTOTAL: {len(findings)} finding(s)")
-        if findings and args.strict:
+        if findings and args.strict and not args.draft:
             print("\nA file name would be destroyed on its way to the screen.")
             print("Fix the site, or suppress it with a reason:")
             print("    // encoding-check: allow <rule-id> - <reason>")
 
-    return 1 if (findings and args.strict) else 0
+    return 1 if (findings and args.strict and not args.draft) else 0
 
 
 if __name__ == "__main__":

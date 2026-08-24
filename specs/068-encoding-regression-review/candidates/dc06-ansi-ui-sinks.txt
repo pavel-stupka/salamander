@@ -1,0 +1,1215 @@
+src/tooltip.cpp:54:        SendMessage(HWindow, WM_USER_HIDETOOLTIP, 0, 0);
+src/tooltip.cpp:94:        SendMessage(HWindow, WM_USER_HIDETOOLTIP, 0, 0);
+src/tooltip.cpp:235:            GetWindowThreadProcessId(hWindow, NULL) == GetCurrentThreadId()) // SendMessage(hWindow, WM_NCHITTEST do jineho threadu zpusoboval deadlock
+src/tooltip.cpp:241:            LRESULT hit = SendMessage(hWindow, WM_NCHITTEST, 0, MAKELPARAM(p.x, p.y));
+src/tooltip.cpp:303:        SendMessage(HNotifyWindow, WM_USER_TTGETTEXT, LastID, (LPARAM)Text);
+src/tooltip.cpp:407:        SendMessage(HWindow, WM_USER_HIDETOOLTIP, 0, 0);
+src/viewer2.cpp:663:            SetWindowText(HWindow, LoadStr(IDS_VIEWERTITLE));
+src/viewer2.cpp:685:        SetWindowText(HWindow, LoadStr(IDS_VIEWERTITLE));
+src/viewer2.cpp:817:            SetWindowText(HWindow, LoadStr(IDS_VIEWERTITLE));
+src/viewer2.cpp:839:        SetWindowText(HWindow, LoadStr(IDS_VIEWERTITLE));
+src/viewer2.cpp:908:        SetWindowText(HWindow, LoadStr(IDS_VIEWERTITLE));
+src/viewer2.cpp:1004:            SetWindowText(HWindow, LoadStr(IDS_VIEWERTITLE));
+src/viewer2.cpp:1180:        SetWindowText(HWindow, LoadStr(IDS_VIEWERTITLE));
+src/viewer2.cpp:2052:            SendMessage(HToolTip, TTM_ACTIVATE, FALSE, 0);
+src/viewer2.cpp:2056:            SendMessage(HToolTip, TTM_ACTIVATE, TRUE, 0);
+src/viewer.cpp:60:            SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+src/viewer.cpp:61:            SendMessage(hwnd, CB_LIMITTEXT, textLen - 1, 0);
+src/viewer.cpp:69:                SendMessage(hwnd, CB_RESETCONTENT, 0, 0);
+src/viewer.cpp:70:                SendMessage(hwnd, CB_LIMITTEXT, textLen - 1, 0);
+src/viewer.cpp:100:                        SendMessage(hwnd, CB_SETEDITSEL, 0, MAKELPARAM(s - Text, 1 + (s - Text)));
+src/viewer.cpp:170:    SendMessage(edit, CB_GETEDITSEL, (WPARAM)&start, (LPARAM)&end);
+src/viewer.cpp:177:    SendMessage(edit, WM_GETTEXT, textLen, (LPARAM)text);
+src/viewer.cpp:267:    SendMessage(edit, WM_SETTEXT, 0, (LPARAM)text);
+src/viewer.cpp:268:    SendMessage(edit, CB_SETEDITSEL, 0, MAKELPARAM(start, end));
+src/viewer.cpp:361:                SendMessage(GetDlgItem(HWindow, IDC_FINDTEXT), WM_SETTEXT, 0, (LPARAM)buf);
+src/viewer.cpp:764:        TextOut(hdc, nXStart, nYStart, buf, cbString);
+src/viewer.cpp:767:        TextOut(hdc, nXStart, nYStart, lpString, cbString);
+src/viewer.cpp:1561:    InsertMenuItem(ViewerMenu, CODING_MENU_INDEX, TRUE, &mi);
+src/viewer.cpp:1703:                if (DrawTextEx(Bitmap.HMemDC, ch, 1, &rect, DT_LEFT | DT_TOP | DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE, NULL))
+src/toolbar4.cpp:1438:                DrawText(CacheBitmap->HMemDC, text, textLen,
+src/toolbar6.cpp:60:    SendMessage(HWindow, WM_SETREDRAW, FALSE, 0);
+src/toolbar6.cpp:105:    SendMessage(HWindow, WM_SETREDRAW, TRUE, 0);
+src/viewer3.cpp:69:        SetWindowText(HWindow, caption);
+src/viewer3.cpp:473:                SendMessage(HToolTip, TTM_NEWTOOLRECTW, 0, (LPARAM)&ti);
+src/viewer3.cpp:508:                    SendMessage(HWindow, WM_COMMAND, zDelta > 0 ? CM_PAGEUP : CM_PAGEDOWN, 0);
+src/viewer3.cpp:514:                        SendMessage(HWindow, WM_COMMAND, zDelta > 0 ? CM_LINEUP : CM_LINEDOWN, 0);
+src/viewer3.cpp:539:                        SendMessage(HWindow, WM_HSCROLL, zDelta > 0 ? SB_LINEUP : SB_LINEDOWN, 0);
+src/viewer3.cpp:542:                    SendMessage(HWindow, WM_HSCROLL, zDelta > 0 ? SB_PAGEUP : SB_PAGEDOWN, 0);
+src/viewer3.cpp:560:        HToolTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL, TTS_NOPREFIX,
+src/viewer3.cpp:578:            SendMessage(HToolTip, TTM_ADDTOOLW, 0, (LPARAM)&ti);
+src/viewer3.cpp:579:            SendMessage(HToolTip, TTM_SETDELAYTIME, TTDT_INITIAL, 500);
+src/viewer3.cpp:580:            SendMessage(HToolTip, TTM_SETDELAYTIME, TTDT_AUTOPOP, 10000);
+src/viewer3.cpp:703:                SendMessage(HToolTip, TTM_NEWTOOLRECTW, 0, (LPARAM)&ti);
+src/viewer3.cpp:749:            SendMessage(FindDialog.HWindow, WM_USER_CLEARHISTORY, wParam, lParam);
+src/viewer3.cpp:761:                SendMessage(HWindow, WM_COMMAND, CM_LINEUP, 0);
+src/viewer3.cpp:764:                SendMessage(HWindow, WM_COMMAND, CM_PAGEUP, 0);
+src/viewer3.cpp:767:                SendMessage(HWindow, WM_COMMAND, CM_PAGEDOWN, 0);
+src/viewer3.cpp:770:                SendMessage(HWindow, WM_COMMAND, CM_LINEDOWN, 0);
+src/viewer3.cpp:816:                SendMessage(HWindow, WM_COMMAND, CM_LEFT, 0);
+src/viewer3.cpp:819:                SendMessage(HWindow, WM_COMMAND, CM_RIGHT, 0);
+src/viewer3.cpp:2971:                SendMessage(HWindow, WM_COMMAND, CM_LINEUP, 0);
+src/viewer3.cpp:2979:                SendMessage(HWindow, WM_COMMAND, CM_LINEDOWN, 0);
+src/viewer3.cpp:3000:                SendMessage(HWindow, WM_COMMAND, CM_LEFT, 0);
+src/viewer3.cpp:3006:                SendMessage(HWindow, WM_COMMAND, CM_RIGHT, 0);
+src/viewer3.cpp:3111:                    SendMessage(HWindow, WM_HSCROLL, zDelta < 0 ? SB_LINEUP : SB_LINEDOWN, 0);
+src/viewer3.cpp:3114:                SendMessage(HWindow, WM_HSCROLL, zDelta < 0 ? SB_PAGEUP : SB_PAGEDOWN, 0);
+src/viewer3.cpp:3298:                        InsertMenuItem(subMenu, 0, TRUE, &miU);
+src/viewer3.cpp:3303:   keep in sync with the InsertMenuItem() calls below...
+src/viewer3.cpp:3320:                    InsertMenuItem(subMenu, 0, TRUE, &mi);
+src/viewer3.cpp:3325:                    InsertMenuItem(subMenu, 1, TRUE, &mi);
+src/viewer3.cpp:3329:                    InsertMenuItem(subMenu, count++, TRUE, &mi);
+src/viewer3.cpp:3337:                    InsertMenuItem(subMenu, count++, TRUE, &mi);
+src/viewer3.cpp:3341:                    InsertMenuItem(subMenu, count++, TRUE, &mi);
+src/viewer3.cpp:3345:                    InsertMenuItem(subMenu, count++, TRUE, &mi);
+src/viewer3.cpp:3501:            SendMessage(HWindow, WM_COMMAND, cmd, 0);
+src/zip.cpp:391:            SetDlgItemText(HWindow, IDT_PROGTITLE, LoadStr(IDS_UNPACKFILEPROGRESS));
+src/zip.cpp:393:        SetWindowText(HWindow, Title);
+src/zip.cpp:2063:        SendMessage(p->HWindow, WM_USER_FOCUSFILE, (WPARAM)nameBackup, (LPARAM)pathBackup);
+src/salmoncl.cpp:318:            MessageBox(NULL, LoadStr(IDS_SALMON_NOT_RUNNING), SALAMANDER_TEXT_VERSION, MB_OK | MB_ICONERROR);
+src/salmoncl.cpp:339:            MessageBox(NULL, LoadStr(IDS_SALMON_NOT_RUNNING), SALAMANDER_TEXT_VERSION, MB_OK | MB_ICONERROR);
+src/themes.cpp:160:        ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &line, NULL, 0, NULL);
+src/themes.cpp:166:        ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &line, NULL, 0, NULL);
+src/themes.cpp:173:        ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &line, NULL, 0, NULL);
+src/themes.cpp:179:        ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &line, NULL, 0, NULL);
+src/themes.cpp:306:            HFONT hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
+src/themes.cpp:416:            SendMessage(hWnd, EM_GETRECT, 0, (LPARAM)&fr); // the exact text rectangle
+src/themes.cpp:419:            HFONT hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
+src/themes.cpp:486:        HFONT hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
+src/themes.cpp:491:        int parts = (int)SendMessage(hWnd, SB_GETPARTS, 0, 0);
+src/themes.cpp:496:            if (!SendMessage(hWnd, SB_GETRECT, i, (LPARAM)&r))
+src/themes.cpp:498:            LRESULT lenType = SendMessage(hWnd, SB_GETTEXTLENGTHW, i, 0);
+src/themes.cpp:511:                dis.itemData = (ULONG_PTR)SendMessage(hWnd, SB_GETTEXTW, i, 0);
+src/themes.cpp:512:                SendMessage(GetParent(hWnd), WM_DRAWITEM, (WPARAM)dis.CtlID, (LPARAM)&dis);
+src/themes.cpp:530:                    SendMessage(hWnd, SB_GETTEXTW, i, (LPARAM)buf);
+src/themes.cpp:607:        HFONT hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
+src/themes.cpp:633:            if (SendMessage(hWnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEACCEL)
+src/themes.cpp:715:                BOOL checked = (SendMessage(hWnd, BM_GETCHECK, 0, 0) & BST_CHECKED) != 0;
+src/themes.cpp:934:            SendMessage(nmh->hwndFrom, HDM_GETITEMW, cd->dwItemSpec, (LPARAM)&hdi);
+src/themes.cpp:936:            HFONT hFont = (HFONT)SendMessage(nmh->hwndFrom, WM_GETFONT, 0, 0);
+src/themes.cpp:1085:            SendMessage(hChild, PBM_SETBKCOLOR, 0, (LPARAM)ThemeSysColor(COLOR_BTNSHADOW));
+src/themes.cpp:1086:            SendMessage(hChild, PBM_SETBARCOLOR, 0, (LPARAM)ThemeSysColor(COLOR_HIGHLIGHT));
+src/themes.cpp:1091:            SendMessage(hChild, PBM_SETBKCOLOR, 0, (LPARAM)CLR_DEFAULT);
+src/themes.cpp:1092:            SendMessage(hChild, PBM_SETBARCOLOR, 0, (LPARAM)CLR_DEFAULT);
+src/themes.cpp:1213:        SendMessage(hTooltip, TTM_SETTIPBKCOLOR, (WPARAM)ThemeSysColor(COLOR_INFOBK), 0);
+src/themes.cpp:1214:        SendMessage(hTooltip, TTM_SETTIPTEXTCOLOR, (WPARAM)ThemeSysColor(COLOR_INFOTEXT), 0);
+src/themes.cpp:1219:        SendMessage(hTooltip, TTM_SETTIPBKCOLOR, (WPARAM)GetSysColor(COLOR_INFOBK), 0);
+src/themes.cpp:1220:        SendMessage(hTooltip, TTM_SETTIPTEXTCOLOR, (WPARAM)GetSysColor(COLOR_INFOTEXT), 0);
+src/svg.cpp:152:        ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &r, "", 0, NULL);
+src/toolbar3.cpp:79:            sent = SendMessage(hNotifyWnd, WM_USER_TBENUMBUTTON2, (WPARAM)ToolBar->HWindow, (LPARAM)&tii) == TRUE;
+src/toolbar3.cpp:136:    SendMessage(HAvailableLB, WM_SETREDRAW, FALSE, 0);
+src/toolbar3.cpp:137:    SendMessage(HCurrentLB, WM_SETREDRAW, FALSE, 0);
+src/toolbar3.cpp:139:    SendMessage(HAvailableLB, LB_RESETCONTENT, 0, 0);
+src/toolbar3.cpp:140:    SendMessage(HCurrentLB, LB_RESETCONTENT, 0, 0);
+src/toolbar3.cpp:145:            int ret = (int)SendMessage(HAvailableLB, LB_ADDSTRING, 0, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:147:                SendMessage(HAvailableLB, LB_SETITEMDATA, ret, (LPARAM)i);
+src/toolbar3.cpp:162:        int ret = (int)SendMessage(HCurrentLB, LB_ADDSTRING, 0, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:164:            SendMessage(HCurrentLB, LB_SETITEMDATA, ret, (LPARAM)index);
+src/toolbar3.cpp:167:    SendMessage(HCurrentLB, LB_ADDSTRING, 0, (LPARAM)-1);
+src/toolbar3.cpp:170:    SendMessage(HAvailableLB, LB_SETCURSEL, 0, 0);
+src/toolbar3.cpp:171:    SendMessage(HCurrentLB, LB_SETCURSEL, 0, 0);
+src/toolbar3.cpp:173:    SendMessage(HAvailableLB, WM_SETREDRAW, TRUE, 0);
+src/toolbar3.cpp:174:    SendMessage(HCurrentLB, WM_SETREDRAW, TRUE, 0);
+src/toolbar3.cpp:182:    int aIndex = (int)SendMessage(HAvailableLB, LB_GETCURSEL, 0, 0);
+src/toolbar3.cpp:183:    int cIndex = (int)SendMessage(HCurrentLB, LB_GETCURSEL, 0, 0);
+src/toolbar3.cpp:184:    int cCount = (int)SendMessage(HCurrentLB, LB_GETCOUNT, 0, 0);
+src/toolbar3.cpp:193:    int aCount = (int)SendMessage(HAvailableLB, LB_GETCOUNT, 0, 0);
+src/toolbar3.cpp:194:    int aIndex = (int)SendMessage(HAvailableLB, LB_GETCURSEL, 0, 0);
+src/toolbar3.cpp:195:    int cIndex = (int)SendMessage(HCurrentLB, LB_GETCURSEL, 0, 0);
+src/toolbar3.cpp:196:    int data = (int)SendMessage(HAvailableLB, LB_GETITEMDATA, aIndex, 0);
+src/toolbar3.cpp:199:        SendMessage(HAvailableLB, WM_SETREDRAW, FALSE, 0);
+src/toolbar3.cpp:202:            SendMessage(HAvailableLB, LB_DELETESTRING, aIndex, 0);
+src/toolbar3.cpp:208:        SendMessage(HAvailableLB, LB_SETCURSEL, 0, 0);
+src/toolbar3.cpp:209:        SendMessage(HAvailableLB, LB_SETCURSEL, aIndex, 0);
+src/toolbar3.cpp:210:        SendMessage(HAvailableLB, WM_SETREDRAW, TRUE, 0);
+src/toolbar3.cpp:211:        int ret = (int)SendMessage(HCurrentLB, LB_INSERTSTRING, cIndex, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:213:            SendMessage(HCurrentLB, LB_SETITEMDATA, ret, data);
+src/toolbar3.cpp:214:        SendMessage(HCurrentLB, LB_SETCURSEL, cIndex + 1, 0);
+src/toolbar3.cpp:215:        SendMessage(ToolBar->HNotifyWindow, WM_USER_TBCHANGED, (WPARAM)ToolBar->HWindow, 0);
+src/toolbar3.cpp:223:    int cIndex = (int)SendMessage(HCurrentLB, LB_GETCURSEL, 0, 0);
+src/toolbar3.cpp:224:    int cCount = (int)SendMessage(HCurrentLB, LB_GETCOUNT, 0, 0);
+src/toolbar3.cpp:229:        int data = (int)SendMessage(HCurrentLB, LB_GETITEMDATA, cIndex, 0);
+src/toolbar3.cpp:230:        SendMessage(HCurrentLB, WM_SETREDRAW, FALSE, 0);
+src/toolbar3.cpp:231:        SendMessage(HCurrentLB, LB_DELETESTRING, cIndex, 0);
+src/toolbar3.cpp:234:        SendMessage(HCurrentLB, LB_SETCURSEL, 0, 0);
+src/toolbar3.cpp:235:        SendMessage(HCurrentLB, LB_SETCURSEL, cIndex, 0);
+src/toolbar3.cpp:236:        SendMessage(HCurrentLB, WM_SETREDRAW, TRUE, 0);
+src/toolbar3.cpp:240:            int aCount = (int)SendMessage(HAvailableLB, LB_GETCOUNT, 0, 0);
+src/toolbar3.cpp:243:                int tmp = (int)SendMessage(HAvailableLB, LB_GETITEMDATA, index, 0);
+src/toolbar3.cpp:247:            int ret = (int)SendMessage(HAvailableLB, LB_INSERTSTRING, index, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:249:                SendMessage(HAvailableLB, LB_SETITEMDATA, ret, data);
+src/toolbar3.cpp:251:        SendMessage(HAvailableLB, LB_SETCURSEL, index, 0);
+src/toolbar3.cpp:252:        SendMessage(ToolBar->HNotifyWindow, WM_USER_TBCHANGED, (WPARAM)ToolBar->HWindow, 0);
+src/toolbar3.cpp:260:    int data = (int)SendMessage(HCurrentLB, LB_GETITEMDATA, srcIndex, 0);
+src/toolbar3.cpp:267:    SendMessage(HCurrentLB, LB_DELETESTRING, srcIndex, 0);
+src/toolbar3.cpp:268:    int ret = (int)SendMessage(HCurrentLB, LB_INSERTSTRING, tgtIndex - delta, 1); // 1 je dumy hodnota, obchazime chybu WinXP
+src/toolbar3.cpp:270:        SendMessage(HCurrentLB, LB_SETITEMDATA, ret, data);
+src/toolbar3.cpp:271:    SendMessage(HCurrentLB, LB_SETCURSEL, tgtIndex - delta, 0);
+src/toolbar3.cpp:272:    SendMessage(ToolBar->HNotifyWindow, WM_USER_TBCHANGED, (WPARAM)ToolBar->HWindow, 0);
+src/toolbar3.cpp:279:    int cIndex = (int)SendMessage(HCurrentLB, LB_GETCURSEL, 0, 0);
+src/toolbar3.cpp:280:    int cCount = (int)SendMessage(HCurrentLB, LB_GETCOUNT, 0, 0);
+src/toolbar3.cpp:289:    int cIndex = (int)SendMessage(HCurrentLB, LB_GETCURSEL, 0, 0);
+src/toolbar3.cpp:290:    int cCount = (int)SendMessage(HCurrentLB, LB_GETCOUNT, 0, 0);
+src/toolbar3.cpp:299:    SendMessage(ToolBar->HNotifyWindow, WM_USER_TBRESET, (WPARAM)ToolBar->HWindow, 0);
+src/toolbar3.cpp:301:    SendMessage(ToolBar->HNotifyWindow, WM_USER_TBCHANGED, (WPARAM)ToolBar->HWindow, 0);
+src/toolbar3.cpp:362:                SendMessage(HCurrentLB, LB_SETCURSEL, index, 0);
+src/toolbar3.cpp:364:                SendMessage(HCurrentLB, LB_SETCURSEL, index, 0);
+src/toolbar3.cpp:409:        HFONT hFont = (HFONT)SendMessage(HAvailableLB, WM_GETFONT, 0, 0);
+src/toolbar3.cpp:420:        SendMessage(HAvailableLB, LB_SETITEMHEIGHT, 0, minHeight);
+src/toolbar3.cpp:421:        SendMessage(HCurrentLB, LB_SETITEMHEIGHT, 0, minHeight);
+src/toolbar3.cpp:507:            DrawText(hDC, text, -1, &r, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
+src/toolbar3.cpp:543:    SendMessage(HNotifyWindow, WM_USER_TBBEGINADJUST, (WPARAM)HWindow, 0);
+src/toolbar3.cpp:559:    SendMessage(HNotifyWindow, WM_USER_TBENDADJUST, (WPARAM)HWindow, 0);
+src/toolbar1.cpp:1034:                    SendMessage(HNotifyWindow, WM_USER_TBDROPDOWN, (WPARAM)HWindow, (LPARAM)DownIndex);
+src/toolbar1.cpp:1041:                    SendMessage(HWindow, WM_MOUSEMOVE, 0, MAKELPARAM(p.x, p.y));
+src/toolbar1.cpp:1104:        if (SendMessage(HNotifyWindow, WM_NOTIFY, (WPARAM)nmhdr.idFrom, (LPARAM)&nmhdr) == TRUE)
+src/toolbar1.cpp:1124:            SendMessage(HNotifyWindow, WM_USER_TBGETTOOLTIP, (WPARAM)HWindow, (LPARAM)&tt);
+src/pwdmngr.cpp:189:        GetDlgItemText(HWindow, IDC_CHMP_CURRENTPWD, curPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:193:            SetDlgItemText(HWindow, IDC_CHMP_CURRENTPWD, "");
+src/pwdmngr.cpp:202:        GetDlgItemText(HWindow, IDC_CHMP_NEWPWD, newPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:228:            SendMessage(hEdit, EM_SETPASSWORDCHAR, 0, 0);
+src/pwdmngr.cpp:229:            SetWindowText(hEdit, LoadStr(IDS_MASTERPASSWORD_NOTSET));
+src/pwdmngr.cpp:240:            GetDlgItemText(HWindow, IDC_CHMP_CURRENTPWD, oldPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:245:        GetDlgItemText(HWindow, IDC_CHMP_NEWPWD, newPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:255:    GetDlgItemText(HWindow, IDC_CHMP_NEWPWD, newPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:256:    GetDlgItemText(HWindow, IDC_CHMP_RETYPEPWD, retypedPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:301:        GetDlgItemText(HWindow, IDC_MPR_PASSWORD, curPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:305:            SetDlgItemText(HWindow, IDC_MPR_PASSWORD, "");
+src/pwdmngr.cpp:317:        GetDlgItemText(HWindow, IDC_MPR_PASSWORD, plainMasterPassword, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:348:        GetDlgItemText(HWindow, IDC_RMP_CURRENTPWD, curPwd, SAL_AES_MAX_PWD_LENGTH);
+src/pwdmngr.cpp:352:            SetDlgItemText(HWindow, IDC_RMP_CURRENTPWD, "");
+src/pwdmngr.cpp:364:        GetDlgItemText(HWindow, IDC_RMP_CURRENTPWD, plainMasterPassword, SAL_AES_MAX_PWD_LENGTH);
+src/mainwnd4.cpp:1174:        SendMessage(HWindow, WM_COMMAND, cmd, 0);
+src/mainwnd4.cpp:1697:        SendMessage(tme.hwndTrack, WM_MOUSELEAVE, 0, 0);
+src/mainwnd4.cpp:1742:        SendMessage(hDirtyWindow, WM_USER_HELP_MOUSELEAVE, 0, 0);
+src/mainwnd4.cpp:1845:                        SendMessage(*hDirtyWindow, WM_USER_HELP_MOUSELEAVE, 0, 0);
+src/mainwnd4.cpp:1850:                    SendMessage(hWndHit, WM_USER_HELP_MOUSEMOVE, 0, MAKELPARAM(p.x, p.y));
+src/mainwnd4.cpp:1854:            int iHit = (int)SendMessage(hWndHit, WM_NCHITTEST, 0,
+src/stswnd.cpp:248:                GetTextExtentExPoint(dc, Text, TextLen, 0, NULL, AlpDX, &s);
+src/stswnd.cpp:338:                GetTextExtentExPoint(dc, Text, TextLen, 0, NULL, AlpDX, &s);
+src/stswnd.cpp:656:        SendMessage(ToolBar->HWindow, TB_SETPARENT, (WPARAM)MainWindow->HWindow, 0);
+src/stswnd.cpp:687:    SendMessage(HWindow, WM_SIZE, 0, 0);
+src/stswnd.cpp:725:        ExtTextOut(dc, x, y, 0, NULL, Text + offset, count, NULL);
+src/stswnd.cpp:734:        ExtTextOut(dc, x, y, 0, NULL, "...", 3, NULL);
+src/stswnd.cpp:973:                    GetTextExtentPoint32(dc, Size, (int)strlen(Size), &s);
+src/stswnd.cpp:1305:                ExtTextOut(dc, SizeRect.left, textY, 0, NULL, Size, (UINT)strlen(Size), NULL);
+src/stswnd.cpp:2187:                SendMessage(MainWindow->HWindow, WM_COMMAND, MAKEWPARAM(CM_ACTIVE_CHANGEDIR, 0), 0);
+src/stswnd.cpp:2209:                SendMessage(MainWindow->HWindow, WM_COMMAND, MAKEWPARAM(CM_ACTIVE_CHANGEDIR, 0), 0);
+src/stswnd.cpp:2258:                            SendMessage(MainWindow->HWindow, WM_COMMAND, MAKEWPARAM(CM_ACTIVE_CHANGEDIR, 0), 0);
+src/stswnd.cpp:2279:                    SendMessage(MainWindow->HWindow, WM_COMMAND,
+src/stswnd.cpp:2390:        GetTextExtentPoint32(hDC, text, textLen, &sz);
+src/stswnd.cpp:2404:        DrawText(hDC, text, textLen, &r, DT_LEFT | DT_SINGLELINE | DT_VCENTER | DT_NOPREFIX);
+src/regwork.cpp:128:                    MessageBox(parent, "Unexpected value type.",
+src/regwork.cpp:175:                MessageBox(parent, "Unexpected value type.",
+src/regwork.cpp:258:                MessageBox(parent, "Unexpected value type.",
+src/salamdr4.cpp:166:    HFONT hFont = (HFONT)SendMessage(hWindow, WM_GETFONT, 0, 0);
+src/salamdr4.cpp:294:            GetTextExtentExPoint(hDC, Text + SubStrIndex, SubStrLen, maxWidth, &fitChars, alpDx, &sz);
+src/salamdr4.cpp:322:            GetTextExtentExPoint(hDC, Text, textLen, 0, NULL, alpDx, &sz);
+src/salamdr4.cpp:327:                GetTextExtentPoint32(hDC, "...", 3, &sz);
+src/salamdr6.cpp:386:    SendMessage(combo, CB_RESETCONTENT, 0, 0);
+src/salamdr6.cpp:1531:            GetWindowText(HWindow, text, 200);
+src/salamdr6.cpp:1568:            if (GetWindowTextLength(hwnd) > 0)
+src/salamdr6.cpp:1573:                int chars = GetWindowText(hwnd, data->Iterator, data->Remains);
+src/pack3.cpp:1989:        GetTextExtentPoint32(dc, Text, (int)strlen(Text), &s);
+src/pack3.cpp:2044:            DrawText(dc, Text, (int)strlen(Text), &r, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOPREFIX);
+src/finddlg2.cpp:291:        SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM) "");
+src/finddlg2.cpp:466:        GetWindowText(HWindow, buff, 200);
+src/finddlg2.cpp:482:        SendMessage(HNotifyWindow, WM_USER_FLASHICON, 0, 0); // if we are not active, postpone flashing
+src/finddlg2.cpp:522:            SendMessage(HWindow, WM_SIZE, SIZE_RESTORED,
+src/finddlg2.cpp:570:        HFONT hOldFont = (HFONT)SelectObject(hdc, (HFONT)SendMessage(HWindow, WM_GETFONT, 0, 0));
+src/finddlg2.cpp:576:        DrawText(hdc, Text, -1, &tr, DT_SINGLELINE | DT_RIGHT | DT_VCENTER);
+src/finddlg2.cpp:642:                    SendMessage(HNotifyWindow, WM_USER_FLASHICON, 0, 0);
+src/finddlg2.cpp:755:    SetDlgItemText(HWindow, IDC_FFS_SUBDIRS, item->SubDirectories ? LoadStr(IDS_INFODLGYES) : LoadStr(IDS_INFODLGNO));
+src/finddlg2.cpp:760:    SetDlgItemText(HWindow, IDC_FFS_ADVANCED, buff);
+src/finddlg2.cpp:1889:            ListView_InsertItem(HListView, &lvi);
+src/finddlg2.cpp:1890:            ListView_SetItemText(HListView, i, 0, LoadStr((item->Flags & FLI_ERROR) != 0 ? IDS_FINDLOG_ERROR : IDS_FINDLOG_INFO));
+src/finddlg2.cpp:1910:                ListView_SetItemText(HListView, i, 2, item->Path);
+src/finddlg2.cpp:1920:            ListView_InsertItem(HListView, &lvi);
+src/finddlg2.cpp:1921:            ListView_SetItemText(HListView, i, 0, LoadStr(IDS_FINDLOG_INFO));
+src/finddlg2.cpp:1922:            ListView_SetItemText(HListView, i, 1, buff);
+src/finddlg2.cpp:1971:    SendMessage(MainWindow->GetActivePanel()->HWindow, WM_USER_FOCUSFILE, (WPARAM)p + 1, (LPARAM)FocusPath);
+src/shellsup.cpp:46:   keep synchronized with the AppendMenu() calls below...
+src/shellsup.cpp:75:        if ((item1 == NULL || AppendMenu(menu, MF_ENABLED | MF_STRING, 1, item1)) &&
+src/shellsup.cpp:76:            (item2 == NULL || AppendMenu(menu, MF_ENABLED | MF_STRING, 2, item2)) &&
+src/shellsup.cpp:77:            (item3 == NULL || AppendMenu(menu, MF_ENABLED | MF_STRING, 3, item3)) &&
+src/shellsup.cpp:78:            (item4 == NULL || AppendMenu(menu, MF_ENABLED | MF_STRING | MF_DEFAULT,
+src/shellsup.cpp:80:            AppendMenu(menu, MF_SEPARATOR, 0, NULL) &&
+src/shellsup.cpp:81:            AppendMenu(menu, MF_ENABLED | MF_STRING | MF_DEFAULT, 5, LoadStr(IDS_DROPCANCEL)))
+src/shellsup.cpp:97:                SetMenuItemInfo(menu, defItem, FALSE, &item);
+src/shellsup.cpp:1137:        if (GetMenuItemInfo(h, i, TRUE, &mi) && (mi.fType & MFT_SEPARATOR))
+src/shellsup.cpp:2125:                                if (GetMenuItemInfo(h, i, TRUE, &mi))
+src/shellsup.cpp:2133:                                                InsertMenuItem(bckgndMenu, bckgndMenuInsert++, TRUE, &mi);
+src/shellsup.cpp:2153:                                InsertMenuItem(bckgndMenu, bckgndMenuInsert++, TRUE, &mi);
+src/shellsup.cpp:2157:   keep synchronized with the InsertMenuItem() calls below...
+src/shellsup.cpp:2202:                            if (!GetMenuItemInfo(bckgndMenu, bckgndMenuInsert, TRUE, &mi2) ||
+src/shellsup.cpp:2209:                                InsertMenuItem(bckgndMenu, bckgndMenuInsert++, TRUE, &mi);
+src/shellsup.cpp:2230:                            InsertMenuItem(h, -1, TRUE, &mi);
+src/menu4.cpp:431:                GetWindowText(hButton, buff, 1024);
+src/msgbox.cpp:215:    if (!GetTextExtentExPoint(hDC, src, srcLen, 0, NULL, alpDx + 1, &sz))
+src/msgbox.cpp:526:                        SetDlgItemText(HWindow, IDS_MSGBOX_HINT, hintLabel);
+src/msgbox.cpp:547:            SetDlgItemText(HWindow, IDS_MSGBOX_CHECK, CheckText);
+src/msgbox.cpp:656:        HFONT hOldFont = (HFONT)SelectObject(hDC, (HFONT)SendMessage(HWindow, WM_GETFONT, 0, 0));
+src/msgbox.cpp:666:        DrawText(hDC, FONT_TEST_TEXT, -1, &fontR, DT_CALCRECT | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
+src/msgbox.cpp:685:            DrawText(hDC, Text.Get(), -1, &tR, calcFlags);
+src/msgbox.cpp:708:                    DrawText(hDC, newText, -1, &tR, calcFlags);
+src/msgbox.cpp:709:                    SetDlgItemText(HWindow, IDS_MSGBOX_TEXT, newText);
+src/msgbox.cpp:727:                    DrawText(hDC, Text.Get(), -1, &iterRect, calcFlags);
+src/msgbox.cpp:739:            DrawText(hDC, urlText, -1, &urlR, DT_CALCRECT | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
+src/msgbox.cpp:746:            DrawText(hDC, CheckText, -1, &tRCheck, DT_SINGLELINE | DT_CALCRECT | DT_LEFT | DT_EXPANDTABS);
+src/msgbox.cpp:752:            DrawText(hDC, hintLabel, -1, &tRHint, DT_SINGLELINE | DT_CALCRECT | DT_LEFT);
+src/msgbox.cpp:931:                            HFONT hFont = (HFONT)SendMessage(hButton, WM_GETFONT, 0, 0);
+src/msgbox.cpp:942:                                GetTextExtentPoint32(hDC2, btnText2, (int)strlen(btnText2), &sz);
+src/msgbox.cpp:1055:        SendMessage(HWindow, DM_SETDEFID, btnID[defIndex], 0);
+src/msgbox.cpp:1064:            SendMessage(GetDlgItem(HWindow, btnID[defIndex]), BCM_SETSHIELD, 0, TRUE);
+src/msgbox.cpp:1115:        SendMessage(HWindow, WM_SYSCOMMAND, SC_RESTORE, 0);
+src/msgbox.cpp:1204:                    SendMessage(Parent, WM_HELP, 0, (LPARAM)&hi);
+src/salamdr1.cpp:86:        MessageBox(NULL, "new address <= 0x00000000ffffffff!\nPlease report this information at github.com/tandemcommander/tandemcommander/issues.", "X64_STRESS_TEST", MB_OK | MB_ICONEXCLAMATION);
+src/salamdr1.cpp:108:        MessageBox(NULL, "Tandem Commander Bug Reporter (salmon.exe) initialization has failed. Please reinstall Tandem Commander.",
+src/salamdr1.cpp:3172:        SendMessage(MainWindow->HTopRebar, RB_SETBKCOLOR, 0, (LPARAM)ThemeSysColor(COLOR_BTNFACE));
+src/salamdr1.cpp:3806:  MessageBox(NULL, bufff, "a", MB_OK);
+src/salamdr1.cpp:3814:        MessageBox(NULL, "Default type 'char' is not 'unsigned char', but 'signed char'. See '/J' compiler switch in MSVC.",
+src/salamdr1.cpp:3887:        MessageBox(NULL, "You need at least Windows 7 to run this program.",
+src/salamdr1.cpp:4000:            MessageBox(NULL, "Unable to find any language file (.SLG) in subdirectory LANG.\n"
+src/salamdr1.cpp:4065:            MessageBox(NULL, errorText, SALAMANDER_TEXT_VERSION, MB_OK | MB_ICONERROR);
+src/salamdr1.cpp:4074:            MessageBox(NULL, errorText, "Tandem Commander", MB_OK | MB_ICONERROR);
+src/salamdr1.cpp:4454:                        SendMessage(MainWindow->HWindow, WM_COMMAND, CM_TOGGLEEDITLINE, TRUE);
+src/salamdr1.cpp:4682:                                        MessageBox(hParent, "_CrtCheckMemory failed. Look to the Trace Server for details.", "Tandem Commander", MB_OK | MB_ICONERROR);
+src/salamdr1.cpp:4727:                                        SendMessage(MainWindow->HWindow, WM_USER_SHOWWINDOW, 0, 0);
+src/plugins2.cpp:1037:            ListView_InsertItem(hListView, &lvi);
+src/plugins2.cpp:1051:        ListView_SetItemText(hListView, i, 1,
+src/plugins2.cpp:1054:        ListView_SetItemText(hListView, i, 2, plugin->Version);
+src/plugins2.cpp:1056:        ListView_SetItemText(hListView, i, 3, plugin->DLLName);
+src/menubar.cpp:203:        DrawText(hDC, string, stringLen, &r, dtFlags);
+src/menubar.cpp:275:            DrawText(hDC, item->String, item->ColumnL1Len,
+src/menubar.cpp:340:    SendMessage(HNotifyWindow, WM_USER_ENTERMENULOOP, 0, 0);
+src/menubar.cpp:585:    SendMessage(HNotifyWindow, WM_USER_LEAVEMENULOOP, 0, 0);
+src/logo.cpp:63:        GetTextExtentPoint32(hDC, part1, (int)strlen(part1), &s1);
+src/logo.cpp:64:        GetTextExtentPoint32(hDC, part2, (int)strlen(part2), &s2);
+src/logo.cpp:74:    TextOut(hDC, r->left, y, part1, (int)strlen(part1));
+src/logo.cpp:76:    TextOut(hDC, r->left + s1.cx, y, part2, (int)strlen(part2));
+src/logo.cpp:169:        DrawText(hDC, text, -1, &r, DT_SINGLELINE | DT_NOPREFIX | DT_NOCLIP);
+src/logo.cpp:210:    ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &r, "", 0, NULL);
+src/logo.cpp:448:    ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &r, "", 0, NULL);
+src/logo.cpp:490:        SetDlgItemText(HWindow, IDS_ABOUT_SALAMANDER, SALAMANDER_TEXT_VERSION);
+src/logo.cpp:498:            SetDlgItemText(HWindow, IDC_ABOUT_WWW, url + 8);
+src/logo.cpp:508:        SetDlgItemText(HWindow, IDC_STATIC_1, VERSINFO_COPYRIGHT_TANDEM);
+src/logo.cpp:509:        SetDlgItemText(HWindow, IDC_STATIC_2, VERSINFO_COPYRIGHT_OPENSAL);
+src/salamdr3.cpp:2845:            uCachedScrollLines = (UINT)::SendMessage(hwMouseWheel, msgGetScrollLines, 0, 0);
+src/salamdr3.cpp:3643:    SendMessage(hEdit, EM_SETSEL, 0, -1);
+src/salamdr3.cpp:3728:                    SendMessage(hChild, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
+src/salamdr3.cpp:3730:                    SendMessage(hChild, EM_SETSEL, 0, -1);
+src/salamdr3.cpp:3915:        BOOL ret = (BOOL)SendMessage(HDialog, WM_USER_KEYDOWN, MAKELPARAM(CtrlID, 0), wParam);
+src/packac.cpp:72:        SendMessage(GetDlgItem(HWindow, IDC_ACLIST), WM_NOTIFYFORMAT,
+src/packac.cpp:75:        HStatusBar = CreateWindowEx(0, STATUSCLASSNAME, (LPCTSTR)NULL,
+src/packac.cpp:630:        SendMessage(HWindow, WM_USER_ACERROR, (WPARAM)LoadStr(IDS_PACKERR_NOMEM), NULL);
+src/packac.cpp:644:        SendMessage(HWindow, WM_USER_ACERROR, (WPARAM)LoadStr(IDS_PACKERR_NOMEM), NULL);
+src/packac.cpp:703:                        SendMessage(HWindow, WM_USER_ACERROR, (WPARAM)LoadStr(IDS_PACKERR_NOMEM), NULL);
+src/packac.cpp:1185:        ListView_InsertItem(ListView->HWindow, &item);
+src/packac.cpp:1604:            SendMessage(ACDialog->HWindow, WM_USER_ACERROR, (WPARAM)LoadStr(IDS_CANTSHOWRESULTS), NULL);
+src/packac.cpp:1612:            SendMessage(ACDialog->HWindow, WM_USER_ACADDFILE, (WPARAM)(totalCount + 1), 0);
+src/menu3.cpp:201:            SendMessage(SharedRes->HParent, WM_MEASUREITEM, 0, (LPARAM)&mis);
+src/menu3.cpp:222:                    SendMessage(SharedRes->HParent, WM_MEASUREITEM, 0, (LPARAM)&mis);
+src/menu3.cpp:525:        SendMessage(SharedRes->HParent, WM_DRAWITEM, 0, (LPARAM)&dis);
+src/menu3.cpp:943:                            DrawText(hDC, item->ColumnL1, item->ColumnL1Len, &textR2, dtFlags);
+src/menu3.cpp:952:                        DrawText(hDC, item->ColumnL1, item->ColumnL1Len, &textR, dtFlags);
+src/menu3.cpp:960:                        DrawText(hDC, item->ColumnL1, item->ColumnL1Len, &textR, dtFlags);
+src/menu3.cpp:986:                            DrawText(hDC, item->ColumnL2, item->ColumnL2Len,
+src/menu3.cpp:997:                        DrawText(hDC, item->ColumnL2, item->ColumnL2Len,
+src/menu3.cpp:1007:                        DrawText(hDC, item->ColumnL2, item->ColumnL2Len,
+src/menu3.cpp:1034:                            DrawText(hDC, item->ColumnR, item->ColumnRLen,
+src/menu3.cpp:1045:                        DrawText(hDC, item->ColumnR, item->ColumnRLen,
+src/menu3.cpp:1054:                        DrawText(hDC, item->ColumnR, item->ColumnRLen,
+src/menu3.cpp:1174:        SendMessage(SharedRes->HParent, WM_DRAWITEM, 0, (LPARAM)&dis);
+src/gui.cpp:102:    HFont = (HFONT)SendMessage(hDlg, WM_GETFONT, 0, 0);
+src/gui.cpp:119:    SendMessage(HWindow, WM_USER_SETPROGRESS, progress, (LPARAM)text);
+src/gui.cpp:194:        ExtTextOut(hMemDC, 0, 0, ETO_OPAQUE, &r, "", 0, NULL);
+src/gui.cpp:207:        ExtTextOut(hMemDC, 0, 0, ETO_OPAQUE, &r, "", 0, NULL);
+src/gui.cpp:220:        ExtTextOut(hMemDC, 0, 0, ETO_OPAQUE, &r, "", 0, NULL);
+src/gui.cpp:244:        GetTextExtentPoint32(hMemDC, progress, progressLen, &sz);
+src/gui.cpp:261:        ExtTextOut(hMemDC, x, y, ETO_OPAQUE | ETO_CLIPPED, &r, progress, progressLen, NULL);
+src/gui.cpp:269:        ExtTextOut(hMemDC, x, y, ETO_OPAQUE | ETO_CLIPPED, &r, progress, progressLen, NULL);
+src/gui.cpp:479:    UIState = (WORD)SendMessage(HWindow, WM_QUERYUISTATE, 0, 0);
+src/gui.cpp:511:    HFont = (HFONT)SendMessage(HWindow, WM_GETFONT, 0, 0);
+src/gui.cpp:1180:                SendMessage(hParent, WM_CTLCOLORSTATIC, (WPARAM)hDC, (LPARAM)HWindow);
+src/gui.cpp:1381:       keep synchronized with the InsertMenu() call below...
+src/gui.cpp:1390:    InsertMenu(hMenu, 0, MF_BYPOSITION, 1, LoadStr(IDS_COPYTOCLIPBOARD));
+src/gui.cpp:1527:    ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+src/gui.cpp:1746:    UIState = (WORD)SendMessage(HWindow, WM_QUERYUISTATE, 0, 0);
+src/gui.cpp:1897:        HICON hIcon = (HICON)SendMessage(HWindow, BM_GETIMAGE, IMAGE_ICON, 0);
+src/gui.cpp:1939:        GetWindowText(HWindow, buff, 500);
+src/gui.cpp:1942:        HFONT hFont = (HFONT)SendMessage(HWindow, WM_GETFONT, 0, 0);
+src/gui.cpp:1952:        DrawText(hdc, buff, -1, &r2, dtFlags);
+src/gui.cpp:1964:            GetWindowText(HWindow, buff, 500);
+src/gui.cpp:2110:        SendMessage(HWindow, WM_SETREDRAW, FALSE, 0);
+src/gui.cpp:2112:        SendMessage(HWindow, WM_SETREDRAW, TRUE, 0);
+src/gui.cpp:2347:                    SendMessage(hParent, WM_NEXTDLGCTL, (WPARAM)hNext, TRUE);
+src/gui.cpp:2359:            SendMessage(GetParent(HWindow), WM_USER_BUTTONDROPDOWN,
+src/gui.cpp:2375:                SendMessage(GetParent(HWindow), WM_USER_BUTTON,
+src/gui.cpp:2448:                SendMessage(GetParent(HWindow), WM_USER_BUTTONDROPDOWN,
+src/gui.cpp:2461:                    SendMessage(GetParent(HWindow), WM_USER_BUTTON,
+src/gui.cpp:2650:  ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+src/gui.cpp:2713:    HFONT hFont = (HFONT)SendMessage(HWindow, WM_GETFONT, 0, 0);
+src/gui.cpp:2721:    DrawText(hdc, "ABC", -1, &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+src/gui.cpp:2802:    UIState = (WORD)SendMessage(HWindow, WM_QUERYUISTATE, 0, 0);
+src/gui.cpp:2915:    GetWindowText(HWindow, buff, 100);
+src/gui.cpp:2920:    HFONT hOldFont = (HFONT)SelectObject(hDC, (HFONT)SendMessage(HWindow, WM_GETFONT, 0, 0));
+src/gui.cpp:2926:    DrawText(hDC, buff, -1, &r, dtFlags);
+src/gui.cpp:3333:      ExtTextOut((HDC)wParam, 0, 0, ETO_OPAQUE, &r, "", 0, NULL);
+src/gui.cpp:3367:  SendMessage(hButton, BM_SETIMAGE, IMAGE_ICON, (WPARAM)HANDLES(LoadIcon(HInstance, MAKEINTRESOURCE(IDI_BROWSE))));
+src/gui.cpp:3384:    SendMessage(hButton, BM_SETIMAGE, IMAGE_ICON, (WPARAM)HANDLES(LoadIcon(HInstance, MAKEINTRESOURCE(iconID))));
+src/gui.cpp:3460:    GetTextExtentPoint32(hDC, " ", 1, &sz);
+src/gui.cpp:3660:                HFONT hFont = (HFONT)SendMessage(data.Label, WM_GETFONT, 0, 0);
+src/gui.cpp:3665:                    GetTextExtentPoint32(hDC, " ", 1, &sz);
+src/gui.cpp:3760:                HFONT hFont = (HFONT)SendMessage(data.Label, WM_GETFONT, 0, 0);
+src/gui.cpp:3765:                    GetTextExtentPoint32(hDC, " ", 1, &sz);
+src/gui.cpp:3813:    HFONT hFont = (HFONT)SendMessage(hWindow, WM_GETFONT, 0, 0);
+src/fileswnb.cpp:320:        return SendMessage(MainWindow->HWindow, uMsg, wParam, lParam);
+src/fileswnb.cpp:863:            SendMessage(HWindow, WM_USER_DONEXTFOCUS, 0, 0);
+src/fileswnb.cpp:1129:            SendMessage(HWindow, WM_USER_INACTREFRESH_DIR, FALSE, InactRefreshLParam);
+src/fileswn4.cpp:728:                        GetTextExtentExPoint(hDC, TransferBuffer, nameLen, textWidth,
+src/fileswn4.cpp:740:                        GetTextExtentPoint32(hDC, TransferBuffer, nameLen, &fnSZ);
+src/fileswn4.cpp:759:                        GetTextExtentExPoint(hDC, TransferBuffer, nameLen, textWidth,
+src/fileswn4.cpp:797:                        ExtTextOut(hDC, r.left + 2, y, ETO_OPAQUE, &adjR, DrawItemBuff, (drawFlags & DRAWFLAG_MASK) ? 0 : totalCount, NULL);
+src/fileswn4.cpp:805:                ExtTextOut(hDC, r.left + 2, y, ETO_OPAQUE, &adjR, TransferBuffer, (drawFlags & DRAWFLAG_MASK) ? 0 : nameLen, NULL);
+src/fileswn4.cpp:923:                                GetTextExtentExPoint(hDC, TransferBuffer, TransferLen, textWidth,
+src/fileswn4.cpp:958:                                    ExtTextOut(hDC, r.left + SPACE_WIDTH / 2, y, ETO_OPAQUE, &adjR, DrawItemBuff, totalCount, NULL);
+src/fileswn4.cpp:973:                                    ExtTextOut(hDC, r.left + deltaX, y, ETO_OPAQUE, &adjR, TransferBuffer, TransferLen, NULL);
+src/fileswn4.cpp:985:                                    GetTextExtentPoint32(hDC, TransferBuffer, TransferLen, &textSize);
+src/fileswn4.cpp:996:                                ExtTextOut(hDC, r.left + deltaX, y, ETO_OPAQUE, &adjR, TransferBuffer, TransferLen, NULL);
+src/fileswn4.cpp:1103:    GetTextExtentExPoint(hDC, text, textLen, 0, NULL, DrawItemAlpDx, &sz);
+src/fileswn4.cpp:1632:            ExtTextOut(hDC, rect.left + (itemWidth - out1Width) / 2, y,
+src/fileswn4.cpp:1645:                ExtTextOut(hDC, rect.left + (itemWidth - out2Width) / 2, y,
+src/fileswn4.cpp:1680:    GetTextExtentExPoint(hDC, buffer, *bufferLen, maxTextWidth,
+src/fileswn4.cpp:2049:            ExtTextOut(hDC, textX, textY, ETO_OPAQUE, &r, out0, (drawFlags & DRAWFLAG_MASK) ? 0 : out0Len, NULL);
+src/fileswn4.cpp:2068:                ExtTextOut(hDC, textX, textY, ETO_OPAQUE, &r, out1, (drawFlags & DRAWFLAG_MASK) ? 0 : out1Len, NULL);
+src/fileswn4.cpp:2083:                ExtTextOut(hDC, textX, textY, ETO_OPAQUE, &r, out2, (drawFlags & DRAWFLAG_MASK) ? 0 : out2Len, NULL);
+src/mainwnd2.cpp:3707:            SendMessage(HWindow, WM_COMMAND, CM_EDITLINE, 0);
+src/mainwnd2.cpp:3728:            GetMenuItemInfo(h, SC_MINIMIZE, FALSE, &mii);
+src/mainwnd2.cpp:3730:            SetMenuItemInfo(h, SC_MINIMIZE, FALSE, &mii);
+src/mainwnd2.cpp:3733:            GetMenuItemInfo(h, SC_MAXIMIZE, FALSE, &mii);
+src/mainwnd2.cpp:3735:            SetMenuItemInfo(h, SC_MAXIMIZE, FALSE, &mii);
+src/mainwnd1.cpp:567:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_TOPTOOLBAR, 0);
+src/mainwnd1.cpp:568:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:605:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_PLUGINSBAR, 0);
+src/mainwnd1.cpp:606:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:671:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_UMTOOLBAR, 0);
+src/mainwnd1.cpp:672:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:708:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_HPTOOLBAR, 0);
+src/mainwnd1.cpp:709:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:747:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR, 0);
+src/mainwnd1.cpp:748:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:755:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR2, 0);
+src/mainwnd1.cpp:756:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:841:    int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_MENU, 0);
+src/mainwnd1.cpp:842:    SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:846:    index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_TOPTOOLBAR, 0);
+src/mainwnd1.cpp:849:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:854:    index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_PLUGINSBAR, 0);
+src/mainwnd1.cpp:857:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:862:    index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_UMTOOLBAR, 0);
+src/mainwnd1.cpp:865:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:870:    index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_HPTOOLBAR, 0);
+src/mainwnd1.cpp:873:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:881:        index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR, 0);
+src/mainwnd1.cpp:882:        SendMessage(HTopRebar, RB_DELETEBAND, index, 0);
+src/mainwnd1.cpp:897:    Configuration.MenuIndex = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_MENU, 0);
+src/mainwnd1.cpp:898:    SendMessage(HTopRebar, RB_GETBANDINFO,
+src/mainwnd1.cpp:907:        Configuration.TopToolbarIndex = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_TOPTOOLBAR, 0);
+src/mainwnd1.cpp:908:        SendMessage(HTopRebar, RB_GETBANDINFO,
+src/mainwnd1.cpp:917:        Configuration.PluginsBarIndex = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_PLUGINSBAR, 0);
+src/mainwnd1.cpp:918:        SendMessage(HTopRebar, RB_GETBANDINFO,
+src/mainwnd1.cpp:927:        Configuration.UserMenuToolbarIndex = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_UMTOOLBAR, 0);
+src/mainwnd1.cpp:928:        SendMessage(HTopRebar, RB_GETBANDINFO,
+src/mainwnd1.cpp:937:        Configuration.HotPathsBarIndex = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_HPTOOLBAR, 0);
+src/mainwnd1.cpp:938:        SendMessage(HTopRebar, RB_GETBANDINFO,
+src/mainwnd1.cpp:947:        Configuration.DriveBarIndex = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR, 0);
+src/mainwnd1.cpp:948:        SendMessage(HTopRebar, RB_GETBANDINFO,
+src/mainwnd1.cpp:982:    int count = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0);
+src/mainwnd1.cpp:988:    SendMessage(HTopRebar, RB_INSERTBAND,
+src/mainwnd1.cpp:1052:    int count = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0);
+src/mainwnd1.cpp:1057:    SendMessage(HTopRebar, RB_INSERTBAND,
+src/mainwnd1.cpp:1088:    int count = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0);
+src/mainwnd1.cpp:1093:    SendMessage(HTopRebar, RB_INSERTBAND,
+src/mainwnd1.cpp:1124:    int count = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0);
+src/mainwnd1.cpp:1130:    SendMessage(HTopRebar, RB_INSERTBAND,
+src/mainwnd1.cpp:1161:    int count = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0);
+src/mainwnd1.cpp:1167:    SendMessage(HTopRebar, RB_INSERTBAND,
+src/mainwnd1.cpp:1203:    int count = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0);
+src/mainwnd1.cpp:1207:        SendMessage(HTopRebar, RB_INSERTBAND, (WPARAM)count, (LPARAM)&rbbi);
+src/mainwnd1.cpp:1211:        SendMessage(HTopRebar, RB_INSERTBAND, (WPARAM)count + 1, (LPARAM)&rbbi);
+src/mainwnd1.cpp:1217:        SendMessage(HTopRebar, RB_INSERTBAND,
+src/mainwnd1.cpp:1426:    GetTextExtentPoint32(dc, "...", 3, &sz);
+src/mainwnd1.cpp:1464:    GetTextExtentPoint32(dc, "...", 3, &sz);
+src/mainwnd1.cpp:1538:            SendMessage(HTopRebar, RB_SETBANDINFO, (WPARAM)Configuration.MenuIndex, (LPARAM)&rbbi);
+src/mainwnd1.cpp:1545:                index = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0) - 2;
+src/mainwnd1.cpp:1548:            SendMessage(HTopRebar, RB_SETBANDINFO, (WPARAM)index, (LPARAM)&rbbi);
+src/mainwnd1.cpp:1553:            int index = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0) - 1;
+src/mainwnd1.cpp:1554:            SendMessage(HTopRebar, RB_SETBANDINFO, (WPARAM)index, (LPARAM)&rbbi);
+src/mainwnd1.cpp:1559:            SendMessage(HTopRebar, RB_SETBANDINFO, (WPARAM)Configuration.UserMenuToolbarIndex, (LPARAM)&rbbi);
+src/mainwnd1.cpp:1564:            SendMessage(HTopRebar, RB_SETBANDINFO, (WPARAM)Configuration.HotPathsBarIndex, (LPARAM)&rbbi);
+src/mainwnd1.cpp:1706:  SetMenuItemInfo(GetSubMenu(Menu->HMenu, FILES_MENU_INDEX), CM_NEWMENU, FALSE, &mi);
+src/mainwnd1.cpp:1714:    SendMessage(HWindow, WM_SIZE, SIZE_RESTORED,
+src/mainwnd1.cpp:1984:        ::SetWindowText(HWindow, text);
+src/mainwnd1.cpp:1994:    SendMessage(HWindow, WM_SETICON, ICON_BIG,
+src/mainwnd1.cpp:2063:        if (SendMessage(HTopRebar, RB_HITTEST, 0, (LPARAM)&hti) == -1 ||
+src/mainwnd1.cpp:2073:            SendMessage(HTopRebar, RB_GETBANDINFO, hti.iBand, (LPARAM)&rbi);
+src/mainwnd1.cpp:2410:      InsertMenu(hMenu, 0xffffffff, MF_BYPOSITION | MF_STRING | 
+src/mainwnd1.cpp:2413:      InsertMenu(hMenu, 0xffffffff, MF_BYPOSITION | MF_STRING | 
+src/mainwnd1.cpp:2416:      InsertMenu(hMenu, 0xffffffff, MF_BYPOSITION | MF_STRING | 
+src/mainwnd1.cpp:2419:      InsertMenu(hMenu, 0xffffffff, MF_BYPOSITION | MF_STRING | 
+src/mainwnd1.cpp:2422:      InsertMenu(hMenu, 0xffffffff, MF_BYPOSITION | MF_STRING | 
+src/mainwnd1.cpp:2425:      InsertMenu(hMenu, 0xffffffff, MF_BYPOSITION | MF_STRING | 
+src/mainwnd1.cpp:2428:      InsertMenu(hMenu, 0xffffffff, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+src/mainwnd3.cpp:106:  MessageBox(HWindow, buff, "Results", MB_OK);
+src/mainwnd3.cpp:663:        int count = (int)SendMessage(HTopRebar, RB_GETBANDCOUNT, 0, 0);
+src/mainwnd3.cpp:665:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR, 0);
+src/mainwnd3.cpp:666:        SendMessage(HTopRebar, RB_MOVEBAND, (WPARAM)index, (LPARAM)count - 1);
+src/mainwnd3.cpp:669:        SendMessage(HTopRebar, RB_SETBANDINFO, count - 1, (LPARAM)&rbi);
+src/mainwnd3.cpp:672:        index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR2, 0);
+src/mainwnd3.cpp:673:        SendMessage(HTopRebar, RB_MOVEBAND, (WPARAM)index, (LPARAM)count - 1);
+src/mainwnd3.cpp:676:        SendMessage(HTopRebar, RB_SETBANDINFO, count - 1, (LPARAM)&rbi);
+src/mainwnd3.cpp:680:        int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR, 0);
+src/mainwnd3.cpp:681:        SendMessage(HTopRebar, RB_SHOWBAND, index, FALSE);
+src/mainwnd3.cpp:683:        index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR2, 0);
+src/mainwnd3.cpp:684:        SendMessage(HTopRebar, RB_SHOWBAND, index, FALSE);
+src/mainwnd3.cpp:903:            SendMessage(MainWindow->HWindow, WM_SETTINGCHANGE, SPI_SETICONMETRICS, (LPARAM) "WindowMetrics");
+src/mainwnd3.cpp:908:            SendMessage(MainWindow->HWindow, WM_SETTINGCHANGE, SPI_SETICONMETRICS, (LPARAM) "WindowMetrics");
+src/mainwnd3.cpp:952:    SendMessage(LeftPanel->HWindow, WM_USER_REFRESH_DIR, 0, t1);
+src/mainwnd3.cpp:953:    SendMessage(RightPanel->HWindow, WM_USER_REFRESH_DIR, 0, t2);
+src/mainwnd3.cpp:1031:   Keep this synchronized with the InsertMenu() call below...
+src/mainwnd3.cpp:1039:            InsertMenu(h, pos, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+src/mainwnd3.cpp:1040:            InsertMenu(h, pos + 1, MF_BYPOSITION | MF_STRING | MF_ENABLED | (Configuration.AlwaysOnTop ? MF_CHECKED : MF_UNCHECKED),
+src/mainwnd3.cpp:1047:        HTopRebar = CreateWindowEx(WS_EX_TOOLWINDOW, REBARCLASSNAME, "",
+src/mainwnd3.cpp:1235:            SendMessage(MenuBar->HWindow, WM_UPDATEUISTATE, wParam, lParam);
+src/mainwnd3.cpp:1264:            SendMessage(HTopRebar, uMsg, wParam, lParam);
+src/mainwnd3.cpp:1299:                SendMessage(HTopRebar, WM_SYSCOLORCHANGE, 0, 0);
+src/mainwnd3.cpp:1588:            SendMessage(tme.hwndTrack, WM_MOUSELEAVE, 0, 0);
+src/mainwnd3.cpp:1632:            SendMessage(HWindow, WM_COMMAND, id, 0);
+src/mainwnd3.cpp:2078:            SendMessage(HWindow, WM_COMMAND, CM_ACTIVEBACK, 0);
+src/mainwnd3.cpp:2084:            SendMessage(HWindow, WM_COMMAND, CM_ACTIVEFORWARD, 0);
+src/mainwnd3.cpp:2805:                SendMessage(LeftPanel->HWindow, WM_USER_REFRESH_DIR, 0, t1);
+src/mainwnd3.cpp:2806:                SendMessage(RightPanel->HWindow, WM_USER_REFRESH_DIR, 0, t2);
+src/mainwnd3.cpp:2829:                SendMessage(GetActivePanel()->HWindow, WM_USER_FOCUSFILE, (WPARAM)newName, (LPARAM)newPath);
+src/mainwnd3.cpp:2856:                        SendMessage(activePanel->HWindow, WM_USER_FOCUSFILE, (WPARAM)(s + 1), (LPARAM)path);
+src/mainwnd3.cpp:2971:                    SendMessage(GetActivePanel()->HWindow, WM_USER_FOCUSFILE, (WPARAM)newName, (LPARAM)newPath);
+src/mainwnd3.cpp:3255:            SendMessage(LeftPanel->HWindow, WM_USER_REFRESH_DIR, 0, t1);
+src/mainwnd3.cpp:3272:            SendMessage(RightPanel->HWindow, WM_USER_REFRESH_DIR, 0, t1);
+src/mainwnd3.cpp:3289:            SendMessage(activePanel->HWindow, WM_USER_REFRESH_DIR, 0, t1);
+src/mainwnd3.cpp:4504:            SendMessage(LeftPanel->HWindow, WM_USER_REFRESH_DIR, 0, t1);
+src/mainwnd3.cpp:4505:            SendMessage(RightPanel->HWindow, WM_USER_REFRESH_DIR, 0, t2);
+src/mainwnd3.cpp:5143:                HWND toolTip = CreateWindowEx(0,
+src/mainwnd3.cpp:5168:                SendMessage(ToolTipWindow.HWindow, TTM_ADDTOOL, 0, (LPARAM)&ti);
+src/mainwnd3.cpp:5179:                SendMessage(ToolTipWindow.HWindow, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD)MAKELONG(mp.x + splitWidth + 2, mp.y + 10));
+src/mainwnd3.cpp:5180:                SendMessage(ToolTipWindow.HWindow, TTM_TRACKACTIVATE, TRUE, (LPARAM)&ti);
+src/mainwnd3.cpp:5253:            SendMessage(ToolTipWindow.HWindow, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD)MAKELONG(p.x + splitWidth + 2, p.y + 10));
+src/mainwnd3.cpp:5292:            SendMessage(ToolTipWindow.HWindow, TTM_ACTIVATE, FALSE, 0);
+src/mainwnd3.cpp:5566:            int index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR2, 0);
+src/mainwnd3.cpp:5567:            SendMessage(HTopRebar, RB_SETBANDINFO, index, (LPARAM)&rbi);
+src/mainwnd3.cpp:5571:            index = (int)SendMessage(HTopRebar, RB_IDTOINDEX, BANDID_DRIVEBAR, 0);
+src/mainwnd3.cpp:5572:            SendMessage(HTopRebar, RB_SETBANDINFO, index, (LPARAM)&rbi);
+src/mainwnd3.cpp:6504:                        SendMessage(destroyArray[i], WM_USER_CLOSEFIND, 0, 0);
+src/mainwnd3.cpp:7041:               keep synchronized with the InsertMenu() call below...
+src/mainwnd3.cpp:7050:            InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, CM_EXIT, LoadStr(IDS_CONTEXTMENU_EXIT));
+src/bugreprt.cpp:1849:            if (SendMessage(hLiteStepWnd, LM_GETREVID, msgflags, (LPARAM)buffer))
+src/filesmap.cpp:146:                    GetTextExtentPoint32(dc, s, len, &sz);
+src/filter.cpp:845:            SendMessage(HWindow, EM_LIMITTEXT, 21, 0);
+src/filter.cpp:846:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)_ui64toa(value.Value, buff, 10));
+src/filter.cpp:852:            SendMessage(HWindow, WM_GETTEXT, 22, (LPARAM)buff);
+src/filter.cpp:879:            SendMessage(HWindow, BM_SETCHECK, value, 0);
+src/filter.cpp:885:            int value = (int)SendMessage(HWindow, BM_GETCHECK, 0, 0);
+src/filter.cpp:915:    SendMessage(hEdit, WM_GETTEXT, 22, (LPARAM)buff);
+src/filter.cpp:921:    SendMessage(hCombo, WM_SETREDRAW, FALSE, 0);
+src/filter.cpp:922:    int curSel = (int)SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+src/filter.cpp:924:    int origCount = (int)SendMessage(hCombo, CB_GETCOUNT, 0, 0);
+src/filter.cpp:933:            SendMessage(hCombo, CB_GETLBTEXT, i, (LPARAM)buff2);
+src/filter.cpp:938:        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)buff);
+src/filter.cpp:942:        SendMessage(hCombo, CB_DELETESTRING, 0, 0);
+src/filter.cpp:948:            SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)LoadStr(sizes[i]));
+src/filter.cpp:951:    SendMessage(hCombo, CB_SETCURSEL, curSel, 0);
+src/filter.cpp:952:    SendMessage(hCombo, WM_SETREDRAW, TRUE, 0);
+src/filter.cpp:1257:        SendMessage(HWindow, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(HWindow, IDC_FFA_SIZEMIN), TRUE);
+src/fileswn5.cpp:2578:    GetTextExtentPoint32(hDC, text, (int)strlen(text), &sz);
+src/fileswn5.cpp:2621:        GetWindowText(QuickRenameWindow.HWindow, buff, 3 * MAX_PATH);
+src/fileswn5.cpp:2765:        SetWindowText(hWnd, formatedFileName);
+src/fileswn5.cpp:2774:    SendMessage(hWnd, WM_SETFONT, (WPARAM)Font, 0);
+src/fileswn5.cpp:2775:    int leftMargin = LOWORD(SendMessage(hWnd, EM_GETMARGINS, 0, 0));
+src/fileswn5.cpp:2777:        SendMessage(hWnd, EM_SETMARGINS, EC_LEFTMARGIN, 2);
+src/fileswn5.cpp:2781:    SendMessage(hWnd, EM_SETSEL, 0, selectionEnd);
+src/fileswn5.cpp:2831:        GetWindowText(hWnd, newName, MAX_PATH);
+src/fileswn5.cpp:2860:                SetWindowText(hWnd, newName);
+src/fileswn5.cpp:2969:                    SendMessage(HWindow, EM_SETSEL, 0, -1);
+src/dialogsp.cpp:560:            SendMessage(GetDlgItem(HWindow, IDC_P2_EXT), EM_SETSEL, errorPos, errorPos + 1);
+src/dialogsp.cpp:890:        SendMessage(HListbox, LB_SETCURSEL, 0, 0);
+src/dialogsp.cpp:911:            SendMessage(HListbox, LB_SETCURSEL, i, 0);
+src/dialogsp.cpp:923:                SendMessage(HListbox, LB_SETCURSEL, i, 0);
+src/dialogsp.cpp:938:    int index = (int)SendMessage(HListbox, LB_GETCURSEL, 0, 0);
+src/dialogsp.cpp:958:    int index = (int)SendMessage(HListbox, LB_GETCURSEL, 0, 0);
+src/dialogsp.cpp:986:    int index = (int)SendMessage(HListbox, LB_GETCURSEL, 0, 0);
+src/dialogsp.cpp:1006:        HFONT hFont = (HFONT)SendMessage(HListbox, WM_GETFONT, 0, 0);
+src/dialogsp.cpp:1013:        SendMessage(HListbox, LB_SETITEMHEIGHT, 0, MAKELPARAM(tm.tmHeight + 1, 0));
+src/dialogsp.cpp:1035:                int index = (int)SendMessage(HListbox, LB_GETCURSEL, 0, 0);
+src/find.cpp:858:                SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:910:        SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1295:                    SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1356:        SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1440:            SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1481:                        SendMessage(data->HWindow, WM_USER_ADDFILE, 0, 0);
+src/find.cpp:1511:        SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1548:        SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1582:                SendMessage(data->HWindow, WM_USER_ADDFILE, 0, 0);
+src/find.cpp:1706:            SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1749:            SendMessage(data->HWindow, WM_USER_ADDLOG, (WPARAM)&log, 0);
+src/find.cpp:1934:    SendMessage(data->HWindow, WM_USER_ADDFILE, 0, 0); // update the listview
+src/cache.cpp:1528:                    SendMessage(hActivePanel, WM_USER_FOCUSFILE, (WPARAM) "", (LPARAM)tmpDir);
+src/filesbx2.cpp:94:        return SendMessage(GetParent(HWindow), uMsg, wParam, lParam);
+src/filesbx2.cpp:230:        TextOut(ItemBitmap.HMemDC, r.left + 3, (r.bottom - FontCharHeight) / 2, column->Name, nameLen);
+src/filesbx2.cpp:249:        GetTextExtentPoint32(ItemBitmap.HMemDC, column->Name, nameLen, &sz);
+src/filesbx2.cpp:265:                GetTextExtentPoint32(ItemBitmap.HMemDC, column->Name, nameLen, &sz);
+src/filesbx2.cpp:270:            TextOut(ItemBitmap.HMemDC, textLeft, (r.bottom - FontCharHeight) / 2,
+src/filesbx2.cpp:275:                GetTextExtentPoint32(ItemBitmap.HMemDC, colExtStr, colExtStrLen, &sz);
+src/filesbx2.cpp:344:        GetTextExtentPoint32(hDC, column->Name, lstrlen(column->Name), &sz);
+src/filesbx2.cpp:358:            GetTextExtentPoint32(hDC, colExtStr, colExtStrLen, &sz);
+src/filesbx2.cpp:401:                GetTextExtentPoint32(ItemBitmap.HMemDC, column->Name, lstrlen(column->Name), &sz);
+src/filesbx2.cpp:483:        return SendMessage(Parent->HWindow, uMsg, wParam, lParam);
+src/editwnd.cpp:205:                SendMessage(hwnd, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
+src/editwnd.cpp:210:                    SendMessage(hwnd, EM_SETSEL, iEnd, iEnd);
+src/editwnd.cpp:216:                int len = GetWindowTextLength(hwnd);
+src/editwnd.cpp:219:                SendMessage(hwnd, WM_GETTEXT, 10000, (LPARAM)buff);
+src/editwnd.cpp:223:                SendMessage(hwnd, EM_SETSEL, iStart, iEnd);
+src/editwnd.cpp:224:                SendMessage(hwnd, EM_REPLACESEL, TRUE, (LPARAM) "");
+src/editwnd.cpp:297:        SendMessage(hWindow, EM_SETWORDBREAKPROC, NULL, (LPARAM)EditWordBreakProcUNICODE);
+src/editwnd.cpp:299:        SendMessage(hWindow, EM_SETWORDBREAKPROC, NULL, (LPARAM)EditWordBreakProc);
+src/editwnd.cpp:355:    SendMessage(HWindow, EM_REPLACESEL, TRUE, (LPARAM)s);
+src/editwnd.cpp:385:            if (SendMessage(HWindow, WM_GETTEXTLENGTH, 0, 0) == 0)
+src/editwnd.cpp:577:                    SendMessage(HWindow, EM_SETSEL, selFrom, selTo);
+src/editwnd.cpp:769:                    SendMessage(HWindow, EM_SETSEL, 0, -1);
+src/editwnd.cpp:916:                        SendMessage(HWindow, WM_CHAR, '\r', 0);
+src/editwnd.cpp:962:                    SetWindowText(HWindow, "");
+src/editwnd.cpp:1114:            LRESULT pos = SendMessage(EditLine->HWindow, EM_CHARFROMPOS, 0, MAKELPARAM(p.x, p.y));
+src/editwnd.cpp:1122:            pos = SendMessage(EditLine->HWindow, EM_POSFROMCHAR, myPos, 0);
+src/editwnd.cpp:1130:                HFONT hFont = (HFONT)SendMessage(EditLine->HWindow, WM_GETFONT, 0, 0);
+src/editwnd.cpp:1134:                GetTextExtentPoint32(hDC, TextBuff + TextLen - 1, 1, &sz);
+src/editwnd.cpp:1175:            SendMessage(EditLine->HWindow, EM_SETSEL, xPos, xPos);
+src/editwnd.cpp:1176:            SendMessage(EditLine->HWindow, EM_REPLACESEL, TRUE, (LPARAM)start);
+src/editwnd.cpp:1344:        TextLen = GetWindowTextLength(EditLine->HWindow);
+src/editwnd.cpp:1347:            TextLen = GetWindowText(EditLine->HWindow, TextBuff, TextLen + 1);
+src/editwnd.cpp:1597:                DrawText(dc, buff, -1, &r,
+src/editwnd.cpp:1659:        GetTextExtentPoint32(dc, Message, (int)strlen(Message), &s);
+src/editwnd.cpp:1733:    SendMessage(HWindow, CB_LIMITTEXT, GetCmdLineLimit(), 0);
+src/editwnd.cpp:1741:    SendMessage(HWindow, CB_RESETCONTENT, 0, 0);
+src/editwnd.cpp:1753:    return (BOOL)SendMessage(HWindow, CB_GETDROPPEDSTATE, 0, 0);
+src/editwnd.cpp:1761:        SendMessage(HWindow, WM_SETFONT, (WPARAM)EnvFont, 0);
+src/editwnd.cpp:1762:        SendMessage(EditLine->HWindow, EM_SETMARGINS, (WPARAM)EC_LEFTMARGIN | EC_RIGHTMARGIN, 0);
+src/editwnd.cpp:1845:        if (!SendMessage(HWindow, CB_GETDROPPEDSTATE, 0, 0) &&
+src/editwnd.cpp:2016:    int textLen = GetWindowTextLength(EditLine->HWindow);
+src/editwnd.cpp:2023:            SendMessage(EditLine->HWindow, EM_GETSEL, (WPARAM)&LastSelStart, (LPARAM)&LastSelEnd);
+src/editwnd.cpp:2034:        SendMessage(EditLine->HWindow, EM_SETSEL, (WPARAM)LastSelStart, (LPARAM)LastSelEnd);
+src/edtlbwnd.cpp:124:    HFONT hFont = (HFONT)SendMessage(HWindow, WM_GETFONT, 0, 0);
+src/edtlbwnd.cpp:140:    SendMessage(HWindow, LB_SETITEMHEIGHT, 0, MAKELPARAM(itemHeight, 0));
+src/edtlbwnd.cpp:169:    LRESULT res = SendMessage(HWindow, LB_INSERTSTRING, ItemsCount, 1); // 1 is a dummy value, we are working around a WinXP bug
+src/edtlbwnd.cpp:172:        SendMessage(HWindow, LB_SETITEMDATA, res, ((Flags & ELB_ITEMINDEXES) ? ItemsCount : itemID));
+src/edtlbwnd.cpp:185:    LRESULT res = SendMessage(HWindow, LB_INSERTSTRING, index, 1); // 1 is a dummy value, we are working around a WinXP bug
+src/edtlbwnd.cpp:188:        SendMessage(HWindow, LB_SETITEMDATA, res, itemID);
+src/edtlbwnd.cpp:196:    int index = (int)SendMessage(HWindow, LB_ADDSTRING, 0, -1);
+src/edtlbwnd.cpp:199:    SendMessage(HWindow, LB_SETITEMDATA, ItemsCount, itemID);
+src/edtlbwnd.cpp:206:    LRESULT ret = SendMessage(HWindow, LB_DELETESTRING, index, 0);
+src/edtlbwnd.cpp:215:                INT_PTR tmp = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, i, 0);
+src/edtlbwnd.cpp:217:                    SendMessage(HWindow, LB_SETITEMDATA, i, tmp - 1);
+src/edtlbwnd.cpp:226:    SendMessage(HWindow, LB_RESETCONTENT, 0, 0);
+src/edtlbwnd.cpp:227:    int ret = (int)SendMessage(HWindow, LB_ADDSTRING, 0, -1);
+src/edtlbwnd.cpp:233:    LRESULT ret = (SendMessage(HWindow, LB_SETCURSEL, index, 0) != LB_ERR || index == -1);
+src/edtlbwnd.cpp:240:    LRESULT res = SendMessage(HWindow, LB_GETCURSEL, 0, 0);
+src/edtlbwnd.cpp:248:    itemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:254:    SendMessage(HWindow, LB_SETITEMDATA, index, itemID);
+src/edtlbwnd.cpp:260:    LRESULT res = SendMessage(HWindow, LB_GETCURSEL, 0, 0);
+src/edtlbwnd.cpp:263:        itemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, res, 0);
+src/edtlbwnd.cpp:294:        SendMessage(hParent, WM_NOTIFY, hdr->idFrom, (LPARAM)hdr);
+src/edtlbwnd.cpp:298:    SendMessage(GetParent(HWindow), WM_NOTIFY, hdr->idFrom, (LPARAM)hdr);
+src/edtlbwnd.cpp:304:    SendMessage(GetParent(HWindow), WM_COMMAND,
+src/edtlbwnd.cpp:314:        int index = (int)SendMessage(HWindow, LB_GETCURSEL, 0, 0);
+src/edtlbwnd.cpp:315:        DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:326:    int index = (int)SendMessage(HWindow, LB_GETCURSEL, 0, 0);
+src/edtlbwnd.cpp:386:    DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:391:        SendMessage(HWindow, LB_SETCURSEL, newIndex, 0);
+src/edtlbwnd.cpp:400:    SendMessage(HWindow, LB_SETCURSEL, ItemsCount, 0);
+src/edtlbwnd.cpp:416:    DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:420:        SendMessage(HWindow, LB_DELETESTRING, index, 0);
+src/edtlbwnd.cpp:427:                INT_PTR tmp = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, i, 0);
+src/edtlbwnd.cpp:429:                    SendMessage(HWindow, LB_SETITEMDATA, i, tmp - 1);
+src/edtlbwnd.cpp:432:        SendMessage(HWindow, LB_SETCURSEL, index, 0);
+src/edtlbwnd.cpp:451:    SendMessage(HWindow, LB_GETITEMRECT, index, (LPARAM)&r);
+src/edtlbwnd.cpp:486:    SendMessage(EditLine->HWindow, WM_SETFONT, SendMessage(HWindow, WM_GETFONT, 0, 0), TRUE);
+src/edtlbwnd.cpp:494:        DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:503:    SendMessage(EditLine->HWindow, EM_SETLIMITTEXT, MAX_PATH, 0);
+src/edtlbwnd.cpp:504:    SendMessage(EditLine->HWindow, EM_SETSEL, start, end);
+src/edtlbwnd.cpp:534:        GetWindowText(EditLine->HWindow, buff, 2);
+src/edtlbwnd.cpp:538:            DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:603:    SendMessage(HWindow, LB_GETITEMRECT, index, (LPARAM)&r);
+src/edtlbwnd.cpp:638:            INT_PTR itemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, lpdis->itemID, 0);
+src/edtlbwnd.cpp:710:                    DrawTextEx(lpdis->hDC, Buffer,
+src/edtlbwnd.cpp:732:    DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:865:                    DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/edtlbwnd.cpp:899:                SendMessage(HWindow, WM_RBUTTONDOWN, 0, 0); // cancel d&d
+src/edtlbwnd.cpp:922:                SendMessage(HWindow, WM_RBUTTONDOWN, 0, 0); // cancel d&d
+src/edtlbwnd.cpp:970:                SendMessage(GetParent(HWindow), WM_NEXTDLGCTL, (WPARAM)HWindow, TRUE);
+src/edtlbwnd.cpp:973:            int item = LOWORD(SendMessage(HWindow, LB_ITEMFROMPOINT, 0,
+src/edtlbwnd.cpp:978:            SendMessage(HWindow, LB_GETITEMRECT, item, (LPARAM)&r);
+src/edtlbwnd.cpp:989:                SendMessage(HWindow, LB_SETCURSEL, index, 0);
+src/edtlbwnd.cpp:995:                DispInfo.ItemID = (INT_PTR)SendMessage(HWindow, LB_GETITEMDATA, index, 0);
+src/finddlg1.cpp:916:        SendMessage(GetParent(HWindow), WM_USER_BUTTONS, 0, 0);
+src/finddlg1.cpp:934:        SendMessage(GetParent(HWindow), WM_USER_BUTTONS, nextIsButton ? wParam : 0, 0);
+src/finddlg1.cpp:1218:                SendMessage(nmh->hwndFrom, HDM_GETITEMW, cd->dwItemSpec, (LPARAM)&hdi);
+src/finddlg1.cpp:1220:                HFONT hFont = (HFONT)SendMessage(nmh->hwndFrom, WM_GETFONT, 0, 0);
+src/finddlg1.cpp:1533:        SendMessage(HProgressBar, PBM_SETBKCOLOR, 0, (LPARAM)ThemeSysColor(COLOR_BTNSHADOW));
+src/finddlg1.cpp:1534:        SendMessage(HProgressBar, PBM_SETBARCOLOR, 0, (LPARAM)ThemeSysColor(COLOR_HIGHLIGHT));
+src/finddlg1.cpp:1539:        SendMessage(HProgressBar, PBM_SETBKCOLOR, 0, (LPARAM)CLR_DEFAULT);
+src/finddlg1.cpp:1540:        SendMessage(HProgressBar, PBM_SETBARCOLOR, 0, (LPARAM)CLR_DEFAULT);
+src/finddlg1.cpp:1563:            HProgressBar = CreateWindowEx(0, PROGRESS_CLASS, NULL,
+src/finddlg1.cpp:1568:            SendMessage(HProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
+src/finddlg1.cpp:1594:        SendMessage(HStatusBar, WM_SETREDRAW, FALSE, 0); // when redraw is enabled, the status bar ends up with a stray frame
+src/finddlg1.cpp:1595:        SendMessage(HStatusBar, SB_SETPARTS, 3, (LPARAM)parts);
+src/finddlg1.cpp:1596:        SendMessage(HStatusBar, SB_SETTEXT, 0 | SBT_NOBORDERS, (LPARAM) "");
+src/finddlg1.cpp:1597:        SendMessage(HStatusBar, SB_SETTEXT, 2 | SBT_NOBORDERS, (LPARAM) "");
+src/finddlg1.cpp:1598:        SendMessage(HStatusBar, WM_SETREDRAW, TRUE, 0);
+src/finddlg1.cpp:1602:        SendMessage(HStatusBar, SB_SETPARTS, 3, (LPARAM)parts);
+src/finddlg1.cpp:1786:            SendMessage(hNamesWnd, CB_SETEDITSEL, 0, MAKELPARAM(errorPos, errorPos + 1));
+src/finddlg1.cpp:1831:    SetDlgItemText(HWindow, IDC_FIND_ADVANCED_TEXT, buff);
+src/finddlg1.cpp:2152:    SetDlgItemText(HWindow, IDOK, LoadStr(IDS_FF_STOP));
+src/finddlg1.cpp:2203:    SetDlgItemText(HWindow, IDOK, FindNowText);
+src/finddlg1.cpp:2223:            SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM)LoadStr(msgID));
+src/finddlg1.cpp:2233:        SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM)LoadStr(IDS_STOPPED));
+src/finddlg1.cpp:2236:    SetWindowText(HWindow, LoadStr(IDS_FF_NAME));
+src/finddlg1.cpp:2294:            SendMessage(HWindow, WM_NEXTDLGCTL, (WPARAM)FoundFilesListView->HWindow, TRUE);
+src/finddlg1.cpp:2347:        defID = (int)SendMessage(HWindow, DM_GETDEFID, 0, 0);
+src/finddlg1.cpp:2352:        SendMessage(HWindow, DM_SETDEFID, -1, 0);
+src/finddlg1.cpp:2354:            SendMessage(GetDlgItem(HWindow, defID), BM_SETSTYLE,
+src/finddlg1.cpp:2361:            defID = (int)SendMessage(HWindow, DM_GETDEFID, 0, 0);
+src/finddlg1.cpp:2383:        SendMessage(HWindow, DM_SETDEFID, defID, 0);
+src/finddlg1.cpp:2450:    SendMessage(MainWindow->GetActivePanel()->HWindow, WM_USER_FOCUSFILE, (WPARAM)data->Name, (LPARAM)data->Path);
+src/finddlg1.cpp:2522:    SendMessage(MainWindow->GetActivePanel()->HWindow, WM_USER_VIEWFILE, (WPARAM)(&openData), (LPARAM)alternate);
+src/finddlg1.cpp:2543:    SendMessage(MainWindow->GetActivePanel()->HWindow, WM_USER_EDITFILE, (WPARAM)longName, 0);
+src/finddlg1.cpp:2590:        SendMessage(MainWindow->GetActivePanel()->HWindow, WM_USER_VIEWFILEWITH,
+src/finddlg1.cpp:2633:        SendMessage(MainWindow->GetActivePanel()->HWindow, WM_USER_EDITFILEWITH,
+src/finddlg1.cpp:2851:    SetWindowText(hEdit, drives);
+src/finddlg1.cpp:2852:    SendMessage(hEdit, EM_SETSEL, lstrlen(drives), lstrlen(drives));
+src/finddlg1.cpp:2911:    if (!GetDlgItemText(hWnd, resID, buff, 500))
+src/finddlg1.cpp:2946:                        SendMessage(HWindow, WM_COMMAND, MAKEWPARAM(IDC_FIND_GREP, BN_CLICKED), 0);
+src/finddlg1.cpp:2974:        GetDlgItemText(HWindow, IDOK, FindNowText, 100);
+src/finddlg1.cpp:3000:        SendMessage(HWindow, WM_SETICON, ICON_BIG, (LPARAM)findIcon);
+src/finddlg1.cpp:3016:        SendMessage(FoundFilesListView->HWindow, WM_NOTIFYFORMAT, (WPARAM)HWindow, NF_REQUERY);
+src/finddlg1.cpp:3023:        HStatusBar = CreateWindowEx(0,
+src/finddlg1.cpp:3041:        SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS, (LPARAM)LoadStr(IDS_FIND_INIT_HINT));
+src/finddlg1.cpp:3083:        SetDlgItemText(HWindow, IDOK, FindNowText);
+src/finddlg1.cpp:3086:        SetWindowText(HWindow, LoadStr(IDS_FF_NAME));
+src/finddlg1.cpp:3124:                SendMessage(HStatusBar, SB_SETTEXT, 1 | SBT_NOBORDERS | SBT_OWNERDRAW, 0);
+src/finddlg1.cpp:3133:                SendMessage(HProgressBar, PBM_SETPOS, pos, 0);
+src/finddlg1.cpp:3383:                SetDlgItemText(HWindow, IDC_FIND_CONTAINING, "");
+src/finddlg1.cpp:3664:                    SendMessage(EditLine->HWindow, WM_GETTEXT, (WPARAM)1024, (LPARAM)buff);
+src/finddlg1.cpp:3941:                DrawText(di->hDC, buff, (int)strlen(buff), &di->rcItem, DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_PATH_ELLIPSIS);
+src/finddlg1.cpp:4171:                        ExtTextOut(CacheBitmap->HMemDC, 0, 0, ETO_OPAQUE, &r2, "", 0, NULL);
+src/finddlg1.cpp:4178:                        SelectObject(CacheBitmap->HMemDC, (HFONT)SendMessage(FoundFilesListView->HWindow, WM_GETFONT, 0, 0));
+src/finddlg1.cpp:4200:                            DrawText(CacheBitmap->HMemDC, buff, -1, &r2,
+src/fileswn0.cpp:465:        SendMessage(GetListBoxHWND(), WM_MOUSEMOVE, 0, MAKELPARAM(p.x, p.y));
+src/fileswn0.cpp:982:            SendMessage(MainWindow->HWindow, WM_COMMAND, CM_EDITLINE, 0);
+src/fileswn0.cpp:1289:        SendMessage(MainWindow->HWindow, WM_COMMAND, CM_EDITLINE, 0);
+src/fileswn0.cpp:1798:                    SendMessage(MainWindow->HWindow, WM_COMMAND, leftPanel ? CM_OPEN_IN_OTHER_PANEL : CM_OPEN_IN_OTHER_PANEL_ACT, 0);
+src/fileswn0.cpp:1804:                    SendMessage(MainWindow->HWindow, WM_COMMAND, leftPanel ? CM_OPEN_IN_OTHER_PANEL_ACT : CM_OPEN_IN_OTHER_PANEL, 0);
+src/fileswn0.cpp:1816:                        SendMessage(ListBox->HWindow, WM_HSCROLL, SB_LINEUP, 0);
+src/fileswn0.cpp:1821:                            SendMessage(ListBox->HWindow, WM_HSCROLL, SB_LINEUP, 0);
+src/fileswn0.cpp:1829:                        SendMessage(ListBox->HWindow, WM_HSCROLL, SB_LINEDOWN, 0);
+src/fileswn0.cpp:1834:                            SendMessage(ListBox->HWindow, WM_HSCROLL, SB_LINEDOWN, 0);
+src/fileswn0.cpp:1845:                        SendMessage(ListBox->HWindow, WM_VSCROLL, SB_LINEUP, 0);
+src/fileswn0.cpp:1855:                        SendMessage(ListBox->HWindow, WM_VSCROLL, SB_LINEDOWN, 0);
+src/fileswn0.cpp:2005:                    SendMessage(ListBox->HWindow, WM_HSCROLL, SB_LINEUP, 0);
+src/fileswn0.cpp:2042:                    SendMessage(ListBox->HWindow, WM_HSCROLL, SB_LINEDOWN, 0);
+src/fileswn0.cpp:3311:        GetTextExtentPoint32(hDC, ss, qsLen, &s);
+src/fileswn0.cpp:3440:    SendMessage(HWindow, WM_USER_REFRESH_DIR, 0, t1);
+src/codetbl.cpp:639:        InsertMenuItem(menu, count++, TRUE, &mi);
+src/codetbl.cpp:654:                InsertMenuItem(menu, count++, TRUE, &mi);
+src/common\allochan.cpp:111:            res = MessageBox(NULL, buf, __AllocHandlerTitle, MB_ICONERROR | MB_TASKMODAL | MB_ABORTRETRYIGNORE | MB_DEFBUTTON2);
+src/common\allochan.cpp:122:                res = MessageBox(NULL, __AllocHandlerWarningAbort, __AllocHandlerTitle, MB_ICONQUESTION | MB_TASKMODAL | MB_YESNO | MB_DEFBUTTON2);
+src/common\allochan.cpp:138:                    res = MessageBox(NULL, __AllocHandlerWarningIgnore, __AllocHandlerTitle, MB_ICONQUESTION | MB_TASKMODAL | MB_YESNO | MB_DEFBUTTON2);
+src/dialogs3.cpp:77:            SendMessage(hWnd, WM_GETTEXT, MAX_PATH, (LPARAM)buf);
+src/dialogs3.cpp:85:                SendMessage(hWnd, CB_SETEDITSEL, 0, MAKELPARAM(errorPos, errorPos + 1));
+src/dialogs3.cpp:112:            SendMessage(hWnd, CB_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs3.cpp:141:    SetDlgItemText(HWindow, IDC_CHC_CODING, buff);
+src/dialogs3.cpp:159:  SetDlgItemText(HWindow, IDC_CHC_EOF, p);
+src/dialogs3.cpp:225:          InsertMenuItem(hMenu, i, TRUE, &mi);
+src/dialogs3.cpp:232:        InsertMenuItem(hMenu, 1, TRUE, &mi);
+src/dialogs3.cpp:287:            SendMessage(GetDlgItem(HWindow, IDE_FILTER), EM_SETSEL, errorPos, errorPos + 1);
+src/dialogs3.cpp:315:            SendMessage(hWnd, CB_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs3.cpp:352:            SendMessage(HWindow, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(HWindow, IDE_FILTER), TRUE);
+src/dialogs3.cpp:375:                SendMessage(HWindow, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(HWindow, IDE_FILTER), TRUE);
+src/dialogs3.cpp:433:                SendMessage(hWnd, CB_LIMITTEXT, PathBufSize - 1, 0);
+src/dialogs3.cpp:479:                SetWindowText(hSubject, Subject->Get());
+src/dialogs3.cpp:538:   keep synchronized with the InsertMenu() call below...
+src/dialogs3.cpp:548:            InsertMenu(hMenu, 0xFFFFFFFF, MF_BYCOMMAND | MF_STRING, 1, LoadStr(IDS_EDITNEWFILE_SAVEASDEFAULT));
+src/dialogs3.cpp:551:            InsertMenu(hMenu, 0xFFFFFFFF, MF_BYCOMMAND | MF_STRING, 2, buff);
+src/dialogs3.cpp:628:                SendMessage(hWnd, CB_LIMITTEXT, PathBufSize - 1, 0);
+src/dialogs3.cpp:720:            GetDlgItemText(HWindow, IDE_CM_SPEEDLIMIT, speedLimitText, 20);
+src/dialogs3.cpp:755:        SendMessage(speedLimitUnits, CB_RESETCONTENT, 0, 0);
+src/dialogs3.cpp:756:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_B_per_s));
+src/dialogs3.cpp:757:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_KB_per_s));
+src/dialogs3.cpp:758:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_MB_per_s));
+src/dialogs3.cpp:759:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_GB_per_s));
+src/dialogs3.cpp:760:        SendMessage(speedLimitUnits, CB_SETCURSEL, speedLimUnits, 0);
+src/dialogs3.cpp:765:        SetWindowText(speedLimit, num);
+src/dialogs3.cpp:766:        SendMessage(speedLimit, EM_LIMITTEXT, 19, 0);
+src/dialogs3.cpp:778:    SetDlgItemText(HWindow, IDC_CM_ADVANCED_INFO, buff);
+src/dialogs3.cpp:792:        GetDlgItemText(HWindow, IDE_CM_SPEEDLIMIT, speedLimitText, 20);
+src/dialogs3.cpp:815:            SendMessage(GetDlgItem(HWindow, IDC_CM_NAMED_MASK), EM_SETSEL, errorPos, errorPos + 1);
+src/dialogs3.cpp:873:            SendMessage(HWindow, DM_SETDEFID, IDOK, 0);
+src/dialogs3.cpp:936:            SendMessage(HWindow, WM_COMMAND, MAKEWPARAM(IDC_FIND_GREP, BN_CLICKED), 0);
+src/dialogs3.cpp:986:                SetWindowText(hSubject, buff);
+src/dialogs3.cpp:1131:                    SendMessage(HWindow, WM_NEXTDLGCTL, FALSE, FALSE); // focus to the mask
+src/dialogs3.cpp:1133:                    SetDlgItemText(HWindow, IDC_CM_NAMED_MASK, "*.*"); // default value for the mask
+src/dialogs3.cpp:1140:                    SendMessage(HWindow, WM_NEXTDLGCTL, FALSE, FALSE); // focus to the editbox
+src/dialogs3.cpp:1196:            SendMessage(hWnd, CB_LIMITTEXT, 2 * MAX_PATH - 1, 0);
+src/dialogs3.cpp:1332:                SetWindowText(GetDlgItem(HWindow, IDE_VOLNAME), volumeName);
+src/dialogs3.cpp:1348:                    SetWindowText(GetDlgItem(HWindow, IDT_MOUNTPOINT), mountPoint);
+src/dialogs3.cpp:1356:                    SetWindowText(GetDlgItem(HWindow, IDT_GUIDPATH), guidPath);
+src/dialogs3.cpp:1368:                GetWindowText(HWindow, buff + strlen(buff), 100); // fallback: keep the legacy A call
+src/dialogs3.cpp:1377:                SetWindowText(HWindow, buff);
+src/dialogs3.cpp:1380:            SetWindowText(GetDlgItem(HWindow, IDT_VOLSERNUM), volumeName);
+src/dialogs3.cpp:1383:            SetWindowText(GetDlgItem(HWindow, IDT_LONGNAMES), volumeName);
+src/dialogs3.cpp:1478:            SetWindowText(GetDlgItem(HWindow, IDT_FILESYSTEMFLAGS), volumeName);
+src/dialogs3.cpp:1480:            SetWindowText(GetDlgItem(HWindow, IDT_FILESYSTEMNAME), fileSystemNameBuffer);
+src/dialogs3.cpp:1675:                SetWindowText(GetDlgItem(HWindow, IDT_DRIVETYPE), volumeName);
+src/dialogs3.cpp:1689:    GetWindowText(hItem, buff, 200);
+src/dialogs3.cpp:1691:    HFONT hFont = (HFONT)SendMessage(hItem, WM_GETFONT, 0, 0);
+src/dialogs3.cpp:1696:    GetTextExtentPoint32(hDC, buff, (int)strlen(buff), &sz);
+src/dialogs3.cpp:1790:    if (SendMessage(edit, WM_GETTEXTLENGTH, 0, 0) == 0)
+src/dialogs3.cpp:1820:            SetWindowText(GetDlgItem(HWindow, IDS_NETPATH), Path);
+src/dialogs3.cpp:1857:            SendMessage(combo, CB_RESETCONTENT, 0, 0);
+src/dialogs3.cpp:1864:            SendMessage(combo, CB_SETCURSEL, (WPARAM)PackerConfig->GetPreferedPacker(), 0);
+src/dialogs3.cpp:1866:            i = (int)SendMessage(combo, CB_GETCURSEL, 0, 0);
+src/dialogs3.cpp:1879:            int i = (int)SendMessage(combo, CB_GETCURSEL, (WPARAM)PackerConfig->GetPreferedPacker(), 0);
+src/dialogs3.cpp:1895:        SendMessage(combo, CB_SETCURSEL, 0, 0);
+src/dialogs3.cpp:1988:                SetWindowText(hSubject, Subject->Get());
+src/dialogs3.cpp:2001:            int i = (int)SendMessage((HWND)lParam, CB_GETCURSEL, 0, 0);
+src/dialogs3.cpp:2015:                        GetWindowText(GetDlgItem(HWindow, IDE_PATH), name2, MAX_PATH);
+src/dialogs3.cpp:2055:                            SetWindowText(GetDlgItem(HWindow, IDE_PATH), name2);
+src/dialogs3.cpp:2107:            SendMessage(combo, CB_RESETCONTENT, 0, 0);
+src/dialogs3.cpp:2114:            SendMessage(combo, CB_SETCURSEL, (WPARAM)UnpackerConfig->GetPreferedUnpacker(), 0);
+src/dialogs3.cpp:2119:            int i = (int)SendMessage(combo, CB_GETCURSEL, 0, 0);
+src/dialogs3.cpp:2133:        SendMessage(combo, CB_SETCURSEL, 0, 0);
+src/dialogs3.cpp:2168:                SetWindowText(hSubject, Subject->Get());
+src/dialogs3.cpp:2260:        SetDlgItemText(HWindow, IDE_CHI_FILENAME, fileName);
+src/dialogs3.cpp:2296:        GetDlgItemText(HWindow, IDE_CHI_FILENAME, fileName, MAX_PATH);
+src/dialogs3.cpp:2372:        SendMessage(hList, LB_SETCOLUMNWIDTH, 32 + 8, 0);
+src/dialogs3.cpp:2373:        SendMessage(hList, LB_SETITEMHEIGHT, 0, MAKELPARAM(32 + 8, 0));
+src/dialogs3.cpp:2575:            DrawText(dc, Text, -1, &tR, DT_CALCRECT | DT_LEFT | DT_NOPREFIX);
+src/dialogs3.cpp:2583:                DrawText(dc, Text, -1, &tR, DT_CALCRECT | DT_LEFT | DT_NOPREFIX | DT_WORDBREAK);
+src/dialogs3.cpp:2742:            DrawText(hDestDC, Text, (int)strlen(Text), &r, DT_LEFT | DT_NOPREFIX | DT_NOCLIP | (NeedWrap ? DT_WORDBREAK : 0));
+src/dialogs3.cpp:2903:            ListView_InsertItem(HListView, &lvi);
+src/dialogs3.cpp:2909:            ListView_SetItemText(HListView, index - 1, 1, buff);
+src/dialogs3.cpp:2911:            ListView_SetItemText(HListView, index - 1, 2, buff);
+src/dialogs3.cpp:2914:        SetDlgItemText(HWindow, IDC_CT_CODEPAGE, buff);
+src/menu2.cpp:288:    SendMessage(HWindow, WM_MOUSEMOVE, 0, MAKELPARAM(cursorPos.x, cursorPos.y));
+src/menu2.cpp:1020:        if (!InsertMenuItem(hMenu, i, TRUE, &mii))
+src/menu2.cpp:1044:        GetMenuItemInfo(hMenu, i, TRUE, &mii);
+src/menu2.cpp:1098:        if (!GetMenuItemInfo(HWindowsMenu, i, TRUE, (MENUITEMINFO*)&mii))
+src/menu2.cpp:1641:        DWORD ret = (DWORD)(SendMessage(SharedRes->HParent, WM_MENUCHAR, MF_POPUP, (LPARAM)hMenu) & 0xffffffff);
+src/menu2.cpp:2073:                if (SendMessage(SharedRes->HParent, WM_USER_CONTEXTMENU,
+src/menu2.cpp:2098:                if (SendMessage(SharedRes->HParent, WM_USER_CONTEXTMENU,
+src/menu2.cpp:2306:            if (SendMessage(SharedRes->HParent, WM_USER_CONTEXTMENU,
+src/menu2.cpp:2520:        SendMessage(SharedRes->HParent, WM_USER_INITMENUPOPUP,
+src/menu2.cpp:2526:            SendMessage(SharedRes->HParent, WM_INITMENUPOPUP, (WPARAM)HWindowsMenu, MAKELPARAM(submenuItemPos, 0));
+src/menu2.cpp:2534:            SendMessage(SharedRes->HParent, WM_USER_UNINITMENUPOPUP,
+src/menu2.cpp:2671:            SendMessage(SharedRes->HParent, WM_USER_UNINITMENUPOPUP,
+src/menu2.cpp:2864:            SendMessage(SharedRes->HParent, WM_USER_UNINITMENUPOPUP,
+src/menu2.cpp:2964:        SendMessage(hwnd, WM_USER_ENTERMENULOOP, 0, 0);
+src/menu2.cpp:2974:        SendMessage(hwnd, WM_USER_LEAVEMENULOOP, 0, 0);
+src/menu2.cpp:2988:        SendMessage(hWndUnderCursor, WM_MOUSEMOVE, 0, MAKELPARAM(cursorPos.x, cursorPos.y));
+src/dialogs2.cpp:432:        SetWindowText(GetDlgItem(HWindow, IDC_EST_SIZE), UnknownText);
+src/dialogs2.cpp:433:        SetWindowText(GetDlgItem(HWindow, IDC_EST_UTIL), UnknownText);
+src/dialogs2.cpp:445:        GetDlgItemText(HWindow, IDS_OCCUPIED, UnknownText, 100); // obtain the "unknown" string for later use
+src/dialogs2.cpp:514:        SendMessage(hCombo, CB_RESETCONTENT, 0, 0);
+src/dialogs2.cpp:515:        SendMessage(hCombo, CB_LIMITTEXT, 11, 0);
+src/dialogs2.cpp:523:            SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)buf);
+src/dialogs2.cpp:529:            SendMessage(hCombo, CB_SETCURSEL, selIndex, 0);
+src/dialogs2.cpp:533:            SendMessage(hCombo, WM_SETTEXT, 0, (LPARAM)buf);
+src/dialogs2.cpp:584:                SendMessage(hWnd, CB_SETEDITSEL, 0, MAKELPARAM(errorPos, errorPos + 1));
+src/dialogs2.cpp:602:            SendMessage(hWnd, CB_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs2.cpp:657:        GetWindowText(HWindow, buff, 5000);
+src/dialogs2.cpp:659:        SetWindowText(HWindow, buff2);
+src/dialogs2.cpp:709:                ListView_InsertItem(hListView, &lvi);
+src/dialogs2.cpp:771:        SendMessage(HWindow, WM_SYSCOMMAND, SC_RESTORE, 0);
+src/dialogs2.cpp:875:        SetDlgItemText(HWindow, IDC_SLG_WEB, Items[index].Web);
+src/dialogs2.cpp:898:        ListView_InsertItem(HListView, &lvi);
+src/dialogs2.cpp:911:        ListView_SetItemText(HListView, i, 1, buff);
+src/dialogs2.cpp:1057:            SetWindowText(HWindow, MAINWINDOW_NAME);
+src/dialogs2.cpp:1068:                if (GetWindowText(HWindow, buf + len, 200 - len))
+src/dialogs2.cpp:1069:                    SetWindowText(HWindow, buf);
+src/dialogs2.cpp:1073:            SetDlgItemText(HWindow, IDCANCEL, ExitButtonLabel);
+src/dialogs2.cpp:1091:        GetDlgItemText(HWindow, IDC_SLG_DESCR, buff, 100);
+src/dialogs2.cpp:1096:        GetDlgItemText(HWindow, IDC_SLG_PATH, buff, 100);
+src/dialogs2.cpp:1103:        SendMessage(HWindow, WM_SYSCOMMAND, SC_RESTORE, 0);
+src/dialogs2.cpp:1123:                MessageBox(HWindow, "Unable to find any language file (.SLG) in subdirectory LANG.\n"
+src/dialogs2.cpp:1252:            SetWindowText(HWindow, LoadStr(IDS_USERMENUCOMPAREARGSTITLE));
+src/dialogs2.cpp:1253:            SetDlgItemText(HWindow, IDT_UMC_NAME1, LoadStr(IDS_USERMENUCOMPAREARG1));
+src/dialogs2.cpp:1254:            SetDlgItemText(HWindow, IDT_UMC_NAME2, LoadStr(IDS_USERMENUCOMPAREARG2));
+src/salamdr2.cpp:308:    SendMessage(hCombo, CB_RESETCONTENT, 0, 0);
+src/common\handles.cpp:566:        if (MessageBoxA(parent, msgBuf, __MessagesTitle,
+src/dialogs5.cpp:94:    SendMessage(HListView, WM_SETREDRAW, FALSE, 0);
+src/dialogs5.cpp:108:        SendMessage(Header->HWindow, WM_SETREDRAW, FALSE, 0);
+src/dialogs5.cpp:110:        SendMessage(Header->HWindow, WM_SETREDRAW, TRUE, 0);
+src/dialogs5.cpp:120:    SendMessage(HListView, WM_SETREDRAW, TRUE, 0);
+src/dialogs5.cpp:380:        SetWindowText(GetDlgItem(HWindow, IDC_PLUGINDESCRIPTION), "");
+src/dialogs5.cpp:381:        SetWindowText(GetDlgItem(HWindow, IDC_PLUGINCOPYRIGHT), "");
+src/dialogs5.cpp:382:        SetWindowText(GetDlgItem(HWindow, IDC_PLUGINWWW), "");
+src/dialogs5.cpp:384:        SetWindowText(GetDlgItem(HWindow, IDC_PLUGINEXTENSIONS), "");
+src/dialogs5.cpp:385:        SetWindowText(GetDlgItem(HWindow, IDC_PLUGINFSNAME), "");
+src/dialogs5.cpp:386:        SetWindowText(GetDlgItem(HWindow, IDC_PLUGINTHUMBNAILS), "");
+src/dialogs5.cpp:387:        SetWindowText(GetDlgItem(HWindow, IDC_PLUGINFUNCTIONS), "");
+src/dialogs5.cpp:495:        GetDlgItemText(HWindow, IDC_PLUGINSHOWINCHDRV, ShowInChDrvText, 200);
+src/dialogs5.cpp:498:        GetDlgItemText(HWindow, IDC_PLUGINHEADER, InstalledPluginsText, 200);
+src/dialogs5.cpp:1032:    SendMessage(HListView, WM_SETREDRAW, FALSE, 0);
+src/dialogs5.cpp:1064:            ListView_InsertItem(HListView, &lvi);
+src/dialogs5.cpp:1086:        ListView_SetItemText(HListView, row, 0, buff);
+src/dialogs5.cpp:1089:        ListView_SetItemText(HListView, row, 1, buff);
+src/dialogs5.cpp:1102:    SendMessage(HListView, WM_SETREDRAW, TRUE, 0);
+src/dialogs5.cpp:1393:    int sel = (int)SendMessage(GetDlgItem(HWindow, IDL_UPDATEDFILES), LB_GETSELCOUNT, 0, 0);
+src/dialogs5.cpp:1423:        SendMessage(list, LB_SETSEL, TRUE, -1);
+src/dialogs5.cpp:1443:            if (SendMessage(GetDlgItem(HWindow, IDL_UPDATEDFILES), LB_GETCOUNT, 0, 0) != 0)
+src/dialogs5.cpp:1457:            int selCount = (int)SendMessage(list, LB_GETSELCOUNT, 0, 0);
+src/dialogs5.cpp:1463:                    SendMessage(list, LB_GETSELITEMS, selCount, (LPARAM)indexes);
+src/dialogs5.cpp:1490:            int selCount = (int)SendMessage(list, LB_GETSELCOUNT, 0, 0);
+src/dialogs5.cpp:1499:                        SendMessage(list, LB_GETSELITEMS, selCount, (LPARAM)indexes);
+src/dialogs5.cpp:1504:                        SendMessage(list, LB_RESETCONTENT, 0, 0);
+src/dialogs5.cpp:1508:                        if (SendMessage(list, LB_GETCOUNT, 0, 0) == 0) // this was "ignore all"
+src/dialogs5.cpp:1618:    HTREEITEM ret = TreeView_InsertItem(HTreeView, &tvis);
+src/dialogs5.cpp:1864:            SendMessage(HWindow, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(HWindow, IDE_DRVSPEC_ONERRGOTO), TRUE);
+src/dialogs5.cpp:2051:    SendMessage(GetDlgItem(HWindow, IDE_COMMAND), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs5.cpp:2052:    SendMessage(GetDlgItem(HWindow, IDE_ARGUMENTS), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs5.cpp:2053:    SendMessage(GetDlgItem(HWindow, IDE_INITDIR), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs5.cpp:2057:    SendMessage(GetDlgItem(HWindow, IDE_ARGUMENTS), EM_SETSEL, 0, -1); // so the browse overwrites the content
+src/dialogs5.cpp:2059:    SendMessage(GetDlgItem(HWindow, IDE_INITDIR), EM_SETSEL, 0, -1); // so the browse overwrites the content
+src/dialogs5.cpp:2434:    SendMessage(GetDlgItem(HWindow, IDE_COMMAND), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs5.cpp:2435:    SendMessage(GetDlgItem(HWindow, IDE_ARGUMENTS), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs5.cpp:2436:    SendMessage(GetDlgItem(HWindow, IDE_INITDIR), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs5.cpp:2440:    SendMessage(GetDlgItem(HWindow, IDE_ARGUMENTS), EM_SETSEL, 0, -1); // so the browse overwrites the content
+src/dialogs5.cpp:2442:    SendMessage(GetDlgItem(HWindow, IDE_INITDIR), EM_SETSEL, 0, -1); // so the browse overwrites the content
+src/dialogs5.cpp:2820:    SendMessage(hEdit, WM_SETFONT, (WPARAM)HPanelFont, MAKELPARAM(TRUE, 0));
+src/dialogs5.cpp:2875:        SendMessage(hWnd, WM_GETTEXT, MAX_PATH, (LPARAM)buff);
+src/dialogs5.cpp:2950:   keep synchronized with the InsertMenu() call below...
+src/dialogs5.cpp:2961:            InsertMenu(hMenu, 0xFFFFFFFF, cstFont ? 0 : MF_CHECKED | MF_BYCOMMAND | MF_STRING, 1, LoadStr(IDS_USEDEFAULTFONT));
+src/dialogs5.cpp:2962:            InsertMenu(hMenu, 0xFFFFFFFF, cstFont ? MF_CHECKED : 0 | MF_BYCOMMAND | MF_STRING, 2, LoadStr(IDS_USECUSTOMFONT));
+src/dialogs5.cpp:3031:                SendMessage(GetParent(HWindow), WM_NEXTDLGCTL, (WPARAM)HWindow, TRUE);
+src/dialogs5.cpp:3032:            int index = LOWORD(SendMessage(HWindow, LB_ITEMFROMPOINT, 0,
+src/dialogs5.cpp:3039:            SendMessage(HWindow, LB_GETITEMRECT, index, (LPARAM)&r);
+src/dialogs5.cpp:3051:            SendMessage(HWindow, WM_LBUTTONDOWN, wParam, lParam);
+src/dialogs5.cpp:3073:        SendMessage(hList, LB_SETSEL, select, i);
+src/dialogs5.cpp:3076:    SendMessage(hList, LB_SETCARETINDEX, 0, FALSE);
+src/dialogs5.cpp:3087:        BOOL selected = (BOOL)SendMessage(hList, LB_GETSEL, i, 0);
+src/dialogs5.cpp:3124:    SendMessage(hList, LB_SETCOLUMNWIDTH, CharSize.cx + 2, 0);
+src/dialogs5.cpp:3126:    SendMessage(hList, LB_SETITEMHEIGHT, 0, MAKELPARAM(/*CharSize.cy + 3*/ r.bottom - r.top - 4, 0));
+src/dialogs5.cpp:3127:    SendMessage(hList, LB_SETCOUNT, DRIVES_COUNT, 0);
+src/dialogs5.cpp:3150:            GetTextExtentPoint32(hDC, buff, 2, &sz);
+src/dialogs5.cpp:3207:            DrawText(hDC, text, 2, &dr, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+src/dialogs5.cpp:3222:        SendMessage(hList, LB_SETCARETINDEX, index, FALSE);
+src/dialogs5.cpp:3223:        BOOL selected = (BOOL)SendMessage(hList, LB_GETSEL, index, 0);
+src/dialogs5.cpp:3224:        SendMessage(hList, LB_SETSEL, !selected, index);
+src/dialogs5.cpp:3371:    int oldIndex = (int)SendMessage(list, LB_GETCURSEL, 0, 0);
+src/dialogs5.cpp:3381:    SendMessage(list, LB_RESETCONTENT, 0, 0);
+src/dialogs5.cpp:3407:            SendMessage(list, LB_SETCURSEL, i, 0);
+src/dialogs5.cpp:3409:    if (SendMessage(list, LB_GETCURSEL, 0, 0) == LB_ERR)
+src/dialogs5.cpp:3410:        SendMessage(list, LB_SETCURSEL, 0, 0); // fallback
+src/dialogs5.cpp:3419:        int i = (int)SendMessage(list, LB_GETCARETINDEX, 0, 0);
+src/dialogs5.cpp:3421:        if (SendMessage(list, LB_GETTEXT, i, (LPARAM)buf) != LB_ERR)
+src/worker.cpp:1043:        SendMessage(hProgressDlg, WM_USER_SETDIALOG, (WPARAM)data, 0);
+src/worker.cpp:1059:        SendMessage(hProgressDlg, WM_USER_SETDIALOG, 0, 0);
+src/worker.cpp:1070:        SendMessage(hProgressDlg, WM_USER_SETDIALOG, 0, 0);
+src/worker.cpp:1751:            SendMessage(hProgressDlg, WM_USER_DIALOG, 2, (LPARAM)data);
+src/worker.cpp:2566:                                        SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:2680:                                    SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:2802:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 8, (LPARAM)data);
+src/worker.cpp:2875:                    SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:2930:            SendMessage(hProgressDlg, WM_USER_DIALOG, 6, (LPARAM)data);
+src/worker.cpp:3292:                SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:3399:            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:3979:            SendMessage(HProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:4105:        SendMessage(HProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:4689:                                SendMessage(hProgressDlg, WM_USER_DIALOG, 12, (LPARAM)data);
+src/worker.cpp:4862:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:4911:                        SendMessage(hProgressDlg, WM_USER_DIALOG, 8, (LPARAM)data);
+src/worker.cpp:4997:                                SendMessage(hProgressDlg, WM_USER_DIALOG, 8, (LPARAM)data);
+src/worker.cpp:5040:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:5087:                                SendMessage(hProgressDlg, WM_USER_DIALOG, 9, (LPARAM)data);
+src/worker.cpp:5128:                                SendMessage(hProgressDlg, WM_USER_DIALOG, 10, (LPARAM)data);
+src/worker.cpp:5165:                        SendMessage(hProgressDlg, WM_USER_DIALOG, 12, (LPARAM)data);
+src/worker.cpp:5263:                                    SendMessage(hProgressDlg, WM_USER_DIALOG, 1, (LPARAM)data);
+src/worker.cpp:5325:                                    SendMessage(hProgressDlg, WM_USER_DIALOG, 2, (LPARAM)data);
+src/worker.cpp:5495:                                                SendMessage(hProgressDlg, WM_USER_DIALOG, 12, (LPARAM)data);
+src/worker.cpp:5539:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:5581:            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:5666:                    SendMessage(hProgressDlg, WM_USER_DIALOG, 10, (LPARAM)data);
+src/worker.cpp:5714:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 9, (LPARAM)data);
+src/worker.cpp:5753:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 10, (LPARAM)data);
+src/worker.cpp:5970:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 1, (LPARAM)data);
+src/worker.cpp:6026:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 2, (LPARAM)data);
+src/worker.cpp:6074:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:6122:                        SendMessage(hProgressDlg, WM_USER_DIALOG, dir ? 4 : 3, (LPARAM)data);
+src/worker.cpp:6184:                    SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:6259:                    SendMessage(hProgressDlg, WM_USER_DIALOG, 2, (LPARAM)data);
+src/worker.cpp:6366:            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:6568:            SendMessage(hProgressDlg, WM_USER_DIALOG, 11, (LPARAM)data);
+src/worker.cpp:6683:                                        SendMessage(hProgressDlg, WM_USER_DIALOG, 12, (LPARAM)data);
+src/worker.cpp:6748:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 9, (LPARAM)data);
+src/worker.cpp:6789:                            SendMessage(hProgressDlg, WM_USER_DIALOG, 10, (LPARAM)data);
+src/worker.cpp:6836:                        SendMessage(hProgressDlg, WM_USER_DIALOG, 7, (LPARAM)data);
+src/worker.cpp:6870:                SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:6901:            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:6992:                SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:7208:            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:7451:                                    SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:7512:                                SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:7565:                                        SendMessage(hProgressDlg, WM_USER_DIALOG, 3, (LPARAM)data);
+src/worker.cpp:7606:                                SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:7669:                    SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:7717:            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:7817:            SendMessage(hProgressDlg, WM_USER_DIALOG, 5, (LPARAM)data);
+src/worker.cpp:7881:            SendMessage(hProgressDlg, WM_USER_DIALOG, 0, (LPARAM)data);
+src/worker.cpp:8298:    SendMessage(hProgressDlg, WM_COMMAND, IDOK, 0); // we're done ...
+src/common\winlib.cpp:56:                                        : MessageBox(hParent, lpText, lpCaption, uType);
+src/common\winlib.cpp:142:    HWND hWnd = CreateWindowEx(dwExStyle,
+src/common\winlib.cpp:1035:            SendMessage(HDialog, WM_NEXTDLGCTL, (WPARAM)ctrl, TRUE);
+src/common\winlib.cpp:1061:                    SendMessage(HWindow, EM_SETSEL, 0, -1);
+src/common\winlib.cpp:1065:            SendMessage(HWindow, EM_LIMITTEXT, bufferSizeInChars - 1, 0);
+src/common\winlib.cpp:1066:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buffer);
+src/common\winlib.cpp:1068:                SendMessage(HWindow, EM_SETSEL, 0, -1);
+src/common\winlib.cpp:1091:            SendMessage(HWindow, WM_GETTEXT, bufferSizeInChars, (LPARAM)buffer);
+src/common\winlib.cpp:1113:    return SetWindowText(hWnd, u8Text); // not valid UTF-8 (transitional): keep the legacy path
+src/common\winlib.cpp:1132:    return GetWindowText(hWnd, u8Buf, u8BufSize); // UTF-8 would not fit: legacy A read (pre-004 truncation semantics)
+src/common\winlib.cpp:1166:    return SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)u8Text); // not valid UTF-8: legacy path
+src/common\winlib.cpp:1185:    return InsertMenuItemA(menu, item, byPosition, &miA);
+src/common\winlib.cpp:1199:    return SendMessage(listbox, LB_ADDSTRING, 0, (LPARAM)u8Text); // not valid UTF-8: legacy path
+src/common\winlib.cpp:1219:    SendMessageA(lv, LVM_SETITEMTEXTA, (WPARAM)item, (LPARAM)&lvi);
+src/common\winlib.cpp:1233:    SendMessageA(statusBar, SB_SETTEXTA, (WPARAM)part, (LPARAM)u8Text); // not valid UTF-8: legacy path
+src/common\winlib.cpp:1275:            SendMessage(HWindow, EM_LIMITTEXT, 30, 0);
+src/common\winlib.cpp:1277:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buff);
+src/common\winlib.cpp:1279:                SendMessage(HWindow, EM_SETSEL, 0, -1);
+src/common\winlib.cpp:1285:            SendMessage(HWindow, WM_GETTEXT, 31, (LPARAM)buff);
+src/common\winlib.cpp:1342:            SendMessage(HWindow, EM_LIMITTEXT, 15, 0);
+src/common\winlib.cpp:1344:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buff);
+src/common\winlib.cpp:1346:                SendMessage(HWindow, EM_SETSEL, 0, -1);
+src/common\winlib.cpp:1352:            SendMessage(HWindow, WM_GETTEXT, 16, (LPARAM)buff);
+src/common\winlib.cpp:1390:            SendMessage(HWindow, EM_LIMITTEXT, 25, 0);
+src/common\winlib.cpp:1396:            SendMessage(HWindow, WM_SETTEXT, 0, (LPARAM)buff);
+src/common\winlib.cpp:1398:                SendMessage(HWindow, EM_SETSEL, 0, -1);
+src/common\winlib.cpp:1404:            SendMessage(HWindow, WM_GETTEXT, 26, (LPARAM)buff);
+src/common\winlib.cpp:1506:            SendMessage(HWindow, BM_SETCHECK, ctrlValue == value, 0);
+src/common\winlib.cpp:1512:            if (SendMessage(HWindow, BM_GETCHECK, 0, 0) == 1)
+src/common\winlib.cpp:1529:            SendMessage(HWindow, BM_SETCHECK, value, 0);
+src/common\winlib.cpp:1535:            value = (int)SendMessage(HWindow, BM_GETCHECK, 0, 0);
+src/common\winlib.cpp:1551:            SendMessage(HWindow, TBM_SETPOS, TRUE, value);
+src/common\winlib.cpp:1556:            value = (int)SendMessage(HWindow, TBM_GETPOS, 0, 0);
+src/toolbar2.cpp:310:                    DrawText(CacheBitmap->HMemDC, item->Text, item->TextLen,
+src/toolbar2.cpp:664:                        DrawText(CacheBitmap->HMemDC, item->Text, item->TextLen,
+src/toolbar2.cpp:680:                DrawText(CacheBitmap->HMemDC, item->Text, item->TextLen, &r,
+src/menu1.cpp:341:            DrawText(sharedRes->HTempMemDC, ColumnL1, ColumnL1Len,
+src/menu1.cpp:356:            DrawText(sharedRes->HTempMemDC, ColumnL2, ColumnL2Len,
+src/menu1.cpp:371:            DrawText(sharedRes->HTempMemDC, ColumnR, ColumnRLen,
+src/execute.cpp:33:        SendMessage(HWindow, EM_GETSEL, (WPARAM)&SelStart, (LPARAM)&SelEnd);
+src/execute.cpp:40:        SendMessage(HWindow, EM_GETSEL, (WPARAM)&SelStart, (LPARAM)&SelEnd);
+src/execute.cpp:50:        SendMessage(HWindow, EM_GETSEL, (WPARAM)start, (LPARAM)end);
+src/execute.cpp:61:    SendMessage(HWindow, EM_SETSEL, SelStart, SelEnd);
+src/execute.cpp:62:    SendMessage(HWindow, EM_REPLACESEL, TRUE, (LPARAM)text);
+src/execute.cpp:1705:    SendMessage(GetDlgItem(hParent, editlineResID), WM_GETTEXT,
+src/execute.cpp:1711:        CALL_STACK_MESSAGE2("BrowseDirCommand::SendMessage( , , ,%s)", path);
+src/execute.cpp:1712:        SendMessage(GetDlgItem(hParent, editlineResID), WM_SETTEXT, 0, (LPARAM)path);
+src/execute.cpp:2014:                    InsertMenu(hSubMenu, 0xFFFFFFFF, MF_BYPOSITION | MF_SEPARATOR, 1, NULL);
+src/execute.cpp:2016:                    InsertMenu(hSubMenu, 0xFFFFFFFF, MF_BYPOSITION | MF_STRING, (UINT_PTR)i + 1,
+src/execute.cpp:2020:            InsertMenu(hMenu, 0xFFFFFFFF, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hSubMenu,
+src/execute.cpp:2026:                InsertMenu(hMenu, 0xFFFFFFFF, MF_BYPOSITION | MF_SEPARATOR, 1, NULL);
+src/execute.cpp:2028:                InsertMenu(hMenu, 0xFFFFFFFF, MF_BYPOSITION | MF_STRING, (UINT_PTR)i + 1,
+src/execute.cpp:2065:            SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)buff);
+src/execute.cpp:2066:            SendMessage(hEdit, EM_SETSEL, lstrlen(buff), lstrlen(buff));
+src/execute.cpp:2073:                SendMessage(hEdit, EM_REPLACESEL, TRUE, (LPARAM)buff);
+src/execute.cpp:2082:                SendMessage(hEdit, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+src/execute.cpp:2096:                    SendMessage(hEdit, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+src/execute.cpp:2097:                SendMessage(hEdit, EM_SETSEL, end - delta, end - delta);
+src/execute.cpp:2100:                SendMessage(hEdit, EM_SETSEL, end, end);
+src/execute.cpp:2104:            SendMessage(hButton, BM_SETSTYLE, BS_PUSHBUTTON, TRUE);
+src/execute.cpp:2118:            DWORD defID = (DWORD)SendMessage(hDialog, DM_GETDEFID, 0, 0);
+src/execute.cpp:2120:                SendMessage(GetDlgItem(hDialog, LOWORD(defID)), BM_SETSTYLE, BS_DEFPUSHBUTTON, TRUE);
+src/execute.cpp:2130:    SendMessage(GetDlgItem(hParent, editlineResID), WM_GETTEXT,
+src/execute.cpp:2156:            CALL_STACK_MESSAGE2("BrowseCommand::SendMessage( , , ,%s)", file);
+src/execute.cpp:2157:            SendMessage(GetDlgItem(hParent, editlineResID), WM_SETTEXT, 0, (LPARAM)file);
+src/dialogs6.cpp:99:    DrawText(hDC, line, -1, &r, DT_LEFT | DT_NOPREFIX | DT_WORDBREAK);
+src/dialogs6.cpp:161:      DrawText(hDC, LoadStr(IDS_TOD_DIDYOUKNOW), -1, &r, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
+src/dialogs6.cpp:344:      SendMessage(HWindow, WM_SETICON, ICON_BIG,
+src/dialogs6.cpp:490:    SendMessage(HListView, WM_SETREDRAW, FALSE, 0);
+src/dialogs6.cpp:508:            int index = ListView_InsertItem(HListView, &lvi);
+src/dialogs6.cpp:517:    SendMessage(HListView, WM_SETREDRAW, TRUE, 0);
+src/dialogs6.cpp:601:      CreateWindowEx(0,
+src/dialogs6.cpp:1285:    SendMessage(HListView, WM_SETREDRAW, FALSE, 0);
+src/dialogs6.cpp:1300:        int index = ListView_InsertItem(HListView, &lvi);
+src/dialogs6.cpp:1322:    SendMessage(HListView, WM_SETREDRAW, TRUE, 0);
+src/dialogs6.cpp:1345:            SendMessage(HWindow, WM_COMMAND, IDCANCEL, 0);
+src/dialogs6.cpp:1489:            SendMessage(GetDlgItem(parent, editline), EM_SETSEL, errorPos, errorPos + 1);
+src/dialogs6.cpp:1605:            SendMessage(HWindow, DM_SETDEFID, IDOK, 0);
+src/dialogs6.cpp:1696:                    SendMessage(HWindow, WM_NEXTDLGCTL, FALSE, FALSE); // focus to the mask
+src/dialogs6.cpp:1701:                    SendMessage(HWindow, WM_NEXTDLGCTL, FALSE, FALSE); // focus to the mask
+src/dialogs6.cpp:1933:                GetDlgItemText(HWindow, IDT_RUNNINGOPERS, buf, 50);
+src/dialogs6.cpp:1936:                    SetDlgItemText(HWindow, IDT_RUNNINGOPERS, num);
+src/dialogs6.cpp:2001:        SetDlgItemText(HWindow, IDE_ALTSTREAMS, Streams);
+src/dialogs6.cpp:2004:            SetWindowText(GetDlgItem(HWindow, IDT_FILEORDIR), LoadStr(IDS_FILETITLE));
+src/dialogs6.cpp:2011:        SetWindowText(GetDlgItem(HWindow, IDS_ERROR), LoadStr(resId));
+src/dialogs6.cpp:2104:            SetWindowText(GetDlgItem(HWindow, IDT_FILEORDIR), LoadStr(IDS_FILETITLE));
+src/dialogs6.cpp:2111:        SetWindowText(GetDlgItem(HWindow, IDS_ERROR), LoadStr(resId));
+src/dialogs6.cpp:2155:            SetWindowText(HWindow, Title);
+src/dialogs6.cpp:2241:        SetWindowText(GetDlgItem(HWindow, IDS_NEEDEDATTRS), text);
+src/dialogs6.cpp:2243:        SetWindowText(GetDlgItem(HWindow, IDS_CURRENTATTRS), text);
+src/dialogs6.cpp:2531:            ListView_InsertItem(HListView, &lvi);
+src/fileswn2.cpp:951:    SendMessage(HWindow, WM_SIZE, SIZE_RESTORED,
+src/fileswn2.cpp:987:    SendMessage(HWindow, WM_SIZE, SIZE_RESTORED,
+src/fileswn2.cpp:3597:                GetTextExtentPoint32(dc, formatedFileName, f->NameLen, &act);
+src/fileswn2.cpp:3610:                GetTextExtentPoint32(dc, formatedFileName, f->NameLen, &act);
+src/fileswn2.cpp:3727:                GetTextExtentPoint32(dc, DirColumnStr, DirColumnStrLen, &act);
+src/fileswn2.cpp:3768:                        GetTextExtentPoint32(dc, text, (int)strlen(text), &act);
+src/fileswn2.cpp:3802:                        GetTextExtentPoint32(dc, formatedFileName, nameLen, &act);
+src/fileswn2.cpp:3818:                    GetTextExtentPoint32(dc, formatedFileName + (int)(f->Ext - f->Name), (int)(f->NameLen - (f->Ext - f->Name)), &act);
+src/fileswn2.cpp:3830:                    GetTextExtentPoint32(dc, f->DosName, (int)strlen(f->DosName), &act);
+src/fileswn2.cpp:3863:                    GetTextExtentPoint32(dc, text, len, &act);
+src/fileswn2.cpp:3888:                        GetTextExtentPoint32(dc, text, (int)strlen(text), &act);
+src/fileswn2.cpp:3929:                                    GetTextExtentPoint32(dc, src, (int)strlen(src), &act);
+src/fileswn2.cpp:3944:                            GetTextExtentPoint32(dc, buf, resLen, &act);
+src/fileswn2.cpp:3960:                                GetTextExtentPoint32(dc, UpDirTypeName, UpDirTypeNameLen, &act);
+src/fileswn2.cpp:3969:                                GetTextExtentPoint32(dc, FolderTypeName, FolderTypeNameLen, &act);
+src/fileswn2.cpp:4009:                GetTextExtentPoint32(dc, text, numLen, &act);
+src/fileswn2.cpp:4032:                GetTextExtentPoint32(dc, text, (int)strlen(text), &act);
+src/fileswn2.cpp:4043:                GetTextExtentPoint32(dc, text, (int)strlen(text), &act);
+src/fileswn2.cpp:4128:                                GetTextExtentPoint32(dc, TransferBuffer, TransferLen, &act);
+src/fileswn9.cpp:1394:            SendMessage(GetListBoxHWND(), WM_MOUSELEAVE, 0, 0);
+src/fileswn9.cpp:1676:        GetTextExtentPoint32(hDC, buff, buffLen, &sz);
+src/fileswn9.cpp:1726:            DrawText(hDC, buff, buffLen, &r, DT_LEFT | DT_SINGLELINE | DT_TOP | DT_NOPREFIX);
+src/fileswn9.cpp:1735:            DrawText(hMaskDC, buff, buffLen, &r, DT_LEFT | DT_SINGLELINE | DT_TOP | DT_NOPREFIX);
+src/dialogs4.cpp:916:            SetDlgItemText(HWindow, IDC_CFGREG_INCOMPLETE_TITLE, LoadStr(IDS_SLGINCOMPLETE_TITLE));
+src/dialogs4.cpp:917:            SetDlgItemText(HWindow, IDC_CFGREG_INCOMPLETE_TEXT, LoadStr(IDS_SLGINCOMPLETE_TEXT));
+src/dialogs4.cpp:918:            SetDlgItemText(HWindow, IDC_CFGREG_INCOMPLETE_URL, IsSLGIncomplete);
+src/dialogs4.cpp:1021:            ListView_InsertItem(HListView, &lvi);
+src/dialogs4.cpp:1045:            ListView_SetItemText(HListView, i, 1, buff);
+src/dialogs4.cpp:1048:            ListView_SetItemText(HListView, i, 2, buff);
+src/dialogs4.cpp:1108:            ListView_InsertItem(HListView2, &lvi);
+src/dialogs4.cpp:1253:        ListView_SetItemText(HListView, index, 0, buff);
+src/dialogs4.cpp:1374:            SendMessage(hEdit, WM_CHAR, wParam, 0);
+src/dialogs4.cpp:1668:            SendMessage(GetDlgItem(HWindow, IDC_VIEW_INTEXT), EM_SETSEL, errorPos, errorPos + 1);
+src/dialogs4.cpp:1686:            SendMessage(GetDlgItem(HWindow, IDC_VIEW_INHEX), EM_SETSEL, errorPos, errorPos + 1);
+src/dialogs4.cpp:1773:    SendMessage(hEdit, WM_SETFONT, (WPARAM)HFont, MAKELPARAM(TRUE, 0));
+src/dialogs4.cpp:1779:    SetWindowText(hEdit, buf);
+src/dialogs4.cpp:1813:    keep synchronized with the InsertMenu() call below...
+src/dialogs4.cpp:1824:                InsertMenu(hMenu, 0xFFFFFFFF, cstFont ? 0 : MF_CHECKED | MF_BYCOMMAND | MF_STRING, 1, LoadStr(IDS_USEDEFAULTFONT));
+src/dialogs4.cpp:1825:                InsertMenu(hMenu, 0xFFFFFFFF, cstFont ? MF_CHECKED : 0 | MF_BYCOMMAND | MF_STRING, 2, LoadStr(IDS_USECUSTOMFONT));
+src/dialogs4.cpp:1868:    keep synchronized with the InsertMenu() call below...
+src/dialogs4.cpp:1883:                    InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultFg ? 0 : MF_CHECKED | MF_BYCOMMAND | MF_STRING, 1, LoadStr(IDS_SETCOLOR_CUSTOM_FG));
+src/dialogs4.cpp:1884:                    InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultFg ? MF_CHECKED : 0 | MF_BYCOMMAND | MF_STRING, 2, LoadStr(IDS_SETCOLOR_SYSTEM_FG));
+src/dialogs4.cpp:1885:                    InsertMenu(hMenu, 0xFFFFFFFF, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
+src/dialogs4.cpp:1886:                    InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultBk ? 0 : MF_CHECKED | MF_BYCOMMAND | MF_STRING, 3, LoadStr(IDS_SETCOLOR_CUSTOM_BK));
+src/dialogs4.cpp:1887:                    InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultBk ? MF_CHECKED : 0 | MF_BYCOMMAND | MF_STRING, 4, LoadStr(IDS_SETCOLOR_SYSTEM_BK));
+src/dialogs4.cpp:2081:            SetWindowText(hChild, "");
+src/dialogs4.cpp:2083:            SendMessage(hChild, BM_SETCHECK, BST_UNCHECKED, 0);
+src/dialogs4.cpp:2153:    SendMessage(GetDlgItem(HWindow, IDE_COMMAND), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs4.cpp:2154:    SendMessage(GetDlgItem(HWindow, IDE_ARGUMENTS), EM_LIMITTEXT, USRMNUARGS_MAXLEN - 1, 0);
+src/dialogs4.cpp:2155:    SendMessage(GetDlgItem(HWindow, IDE_INITDIR), EM_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs4.cpp:2159:    SendMessage(GetDlgItem(HWindow, IDE_ARGUMENTS), EM_SETSEL, 0, -1); // so that Browse overwrites the content
+src/dialogs4.cpp:2161:    SendMessage(GetDlgItem(HWindow, IDE_INITDIR), EM_SETSEL, 0, -1); // so that Browse overwrites the content
+src/dialogs4.cpp:2787:            ListView_InsertItem(HListView, &lvi);
+src/dialogs4.cpp:2796:                ListView_SetItemText(HListView, i, 1, buff);
+src/dialogs4.cpp:2849:        SetDlgItemText(HWindow, IDC_HOTPATH_NAME, name);
+src/dialogs4.cpp:2859:        SetDlgItemText(HWindow, IDC_HOTPATH_PATH, path);
+src/dialogs4.cpp:2896:            GetDlgItemText(HWindow, IDC_HOTPATH_PATH, buff, HOTPATHITEM_MAXPATH);
+src/dialogs4.cpp:2912:            GetDlgItemText(HWindow, IDC_HOTPATH_NAME, buff, MAX_PATH);
+src/dialogs4.cpp:2960:        ListView_SetItemText(HListView, index, 0, buffEmpty);
+src/dialogs4.cpp:3018:            SendMessage(HListView, LVM_EDITLABEL, EditIndex, 0);
+src/dialogs4.cpp:3081:            SendMessage(hIconCombo, CB_ADDSTRING, 0, (LPARAM)i);
+src/dialogs4.cpp:3082:        SendMessage(hIconCombo, CB_SETITEMHEIGHT, (WPARAM)-1, iconSize + 4); // selection field
+src/dialogs4.cpp:3083:        SendMessage(hIconCombo, CB_SETITEMHEIGHT, 0, iconSize + 4);          // list items
+src/dialogs4.cpp:3134:            SendMessage(hEdit, WM_CHAR, wParam, 0);
+src/dialogs4.cpp:3331:            SendMessage(GetDlgItem(HWindow, IDE_RECYCLEMASKS), EM_SETSEL, errorPos, errorPos + 1);
+src/dialogs4.cpp:3499:            SendMessage(HScheme, CB_ADDSTRING, 0, (LPARAM)LoadStr(schemes[i]));
+src/dialogs4.cpp:3502:            SendMessage(HItem, CB_ADDSTRING, 0, (LPARAM)LoadStr(Page7Data[i].ItemLabel));
+src/dialogs4.cpp:3506:            SetDlgItemText(HWindow, CConfigurationPage7Masks[i], LoadStr(labels[i]));
+src/dialogs4.cpp:3517:        SendMessage(HScheme, CB_SETCURSEL, index, 0);
+src/dialogs4.cpp:3518:        SendMessage(HItem, CB_SETCURSEL, 0, 0);
+src/dialogs4.cpp:3533:        int index = (int)SendMessage(HScheme, CB_GETCURSEL, 0, 0);
+src/dialogs4.cpp:3566:    int index = (int)SendMessage(HScheme, CB_GETCURSEL, 0, 0);
+src/dialogs4.cpp:3581:    index = (int)SendMessage(HItem, CB_GETCURSEL, 0, 0);
+src/dialogs4.cpp:3593:        SetDlgItemText(HWindow, CConfigurationPage7Items[i], label);
+src/dialogs4.cpp:3822:                data = &Page7Data[SendMessage(HItem, CB_GETCURSEL, 0, 0)];
+src/dialogs4.cpp:3825:                index = (int)SendMessage(HScheme, CB_GETCURSEL, 0, 0);
+src/dialogs4.cpp:3914:    keep synchronized with the InsertMenu() call below...
+src/dialogs4.cpp:3923:                InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultFg ? 0 : MF_CHECKED | MF_BYCOMMAND | MF_STRING, 1, LoadStr(IDS_SETCOLOR_CUSTOM));
+src/dialogs4.cpp:3924:                InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultFg ? MF_CHECKED : 0 | MF_BYCOMMAND | MF_STRING | enabledFg ? 0
+src/dialogs4.cpp:3932:    keep synchronized with the InsertMenu() call below...
+src/dialogs4.cpp:3952:                InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultFg ? 0 : MF_CHECKED | MF_BYCOMMAND | MF_STRING, 1, LoadStr(IDS_SETCOLOR_CUSTOM_FG));
+src/dialogs4.cpp:3954:                InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultFg ? MF_CHECKED : 0 | MF_BYCOMMAND | MF_STRING | enabledFg ? 0
+src/dialogs4.cpp:3957:                InsertMenu(hMenu, 0xFFFFFFFF, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
+src/dialogs4.cpp:3958:                InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultBk ? 0 : MF_CHECKED | MF_BYCOMMAND | MF_STRING, 3, LoadStr(IDS_SETCOLOR_CUSTOM_BK));
+src/dialogs4.cpp:3960:                InsertMenu(hMenu, 0xFFFFFFFF, checkedDefaultBk ? MF_CHECKED : 0 | MF_BYCOMMAND | MF_STRING | enabledBk ? 0
+src/dialogs4.cpp:3977:                int index = (int)SendMessage(HScheme, CB_GETCURSEL, 0, 0);
+src/dialogs4.cpp:3993:                    SendMessage(HScheme, CB_SETCURSEL, 4, 0);
+src/common\trace.cpp:904:    MessageBoxA(NULL, msg, "Debug Message", MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
+src/common\heap.cpp:118:            MessageBoxA(NULL, "Detected memory leaks!", "Heap Message",
+src/shellib.cpp:2483:        SetWindowText(hwnd, ((CBrowseData*)lpData)->Title);
+src/shellib.cpp:2495:            SendMessage(hwnd, BFFM_SETSELECTION, TRUE, (LPARAM)path);
+src/shellib.cpp:2504:            SendMessage(hwnd, BFFM_ENABLEOK, 0, ret);
+src/shellib.cpp:2763:                                if (GetMenuItemInfo(m, index, TRUE, &mi))
+src/common\messages.cpp:180:    data->Return = MessageBoxA(NULL, data->Text, data->Caption, data->Type | MB_SETFOREGROUND);
+src/common\messages.cpp:229:int C__Messages::MessageBox(HWND hWnd, const char* lpCaption, UINT uType)
+src/common\messages.cpp:237:    ret = ::MessageBoxA(hWnd, MessagesStringBuf.c_str(), lpCaption, uType);
+src/common\messages.cpp:253:    ret = ::MessageBoxA(hWnd, txt, lpCaption, uType);
+src/common\messages.cpp:349:int C__MessagesW::MessageBox(HWND hWnd, const WCHAR* lpCaption, UINT uType)
+src/dialogs.cpp:484:        SetWindowText(HPreposition, PrepositionCache);
+src/dialogs.cpp:523:        ::GetWindowText(HWindow, oldCaption, 200);
+src/dialogs.cpp:526:            SetWindowText(HWindow, buf);
+src/dialogs.cpp:552:        SendMessage(HWindow, WM_SETICON, ICON_BIG,
+src/dialogs.cpp:565:        SetDlgItemText(HWindow, IDB_PAUSERESUME, LoadStr(IDS_PROGDLGPAUSE));
+src/dialogs.cpp:568:            SetWindowText(HWindow, Caption); // in the modal version of the dialog this is the only title setup
+src/dialogs.cpp:658:                SetDlgItemText(HWindow, IDB_PAUSERESUME, LoadStr(ShowPause ? IDS_PROGDLGPAUSE : IDS_PROGDLGRESUME));
+src/dialogs.cpp:667:                    SetWindowText(HPreposition, LoadStr(IDS_COPYINGTO));
+src/dialogs.cpp:1079:            SendMessage(HWindow, WM_TIMER, IDT_UPDATESTATUS, 0); // send one more timer so the "stopped" status is displayed
+src/dialogs.cpp:1152:                SetDlgItemText(HWindow, IDB_PAUSERESUME, LoadStr(IDS_PROGDLGRESUME));
+src/dialogs.cpp:1175:                SendMessage(HWindow, WM_TIMER, IDT_UPDATESTATUS, 0); // send one more timer so status gets updated (some data might have finished copying)
+src/dialogs.cpp:1183:                SendMessage(HWindow, WM_TIMER, IDT_UPDATESTATUS, 0); // send one more timer so status gets updated (some data might have finished copying)
+src/dialogs.cpp:1412:                SetDlgItemText(HWindow, IDB_PAUSERESUME, LoadStr(ShowPause ? IDS_PROGDLGPAUSE : IDS_PROGDLGRESUME));
+src/dialogs.cpp:1557:        SetWindowText(HWindow, Caption);
+src/dialogs.cpp:1587:            if (GetDlgItemText(HWindow, IDB_IGNORE, buf, 100))
+src/dialogs.cpp:1727:        SetWindowText(HWindow, Caption);
+src/dialogs.cpp:1874:            SendMessage(hWnd, CB_LIMITTEXT, MAX_PATH - 1, 0);
+src/dialogs.cpp:2057:    SetDlgItemText(HWindow, IDOK, buff);
+src/dialogs.cpp:2075:            SetDlgItemText(HWindow, IDC_BETAEXPIREDURL, url + 8);
+src/dialogs.cpp:2079:        GetDlgItemText(HWindow, IDC_BETAEXPIREDDATE, orig, 200);
+src/dialogs.cpp:2096:        GetDlgItemText(HWindow, IDOK, OldOK, 100);
+src/dialogs.cpp:2111:            SetDlgItemText(HWindow, IDOK, OldOK);
+src/dialogs.cpp:2150:        GetDlgItemText(HWindow, IDE_SETSPLIMNUMBER, speedLimitText, 20);
+src/dialogs.cpp:2192:        SendMessage(speedLimitUnits, CB_RESETCONTENT, 0, 0);
+src/dialogs.cpp:2193:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_B_per_s));
+src/dialogs.cpp:2194:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_KB_per_s));
+src/dialogs.cpp:2195:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_MB_per_s));
+src/dialogs.cpp:2196:        SendMessage(speedLimitUnits, CB_ADDSTRING, 0, (LPARAM)LoadStr(IDS_SPEED_GB_per_s));
+src/dialogs.cpp:2197:        SendMessage(speedLimitUnits, CB_SETCURSEL, speedLimUnits, 0);
+src/dialogs.cpp:2202:        SetWindowText(speedLimit, num);
+src/dialogs.cpp:2203:        SendMessage(speedLimit, EM_LIMITTEXT, 19, 0);
+src/dialogs.cpp:2213:            GetDlgItemText(HWindow, IDE_SETSPLIMNUMBER, speedLimitText, 20);
+src/common\messages.h:74:    int MessageBox(HWND hWnd,             // handle of owner window
+src/common\messages.h:93:    int MessageBox(HWND hWnd,              // handle of owner window
+src/common\messages.h:116:        .MessageBox(((parent) == NULL) ? __MessagesParent : (parent), __MessagesTitle, (buttons))
+src/common\messages.h:121:        .MessageBox(((parent) == NULL) ? __MessagesParent : (parent), __MessagesTitleW, (buttons))
+src/common\messages.h:140:        .MessageBox(((parent) == NULL) ? __MessagesParent : (parent), __MessagesTitle, (buttons))
+src/common\messages.h:145:        .MessageBox(((parent) == NULL) ? __MessagesParent : (parent), __MessagesTitleW, (buttons))
+src/common\messages.h:164:    (__Messages.OStream() << str, __Messages).MessageBox(((parent) == NULL) ? __MessagesParent : (parent), __MessagesTitle, (buttons))
+src/common\messages.h:167:    (__MessagesW.OStream() << str, __MessagesW).MessageBox(((parent) == NULL) ? __MessagesParent : (parent), __MessagesTitleW, (buttons))
+src/common\messages.h:180:        .MessageBox(((parent) == NULL) ? __MessagesParent : (parent), \
+src/common\messages.h:186:        .MessageBox(((parent) == NULL) ? __MessagesParent : (parent), \
+src/filesbx1.cpp:437:        DrawText(HPrivateDC, textBuf, -1,
+src/filesbx1.cpp:1816:            SendMessage(HWindow, WM_MOUSEMOVE, 0, MAKELPARAM(p.x, p.y));
+src/filesbx1.cpp:1969:            GetTextExtentPoint32(dc, s, len, &sz);
+src/filesbx1.cpp:2207:        HHScrollBar = CreateWindow("scrollbar", "", WS_CHILD | SBS_HORZ | WS_VISIBLE | WS_CLIPSIBLINGS | SBS_HORZ,
+src/filesbx1.cpp:2225:            HVScrollBar = CreateWindow("scrollbar", "", WS_CHILD | SBS_VERT | WS_VISIBLE | WS_CLIPSIBLINGS | SBS_VERT,
+src/common\sheets.cpp:636:            DrawText(hdc, Text, (int)_tcslen(Text), &r, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_NOPREFIX);
+src/common\sheets.cpp:829:            ::SendMessage(ChildDialog->HWindow, uMsg, wParam, lParam);
+src/common\sheets.cpp:851:                    SendMessage(page->HWindow, WM_NOTIFY, _TPD_IDC_TREE, (LPARAM)&nmhdr);
+src/common\sheets.cpp:873:                            SendMessage(page->HWindow, WM_NOTIFY, _TPD_IDC_TREE, (LPARAM)&nmhdr);
+src/common\sheets.cpp:1074:        TPD->At(i)->HTreeItem = TreeView_InsertItem(HTreeView, &tvis);
+src/common\sheets.cpp:1117:        SendMessage(ChildDialog->HWindow, WM_NOTIFY, 0, (LPARAM)&nmhdr);

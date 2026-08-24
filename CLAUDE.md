@@ -286,6 +286,31 @@ plugin architecture preservation, UI consistency.
   leniently and was the one residual operational site. Contract:
   `specs/066-fix-surrogate-filenames/contracts/name-encoding-wtf8.md`;
   saltests 1221/0 incl. a real-NTFS facade round trip (`TestWtf8FileOps`).
+- 068-encoding-regression-review: product-wide review of encoding handling
+  (the whole core, not one release delta) after feature 067 showed a defect in
+  a surface earlier features were believed to cover. Seven charted perspectives
+  inventoried 2,529 candidate sites across 8 boundaries; **76 findings raised,
+  60 confirmed** by independent refute-first verifiers (8 refuted, 4 latent,
+  2 by-design, 2 withdrawn). **9 fixes**, each accepted by a third agent that
+  did not write it: command-line stack overrun (261-byte buffer vs a 765-byte
+  name), taskbar jump list (ANSI `IShellLink` → mojibake *and* wouldn't open),
+  per-drive remembered directory lost each restart, disk-cache/temp cleanup
+  dead under a non-ASCII `%TEMP%` (incl. the `RemoveTemporaryDir` plugin
+  service), rubber-band over-selection, a **regression feature 052 itself
+  introduced** (`dialogs5.cpp:495`), ZIP overwrite prompt, filecomp blank
+  title. Guard `tools/check_encoding.py` gains 3 strict rules (9 total), each
+  **proven to fire** on a planted defect; 4 stay report-only behind deferred
+  fixes; `signed-char-name-byte`'s premise is void — the product compiles
+  with `/J`. saltests 1229 → **1257**. Plugin ABI untouched (no
+  `src/plugins/shared/` or forwarder diff; interface 106).
+  **Deferred with evidence, not dismissed** — 6 systemic clusters, each
+  feature-sized: 88 of 90 dialogs are ANSI windows (non-ACP input becomes `?`
+  and is *persisted* by Change Directory / Find / user menu), ACP byte tables
+  behind all name comparison (`Č.txt` != `č.txt`), the undocumented UTF-8
+  `GetErrorText` (~27 plugin sites; a naive sweep would *regress* FTP),
+  `AlterFileName` (also drives Change Case, which renames on disk), the
+  plugin-facing ANSI services (FR-009 freeze), and the remaining facade
+  migration. Report: `specs/068-encoding-regression-review/review-report.md`.
 - 059-fix-onedrive-syncing-badge: the sync-in-progress badge (blue arrows)
   now shows as in Explorer. Windows exposes cloud state through two
   channels; folders in a pending state are claimed by NO overlay handler

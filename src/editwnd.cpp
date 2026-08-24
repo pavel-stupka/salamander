@@ -350,7 +350,7 @@ CEditLine::CEditLine()
     SelChangeDisabled = FALSE;
 }
 
-void CEditLine::InsertText(char* s)
+void CEditLine::InsertText(const char* s)
 {
     SendMessage(HWindow, EM_REPLACESEL, TRUE, (LPARAM)s);
 }
@@ -875,7 +875,12 @@ CEditLine::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (controlPressed && !altPressed) // filename of the selected file to the command line
             {
                 SkipCharacter = TRUE;
-                char path[MAX_PATH + 1];
+                // feature 068 (F-P6-05): CFileData::Name is UTF-8 and one NTFS
+                // component may need up to 3*255 bytes (spl_com.h:224 - the
+                // MAX_PATH-5 cap is gone since plugin interface 104), so the
+                // former char[MAX_PATH + 1] was up to 506 bytes short and the
+                // copy below overran the stack frame.
+                char path[SAL_FIND_NAME_U8 + 2]; // name + ' ' + terminator
                 const char* s;
                 int l;
                 CFilesWindow* p = MainWindow->GetActivePanel();
@@ -895,6 +900,12 @@ CEditLine::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 else
                     return 0;
                 l = (int)strlen(s);
+                if (l > (int)sizeof(path) - 2) // defence in depth: unreachable
+                {                              // for a well-formed name
+                    l = (int)sizeof(path) - 2;
+                    while (l > 0 && ((unsigned char)s[l] & 0xC0) == 0x80) // cut
+                        l--;                                              // only on a UTF-8 character boundary
+                }
                 memmove(path, s, l);
                 path[l++] = ' ';
                 path[l] = 0;
@@ -975,7 +986,11 @@ CEditLine::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (controlPressed && !altPressed)
             {
                 SkipCharacter = TRUE;
-                char path[MAX_PATH];
+                // feature 068 (F-P6-05): GetPath() is a UTF-8 panel path of up
+                // to SAL_MAX_PATH_UTF8 bytes (long paths since feature 004), so
+                // the former char[MAX_PATH] + strcpy overran the stack frame.
+                // CSalPathBuf is the house growable UTF-8 path buffer.
+                CSalPathBuf path;
                 const char* s;
                 switch (wParam)
                 {
@@ -991,19 +1006,26 @@ CEditLine::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 }
                 if (s != NULL)
                 {
+                    BOOL ok;
                     if (shiftPressed) // DOS path
                     {
-                        if (!GetShortPathName(s, path, MAX_PATH))
-                        {
-                            strcpy(path, s);
-                        }
+                        char shortPath[MAX_PATH]; // 8.3 form fits by definition
+                        if (GetShortPathName(s, shortPath, MAX_PATH))
+                            ok = path.Set(shortPath);
+                        else
+                            ok = path.Set(s);
                     }
                     else
                     {
-                        strcpy(path, s);
+                        ok = path.Set(s);
                     }
-                    SalPathAddBackslash(path, MAX_PATH);
-                    InsertText(path);
+                    // on allocation failure insert nothing rather than the bare
+                    // separator AddBackslash() would produce on an empty buffer
+                    if (ok)
+                    {
+                        path.AddBackslash();
+                        InsertText(path.Get());
+                    }
                 }
                 return 0;
             }

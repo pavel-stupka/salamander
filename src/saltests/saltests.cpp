@@ -1281,6 +1281,146 @@ static void TestWtf8FileOps()
     CHECK(SalRemoveDirectory(base.Get()));
 }
 
+// Feature 068: encoding regression review. Pins the converter behaviors the
+// review's site classification relies on (specs/068-encoding-regression-review/
+// research.md R3/R7), so a later change to the machinery is caught here before
+// the inventory's evidence goes stale. Per-finding property checks (the
+// fail-before/pass-after proof required by FR-010) are appended to this
+// function as the review confirms defects.
+static void TestEncodingReview068()
+{
+    WCHAR wide[8];
+    // (1) SalU8ToW reports "buffer too small" and "invalid input" the same way
+    //     (both 0) - defect class DC-20: a caller cannot tell them apart.
+    CHECK(SalU8ToW("abcdefghij", -1, wide, _countof(wide)) == 0); // 10 + NUL > 8
+    CHECK(SalU8ToW("\xC0\x80", -1, wide, _countof(wide)) == 0);   // overlong NUL
+    CHECK(SalU8ToW("abc", -1, wide, _countof(wide)) == 4);        // 3 + terminator
+
+    // (2) SalLegacyToU8Alloc keeps WTF-8 bytes verbatim - its probe is WTF-8
+    //     aware (feature 066), so a surrogate-bearing name is never misrouted
+    //     through the CP_ACP branch.
+    char* s = SalLegacyToU8Alloc(WTF8_REPRO);
+    CHECK(s != NULL && strcmp(s, WTF8_REPRO) == 0);
+    free(s);
+
+    // (3) the display converter never fails: one U+FFFD per malformed byte,
+    //     neighbours intact (DC-14 relies on this being display-only)
+    CHECK(SalU8ToWDisplay("a\xF9"
+                          "b",
+                          -1, wide, _countof(wide)) != 0 &&
+          wide[0] == L'a' && wide[1] == 0xFFFD && wide[2] == L'b');
+
+    // (4) the encoder is total for a lone surrogate (066 contract)
+    WCHAR lone[2] = {0xD800, 0};
+    char u8[8];
+    CHECK(SalWToU8(lone, -1, u8, _countof(u8)) != 0 &&
+          memcmp(u8, WTF8_D800, 3) == 0 && u8[3] == 0);
+
+    // (5) F-P3-02: srcLen == 0 is reported as a conversion FAILURE, although an
+    //     empty string is a legitimate input - callers cannot tell it from
+    //     malformed input (DC-20's sibling; salunicode.cpp:247 skips the WTF-8
+    //     retry only for srcLen == 0).
+    WCHAR w0[8];
+    char c0[8];
+    CHECK(SalU8ToW("", 0, w0, _countof(w0)) == 0);  // empty by length: "failure"
+    CHECK(SalU8ToW("", -1, w0, _countof(w0)) == 1); // the same text by NUL: success
+    CHECK(SalWToU8(L"", 0, c0, _countof(c0)) == 0); // the encoder agrees
+    CHECK(w0[0] == 0 && c0[0] == 0);                // both still 0-terminate
+
+    // (6) F-P3-09: capacity failure needs room for the terminator too - an
+    //     "exact fit" buffer fails exactly like malformed input, which is why
+    //     an all-ASCII selection can silently miss the wide shell path.
+    WCHAR w3[4];
+    CHECK(SalU8ToW("abc", -1, w3, 3) == 0); // 3 units + NUL > 3
+    CHECK(SalU8ToW("abc", -1, w3, 4) == 4); // one more WCHAR is enough
+
+    // (7) F-P3-03 (DC-09): the file facade REJECTS a path from an ANSI producer
+    //     instead of falling back - the strict conversion is the whole gate.
+    //     0xE8 is c-caron in CP1250 and is not valid UTF-8 in any locale.
+    const char* acpPath = "C:\\\xE8"
+                          "esta\\x.txt";
+    SetLastError(ERROR_SUCCESS);
+    CHECK(SalGetFileAttributes(acpPath) == INVALID_FILE_ATTRIBUTES);
+    CHECK(GetLastError() == ERROR_INVALID_NAME); // never reached the disk
+    CHECK(SalPathToWExtAlloc(acpPath) == NULL);  // and this is where it stops
+
+    // (8) F-P1-08/F-P1-10 (DC-09) repair property: SalLegacyToU8Alloc is what
+    //     makes an ANSI producer's path usable by the facade. Exact bytes are
+    //     assertable only under CP1250 (the conversion goes through CP_ACP).
+    if (GetACP() == 1250)
+    {
+        char* repaired = SalLegacyToU8Alloc(acpPath);
+        CHECK(repaired != NULL);
+        if (repaired != NULL)
+        {
+            WCHAR* wr = SalU8ToWAlloc(repaired);
+            CHECK(wr != NULL); // convertible now, so the facade would accept it
+            free(wr);
+            free(repaired);
+        }
+    }
+
+    // (9) F-P2-01/F-P6-02 (DC-19) mechanism: SalLegacyToU8Alloc's probe is
+    //     ALL-OR-NOTHING. One legacy byte anywhere makes the whole buffer
+    //     legacy, so the UTF-8 half is re-encoded and reaches the screen as
+    //     mojibake - this is why an ANSI template plus a UTF-8 argument is a
+    //     defect and not a cosmetic inconsistency.
+    if (GetACP() == 1250)
+    {
+        //   "n<0xE1>zev: " (CP1250) + "<U+016F>" (UTF-8 C5 AF)
+        char* mixedFixed = SalLegacyToU8Alloc("n\xE1"
+                                              "zev: \xC5\xAF");
+        //   CP1250 reads C5 AF as L-acute + Z-dot => C4 B9 C5 BB
+        CHECK(mixedFixed != NULL && strstr(mixedFixed, "\xC4\xB9\xC5\xBB") != NULL);
+        free(mixedFixed);
+    }
+    //   and the composed buffer itself has no wide path at all
+    CHECK(SalU8ToWAlloc("Zobrazit polo\xBE"
+                        "ku Obnoven\xC3\xAD") == NULL); // CP1250 z-caron + UTF-8
+
+    // (10) F-P3-07 (DC-12): clamping a UTF-8 path in BYTES cuts a sequence, and
+    //      the strict converter then refuses the WHOLE string - one truncated
+    //      character costs the entire status-bar hint. The display converter
+    //      keeps everything but the cut.
+    char clipped[8];
+    lstrcpyn(clipped, "abc\xC4\x8D"
+                      "def",
+             5); // 4 bytes + NUL: cuts C4 8D in half
+    CHECK(SalU8ToW(clipped, -1, w0, _countof(w0)) == 0);
+    CHECK(SalU8ToWDisplay(clipped, -1, w0, _countof(w0)) != 0 &&
+          w0[0] == L'a' && w0[3] == 0xFFFD);
+    //      the byte-safe way to clamp: walk characters, never bytes
+    CHECK(SalU8CharCount("abc\xC4\x8D"
+                         "def",
+                         -1) == 7);
+    const char* walk = "\xC4\x8D"
+                       "def";
+    CHECK(SalU8Next(walk) == walk + 2); // one character, two bytes
+
+    // (11) F-P1-16/F-P1-18 (DC-20) caller property: on failure the converter
+    //      0-terminates the destination, so a caller that ignores the return
+    //      value gets an EMPTY string - never the indeterminate stack contents
+    //      those two findings describe. The defect is the caller's, and this is
+    //      the guarantee a fix can rely on.
+    WCHAR poisoned[8];
+    int k;
+    for (k = 0; k < _countof(poisoned); k++)
+        poisoned[k] = L'X';
+    CHECK(SalU8ToW("\xC0\x80", -1, poisoned, _countof(poisoned)) == 0);
+    CHECK(poisoned[0] == 0);
+
+    // (12) WTF-8 stays byte-identical to UTF-8 for valid text, and the pair
+    //      round-trips a lone surrogate through the display converter too -
+    //      P1's and P6's operational sites all assume this (066 contract).
+    WCHAR wtf[32];
+    char back[32];
+    CHECK(SalU8ToW(WTF8_REPRO, -1, wtf, _countof(wtf)) != 0);
+    CHECK(SalWToU8(wtf, -1, back, _countof(back)) != 0 &&
+          strcmp(back, WTF8_REPRO) == 0);
+    CHECK(SalU8ToWDisplay(WTF8_REPRO, -1, wtf, _countof(wtf)) != 0 &&
+          wtf[4] == 0xD800); // display keeps the true unit, not U+FFFD
+}
+
 int main()
 {
     TestConversions();
@@ -1300,6 +1440,7 @@ int main()
     TestPluginMetadataEncoding();
     TestWtf8();
     TestWtf8FileOps();
+    TestEncodingReview068();
 
     printf("saltests: %d checks, %d failed\n", g_checks, g_failures);
     return g_failures;

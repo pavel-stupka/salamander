@@ -63,10 +63,14 @@ void SalConvertFindDataW(const WIN32_FIND_DATAW* w, WIN32_FIND_DATA* a,
     // call remains as a last-resort fail-safe only
     if (nameU8 != NULL &&
         SalWToU8(w->cFileName, -1, nameU8, nameU8Size) == 0 &&
+        // encoding-check: allow lossy-lenient-at-intake - last-resort fail-safe
+        // after the total SalWToU8; reachable only on a too-small buffer (066)
         WideCharToMultiByte(CP_UTF8, 0, w->cFileName, -1, nameU8, nameU8Size, NULL, NULL) == 0)
         nameU8[0] = 0;
     if (dosNameU8 != NULL &&
         SalWToU8(w->cAlternateFileName, -1, dosNameU8, dosNameU8Size) == 0 &&
+        // encoding-check: allow lossy-lenient-at-intake - last-resort fail-safe
+        // after the total SalWToU8; reachable only on a too-small buffer (066)
         WideCharToMultiByte(CP_UTF8, 0, w->cAlternateFileName, -1, dosNameU8, dosNameU8Size, NULL, NULL) == 0)
         dosNameU8[0] = 0;
 }

@@ -1,0 +1,160 @@
+src/viewer3.cpp:1318:                        sprintf(buf, LoadStr(IDS_INVALIDREGEXP), RegExp.GetPattern(), RegExp.GetLastErrorText());
+src/viewer3.cpp:1499:                    sprintf(buff, LoadStr(FindDialog.Regular ? IDS_FIND_NOREGEXPMATCH : IDS_FIND_NOMATCH), FindDialog.Text);
+src/zip.cpp:3948:        _snprintf_s(sourceDescr, sourceDescrSize, _TRUNCATE,
+src/zip.cpp:3949:                    ::LoadStr(nameIsDir ? (forDlgCaption ? IDS_DLG_QUESTION_DIRECTORY : IDS_QUESTION_DIRECTORY) : (forDlgCaption ? IDS_DLG_QUESTION_FILE : IDS_QUESTION_FILE)),
+src/worker.cpp:1168:            sprintf(buffer, "%s, %s", LoadStr(IDS_INVALID_DATEORTIME), LoadStr(IDS_INVALID_DATEORTIME));
+src/pack1.cpp:843:            sprintf(buffer, LoadStr(IDS_PACKRET_GENERAL), exitCode);
+src/mainwnd4.cpp:254:                sprintf(errorText, "%s\n\n%s", LoadStr(IDS_ERRORCREATINGTMPFILE),
+src/mainwnd4.cpp:721:                    sprintf(aliasBtnNames, "%d\t%s\t%d\t%s",
+src/mainwnd4.cpp:722:                            DIALOG_YES, LoadStr(IDS_MSGBOXBTN_FILES),
+src/mainwnd4.cpp:941:                            sprintf(buff, LoadStr(IDS_EXECERROR), cmdLine, GetErrorText(err));
+src/mainwnd4.cpp:1008:                            sprintf(buff, LoadStr(IDS_EXECERROR), cmdLine, GetErrorText(err));
+src/mapi.cpp:156:    p += sprintf(p, "%s ", LoadStr(IDS_EMAILFILES_SUBJECT));
+src/salamdr5.cpp:396:                    _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_CHECKINGPATHESC), path); // path may exceed the buffer (long paths, feature 010)
+src/salamdr5.cpp:505:            _snprintf_s(text, _TRUNCATE, LoadStr(IDS_NODISKINDRIVE), drive);
+src/pack3.cpp:1932:            sprintf(buffer, LoadStr(IDS_PACKRET_GENERAL), exitCode);
+src/finddlg2.cpp:688:            wsprintf(tt->Buffer, LoadStr(IDS_FINDTBTT_MESSAGES), ErrorsCount, InfosCount);
+src/finddlg2.cpp:1915:            wsprintf(buff, LoadStr(IDS_FINDERRORS_SKIPPING), Log->GetSkippedCount());
+src/mainwnd5.cpp:1776:            _snprintf_s(buf, _TRUNCATE, "%s\n\n%s ", LoadStr(messageID), LoadStr(IDS_CMPDIRS_NOTE));
+src/shellsup.cpp:1975:                        sprintf(p, " (%s)%s", LoadStr(IDS_PASTE_CHANGE_DIRECTORY), tail);
+src/shellsup.cpp:2180:                                sprintf(p, " (%s)%s", LoadStr(IDS_PASTE_CHANGE_DIRECTORY), tail);
+src/salamdr1.cpp:1097:        _snprintf_s(text, _TRUNCATE, LoadStr(IDS_NAMEISTOOLONG), name, path);
+src/salamdr1.cpp:1121:                sprintf(aliasBtnNames, "%d\t%s\t%d\t%s\t%d\t%s",
+src/salamdr1.cpp:1122:                        DIALOG_YES, LoadStr(IDS_MSGBOXBTN_SKIP),
+src/salamdr1.cpp:3404:            sprintf(skippedNames, LoadStr(IDS_NUMOFSKIPPEDPLUGINNAMES), skipped);
+src/salamdr1.cpp:3406:        sprintf(msg, LoadStr(IDS_NOTALLPLUGINSCFGIMPORTED), names, skippedNames);
+src/salamdr1.cpp:3419:        sprintf(aliasBtnNames, "%d\t%s\t%d\t%s",
+src/salamdr1.cpp:3420:                DIALOG_OK, LoadStr(IDS_STARTWITHOUTMISSINGPLUGINS),
+src/salamdr1.cpp:4573:                            sprintf(aliasBtnNames, "%d\t%s", DIALOG_OK, LoadStr(IDS_SELLANGEXITBUTTON));
+src/mainwnd1.cpp:132:                    sprintf(root, "%s\t%s+%s+%d", name, LoadStr(IDS_CTRL), LoadStr(IDS_SHIFT), key);
+src/mainwnd1.cpp:134:                    sprintf(root, "%s\t%s+%d", name, LoadStr(IDS_CTRL), key);
+src/mainwnd1.cpp:1953:            sprintf(stdWndName + lstrlen(stdWndName), " (%s)", LoadStr(IDS_AS_ADMIN_TITLE));
+src/fileswn3.cpp:285:        _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_READINGPATHESC), GetPath()); // path may exceed the buffer (long paths, feature 010)
+src/fileswn3.cpp:370:                        sprintf(buf, LoadStr(IDS_NODISKINDRIVE), drive);
+src/fileswn3.cpp:2423:                                            _snprintf_s(errBuf, _countof(errBuf), _TRUNCATE, LoadStr(IDS_PATHINARCHIVENOTFOUND), end);
+src/fileswn3.cpp:2502:                                            _snprintf_s(errBuf, _countof(errBuf), _TRUNCATE, LoadStr(IDS_NODISKINDRIVE), drive);
+src/icncache.cpp:1239:                _snprintf_s(errBuf, _TRUNCATE, LoadStr(IDS_UNABLETOGETASSOC), GetErrorText(enumRet));
+src/icncache.cpp:1286:                    _snprintf_s(errBuf, _TRUNCATE, LoadStr(IDS_UNABLETOGETASSOC), GetErrorText(enumRet));
+src/salamdr2.cpp:898:                            sprintf(text, LoadStr(IDS_EXP_VARNOTFOUND), buf);
+src/salamdr2.cpp:949:                                    sprintf(text, LoadStr(IDS_EXP_ENVVARNOTFOUND), envVar);
+src/salamdr2.cpp:951:                                    sprintf(text, LoadStr(IDS_EXP_ENVVARTOOLARGE), envVar);
+src/salamdr2.cpp:974:                                        sprintf(aliasBtnNames, "%d\t%s", DIALOG_OK, LoadStr(IDS_BUTTON_IGNORE));
+src/mainwnd2.cpp:1004:                _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_CORRUPTEDCONFIGFOUND), root);
+src/mainwnd2.cpp:1024:                sprintf(aliasBtnNames, "%d\t%s\t%d\t%s", DIALOG_OK, LoadStr(IDS_CORRUPTEDCONFIGREMOVEBTN),
+src/mainwnd2.cpp:3729:            wsprintf(buff + strlen(buff), "\t%s+%s", LoadStr(IDS_SHIFT), LoadStr(IDS_ESCAPE));
+src/mainwnd2.cpp:3734:            wsprintf(buff + strlen(buff), "\t%s+%s+%s", LoadStr(IDS_CTRL), LoadStr(IDS_SHIFT), LoadStr(IDS_F11));
+src/mainwnd3.cpp:2844:                _snprintf_s(buff, _TRUNCATE, LoadStr(IDS_SAVECFG_EXPFILEEXISTS), ConfigurationName);
+src/mainwnd3.cpp:4900:                sprintf(p, " (%s)%s", LoadStr(IDS_PASTE_CHANGE_DIRECTORY), tail);
+src/mainwnd3.cpp:5979:        sprintf(buff, "%s\n", LoadStr(IDS_SLGINCOMPLETE_TEXT));
+src/salamdr3.cpp:1122:                sprintf(title, LoadStr(IDS_QUESTION));
+src/salamdr3.cpp:1124:                sprintf(checkText, LoadStr(IDS_DONTSHOWAGAINCD));
+src/salamdr3.cpp:1172:                        _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_NAMEUSEDFORFILE), name);
+src/salamdr3.cpp:1219:                    _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_CREATEDIRFAILED), name);
+src/salamdr3.cpp:1258:        _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_NAMEUSEDFORFILE), dir);
+src/fileswn4.cpp:1823:            out2LenA = sprintf(out2, LoadStr(IDS_INVALID_DATEORTIME));
+src/fileswn4.cpp:1839:            out2LenB = sprintf(out2 + out2LenA, LoadStr(IDS_INVALID_DATEORTIME));
+src/fileswn5.cpp:1126:                        sprintf(buff, LoadStr(IDS_ERROREXECVIEW), expCommand, GetErrorText(err));
+src/fileswn5.cpp:1145:                    sprintf(buff, LoadStr(IDS_ERROREXECVIEW), expCommand, LoadStr(IDS_TOOLONGNAME));
+src/fileswn5.cpp:1449:                    sprintf(buff, LoadStr(IDS_ERROREXECEDIT), expCommand, GetErrorText(err));
+src/fileswn5.cpp:1461:                sprintf(buff, LoadStr(IDS_ERROREXECEDIT), expCommand, LoadStr(IDS_TOOLONGNAME));
+src/fileswn5.cpp:1621:            sprintf(buff, LoadStr(IDS_VIEWWITH_EXTERNAL), item->Command);
+src/fileswn5.cpp:1811:            sprintf(buff, LoadStr(IDS_EDITWITH_EXTERNAL), item->Command);
+src/find.cpp:166:    sprintf(ItemName, "\"%s\" %s \"%s\"",
+src/find.cpp:167:            NamedText, LoadStr(IDS_FF_IN), LookInText);
+src/find.cpp:853:                sprintf(buf, LoadStr(IDS_ERROR_READING_FILE2), GetErrorText(err));
+src/find.cpp:905:        sprintf(buf, LoadStr(IDS_ERROR_OPENING_FILE2), GetErrorText(err));
+src/find.cpp:1434:            sprintf(buf, LoadStr(getLinkFileSizeErr ? IDS_GETLINKTGTFILESIZEERROR : IDS_ERROR_OPENING_FILE2),
+src/find.cpp:1701:            sprintf(message, LoadStr(IDS_DIRERRORFORMAT), GetErrorText(err));
+src/find.cpp:1743:            sprintf(message, LoadStr(IDS_DIRERRORFORMAT), GetErrorText(err));
+src/fileswn6.cpp:1590:        _snprintf_s(text, _TRUNCATE, LoadStr(IDS_NAMEISTOOLONG), dirName, sourcePath);
+src/fileswn6.cpp:1612:            sprintf(aliasBtnNames, "%d\t%s\t%d\t%s\t%d\t%s",
+src/fileswn6.cpp:1613:                    DIALOG_YES, LoadStr(IDS_MSGBOXBTN_SKIP),
+src/fileswn6.cpp:1659:            _snprintf_s(text, _TRUNCATE, LoadStr(IDS_TOOLONGNAME2), targetPath, s2);
+src/fileswn6.cpp:1681:                sprintf(aliasBtnNames, "%d\t%s\t%d\t%s\t%d\t%s",
+src/fileswn6.cpp:1682:                        DIALOG_YES, LoadStr(IDS_MSGBOXBTN_SKIP),
+src/fileswn6.cpp:1943:                                        _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed the message buffer (feature 012)
+src/fileswn6.cpp:1964:                                            sprintf(aliasBtnNames, "%d\t%s\t%d\t%s",
+src/fileswn6.cpp:1965:                                                    DIALOG_YES, LoadStr(IDS_MSGBOXBTN_SKIP),
+src/fileswn6.cpp:2095:                        sprintf_s(detailsTxt, LoadStr(repPointType == 2 /* JUNCTION POINT */ ? IDS_INFODLGTYPE9 : IDS_INFODLGTYPE10),
+src/fileswn6.cpp:2161:                _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed the message buffer (feature 012)
+src/fileswn6.cpp:2185:                    sprintf(aliasBtnNames, "%d\t%s\t%d\t%s",
+src/fileswn6.cpp:2186:                            DIALOG_YES, LoadStr(IDS_MSGBOXBTN_SKIP),
+src/fileswn6.cpp:2318:                _snprintf_s(text, _TRUNCATE, LoadStr(IDS_CANNOTREADDIR), sourcePath, GetErrorText(err)); // path may exceed the message buffer (feature 012)
+src/fileswn6.cpp:2339:                    sprintf(aliasBtnNames, "%d\t%s\t%d\t%s",
+src/fileswn6.cpp:2340:                            DIALOG_YES, LoadStr(IDS_MSGBOXBTN_SKIP),
+src/fileswn6.cpp:2594:                _snprintf_s(message, _TRUNCATE, LoadStr(IDS_FILEISTOOBIGFORFAT32), op.SourceName);
+src/fileswn6.cpp:2612:                sprintf(aliasBtnNames, "%d\t%s\t%d\t%s",
+src/fileswn6.cpp:2613:                        DIALOG_YES, LoadStr(IDS_MSGBOXBTN_SKIP),
+src/finddlg1.cpp:1408:    sprintf(buf, "%s ", LoadStr(IDS_FF_SEARCHING));
+src/finddlg1.cpp:2094:                    sprintf(buf, LoadStr(IDS_INVALIDREGEXP), GrepData.RegExp.GetPattern(), GrepData.RegExp.GetLastErrorText());
+src/finddlg1.cpp:2164:    _snprintf_s(buff, _TRUNCATE, NORMAL_FINDING_CAPTION, LoadStr(IDS_FF_NAME), LoadStr(IDS_FF_NAMED), SearchForData[0]->MasksGroup.GetMasksString());
+src/finddlg1.cpp:2415:                _snprintf_s(buf, _TRUNCATE, MINIMIZED_FINDING_CAPTION, FoundFilesListView->GetCount(),
+src/finddlg1.cpp:2416:                            LoadStr(IDS_FF_NAME), LoadStr(IDS_FF_NAMED), SearchForData[0]->MasksGroup.GetMasksString());
+src/finddlg1.cpp:3340:            _snprintf_s(buff, _TRUNCATE, NORMAL_FINDING_CAPTION, LoadStr(IDS_FF_NAME), LoadStr(IDS_FF_NAMED),
+src/plugins1.cpp:2298:                            sprintf(bufText, LoadStr(IDS_OLDPLUGINVERSION2), s);
+src/plugins1.cpp:2465:                            sprintf(bufText, LoadStr(IDS_PLUGININVALID2), s);
+src/plugins1.cpp:2479:                sprintf(bufText, LoadStr(IDS_UNABLETOFINDPLUGINENTRY), s);
+src/drivelst.cpp:599:            _snprintf_s(captionBuf, _TRUNCATE, LoadStr(IDS_RECONNET_TITLE), remoteName);
+src/drivelst.cpp:600:            _snprintf_s(messageBuf, _TRUNCATE, LoadStr(IDS_RECONNET_TEXT), remoteName);
+src/drivelst.cpp:2015:                    sprintf_s(itemText, "%s - %s", LoadStr(IDS_ONEDRIVE), LoadStr(IDS_ONEDRIVEPERSONAL));
+src/drivelst.cpp:2021:                sprintf_s(itemText, "%s - %s", LoadStr(IDS_ONEDRIVE), OneDriveBusinessStorages[i]->DisplayName);
+src/drivelst.cpp:2330:                sprintf_s(itemText, "%s - %s", LoadStr(IDS_ONEDRIVE), LoadStr(IDS_ONEDRIVEPERSONAL));
+src/drivelst.cpp:2337:                sprintf_s(itemText, "%s - %s", LoadStr(IDS_ONEDRIVE), OneDriveBusinessStorages[i]->DisplayName);
+src/fileswn7.cpp:1589:                sprintf(alias, "%d\t%s\t%d\t%s",
+src/fileswn7.cpp:1590:                        DIALOG_YES, LoadStrU8(IDS_CONFIRM_ADDTOARCHIVE_ADD),
+src/fileswn7.cpp:1591:                        DIALOG_NO, LoadStr(IDS_CONFIRM_ADDTOARCHIVE_OVER));
+src/dialogs4.cpp:1775:    _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_FONTDESCRIPTION),
+src/dialogs4.cpp:2795:                sprintf(buff, "%s+%d", LoadStr(IDS_CTRL), i < 9 ? i + 1 : 0);
+src/cache.cpp:1508:                sprintf(alias, "%d\t%s\t%d\t%s\t%d\t%s",
+src/cache.cpp:1509:                        DIALOG_ABORT, LoadStr(IDS_DELETETMPSALDIRS_YES),
+src/callstk.cpp:581:        _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_ICONOVRLS_CRASH), iconOvrlsHanName);
+src/callstk.cpp:600:        sprintf(aliasBtnNames, "%d\t%s\t%d\t%s",
+src/callstk.cpp:601:                DIALOG_ABORT, LoadStr(IDS_ICONOVRLS_DISTHIS),
+src/codetbl.cpp:180:                                            sprintf(textBuf, LoadStr(IDS_VIEWERERROPENFILE), fullName, text);
+src/codetbl.cpp:204:                                                    sprintf(textBuf, LoadStr(IDS_VIEWERBADINTCODING), convertCfgFileName);
+src/codetbl.cpp:218:                                                sprintf(textBuf, LoadStr(IDS_VIEWERERROPENFILE), fileName, text);
+src/codetbl.cpp:230:                                sprintf(textBuf, LoadStr(IDS_VIEWERINVALIDLINE), convertCfgFileName);
+src/dialogs3.cpp:550:            wsprintf(buff, LoadStr(IDS_EDITNEWFILE_REVERTDEFAULT), LoadStr(IDS_EDITNEWFILE_DEFAULTNAME));
+src/dialogs3.cpp:1293:                sprintf(buf, LoadStr(IDS_UNABLETOCHANGEDRIVELABEL), GetErrorText(err));
+src/dialogs3.cpp:1635:                    sprintf(volumeName + strlen(volumeName), LoadStr(IDS_INFODLGTYPE8),
+src/dialogs3.cpp:1648:                sprintf(volumeName, LoadStr(IDS_INFODLGTYPE6), driveType);
+src/dialogs3.cpp:1659:                    sprintf(volumeName + strlen(volumeName), LoadStr(IDS_INFODLGTYPE7), buff);
+src/dialogs3.cpp:1665:                sprintf(volumeName + strlen(volumeName), LoadStr(linkType == 2 ? IDS_INFODLGTYPE9 : IDS_INFODLGTYPE10),
+src/fileswn8.cpp:1017:                        sprintf(format, LoadStr(type == atCopy ? IDS_COPYDLGTITLE : IDS_MOVEDLGTITLE), expanded);
+src/fileswn8.cpp:1021:                        sprintf(subject, LoadStr(type == atCopy ? IDS_COPYDLGTITLE : IDS_MOVEDLGTITLE), expanded);
+src/fileswn8.cpp:1404:                        sprintf(text, LoadStr(IDS_CONFIRM_EMAIL), expanded, totalSize);
+src/dialogs5.cpp:2822:    _snprintf_s(buf, _TRUNCATE, LoadStr(IDS_FONTDESCRIPTION),
+src/dialogs5.cpp:3402:        sprintf(buf, LoadStr(IDS_TASKLISTLINE), items[i].PID, date, time,
+src/fileswn2.cpp:1256:                    sprintf(title, LoadStr(IDS_INFOTITLE));
+src/fileswn2.cpp:1258:                    sprintf(checkText, LoadStr(IDS_DONTSHOWAGAIN));
+src/fileswn2.cpp:1995:                sprintf(text, LoadStr(IDS_NODISKINDRIVE), drive);
+src/fileswn2.cpp:3851:                    len = sprintf(text, LoadStr(IDS_INVALID_DATEORTIME));
+src/fileswn9.cpp:1936:        wsprintf(uncPath, LoadStr(IDS_CANNOT_CREATE_UNC_NAME), buff);
+src/dialogs.cpp:520:            sprintf(buf, "(%s) %s", LoadStr(AutoPaused ? IDS_PROGDLGQUEUEPAUSED : IDS_PROGDLGPAUSED),
+src/dialogs.cpp:535:                sprintf(buf, "(%s) %s: %s", LoadStr(IDS_PROGDLGPAUSED), MAINWINDOW_NAME, Caption);
+src/dialogs.cpp:951:                            sprintf(buf, LoadStr(Script->IsCopyOperation ? IDS_PROGDLGSTATUSCOPY : IDS_PROGDLGSTATUSMOVE),
+src/dialogs.cpp:970:                            sprintf(buf + len, LoadStr(IDS_PROGDLGTRRATELIM), num1, num2);
+src/dialogs.cpp:973:                            sprintf(buf + len, LoadStr(IDS_PROGDLGTRRATE), num1);
+src/dialogs.cpp:1042:                        sprintf(buf + len, LoadStr(IDS_PROGDLGTIMELEFT), num1);
+src/dialogs6.cpp:647:                    wsprintf(buff, LoadStr(IDS_CONFIRM_STOPSHARE), remoteName);
+src/plugins2.cpp:2975:        _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), LoadStr(IDS_AUTOINSTALLPLUGINS_INIT));
+src/plugins2.cpp:3002:                    _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), pluginName);
+src/plugins2.cpp:3018:                _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), Data[i]->DLLName);
+src/plugins2.cpp:3060:    _snprintf_s(textProgress, _TRUNCATE, "%s\n", LoadStr(IDS_LOADINGPLUGINS));
+src/plugins2.cpp:3074:            _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_LOADINGPLUGINS), Data[i]->DLLName);
+src/plugins2.cpp:3110:        _snprintf_s(textProgress, _TRUNCATE, "%s\n", LoadStr(IDS_LOADINGPLUGINS));
+src/plugins2.cpp:3121:                _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_LOADINGPLUGINS), Data[i]->DLLName);
+src/plugins2.cpp:3257:        _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), LoadStr(IDS_AUTOINSTALLPLUGINS_INIT));
+src/plugins2.cpp:3338:                _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), Data[i]->DLLName);
+src/plugins2.cpp:3393:    _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), LoadStr(IDS_AUTOINSTALLPLUGINS_INIT));
+src/plugins2.cpp:3430:                _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), pluginName);
+src/plugins2.cpp:3454:            _snprintf_s(textProgress, _TRUNCATE, "%s\n%s", LoadStr(IDS_AUTOINSTALLPLUGINS), Data[i]->DLLName);
+src/toolbar4.cpp:1146:                sprintf(p, " (%s)%s", LoadStr(IDS_PASTE_CHANGE_DIRECTORY), tail);
+src/salamdr4.cpp:1469:            TransferLen = sprintf(TransferBuffer, LoadStr(IDS_INVALID_DATEORTIME));
+src/salamdr4.cpp:1486:            TransferLen = sprintf(TransferBuffer, LoadStr(IDS_INVALID_DATEORTIME));
+src/salamdr4.cpp:1511:            TransferLen = sprintf(TransferBuffer, LoadStr(IDS_INVALID_DATEORTIME));
+src/salamdr4.cpp:1528:            TransferLen = sprintf(TransferBuffer, LoadStr(IDS_INVALID_DATEORTIME));
+src/mainwnd5.cpp:1768:        ExpandPluralString(buf2, 400,
+src/mainwnd5.cpp:1769:                           LoadStr(Configuration.IgnoreDSTShifts ? (!canceled && identical ? IDS_CMPDIRS_IGNDSTDIFFSEXACT : IDS_CMPDIRS_IGNDSTDIFFS) : IDS_CMPDIRS_FOUNDDSTDIFFS),
+src/cache.cpp:1504:                ExpandPluralString(buf2, 300, LoadStr(IDS_DELETETMPSALDIRS),
+src/filter.cpp:929:        ExpandPluralString(buff, 100, LoadStr(units[i]), 1, &editValue);

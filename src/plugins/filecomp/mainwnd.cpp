@@ -890,9 +890,17 @@ void CMainWindow::SpawnWorker(const char* path1, const char* path2,
             sprintf(buf, LoadStr(IDS_MAINWNDHEADERCOMPUTING), SG->SalPathFindFileName(path1),
                     SG->SalPathFindFileName(path2));
             // 'buf' is assembled from UTF-8 file names (interface 104) -> show via the W API
+            // feature 068 (F-P5-09): legacy fallback instead of blanking the
+            // title - this third site was missed by the first pass and is the
+            // one that also affects German
             WCHAR* wBuf = SplU8ToWAlloc(buf);
-            SetWindowTextW(HWindow, wBuf != NULL ? wBuf : L"");
-            free(wBuf);
+            if (wBuf != NULL)
+            {
+                SetWindowTextW(HWindow, wBuf);
+                free(wBuf);
+            }
+            else
+                SetWindowTextA(HWindow, buf);
             SetWait(TRUE);
         }
     }
@@ -2041,9 +2049,18 @@ CMainWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             _stprintf(buf, fmt, SG->SalPathFindFileName(Path1), SG->SalPathFindFileName(Path2),
                       LOWORD(lParam), HIWORD(lParam));
             // 'buf' is assembled from UTF-8 file names (interface 104) -> show via the W API
+            // feature 068 (F-P5-09): on conversion failure fall back to the
+            // legacy narrow call - the buffer mixes an ANSI LoadStr template
+            // with UTF-8 names, so in cs/fr/hu/sk the strict conversion fails
+            // and the window title was being blanked outright instead
             WCHAR* wBuf = SplU8ToWAlloc(buf);
-            SetWindowTextW(HWindow, wBuf != NULL ? wBuf : L"");
-            free(wBuf);
+            if (wBuf != NULL)
+            {
+                SetWindowTextW(HWindow, wBuf);
+                free(wBuf);
+            }
+            else
+                SetWindowTextA(HWindow, buf);
             return 0;
         }
 
@@ -2133,9 +2150,15 @@ CMainWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             _tcscpy(buf, LoadStr(IDS_PLUGINNAME));
 
         // 'buf' may carry UTF-8 file names (interface 104) -> show via the W API
+        // feature 068 (F-P5-09): legacy fallback instead of blanking the title
         WCHAR* wBuf = SplU8ToWAlloc(buf);
-        SetWindowTextW(HWindow, wBuf != NULL ? wBuf : L"");
-        free(wBuf);
+        if (wBuf != NULL)
+        {
+            SetWindowTextW(HWindow, wBuf);
+            free(wBuf);
+        }
+        else
+            SetWindowTextA(HWindow, buf);
 
         if ((wParam != WN_TEXT_FILES_DIFFER) && (wParam != WN_UNICODE_FILES_DIFFER) && (wParam != WN_BINARY_FILES_DIFFER))
         {

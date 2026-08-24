@@ -114,9 +114,12 @@ BOOL CCacheData::CleanFromDisk()
             {
                 if (attrs & FILE_ATTRIBUTE_READONLY)
                 {
-                    SetFileAttributes(TmpName, FILE_ATTRIBUTE_ARCHIVE);
+                    // feature 068 (F-P1-01): TmpName is UTF-8 (SalGetTempFileName),
+                    // so the ANSI calls could not find the file under a non-ASCII
+                    // %TEMP% and the cached copy was never removed
+                    SalSetFileAttributes(TmpName, FILE_ATTRIBUTE_ARCHIVE);
                 }
-                DeleteFile(TmpName);
+                SalDeleteFile(TmpName);
             }
             attrs = SalGetFileAttributes(TmpName); // check if the deletion was successful
             if (attrs == 0xFFFFFFFF)
@@ -346,8 +349,10 @@ CCacheDirData::~CCacheDirData()
     }
     if (PathLength > 0)
         Path[PathLength - 1] = 0; // trimming a backslash
-    SetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
-    RemoveDirectory(Path);
+    // feature 068 (F-P1-01): Path is UTF-8; the ANSI calls left the whole tmp
+    // tree behind under a non-ASCII %TEMP%
+    SalSetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
+    SalRemoveDirectory(Path);
 }
 
 BOOL CCacheDirData::ContainTmpName(const char* tmpName, const char* rootTmpPath,
@@ -380,19 +385,25 @@ BOOL CCacheDirData::ContainTmpName(const char* tmpName, const char* rootTmpPath,
                         return TRUE;
                 }
 
-                WIN32_FIND_DATA data;
-                HANDLE find = HANDLES_Q(FindFirstFile(tmpFullName, &data));
+                // feature 068 (F-P1-02): tmpFullName is UTF-8, so the ANSI
+                // enumeration found nothing under a non-ASCII %TEMP%
+                WIN32_FIND_DATAW dataW;
+                char foundNameU8[SAL_FIND_NAME_U8];
+                char foundDosNameU8[SAL_FIND_DOSNAME_U8];
+                HANDLE find = SalFindFirstFile(tmpFullName, &dataW); // registers with HANDLES itself
                 if (find != INVALID_HANDLE_VALUE)
                 {
                     HANDLES(FindClose(find));
-                    if (StrICmp(tmpName, data.cFileName) == 0)
+                    SalConvertFindDataW(&dataW, NULL, foundNameU8, sizeof(foundNameU8),
+                                        foundDosNameU8, sizeof(foundDosNameU8));
+                    if (StrICmp(tmpName, foundNameU8) == 0)
                     {
                         TRACE_E("CCacheDirData::ContainTmpName(): unexpected situation: tmp-directory contains unknown file!");
                         *canContainThisName = FALSE; // the file cannot be placed here; another file would be opened
                     }
                     else
                     {
-                        if (data.cAlternateFileName[0] != 0 && StrICmp(tmpName, data.cAlternateFileName) == 0)
+                        if (foundDosNameU8[0] != 0 && StrICmp(tmpName, foundDosNameU8) == 0)
                         {
                             TRACE_I("CCacheDirData::ContainTmpName(): tmp-directory contains file whose dos-name conflicts with new tmp-file - different tmp-directory has to be choosen!");
                             *canContainThisName = FALSE; // the file cannot be placed here; an existing file with the same DOS name would be opened
@@ -469,9 +480,10 @@ void CCacheDirData::RemoveEmptyTmpDirsOnlyFromDisk()
 
     if (PathLength > 0)
         Path[PathLength - 1] = 0; // backslash trimming
-    SetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
+    // feature 068 (F-P1-01): Path is UTF-8 - see the note in CCacheDirData
+    SalSetFileAttributes(Path, FILE_ATTRIBUTE_ARCHIVE);
     // the system deletes our tmp directory only if it is empty (if a tmp directory is needed again, we create it in CCacheDirData::GetName())
-    RemoveDirectory(Path);
+    SalRemoveDirectory(Path);
     if (PathLength > 0)
         Path[PathLength - 1] = '\\'; // restoring backslash
 }
@@ -1149,7 +1161,13 @@ CDiskCache::GetName(const char* name, const char* tmpName, BOOL* exists, BOOL on
     const char* rootTmpPathExp;
     if (rootTmpPath == NULL) // if this is TEMP, we will find out its location
     {
-        if (!GetTempPath(MAX_PATH, sysTmpDir))
+        // feature 068 (F-P1-02): the ANSI GetTempPath returned the system temp
+        // directory in the legacy code page, so the prefix comparison against
+        // the UTF-8 cache Path could never match and every cached file got a
+        // brand-new SAL####.tmp directory that was then never reused
+        WCHAR wSysTmpDir[MAX_PATH];
+        if (!GetTempPathW(MAX_PATH, wSysTmpDir) ||
+            SalWToU8(wSysTmpDir, -1, sysTmpDir, MAX_PATH) == 0)
             sysTmpDir[0] = 0;
         rootTmpPathExp = sysTmpDir;
     }
@@ -1189,8 +1207,8 @@ CDiskCache::GetName(const char* name, const char* tmpName, BOOL* exists, BOOL on
     if (newDir == NULL)
     {
         TRACE_E(LOW_MEMORY);
-        RemoveDirectory(newDirPath);
-        *exists = TRUE; // fatal error
+        SalRemoveDirectory(newDirPath); // feature 068 (F-P1-01): UTF-8 path
+        *exists = TRUE;                 // fatal error
         Leave();
         if (errorCode != NULL)
             *errorCode = DCGNE_LOWMEMORY;
@@ -1201,8 +1219,8 @@ CDiskCache::GetName(const char* name, const char* tmpName, BOOL* exists, BOOL on
     {
         delete newDir;
         Dirs.ResetState();
-        RemoveDirectory(newDirPath);
-        *exists = TRUE; // fatal error
+        SalRemoveDirectory(newDirPath); // feature 068 (F-P1-01): UTF-8 path
+        *exists = TRUE;                 // fatal error
         Leave();
         if (errorCode != NULL)
             *errorCode = DCGNE_LOWMEMORY;
@@ -1458,7 +1476,13 @@ void CDiskCache::PrematureDeleteByPlugin(CPluginInterfaceAbstract* ownDeletePlug
 void CDiskCache::ClearTEMPIfNeeded(HWND parent, HWND hActivePanel)
 {
     char tmpDir[2 * MAX_PATH];
-    if (GetTempPath(2 * MAX_PATH, tmpDir))
+    // feature 068 (F-P1-04): this path is handed to RemoveTemporaryDir, which
+    // now goes through the strict UTF-8 facade, so it must be produced as UTF-8
+    // - the ANSI GetTempPath returned legacy bytes and the whole startup
+    // cleanup would silently do nothing on a non-ASCII account name
+    WCHAR wTmpDir[2 * MAX_PATH];
+    if (GetTempPathW(2 * MAX_PATH, wTmpDir) &&
+        SalWToU8(wTmpDir, -1, tmpDir, 2 * MAX_PATH) != 0)
     {
         SalPathAddBackslash(tmpDir, 2 * MAX_PATH);
         char* tmpDirEnd = tmpDir + strlen(tmpDir);
@@ -1466,21 +1490,29 @@ void CDiskCache::ClearTEMPIfNeeded(HWND parent, HWND hActivePanel)
         {
             TIndirectArray<char> tmpDirs(10, 50);
 
-            WIN32_FIND_DATA data;
-            HANDLE find = HANDLES_Q(FindFirstFile(tmpDir, &data));
+            // feature 068 (F-P1-04): 'tmpDir' is UTF-8 (above), so the whole
+            // enumeration must be the facade too - an ANSI FindFirstFile here
+            // re-read those bytes as legacy text and found nothing on a
+            // non-ASCII account name, so the cleanup prompt never appeared
+            WIN32_FIND_DATAW dataW;
+            char nameU8[SAL_FIND_NAME_U8];
+            HANDLE find = SalFindFirstFile(tmpDir, &dataW); // registers with HANDLES itself
             if (find != INVALID_HANDLE_VALUE)
             {
                 do
                 { // we will process all found directories (search errors are ignored)
-                    if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                    if (dataW.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
                     {
-                        char* s = data.cFileName + 3;
+                        SalConvertFindDataW(&dataW, NULL, nameU8, sizeof(nameU8), NULL, 0);
+                        if (nameU8[0] == 0)
+                            continue; // unconvertible name: cannot be one of ours
+                        char* s = nameU8 + 3;
                         while (*s != 0 && *s != '.' &&
                                (*s >= '0' && *s <= '9' || *s >= 'a' && *s <= 'f' || *s >= 'A' && *s <= 'F'))
                             s++;
                         if (StrICmp(s, ".tmp") == 0) // matches "SAL" + hex number + ".tmp"; it is almost certainly our directory
                         {
-                            char* tmp = DupStr(data.cFileName);
+                            char* tmp = DupStr(nameU8);
                             if (tmp != NULL)
                             {
                                 tmpDirs.Add(tmp);
@@ -1492,7 +1524,7 @@ void CDiskCache::ClearTEMPIfNeeded(HWND parent, HWND hActivePanel)
                             }
                         }
                     }
-                } while (FindNextFile(find, &data));
+                } while (SalFindNextFile(find, &dataW));
                 HANDLES(FindClose(find));
             }
 

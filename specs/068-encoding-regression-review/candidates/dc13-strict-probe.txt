@@ -1,0 +1,3 @@
+src/common\salunicode.cpp:245:    int res = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, src, srcLen,
+src/common\salunicode.cpp:286:    int res = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, src, srcLen,
+src/common\salunicode.cpp:405:    int res = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, src, srcLen,

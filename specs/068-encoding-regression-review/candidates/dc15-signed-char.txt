@@ -1,0 +1,129 @@
+src/viewer.cpp:81:                                   LowerCase[*s] >= 'a' && LowerCase[*s] <= 'f' ||
+src/viewer.cpp:308:                        value = (BYTE)(10 + (LowerCase[*s] - 'a'));
+src/viewer.cpp:316:                            value |= (BYTE)(10 + (LowerCase[*s] - 'a'));
+src/toolbar6.cpp:188:                panel->ChangePathToDisk(HWindow, DefaultDir[LowerCase[drive] - 'a'], -1, NULL,
+src/consts.h:2142:extern BOOL IsNotAlphaNorNum[256]; // pole TRUE/FALSE pro znaky (TRUE = neni pismeno ani cislice)
+src/consts.h:2143:extern BOOL IsAlpha[256];          // pole TRUE/FALSE pro znaky (TRUE = pismeno)
+src/pack3.cpp:521:                ext[idx++] = LowerCase[ptr[len--]];
+src/pack3.cpp:526:            if (!Extensions[LowerCase[ptr[last]]].SIns(item))
+src/pack3.cpp:598:    CStringArray* array = &Extensions[LowerCase[archiveName[idx]]];
+src/pack3.cpp:606:               ((*ptr == LowerCase[*name] && *ptr != '#') ||
+src/pack3.cpp:624:                   ((*ptr == LowerCase[*name] && *ptr != '#') ||
+src/zip.cpp:2492:                   (unsigned char)*s >= 32 && *s != '<' && *s != '>' && *s != '|' && *s != '"')
+src/zip.cpp:3225:           (unsigned char)*s >= 32 && *s != '<' && *s != '>' && *s != '|' && *s != '"')
+src/zip.cpp:3334:        if (*s < ' ' && *s != '\a' && *s != '\b' && *s != '\r' && // *s != 0 must not be here because of Unicode files ("0A 00" cannot be expanded to "0D 0A 00")
+src/masks.cpp:49:            agree = (LowerCase[*filename] == LowerCase[*mask] || *mask == '?' || // match or '?' represents any character or '#' represents any digit
+src/masks.cpp:52:            agree = (LowerCase[*filename] == LowerCase[*mask] || *mask == '?'); // match or '?' represents any character
+src/masks.cpp:327:        if (LowerCase[*filename] == LowerCase[*mask])
+src/masks.cpp:491:            hash = (LowerCase[*__CMGH_ext] - 'a'); \
+src/masks.cpp:494:                hash += 3 * (LowerCase[*__CMGH_ext] - 'a'); \
+src/masks.cpp:496:                    hash += 7 * (LowerCase[*__CMGH_ext] - 'a'); \
+src/olespy.cpp:813:        if (*pv > '~' || *pv < ' ')
+src/salamdr1.cpp:350:BOOL IsNotAlphaNorNum[256]; // pole TRUE/FALSE pro znaky (TRUE = neni pismeno ani cislice)
+src/salamdr1.cpp:351:BOOL IsAlpha[256];          // pole TRUE/FALSE pro znaky (TRUE = pismeno)
+src/salamdr1.cpp:941:        IsNotAlphaNorNum[i] = !IsCharAlphaNumeric((char)i);
+src/salamdr1.cpp:942:        IsAlpha[i] = IsCharAlpha((char)i);
+src/salamdr1.cpp:1166:    if (LowerCase[path1[0]] == LowerCase[path2[0]] && path1[1] == path2[1])
+src/salamdr1.cpp:1178:                    if (LowerCase[*s1] == LowerCase[*s2])
+src/salamdr1.cpp:1190:                        if (LowerCase[*s1] == LowerCase[*s2])
+src/salamdr1.cpp:1404:    while (*path1 != 0 && LowerCase[*path1] == LowerCase[*path2])
+src/salamdr1.cpp:1425:    while (*s1 != 0 && *s2 != 0 && LowerCase[*s1] == LowerCase[*s2])
+src/salamdr1.cpp:3812:    if (testChar != 129) // pokud bude testChar zaporne, mame problem: LowerCase[testCharValue] saha mimo pole...
+src/salamdr6.cpp:1782:            path[0] = UpperCase[path[0]];
+src/salamdr5.cpp:552:            if (LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+src/salamdr5.cpp:627:            if (LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+src/salamdr5.cpp:702:        BOOL mustBePath = (len == 2 && LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+src/salamdr5.cpp:1199:    if (nameLen > 0 && (name[nameLen - 1] <= ' ' || name[nameLen - 1] == '.') &&
+src/salamdr5.cpp:1227:    return nameLen > 0 && (name[nameLen - 1] <= ' ' || name[nameLen - 1] == '.');
+src/salamdr5.cpp:1519:                        LowerCase[path[0]] == LowerCase[netSource->lpLocalName[0]])
+src/gui.cpp:653:        if (len > 0 && (text[0] <= ' ' || text[len - 1] <= ' ') && len < 2 * MAX_PATH)
+src/salamdr4.cpp:2011:    while (LowerCase[*name] >= 'a' && LowerCase[*name] <= 'z' ||
+src/mainwnd4.cpp:1053:        if (curPath != NULL && d == LowerCase[curPath[0]]) // UNC paths are ignored
+src/menubar.cpp:701:        if (found != NULL && UpperCase[*found] == UpperCase[hotKey])
+src/fileswn6.cpp:236:        else if (drvType == DRIVE_REMOVABLE && UpperCase[path[0]] >= 'A' && UpperCase[path[0]] <= 'Z' && path[1] == ':' &&
+src/fileswn6.cpp:237:                 GetDriveFormFactor(UpperCase[path[0]] - 'A' + 1) == 0 /* not a floppy */)
+src/fileswn6.cpp:553:        if (name != NULL && LowerCase[*name] >= 'a' && LowerCase[*name] <= 'z' &&
+src/fileswn6.cpp:601:    if (LowerCase[*targetDir] >= 'a' && LowerCase[*targetDir] <= 'z' &&
+src/fileswn6.cpp:1244:        if (LowerCase[*targetPath] >= 'a' && LowerCase[*targetPath] <= 'z' &&
+src/fileswn6.cpp:1504:                if (*s < ' ' && size > 3)
+src/mainwnd2.cpp:2642:                            char d2 = LowerCase[name[0]];
+src/mainwnd2.cpp:2645:                                if (dataLen > 2 && LowerCase[path[0]] == d2 &&
+src/mainwnd2.cpp:2906:                                        switch (LowerCase[*++s])
+src/mainwnd2.cpp:3673:        lstrcpyn(sysDefDir, DefaultDir[LowerCase[leftPanelPath[0]] - 'a'], MAX_PATH);
+src/mainwnd2.cpp:3895:        lstrcpyn(DefaultDir[LowerCase[sysDefDir[0]] - 'a'], sysDefDir, MAX_PATH);
+src/fileswn5.cpp:1882:        return nameLen > 0 && (*name <= ' ' || name[nameLen - 1] <= ' ' || name[nameLen - 1] == '.');
+src/fileswn5.cpp:2116:           (unsigned char)*s >= 32 && *s != '<' && *s != '>' && *s != '|' && *s != '"')
+src/plugins2.cpp:3586:    BYTE vk = UpperCase[(BYTE)wParam]; // we should be case-insensitive; the user might accidentally have caps lock on and the hotkey edit line always treats the key as uppercase
+src/finddlg2.cpp:1017:        if (LowerCase[*p] >= 'a' && LowerCase[*p] <= 'z')
+src/mainwnd1.cpp:539:        char* row = DefaultDir[LowerCase[pathActive[0]] - 'a'];
+src/mainwnd1.cpp:548:        char* row = DefaultDir[LowerCase[pathPasive[0]] - 'a'];
+src/find.cpp:465:                     LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' && path[1] == ':')
+src/find.cpp:1271:                            if ((found == 0 || *(beg + found - 1) != '_' && IsNotAlphaNorNum[*(beg + found - 1)]) &&
+src/find.cpp:1316:                             off > 0 && txt[off - 1] != '_' && IsNotAlphaNorNum[txt[off - 1]]) &&                        // not at the start of the buffer and no letter or digit before the pattern
+src/find.cpp:1320:                                 IsNotAlphaNorNum[txt[off + data->SearchData.GetLength()]])) // no letter or digit after the pattern
+src/fileswn7.cpp:518:            BOOL mustBePath = (len == 2 && LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+src/drivelst.cpp:52:                        char drv = LowerCase[name[0]];
+src/drivelst.cpp:829:    if (netDrives & (1 << (LowerCase[drive] - 'a'))) // the drive existed, try to restore it
+src/drivelst.cpp:833:        if (GetLogicalDrives() & (1 << (LowerCase[drive] - 'a'))) // theoretically there is nothing to do, it is accessible ... but on Vista after hibernation, the mapped disk can return the same error over and over again (e.g. "(31) device attached to system is not functioning"), we will discuss it only by accessing the UNC path, probably some MS error, but in Explorer it works, who knows what they are doing there
+src/drivelst.cpp:838:            char* netPath = netRemotePath[LowerCase[drive] - 'a'];
+src/drivelst.cpp:851:            pathInvalid = !RestoreNetworkConnection(parent, name, netRemotePath[LowerCase[drive] - 'a']);
+src/drivelst.cpp:1653:                if (LowerCase[Drives->At(index).DriveText[0]] == LowerCase[(char)*DriveTypeParam])
+src/drivelst.cpp:1861:                if (LowerCase[Drives->At(index).DriveText[0]] == LowerCase[(char)*DriveTypeParam])
+src/drivelst.cpp:2771:        if (LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' && path[1] == ':' && (path[2] == '\\' || path[2] == '/') ||
+src/drivelst.cpp:3188:                    if (LowerCase[path[0]] == LowerCase[item->DriveText[0]])
+src/codetbl.cpp:795:                if (LowerCase[*n] != LowerCase[*c] || *n == 0)
+src/codetbl.cpp:962:                        if (*s < ' ' && *s != 0 && *s != '\a' && *s != '\b' && *s != '\r' &&
+src/codetbl.cpp:979:                    if (IsNotAlphaNorNum[*s]) // character is neither alpha nor numeric
+src/codetbl.cpp:1008:                                if (s > (const unsigned char*)testBuf && !IsNotAlphaNorNum[*(s - 1)])
+src/codetbl.cpp:1018:                                if (s + 1 < end && !IsNotAlphaNorNum[*(s + 1)])
+src/codetbl.cpp:1032:                        if (s + 1 < end && !IsNotAlphaNorNum[*(s + 1)]) // next character is also alpha or numeric
+src/codetbl.cpp:1035:                            if (!IsAlpha[*s])
+src/codetbl.cpp:1038:                                c1 = UpperCase[*s] == *s ? 2 : 1;
+src/codetbl.cpp:1040:                            if (!IsAlpha[*(s + 1)])
+src/codetbl.cpp:1043:                                c2 = UpperCase[*(s + 1)] == *(s + 1) ? 2 : 1;
+src/codetbl.cpp:1047:                                if (s > (const unsigned char*)testBuf && IsAlpha[*(s - 1)])
+src/fileswn3.cpp:161:            int drv = UpperCase[fileName[0]] - 'A' + 1;
+src/fileswn3.cpp:2236:                    path[0] = UpperCase[path[0]]; // "c:" path will be "C:"
+src/fileswn3.cpp:2749:    ChangePathToDisk(HWindow, DefaultDir[LowerCase[drive] - 'a'], -1, NULL,
+src/salamdr3.cpp:498:                    if (LowerCase[*s] >= 'a' && LowerCase[*s] <= 'z')
+src/salamdr3.cpp:501:                        if (curDir != NULL && LowerCase[curDir[0]] == LowerCase[*s])
+src/salamdr3.cpp:504:                            head = DefaultDir[LowerCase[*s] - 'a'];
+src/salamdr3.cpp:1213:                if (name[len - 1] <= ' ' || name[len - 1] == '.')
+src/fileswna.cpp:169:                    BOOL mustBePath = (len == 2 && LowerCase[targetPath[0]] >= 'a' && LowerCase[targetPath[0]] <= 'z' &&
+src/fileswn1.cpp:259:            int drv = UpperCase[Path[0]] - 'A' + 1;
+src/finddlg1.cpp:1303:        while (*p != 0 && !IsAlpha[*p])
+src/finddlg1.cpp:1305:        if (IsAlpha[*p])
+src/finddlg1.cpp:2917:            return UpperCase[*(p + 1)];
+src/fileswn0.cpp:3075:        while (l > 0 && NextFocusName[l - 1] <= ' ')
+src/fileswn0.cpp:3079:        while (off < l && NextFocusName[off] <= ' ')
+src/fileswn8.cpp:110:        if (oneFile->Name[oneFile->NameLen - 1] <= ' ' || oneFile->Name[oneFile->NameLen - 1] == '.')
+src/fileswn8.cpp:543:                BOOL mustBePath = (len == 2 && LowerCase[path[0]] >= 'a' && LowerCase[path[0]] <= 'z' &&
+src/dialogs6.cpp:1021:                        char drv = LowerCase[name[0]];
+src/dialogs6.cpp:2404:                int drv = UpperCase[root[0]] - 'A' + 1;
+src/plugins1.cpp:781:    while (*s1 != 0 && LowerCase[*s1] == LowerCase[*s2])
+src/plugins1.cpp:792:    if ((unsigned)LowerCase[*s1] < (unsigned)LowerCase[*s2])
+src/dialogs5.cpp:3220:        int index = LowerCase[LOBYTE(LOWORD(wParam))] - 'a';
+src/fileswn2.cpp:1914:                            if (LowerCase[root[0]] != LowerCase[changedPath[0]]) // prevention againts an infinite loop
+src/salamdr2.cpp:1265:        if (GetSubstInformation(LowerCase[resPath[0]] - 'a', tgt, MAX_PATH) && tgt[0] != '\\' /* mapped network disks handled elsewhere */)
+src/salamdr2.cpp:1897:        while (c-- && *s != 0 && *s == UpperCase[*s] && *s != '.')
+src/salamdr2.cpp:1907:        while (c-- && *s != 0 && *s != '.' && *s == UpperCase[*s])
+src/shellib.cpp:1524:        if (len > 0 && (fileName[len - 1] <= ' ' || fileName[len - 1] == '.'))
+src/common\moore.h:108:            while (i >= 0 && LowerCase[text[j]] == Pattern[i])
+src/common\moore.h:115:            j += Maximum(Fail1[LowerCase[text[j]]], Fail2[i]);
+src/common\moore.h:154:            while (i >= 0 && LowerCase[text[l2 - j]] == Pattern[i])
+src/common\moore.h:161:            j += Maximum(Fail1[LowerCase[text[l2 - j]]], Fail2[i]);
+src/common\str.cpp:63:BYTE LowerCase[256];
+src/common\str.cpp:64:BYTE UpperCase[256];
+src/common\str.cpp:114:        LowerCase[i] = (char)(UINT_PTR)CharLowerA((LPSTR)(UINT_PTR)i);
+src/common\str.cpp:116:        UpperCase[i] = (char)(UINT_PTR)CharUpperA((LPSTR)(UINT_PTR)i);
+src/common\str.cpp:143:        res = (unsigned)LowerCase[*s1] - (unsigned)LowerCase[*s2++];
+src/common\str.cpp:212:    res = (unsigned)LowerCase[*s1++] - (unsigned)LowerCase[*s2++];
+src/common\str.cpp:229:        res = (unsigned)LowerCase[*s1] - (unsigned)LowerCase[*s2++];
+src/common\str.cpp:388:        res = (unsigned)LowerCase[*s1++] - (unsigned)LowerCase[*s2++];
+src/common\str.h:22:extern BYTE LowerCase[256]; // premapovani vsech znaku na male; generovano pomoci API CharLower
+src/common\str.h:23:extern BYTE UpperCase[256]; // premapovani vsech znaku na velke; generovano pomoci API CharUpper
+src/menu2.cpp:141:                assigned[UpperCase[*(p + 1)]] = TRUE;
+src/menu2.cpp:182:                char upper = UpperCase[*p];
+src/menu2.cpp:1540:    key = UpperCase[key];
+src/menu2.cpp:1570:                        if (*(p + 1) != 0 && UpperCase[*(p + 1)] == key)
+src/menu2.cpp:1588:                    if (UpperCase[*p] == key)
