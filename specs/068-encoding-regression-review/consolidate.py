@@ -33,7 +33,9 @@ def read(p):
 def section(txt, title):
     """Body of a '## <title>' section (all occurrences concatenated)."""
     out = []
-    for m in re.finditer(r'^##\s+%s\s*.*?$(.*?)(?=^## |\Z)' % re.escape(title),
+    # tolerate numbered headings ("## 6. Ledger rows + contract B6.3") - P7 used
+    # them and the strict form silently dropped 12 completed ledger rows
+    for m in re.finditer(r'^##\s+(?:\d+\.\s*)?%s\s*.*?$(.*?)(?=^## |\Z)' % re.escape(title),
                          txt, re.M | re.S):
         out.append(m.group(1))
     return "\n".join(out)

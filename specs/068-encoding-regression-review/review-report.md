@@ -298,7 +298,23 @@ each carries verified evidence and a scoping note for its own feature.
 | B-3 | **`GetErrorText` is UTF-8 but undocumented** in the SDK | F-P5-12 (+ the core half in F-P2-01/02/03/06) | V6 corrected the count to ~27 defective sites in 5 plugins (not 127/19) **and** showed a naive sweep would *regress* FTP, whose own `FTPGetErrorText` is internally consistent ANSI. Needs an SDK contract statement plus per-plugin work. |
 | B-4 | **`AlterFileName` byte-folds UTF-8** | F-P5-13 | V6: highest-risk fix in the review — `AlterFileName` also drives **Change Case, which renames files on disk**. Requires its own regression matrix. |
 | B-5 | **Plugin-facing ANSI browse dialogs / services** | F-P5-03, F-P1-21 (plugin-facing group), F-P5-07 (`NumberToStr` re-widening) | Changing them alters bytes plugins receive; FR-009 freezes that. Needs an interface-version decision. |
-| B-6 | **The remaining Group-A-shaped sites not yet reached** | the rest of the confirmed P1/P2 sets | Recorded per finding; each is individually fixable and is queued behind the Group-A set below. |
+| B-6 | **Contained, individually fixable — confirmed but NOT reached in this feature** | **34 findings** (list in §7.3) | No systemic obstacle: each is a local change of the same shape as the nine that were done. They were not reached, not judged unsafe. This is the honest remainder and the natural content of a follow-up feature. |
+
+**Actual outcome vs. this plan** (stated plainly, because the split above
+describes intent and the numbers describe what happened):
+
+| | Count |
+|---|---|
+| Confirmed findings | **60** |
+| Fixed and independently accepted here | **9** |
+| Deferred — systemic (clusters B-1…B-5) | **17** |
+| **Confirmed, contained, simply not reached (B-6)** | **34** |
+
+The nine that were done were chosen by consequence — a crash, a plugin service
+silently dead, data lost on restart, a shipped regression — not by
+convenience. But two thirds of the confirmed contained defects remain, and the
+group A/B language above should not be read as "everything contained was
+fixed".
 
 ### 7.1 Fixes applied
 
@@ -331,6 +347,27 @@ probe separates the two losses, since on the ANSI control the character is
 already `003F` *at storage* (a wide paint would read back `?`), while on a
 Unicode control it stores as `65E5` but `GetWindowTextA` still yields `3F`.
 Conclusion unchanged; mechanism corrected twice.
+
+### 7.3 Confirmed, contained, not fixed here (B-6)
+
+Each is verified, has a recorded failure scenario, and needs no systemic
+redesign. Highest-consequence first, as the queue for a follow-up:
+
+| Finding | What the user gets today |
+|---|---|
+| F-P6-04 | Ctrl+Enter / Ctrl+Space insert raw UTF-8 into the ANSI command line, so the command runs against a name that does not exist. **Same keystroke as the crash fixed in X01** — the overrun is gone, the mojibake is not. |
+| F-P4-01, F-P4-02 | The viewer's chosen character set is lost on every restart when its name is non-ASCII (Kamenické, KOI-8 ČS2); a non-ASCII coding name also mojibakes the file name in the viewer caption — and in cs/sk/hu the caption template alone is enough to do it. |
+| F-P1-08, F-P1-10 | With a non-ASCII Windows **account name** (`Jiří`, `Kovács`): Google Drive's drive-bar item disappears, `config.reg` auto-import is dead, F1 Help fails, `$(SalDir)` kills a launch. |
+| F-P1-19 | Compare Directories cannot read files or subdirectories with non-ASCII names. |
+| F-P1-09, F-P4-05 | OneDrive **and** Dropbox **and** Google Drive roots are stored CP_ACP and then used as panel paths. |
+| F-P6-01 | mdview's "instant view" silently stops working after a Plugins Manager unload+reload (the keeper class is never unregistered). |
+| F-P1-20 | Writing an edited file back into an archive uses the ANSI `SHFileOperation` — silent loss of the copy-out. |
+| F-P2-13 | The Save Configuration prompt mixes an ANSI template with a UTF-8 path — and **refutes the standing suppression L13**, whose premise is stale. |
+| F-P2-09, F-P2-10, F-P2-11 | Plugins Manager: Location column, the Change Drive checkbox, the Keyboard Shortcuts list. |
+| F-P1-05, F-P1-06, F-P1-07 | The external-archiver subsystem: list files written with `CharToOem` on UTF-8, ANSI file APIs on UTF-8 temp/archive paths, and the `salspawn.exe` path. |
+| F-P1-12, F-P1-13, F-P1-14 | Volume information, `subst` targets, volume labels / mapped-drive UNC paths. |
+| F-P1-21…F-P1-27 | Assorted: user-menu icons, environment expansion, common dialogs, shell/OLE hand-off, dropped files, share enumeration. |
+| F-P2-04, F-P2-07, F-P3-07, F-P4-03, F-P4-07, F-P5-06 | Safe-wait window, Drive Information type line, status-bar tooltip clamp, packer titles at rest, config fields seeded from ANSI, the undocumented FS plugin path contract. |
 
 ### 7.2 Regression reviews
 
@@ -382,7 +419,9 @@ Gates after X01–X07: `build.cmd` clean, `saltests` **1257 checks / 0 failed**,
 | L15 | P2 | Verified by design; wide `CreateExW` above, ANSI branch now unreachable for panel names after 066 · **by-design** (annotate as effectively dead) |
 | L16 | P2 | Asymmetry confirmed (checkbox/hint ANSI, body/title/URL/buttons U8); every shipped producer is ANSI, and the hint body is normalized by `SetToolTipText` · **still-open** as a documentation item (`spl_gen.h` must state the encoding); not a shipped defect |
 | L17 | P4 | The class is real and still unswept. `packers.cpp:734` is confirmed (F-P4-03) but is *tolerated* by its sinks; the sweep found three more members of the same class, one of which is a hard, user-visibl… · **fix-candidate** — F-P4-01/02 first (real defect), then the invariant work: document the four fields as UTF-8, `LoadStrU8` at the seeds, `SalLegacyToU8Alloc` at the `convert.cfg` intake |
+| L18 | P7 | Application-wide `LoadStr` → UTF-8 was tried in 041 and reverted; the standing decision is "per site + guard". I measured what the guard actually covers of the class it is standing in for: **27% of th… · **OPEN by design — reaffirmed, with the §2.4 widening as the condition** |
 | L19 | P2 | `WM_NOTIFYFORMAT`/`NF_REQUERY` is still handled per dialog (`src/finddlg1.cpp:3016,3981-4003`, `src/packac.cpp:70-73,184-187`), not centrally in `CDialog::CDialogProc` · **still-open by design** — only two dialogs need it today; centralizing would change ~100 dialogs' notification format |
+| L20 | P7 | `src/tserver/tablist.cpp:748` reads `case LVN_GETDISPINFO:` today — the **ANSI** notification, not `LVN_GETDISPINFOW`; the ledger's description is imprecise. Two independent reasons no rule will ever … · **still-open, out-of-scope** — correct the row's description; do not widen the guard for it |
 | L21 | P3 | A concrete flow now exists: `finddlg1.cpp:1290-1341` sizes the Find date/time columns by calling **`ListView_GetStringWidth` (ANSI)** on `SalGetDateFormatU8`/`SalGetTimeFormatU8` output and probes it … · **still-open**, now **automatable**: a saltests check that feeds a synthetic non-ASCII `LOCALE_SSHORTDATE`/long-date through `SalGetDateFormatU8` into the two consumers (`finddlg1.cpp` column sizing, … |
 | L22 | P2 | The size/archive number fields were converted by 067 (`dialogs2.cpp:414,454,477,480`, `dialogs3.cpp:1540-1549,2219` all `PrintDiskSize(…, TRUE)` + `SalSetDlgItemTextU8`); no core mode-1/2 caller with … · **closed-by-067** — but note the adjacent *type line* in the same dialog is still defective (F-P2-07) |
 | L23 | P3 | Confirmed unchanged: `viewer2.cpp:1059-1062` explicitly leaves UTF-16 content to the hex path ("leave UTF-16 to the existing path (shown as hex)"). Only `VCE_UTF8` gets the wide draw (`viewer.cpp:781-… · **still-open** (by design for this feature; a separate viewer feature). |
@@ -398,6 +437,7 @@ Gates after X01–X07: `build.cmd` clean, `saltests` **1257 checks / 0 failed**,
 | L33 | P1 | `src/shiconov.cpp:261-269` (`InitGoogleDrivePath` gating) is unreachable 2015-era Google-Drive machinery; its `WideCharToMultiByte(CP_ACP,…)` at :263 never runs. Nothing has changed since the row was … · **still-open, out-of-scope** (dead code; delete when the Google-Drive detection is reworked) |
 | L34 | P1 | Explorer's *Status* column uses a different mechanism (property-store driven); 059 added the `PKEY_StorageProviderState` fallback for the **overlay**, not a column. No change. · **by-design** |
 | L35 | P5 | `zip.cpp:5154` `ResolveLocalPathWithReparsePoints` unchanged; it is one instance of a wider pattern — the plugin-exported `MAX_PATH` buffer contracts are byte limits on UTF-8 (`zip.cpp:5868,5966`, `sp… · still-open (widen to the S6/Note N-5 statement) |
+| L36 | P7 | Manifest `activeCodePage=UTF-8`, rejected four times. Nothing in the guard or in the tests depends on it; every rule here is written for the "core built without `UNICODE`, ACP is CP1250" world. · **by-design — not revisited** |
 | L37 | P1 | `MAX_PATH` for components / 8.3 names / roots / `DefaultDir[26][MAX_PATH]` is still deliberate; my sweep found no site where a component legitimately exceeds `MAX_PATH`. Note that WTF-8 makes a compon… · **by-design** |
 | L38 | P5 | Confirmed verbatim at `ftp/dialogs6.cpp:377-381`; `PrintDiskSize(…,1)` ×3 into an ANSI `LoadStr` template into `SetActionShowHint` (`gui.cpp:1340`, ANSI). · still-open → F-P5-07 |
 | L39 | P5 | Confirmed at `ftp/fs4.cpp:325-327` (`NumberToStr` ×2 + ANSI `ExpandPluralString` template) and `ftp/operats1.cpp:1207,1210`. · still-open → F-P5-07 |
@@ -414,6 +454,12 @@ Gates after X01–X07: `build.cmd` clean, `saltests` **1257 checks / 0 failed**,
 | L50 | P5 | Re-examined per plugin. `uniso`, `tar`, `folders` have **no** ANSI UI text sinks at all (nothing to wrap). `checksum`'s remaining `SetDlgItemText`/`SetWindowText` carry `LoadStr` text only (`dialogs.c… · partly closed; residue = `uncab` → F-P5-03 |
 | L51 | P2 | Re-checked the data: `translations/french/salamand.slt` id 12820 is still `{!}%s octets{s\ · 0\ · \ · 1\ · s}` — base word already plural, default suffix `s` ⇒ "octetss" for every count ≠ 0 · **still-open** (data-only fix; FR-015 candidate). Same table shows cs `bajt{ů…}`, sk `bajt{ov…}`, hu `bájt{…}` are correct |
 | L52 | P2 | Confirmed the mechanism: `IDS_PLURAL_X_BYTES` is non-ASCII only in cs/hu among enabled languages, and only `PrintDiskSize` modes 1/2 with `u8=FALSE` compose it with `NumberToStr`. Core has **no** such… · **latent** — keep as a re-enable checklist note; add "also re-check every enabled plugin's `PrintDiskSize` mode-1/2 use" |
+| L53 | P7 | The 5-row shortfall is **still present**: `translations/czech/sftp.slt` has 235 lines against 230 in `russian`, `ukrainian` and `chinesesimplified`. The code reference `addrows.py:45` is stale (that l… · **still-open (dev-only)** — blocking for re-enabling ru/uk/zh; **convert to an automated check** (parity assertion), not another manual note |
+| L54 | P7 | `addrows.py:81` is stale as a reference (the merge loop now lives at :79-83, "keep anything left over rather than dropping it"). The gain+loss ordering defect was never re-tested. · **still-open (dev-only)** — cover by a round-trip test (`.slt` → merge → `.slt`) in the same tooling test as L53 |
+| L55 | P7 | `relayout.py:79` — the geometry-rebuild path still copies template numbers with the row's own trailing state (`:77-81`); nothing prevents stale text importing silently. · **still-open (dev-only)** |
+| L56 | P7 | `layout.py:196` — the dedupe still keys on control rows by shape (`len(row.numbers) != 6`), i.e. on the `&`-stripped body. · **still-open (dev-only)** |
+| L57 | P7 | Translator layout validator is red module-wide; the gate is "no new findings", which is not mechanical unless the baseline is recorded. · **still-open (tooling)** — record the per-module baseline count in the feature's quickstart so "no new" can be checked by subtraction |
+| L58 | P7 | `translations/ui-overrides.json` exists (93 lines) and carries the 052 pins. This is an obligation on future work, not a defect: an identifier-type plugin name must be pinned when it is introduced. · **obligation — carry forward** (no code change) |
 | L59 | P5 | Confirmed at `plugins1.cpp:2184`: `sprintf` of `Name` (UTF-8, up to MAX_PATH) + full DLL path + `GetErrorText` into `char bufText[MAX_PATH + 200]` (`:2154`). · still-open (not encoding; Note N-6) |
 | L60 | P5 | Confirmed at `plugins1.cpp:2166-2169`: `GetModuleFileName(HInstance, buf, MAX_PATH)` then `strcpy(s, "plugins\\")` + `strcat(s, DLLName)` with no bound. Also the ANSI `GetModuleFileName` is P1's seed … · still-open (Note N-6; coordinate with P1) |
 | L61 | P5 | Site present (`sftp/dialogs.cpp:1125-1140`, the label-widening loop). Purely geometric, no encoding content; cannot be judged without running the dialog. · still-open (not P5's class) |
@@ -423,12 +469,15 @@ Gates after X01–X07: `build.cmd` clean, `saltests` **1257 checks / 0 failed**,
 | L65 | P5 | `sftp/lang/lang.rc2:128` duplicate accelerators — translation/resource item, not encoding. · still-open (translation queue) |
 | L66 | P1 | `src/shiconov.cpp:856-868` — the SEH handler still leaks one `IPropertyStore` on the exception path. Unchanged by 059 (which added the property-store fallback in `GetIconOverlayIndex`, a different fun… · **still-open** (low) |
 | L67 | P1 | Overlay worst-case scanning is unchanged; 059 added one extra `CfGetSyncRootInfoByPath` call on the "every handler declined" path, which is cached per panel path. No new cost found. · **by-design** |
+| L68 | P7 | `utils/migrate-altap-settings.cmd` is present; `%`-expansion / echo / no cycle guard. It is a developer migration utility, outside `src/`, and the guard scans `src/` only. · **still-open, out-of-scope** (FR-015: dispose, do not fix) |
 | L69 | P1 | `src/shiconov.cpp:1192` `NOHANDLES(LoadLibrary("cldapi.dll"))` — still a relative load. `cldapi.dll` is a system DLL present in `System32`, and the process is not marked with a custom DLL search path,… · **still-open → fix-candidate** (one-line `LOAD_LIBRARY_SEARCH_SYSTEM32`); non-encoding |
 | L70 | P1 | Theoretical overlay index staleness — no new evidence either way; the index is rebuilt on `WM_SETTINGCHANGE`. · **by-design** |
 | L71 | P1 | `src/shexreg.h:218` IPC struct is a fixed shell-extension ABI shared with the 32-bit shell extension; changing it breaks the mixed-bitness contract. Unchanged. · **by-design** |
 | L72 | P1 | Long-path truncation without a crash in Compare Directories / Shift+F4 / archive backups / clipboard paste / hot-path save / window title. My sweep adds one datum: Compare Directories has a *different… · **still-open** (unchanged priority) |
 | L73 | P1 | Archive-subsystem path buffers are still bounded by `MAX_PATH`; the external-packer subsystem (`pack1/2/3`) explicitly refuses longer paths (`src/salamdr3.cpp:255` `"Too long base path in SalGetTempFi… · **by-design** |
 | L74 | P1 | External `MAX_PATH` limits at the shell/launch/MAPI/common-dialog boundary: still true; the common-dialog sites additionally have an *encoding* defect (F-P1-24) that is independent of the length limit… · **by-design** (length) + **fix-candidate** (encoding, F-P1-24) |
+| L75 | P7 | The unreproduced "Use Recycle Bin" read-back anomaly: not statically detectable, and not reachable from saltests either — the registry facade does not link into the test exe (`saltests.vcxproj:80-88`)… · **verification debt — keep as a manual gate item**; it becomes testable only if the facade is ever split into a linkable unit |
+| L76 | P7 | `src/finddlg1.cpp:3865` is now `case CM_FIND_SHOWERRORS:` — the reference is **stale** (the file has moved on since 041). `clang-format` is not on PATH in this environment, so I could not re-locate th… · **still-open but unverified** — re-run `clang-format --dry-run` over `finddlg1.cpp` during the fix wave and either re-locate the row or close it as stale |
 | L77 | P4 | Hot-path configuration. Both halves still present and both are deliberate: `CHotPathItems::Save` writes the *effective label* into the `Name` value "so older builds read this configuration without any… · **by-design** for the two named behaviours; the buffer asymmetry is a new **still-open** note |
 | L78 | P4 | `src/jumplist.cpp` — "no gallery icon" unchanged (`SetIconLocation("shell32.dll", -319)` at `:174`). But the file is **not** otherwise clean: it is built entirely on `IShellLinkA` and a `VT_LPSTR` `PK… · **still-open** (icon), and the file gains **fix-candidate** F-P4-06 |
 | L79 | P2 | The 84 sites converted by 042 were never individually verified per language. This review verified the *mechanism* (M2) and checked the actual translated strings for the ids it touched; it did **not** … · **still-open** — but F-P2-01…F-P2-07 show the residual `LoadStr` siblings of exactly that sweep are defective, so the sweep was incomplete rather than wrong |
@@ -443,7 +492,7 @@ Gates after X01–X07: `build.cmd` clean, `saltests` **1257 checks / 0 failed**,
 | L88 | P1 | GUI screenshots are still not captured programmatically; every visual claim in this report is code-derived, not screenshot-verified. · **still-open** (test-only) |
 | L89 | P5 | The "8 of 18 plugins not runtime-verified" set overlaps L47. Non-ASCII date/time locale: no plugin site found that formats dates itself except `dbviewer/parser.cpp:298,1029` (`GetTimeFormat` **A** int… · still-open (one new site named) |
 
-**77 of 89 ledger rows re-examined** so far (78 dispositions from 6 perspectives).
+**89 of 89 ledger rows re-examined** so far (90 dispositions from 7 perspectives).
 <!-- END GENERATED: ledger -->
 
 ### 8.2 New deferred items
