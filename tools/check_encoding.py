@@ -96,11 +96,17 @@ lossy-lenient-at-intake
                  registry, process).  U+FFFD baked into a name destroys its
                  identity (feature 066).
 
-signed-char-name-byte
-                 A name byte compared as a control character (<= ' ', < 32)
-                 through a signed char, or a 256-entry byte table indexed by a
-                 name byte: every byte >= 0x80 - all of UTF-8 - is misjudged
-                 (feature 005 D4; still open at the Recycle Bin guard).
+acp-byte-table-on-name
+                 A 256-entry ACP byte table (LowerCase[], IsAlpha[], ...)
+                 indexed by a byte of a UTF-8 name: every byte >= 0x80 - all
+                 of UTF-8 - is folded through the active code page, so two
+                 spellings of one accented name compare unequal while
+                 unrelated accented letters compare equal (cluster B-2).
+
+                 Feature 069 narrowed this rule: it used to also flag a name
+                 byte compared as a control character through a *signed* char,
+                 a premise that is void - the product compiles with /J, so
+                 plain char is unsigned (feature 068, ledger L07).
 
 missed-twin      LoadStr(IDS_X) where IDS_X is already loaded with LoadStrU8
                  somewhere else.  The remaining ANSI twin is either composed
@@ -256,18 +262,18 @@ OPERATIONAL_SINK = re.compile(
     r'CreateFileW|DeleteFileW|MoveFileW|MoveFileExW|CopyFileW|SHFileOperationW|'
     r'CreateProcessW|ShellExecuteW|ShellExecuteExW|SetCurrentDirectoryW|'
     r'RegSetValueExW)\s*\(')
-SIGNED_CHAR_TEST = re.compile(
-    r'\b\w*(?:[Nn]ame|[Pp]ath|[Ff]ile)\w*\s*\[[^\]]*\]\s*(?:<=|<|>=|>)\s*(?:\'\s\'|32\b|0x20\b)')
 BYTE_TABLE = re.compile(r'\b(?:IsNotAlphaNorNum|IsAlpha|LowerCase|UpperCase)\s*\[')
 LOADSTRU8_ID = re.compile(r'\bLoadStrU8\s*\(\s*(IDS_\w+)')
 LOADSTR_ID = re.compile(r'(?<![A-Za-z_])LoadStr\s*\(\s*(IDS_\w+)')
 
-# Still report-only: each is blocked on a fix this feature deferred (see the
-# review report). signed-char-name-byte's premise is VOID - the product compiles
-# with /J so plain char is unsigned - and it is kept only until its replacement
-# (acp-byte-table-on-name) lands with the group B-2 work.
+# Still report-only: each is blocked on a fix deferred to its own feature (the
+# 068 review report; specs/069-finish-encoding-fixes/research.md R8).
+# acp-byte-table-on-name is the feature-069 successor of signed-char-name-byte:
+# the signed-char half of that rule rested on a void premise (/J makes plain
+# char unsigned, feature 068 ledger L07); the byte-table half is the real defect
+# and waits for the group B-2 work.
 DRAFT_RULES = ("ansi-api-on-utf8-path", "cp-acp-utf8-source",
-               "signed-char-name-byte", "missed-twin")
+               "acp-byte-table-on-name", "missed-twin")
 
 
 class Finding:
@@ -497,11 +503,11 @@ def scan_draft(only=None):
                     if not suppressed(lines, i, "lossy-lenient-at-intake"):
                         findings.append(Finding("lossy-lenient-at-intake", rel, i + 1, ln))
 
-            # --- signed-char-name-byte ---------------------------------
-            if only in (None, "signed-char-name-byte") and "unsigned" not in ln:
-                if SIGNED_CHAR_TEST.search(ln) or (BYTE_TABLE.search(ln) and UTF8_IDENT.search(ln)):
-                    if not suppressed(lines, i, "signed-char-name-byte"):
-                        findings.append(Finding("signed-char-name-byte", rel, i + 1, ln))
+            # --- acp-byte-table-on-name --------------------------------
+            if only in (None, "acp-byte-table-on-name"):
+                if BYTE_TABLE.search(ln) and UTF8_IDENT.search(ln):
+                    if not suppressed(lines, i, "acp-byte-table-on-name"):
+                        findings.append(Finding("acp-byte-table-on-name", rel, i + 1, ln))
 
             # --- missed-twin -------------------------------------------
             if only in (None, "missed-twin"):

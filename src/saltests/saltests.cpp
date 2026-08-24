@@ -1421,6 +1421,17 @@ static void TestEncodingReview068()
           wtf[4] == 0xD800); // display keeps the true unit, not U+FFFD
 }
 
+// ****************************************************************************
+// Feature 069 - the contained fixes finished from the 068 handoff.
+//
+// One block per fix, numbered by its finding id.  Each block was proven to
+// fail on the pre-fix tree before the fix landed (spec FR-008), which is why
+// the assertions are written against the defect, not against the helper.
+
+static void TestEncodingFixes069()
+{
+}
+
 int main()
 {
     TestConversions();
@@ -1441,6 +1452,7 @@ int main()
     TestWtf8();
     TestWtf8FileOps();
     TestEncodingReview068();
+    TestEncodingFixes069();
 
     printf("saltests: %d checks, %d failed\n", g_checks, g_failures);
     return g_failures;

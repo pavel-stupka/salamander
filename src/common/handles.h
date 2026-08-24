@@ -528,15 +528,21 @@ public:
 
     LONG RegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
 
-    LONG RegCreateKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD Reserved,
-                        LPTSTR lpClass, DWORD dwOptions, REGSAM samDesired,
-                        LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-                        PHKEY phkResult, LPDWORD lpdwDisposition);
+    // feature 069 (D01): declared explicitly as the A twin, exactly like
+    // CreateFileA/CreateFileW above.  The generic LPCTSTR spelling was renamed
+    // by windows.h to ...W in a UNICODE consumer and then collided with the
+    // explicit ...W below, so the Trace Server (CharacterSet=Unicode) could
+    // not be built at all.  In the non-UNICODE core this is the same member it
+    // always was: LPCTSTR is LPCSTR and ::RegCreateKeyEx is ::RegCreateKeyExA.
+    LONG RegCreateKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved,
+                         LPSTR lpClass, DWORD dwOptions, REGSAM samDesired,
+                         LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+                         PHKEY phkResult, LPDWORD lpdwDisposition);
 
     LONG RegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
 
-    LONG RegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD ulOptions,
-                      REGSAM samDesired, PHKEY phkResult);
+    LONG RegOpenKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions,
+                       REGSAM samDesired, PHKEY phkResult);
 
     LONG RegCreateKeyExW(HKEY hKey, LPCWSTR lpSubKey, DWORD Reserved,
                          LPWSTR lpClass, DWORD dwOptions, REGSAM samDesired,
@@ -612,8 +618,8 @@ public:
 
     BOOL GlobalUnlock(HGLOBAL hMem);
 
-    HANDLE FindFirstChangeNotification(LPCTSTR lpPathName, BOOL bWatchSubtree,
-                                       DWORD dwNotifyFilter);
+    HANDLE FindFirstChangeNotificationA(LPCSTR lpPathName, BOOL bWatchSubtree,
+                                        DWORD dwNotifyFilter);
 
     HANDLE FindFirstChangeNotificationW(LPCWSTR lpPathName, BOOL bWatchSubtree,
                                         DWORD dwNotifyFilter);

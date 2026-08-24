@@ -1348,14 +1348,14 @@ LONG C__Handles::RegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult)
     return ret;
 }
 
-LONG C__Handles::RegCreateKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD Reserved,
-                                LPTSTR lpClass, DWORD dwOptions, REGSAM samDesired,
-                                LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-                                PHKEY phkResult, LPDWORD lpdwDisposition)
+LONG C__Handles::RegCreateKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved,
+                                 LPSTR lpClass, DWORD dwOptions, REGSAM samDesired,
+                                 LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+                                 PHKEY phkResult, LPDWORD lpdwDisposition)
 {
-    LONG ret = ::RegCreateKeyEx(hKey, lpSubKey, Reserved, lpClass, dwOptions,
-                                samDesired, lpSecurityAttributes, phkResult,
-                                lpdwDisposition);
+    LONG ret = ::RegCreateKeyExA(hKey, lpSubKey, Reserved, lpClass, dwOptions,
+                                 samDesired, lpSecurityAttributes, phkResult,
+                                 lpdwDisposition);
     CheckCreate(ret == ERROR_SUCCESS, __htKey, __hoRegCreateKeyEx,
                 (phkResult != NULL) ? *phkResult : NULL, ret);
     return ret;
@@ -1369,10 +1369,10 @@ LONG C__Handles::RegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult)
     return ret;
 }
 
-LONG C__Handles::RegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD ulOptions,
-                              REGSAM samDesired, PHKEY phkResult)
+LONG C__Handles::RegOpenKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions,
+                               REGSAM samDesired, PHKEY phkResult)
 {
-    LONG ret = ::RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+    LONG ret = ::RegOpenKeyExA(hKey, lpSubKey, ulOptions, samDesired, phkResult);
     CheckCreate(ret == ERROR_SUCCESS, __htKey, __hoRegOpenKeyEx,
                 (phkResult != NULL) ? *phkResult : NULL, ret);
     return ret;
@@ -2223,11 +2223,11 @@ BOOL C__Handles::GlobalUnlock(HGLOBAL hMem)
 }
 
 HANDLE
-C__Handles::FindFirstChangeNotification(LPCTSTR lpPathName, BOOL bWatchSubtree,
-                                        DWORD dwNotifyFilter)
+C__Handles::FindFirstChangeNotificationA(LPCSTR lpPathName, BOOL bWatchSubtree,
+                                         DWORD dwNotifyFilter)
 {
-    HANDLE ret = ::FindFirstChangeNotification(lpPathName, bWatchSubtree,
-                                               dwNotifyFilter);
+    HANDLE ret = ::FindFirstChangeNotificationA(lpPathName, bWatchSubtree,
+                                                dwNotifyFilter);
     CheckCreate(ret != INVALID_HANDLE_VALUE, __htChangeNotification,
                 __hoFindFirstChangeNotification, ret, GetLastError());
     return ret;

@@ -108,7 +108,7 @@ if (Test-Path $configFile) {
         }
     }
 } else {
-    # No config file — auto-commit disabled by default
+    # No config file - auto-commit disabled by default
     exit 0
 }
 
@@ -146,4 +146,4 @@ try {
     exit 1
 }
 
-Write-Host "✓ Changes committed $phase $commandName"
+Write-Host "OK: Changes committed $phase $commandName"
