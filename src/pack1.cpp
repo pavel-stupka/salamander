@@ -295,12 +295,6 @@ BOOL PackScanLine(char* buffer, CSalamanderDirectory& dir, const int index,
     // and pomptr2 possibly holds the path to it
     newfile.NameLen = tmpfname - pomptr + 1;
 
-    // feature 069 (F-P1-05): the archiver prints its names in the console (OEM)
-    // code page, and CFileData::Name is UTF-8 - OemToCharBuff produced ANSI
-    // bytes instead, i.e. a name in no defined encoding.  Convert properly; the
-    // UTF-8 form can be longer than the OEM one, so the buffer is sized for it
-    // and NameLen is taken from the result.  The pack side above converts the
-    // other way with the matching helper: both directions move together.
     // set the name of the new file or directory
     //
     // feature 069 (F-P1-05): this listing stays in the ACTIVE CODE PAGE, and
@@ -1077,16 +1071,10 @@ BOOL PackUC2List(const char* archiveFileName, CPackLineArray& lineArray,
                 currentDir[i++] = *txtPtr++;
             // terminate the string
             currentDir[i] = '\0';
-            // feature 069 (F-P1-05): the archiver prints in the console code page and this path
-            // becomes part of a UTF-8 panel name
-            {
-                char dirU8[3 * MAX_PATH];
-                if (SalOEMToU8(currentDir, dirU8, sizeof(dirU8)) != 0 &&
-                    strlen(dirU8) <= strlen(currentDir))
-                    strcpy(currentDir, dirU8); // fits in place
-                else
-                    OemToChar(currentDir, currentDir); // legacy fallback
-            }
+            // feature 069 (F-P1-05): code page, like the two listing sites above -
+            // this is a DIRECTORY, and a per-item conversion of a directory is
+            // exactly what splits the tree (see the note at the main site)
+            OemToChar(currentDir, currentDir);
             // one more check
             if (*txtPtr == '\0')
                 return (*PackErrorHandlerPtr)(NULL, IDS_PACKERR_PARSE);
