@@ -484,7 +484,17 @@ void SalMakeValidFileNameComponent(char* fileNameComponent);
 // tisk velikosti mista na disku, mode==0 "1.23 MB", mode==1 "1 230 000 bytes, 1.23 MB",
 // mode==2 "1 230 000 bytes", mode==3 (vzdy v celych KB), mode==4 (jako mode==0, ale vzdy
 // aspon 3 platne cislice, napr. "2.00 MB")
-char* PrintDiskSize(char* buf, const CQuadWord& size, int mode);
+// feature 067: 'u8' picks LoadStrU8() for every localized text inside (the
+// "bytes" plural template and the B..EB unit words), so the whole result is
+// valid UTF-8 -- the number already carries the UTF-8 locale separator
+// (feature 041), and with the ANSI default the mode 1/2 result is a mixed
+// string that a Sal*U8 sink cannot convert and draws through the legacy path
+// as mojibake. Pass TRUE when the result goes to a UTF-8 display path.
+// Plugins via CSalamanderGeneral keep the ANSI default: their output bytes
+// are frozen (several plugin sinks are genuinely ANSI and render the ANSI
+// unit word correctly today). See
+// specs/067-fix-drive-info-encoding/contracts/number-format-encoding.md.
+char* PrintDiskSize(char* buf, const CQuadWord& size, int mode, BOOL u8 = FALSE);
 
 // prevadi pocet sekund na retezec ("5 sec", "1 hr 34 min", atp.); 'buf' je
 // buffer pro vysledny text, musi byt velky aspon 100 znaku; 'secs' je pocet sekund;
@@ -869,11 +879,11 @@ int ExpandPluralString(char* lpOut, int nOutMax, const char* lpFmt, int nParCoun
 //
 // popis konstant epfdmXXX viz spl_gen.h
 // feature 041: 'u8' picks LoadStrU8() instead of LoadStr() for the localized
-// template, so the result is UTF-8. Set it ONLY for the information line, whose
-// text is drawn through the UTF-8 path and is concatenated with a number that
-// carries the locale separator. Every other caller (dialogs, captions, the Find
-// dialog, plugins via CSalamanderGeneral) keeps the ANSI default, because they
-// still hand the result to ANSI display APIs.
+// template, so the result is UTF-8. Set it for callers that draw through the
+// UTF-8 path and concatenate the text with a number that carries the locale
+// separator (the information line since feature 041, the Find status bar
+// since feature 043). Plugins via CSalamanderGeneral keep the ANSI default --
+// the API's output bytes are frozen (feature 067).
 int ExpandPluralFilesDirs(char* lpOut, int nOutMax, int files, int dirs,
                           int mode, BOOL forDlgCaption, BOOL u8 = FALSE);
 int ExpandPluralBytesFilesDirs(char* lpOut, int nOutMax, const CQuadWord& selectedBytes,

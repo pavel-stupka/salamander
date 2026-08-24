@@ -413,16 +413,20 @@ BOOL IsPathOnVolumeSupADS(const char* path, BOOL* isFAT32)
 // PrintDiskSize
 //
 
-char* PrintDiskSize(char* buf, const CQuadWord& size2, int mode)
+char* PrintDiskSize(char* buf, const CQuadWord& size2, int mode, BOOL u8)
 {
     CALL_STACK_MESSAGE3("PrintDiskSize(, %g, %d)", size2.GetDouble(), mode);
     CQuadWord size(size2);
+
+    // feature 067: with 'u8' the localized texts load as UTF-8, so they compose
+    // with the UTF-8 number (feature 041 separator) into one valid UTF-8 string
+    char* (*loadStr)(int, HINSTANCE) = u8 ? LoadStrU8 : LoadStr;
 
     buf[0] = 0;
     if (mode == 1 || mode == 2)
     {
         char expanded[200];
-        ExpandPluralString(expanded, 200, HLanguage != NULL ? LoadStr(IDS_PLURAL_X_BYTES) : "{!}%s byte{s|0||1|s}", 1, &size);
+        ExpandPluralString(expanded, 200, HLanguage != NULL ? loadStr(IDS_PLURAL_X_BYTES, NULL) : "{!}%s byte{s|0||1|s}", 1, &size);
         char num[50];
         sprintf(buf, expanded, NumberToStr(num, size));
     }
@@ -453,27 +457,27 @@ char* PrintDiskSize(char* buf, const CQuadWord& size2, int mode)
         case 0:
         {
             if (mode == 0 || mode == 4)
-                s = HLanguage != NULL ? LoadStr(IDS_SIZE_B) : "B";
+                s = HLanguage != NULL ? loadStr(IDS_SIZE_B, NULL) : "B";
             break;
         }
 
         case 1:
-            s = HLanguage != NULL ? LoadStr(IDS_SIZE_KB) : "KB";
+            s = HLanguage != NULL ? loadStr(IDS_SIZE_KB, NULL) : "KB";
             break;
         case 2:
-            s = HLanguage != NULL ? LoadStr(IDS_SIZE_MB) : "MB";
+            s = HLanguage != NULL ? loadStr(IDS_SIZE_MB, NULL) : "MB";
             break;
         case 3:
-            s = HLanguage != NULL ? LoadStr(IDS_SIZE_GB) : "GB";
+            s = HLanguage != NULL ? loadStr(IDS_SIZE_GB, NULL) : "GB";
             break;
         case 4:
-            s = HLanguage != NULL ? LoadStr(IDS_SIZE_TB) : "TB";
+            s = HLanguage != NULL ? loadStr(IDS_SIZE_TB, NULL) : "TB";
             break;
         case 5:
-            s = HLanguage != NULL ? LoadStr(IDS_SIZE_PB) : "PB";
+            s = HLanguage != NULL ? loadStr(IDS_SIZE_PB, NULL) : "PB";
             break;
         case 6:
-            s = HLanguage != NULL ? LoadStr(IDS_SIZE_EB) : "EB";
+            s = HLanguage != NULL ? loadStr(IDS_SIZE_EB, NULL) : "EB";
             break;
         }
 
@@ -524,7 +528,7 @@ char* PrintDiskSize(char* buf, const CQuadWord& size2, int mode)
         size /= CQuadWord(1024, 0); // integer division! (it could also be done by bit-shifting, but...)
         NumberToStr(buf, size);
         strcat(buf, " ");
-        strcat(buf, HLanguage != NULL ? LoadStr(IDS_SIZE_KB) : "KB");
+        strcat(buf, HLanguage != NULL ? loadStr(IDS_SIZE_KB, NULL) : "KB");
         break;
     }
     }

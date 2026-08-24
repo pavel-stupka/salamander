@@ -940,6 +940,64 @@ static void TestUiTextEncoding()
     }
 }
 
+// Feature 067: the number-composition encoding contract. PrintDiskSize mode 1/2
+// composed the ANSI LoadStr() "bytes" plural with a NumberToStr() number that
+// carries the UTF-8 locale separator (feature 041), so in Czech the Drive
+// Information byte counts were a MIXED string: the strict Sal*U8 sink refused
+// it and the legacy fallback drew the separator as "A-circumflex + space".
+// PrintDiskSize/NumberToStr are not linked into this exe (they pull in the
+// whole application), so what is asserted is the property the fixed call
+// sites depend on -- the 052 stance; tools/check_encoding.py guards the
+// composition sites themselves.
+// Contract: specs/067-fix-drive-info-encoding/contracts/number-format-encoding.md
+static void TestNumberCompositionEncoding()
+{
+    WCHAR wide[256];
+
+    // (1) the repaired composition: digits + the REAL locale separator +
+    //     the UTF-8 unit word ("bajtu" with u-ring) is valid UTF-8 wholesale,
+    //     so the wide drawing path is available
+    char sep[16];
+    if (SalGetLocaleInfoU8(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, sep, sizeof(sep)) == 0)
+        strcpy_s(sep, " ");
+    char composed[128];
+    _snprintf_s(composed, _TRUNCATE, "967%s709%s523%s968 bajt\xC5\xAF", sep, sep, sep);
+    CHECK(SalU8ToW(composed, -1, wide, _countof(wide)) != 0);
+
+    // (2) the defect: the same number with the CP1250 unit word (0xF9 =
+    //     u-ring in the legacy codepage) forfeits the wide path wholesale --
+    //     this refusal is exactly why the "A-circumflex" fallback rendering
+    //     appeared in the Ctrl+F1 dialog
+    char mixed[128];
+    _snprintf_s(mixed, _TRUNCATE, "967\xC2\xA0"
+                                  "709\xC2\xA0"
+                                  "523\xC2\xA0"
+                                  "968 bajt\xF9");
+    CHECK(SalU8ToW(mixed, -1, wide, _countof(wide)) == 0);
+
+    // (3) the lenient display mirror keeps everything but the one bad byte
+    CHECK(SalU8ToWDisplay(mixed, -1, wide, _countof(wide)) != 0);
+    CHECK(wcsstr(wide, L"967\x00A0"
+                       L"709") != NULL); // separators decoded
+    int replacements = 0;
+    for (const WCHAR* p = wide; *p != 0; p++)
+        if (*p == 0xFFFD)
+            replacements++;
+    CHECK(replacements == 1);
+
+    // (4) every separator shape Windows can supply converts strictly once the
+    //     composition is all-UTF-8: NBSP (Czech), narrow NBSP (newer French
+    //     locales), typographic apostrophe (Swiss)
+    static const char* seps[] = {"\xC2\xA0", "\xE2\x80\xAF", "\xE2\x80\x99"};
+    int i;
+    for (i = 0; i < _countof(seps); i++)
+    {
+        char num[64];
+        _snprintf_s(num, _TRUNCATE, "1%s234%s567 bajt\xC5\xAF", seps[i], seps[i]);
+        CHECK(SalU8ToW(num, -1, wide, _countof(wide)) != 0);
+    }
+}
+
 // Feature 052: the plugin metadata encoding contract. CPluginData's translated
 // strings hold UTF-8 from every producer: plugin-supplied ANSI is normalized
 // through SalLegacyToU8Alloc at the intake boundaries, and persisted values
@@ -1238,6 +1296,7 @@ int main()
     TestDarkIconColorAdaptation();
     TestComposedMessageEncoding();
     TestUiTextEncoding();
+    TestNumberCompositionEncoding();
     TestPluginMetadataEncoding();
     TestWtf8();
     TestWtf8FileOps();

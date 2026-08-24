@@ -6562,7 +6562,10 @@ BOOL TestFreeSpace(HWND parent, const char* path, const CQuadWord& totalSize, co
         char buf1[50];
         char buf2[50];
         char buf3[200];
-        sprintf(buf3, LoadStr(IDS_NOTENOUGHSPACE),
+        // feature 067: LoadStrU8 - the numbers carry the UTF-8 locale separator,
+        // an ANSI template made the whole message invalid UTF-8 (mojibake in the
+        // message box); same conversion as fileswn6.cpp/fileswn8.cpp (feature 041)
+        sprintf(buf3, LoadStrU8(IDS_NOTENOUGHSPACE),
                 NumberToStr(buf1, totalSize),
                 NumberToStr(buf2, freeSpace));
         return SalMessageBox(parent, buf3, messageTitle, MB_YESNO | MB_ICONQUESTION | MSGBOXEX_ESCAPEENABLED) == IDYES;

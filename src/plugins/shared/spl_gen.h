@@ -1408,6 +1408,10 @@ public:
     // prevod cisla na "prehlednejsi" retezec (po trech cislicich mezera), retezec vraci v
     // 'buffer' (min. velikost 50 bytu), vraci 'buffer'
     // mozne volat z libovolneho threadu
+    // encoding (feature 067, documentation only - behavior unchanged since
+    // feature 041): the digit-group separator comes from the locale as UTF-8,
+    // so on locales with a non-ASCII separator (e.g. Czech no-break space)
+    // the result contains multi-byte UTF-8 sequences; digits are ASCII
     virtual char* WINAPI NumberToStr(char* buffer, const CQuadWord& number) = 0;
 
     // tisk velikosti mista na disku do 'buf' (min. velikost bufferu je 100 bytu),
@@ -1416,6 +1420,11 @@ public:
     // aspon 3 platne cislice, napr. "2.00 MB")
     // vraci 'buf'
     // mozne volat z libovolneho threadu
+    // encoding (feature 067, documentation only - behavior unchanged): the
+    // number part carries the UTF-8 locale separator (see NumberToStr), the
+    // localized unit words are ANSI from the core language module - ASCII in
+    // every shipped language, so in practice the result is valid UTF-8 except
+    // the mode 1/2 "bytes" plural in languages where that word has diacritics
     virtual char* WINAPI PrintDiskSize(char* buf, const CQuadWord& size, int mode) = 0;
 
     // prevadi pocet sekund na retezec ("5 sec", "1 hr 34 min", atp.); 'buf' je
@@ -3388,6 +3397,8 @@ public:
     // delka retezce muze narust, protoze separator muze mit podle MSDN az 4 znaky
     // vraci TRUE, pokud byl buffer dostatecne veliky a operaci se povedlo dokoncit, jinak vraci FALSE
     // mozne volat z libovolneho threadu
+    // encoding (feature 067, documentation only): the separator is spliced in
+    // as UTF-8 bytes (ASCII ','/'.' on all shipped locales)
     virtual BOOL WINAPI PointToLocalDecimalSeparator(char* buffer, int bufferSize) = 0;
 
     // nastavi pro tento plugin pole icon-overlays; po nastaveni muze plugin v listingach vracet

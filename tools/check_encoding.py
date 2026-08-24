@@ -32,6 +32,19 @@ mixed-composition
                  converts cleanly and looks correct.  Only localized builds show
                  it.  That is why this rule is static rather than a runtime test.
 
+ansi-template-number
+                 A grouped number composed with an ANSI LoadStr() template
+                 (feature 067).  NumberToStr()/PrintDiskSize() output carries
+                 the UTF-8 locale thousands separator (feature 041), so an
+                 ANSI template makes the composed string invalid UTF-8 and a
+                 Sal*U8 sink draws it through the legacy path - the Czech
+                 no-break-space separator renders as "A-circumflex + space".
+                 Two shapes: a printf-family call whose format is LoadStr()
+                 and whose arguments call NumberToStr()/PrintDiskSize()
+                 directly, and ExpandPluralString() fed a LoadStr() bytes-
+                 plural template (those templates receive a grouped number by
+                 construction).  Use LoadStrU8(), or PrintDiskSize(..., TRUE).
+
 dead-dispinfow   A dialog handles LVN_GETDISPINFOW but never sends NF_REQUERY.
                  Such a handler can never run: a list view asks its parent for a
                  notification format during its own creation, which is before
@@ -95,6 +108,14 @@ DISPLAY_SINK = re.compile(r'\bpszText\b|\bDrawText\s*\(|\bTextOut\s*\(|\bExtText
 DISPINFOW = re.compile(r'\bLVN_GETDISPINFOW\b')
 REQUERY = re.compile(r'\bNF_REQUERY\b')
 
+# --- feature 067 -------------------------------------------------------------
+# Number formatters whose output carries the UTF-8 locale separator; composing
+# it with an ANSI LoadStr() template is the Drive Information defect shape.
+NUMBER_ARG = re.compile(r'\b(?:NumberToStr2?|PrintDiskSize)\s*\(')
+EXPAND_PLURAL = re.compile(r'\bExpandPluralString\s*\(')
+# the bytes-plural templates receive a NumberToStr() result by construction
+ANSI_BYTES_TEMPLATE = re.compile(r'\bLoadStr\s*\(\s*IDS_\w*BYTES')
+
 # --- feature 043 -------------------------------------------------------------
 # The rules above describe the two defects feature 042 had in hand. They passed
 # cleanly while three further defects of the same class were present, because
@@ -134,7 +155,7 @@ SINK_COMBO = re.compile(r'\bCB_ADDSTRING\b(?!W)')
 SINK_CLIPBOARD = re.compile(r'\bCopyTextToClipboard\s*\(')
 
 RULES = ("cp-acp-display", "mixed-composition", "dead-dispinfow",
-         "utf8-to-legacy-sink", "ansi-template-caption")
+         "utf8-to-legacy-sink", "ansi-template-caption", "ansi-template-number")
 
 
 class Finding:
@@ -153,14 +174,14 @@ def sources():
         yield p, rel
 
 
-def call_text(lines, i):
-    """Return exactly the printf-family call starting on line i.
+def call_text(lines, i, call=PRINTF):
+    """Return exactly the call (printf-family by default) starting on line i.
 
     A fixed line window is not good enough: it swallows the next statement and
     reports calls whose format is a plain literal as if it came from LoadStr().
     Match parentheses instead, so the text is the call and nothing else.
     """
-    m = PRINTF.search(lines[i])
+    m = call.search(lines[i])
     if not m:
         return None
     # text from the call NAME onwards (the name is needed for FMT_IS_LOADSTR to
@@ -251,6 +272,19 @@ def scan(only=None):
                     if NAME_ARG.search(after) and MSGBOX.search(" ".join(lines[i:i + 14])):
                         if not suppressed(lines, i, "mixed-composition"):
                             findings.append(Finding("mixed-composition", rel, i + 1, ln))
+
+            # --- ansi-template-number (feature 067) -----------------------
+            if only in (None, "ansi-template-number"):
+                if PRINTF.search(ln):
+                    stmt = call_text(lines, i) or ""
+                    if FMT_IS_LOADSTR.search(stmt) and NUMBER_ARG.search(stmt):
+                        if not suppressed(lines, i, "ansi-template-number"):
+                            findings.append(Finding("ansi-template-number", rel, i + 1, ln))
+                if EXPAND_PLURAL.search(ln):
+                    stmt = call_text(lines, i, EXPAND_PLURAL) or ""
+                    if ANSI_BYTES_TEMPLATE.search(stmt):
+                        if not suppressed(lines, i, "ansi-template-number"):
+                            findings.append(Finding("ansi-template-number", rel, i + 1, ln))
 
             # --- cp-acp-display -------------------------------------------
             if only in (None, "cp-acp-display") and CP_ACP_W2A.search(ln):

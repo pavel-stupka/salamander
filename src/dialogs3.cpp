@@ -1534,16 +1534,19 @@ void CDriveInfo::Transfer(CTransferInfo& ti)
             GetWindowRect(GetDlgItem(HWindow, IDB_GRAPH), &tmpR2);
             spaceForLongAndShort = tmpR2.left - tmpR1.left;
 
-            SalSetDlgItemTextU8(HWindow, IDT_CAPACITY, PrintDiskSize(volumeName, diskTotalBytes, 2));
-            SalSetDlgItemTextU8(HWindow, IDT_CAPACITY_SHORT, PrintDiskSize(volumeName, diskTotalBytes, 0));
-            SalSetDlgItemTextU8(HWindow, IDT_FREESPACE, PrintDiskSize(volumeName, diskFreeBytes, 2));
-            SalSetDlgItemTextU8(HWindow, IDT_FREESPACE_SHORT, PrintDiskSize(volumeName, diskFreeBytes, 0));
+            // feature 067: u8=TRUE - the mode 2 string carries the localized
+            // "bytes" plural; composed with the ANSI LoadStr it was invalid
+            // UTF-8 and the U8 sink drew it via the legacy path as mojibake
+            SalSetDlgItemTextU8(HWindow, IDT_CAPACITY, PrintDiskSize(volumeName, diskTotalBytes, 2, TRUE));
+            SalSetDlgItemTextU8(HWindow, IDT_CAPACITY_SHORT, PrintDiskSize(volumeName, diskTotalBytes, 0, TRUE));
+            SalSetDlgItemTextU8(HWindow, IDT_FREESPACE, PrintDiskSize(volumeName, diskFreeBytes, 2, TRUE));
+            SalSetDlgItemTextU8(HWindow, IDT_FREESPACE_SHORT, PrintDiskSize(volumeName, diskFreeBytes, 0, TRUE));
             if (diskTotalBytes >= diskFreeBytes)
                 diskTotalBytes -= diskFreeBytes;
             else
                 diskTotalBytes.SetUI64(0); // rather zero than complete nonsense
-            SalSetDlgItemTextU8(HWindow, IDT_USEDSPACE, PrintDiskSize(volumeName, diskTotalBytes, 2));
-            SalSetDlgItemTextU8(HWindow, IDT_USEDSPACE_SHORT, PrintDiskSize(volumeName, diskTotalBytes, 0));
+            SalSetDlgItemTextU8(HWindow, IDT_USEDSPACE, PrintDiskSize(volumeName, diskTotalBytes, 2, TRUE));
+            SalSetDlgItemTextU8(HWindow, IDT_USEDSPACE_SHORT, PrintDiskSize(volumeName, diskTotalBytes, 0, TRUE));
             // position the static controls
             int height;
             RECT r;
@@ -2213,7 +2216,7 @@ CZIPSizeResultsDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
       MoveWindow(HWindow, r1.left, r1.top, width, r1.bottom - r1.top, FALSE);
       */
         char buf[50];
-        SalSetDlgItemTextU8(HWindow, IDS_SIZE, PrintDiskSize(buf, Size, 1));
+        SalSetDlgItemTextU8(HWindow, IDS_SIZE, PrintDiskSize(buf, Size, 1, TRUE)); // feature 067: u8
         SalSetDlgItemTextU8(HWindow, IDS_FILESCOUNT, NumberToStr(buf, CQuadWord(Files, 0)));
         SalSetDlgItemTextU8(HWindow, IDS_DIRSCOUNT, NumberToStr(buf, CQuadWord(Dirs, 0)));
         break;

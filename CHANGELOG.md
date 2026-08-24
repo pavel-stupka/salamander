@@ -13,6 +13,21 @@ plugin.
 
 ### Fixed
 
+- **Byte counts no longer show a stray "Â" before every digit group** in
+  languages whose word for "bytes" carries accents (Czech "bajtů", Hungarian
+  "bájt"). The Drive Information dialog (Ctrl+F1) showed
+  `967Â 709Â 523Â 968 bajtů` instead of `967 709 523 968 bajtů`; the same
+  defect affected the directory-size and archive-size results dialogs and the
+  "not enough space" message. Cause: the number carries the locale's
+  no-break-space digit-group separator in UTF-8 while the localized word was
+  composed in the legacy codepage, and the mixed text was then drawn through
+  the legacy path. The internal viewer's file-offset tooltip had the same
+  separator garble in every language with a non-ASCII separator and is fixed
+  too. English and other languages whose formatting is pure ASCII are
+  byte-for-byte unchanged, as is everything plugins display (several plugin
+  dialogs have their own, pre-existing separator garble on such locales —
+  those are recorded and will be fixed separately).
+
 - **Files whose names contain a broken (unpaired-surrogate) character can now
   be deleted, copied, moved, renamed, viewed and modified.** Windows permits
   file names that are not valid Unicode text — they typically arrive from

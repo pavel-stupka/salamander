@@ -465,12 +465,12 @@ CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             Bitmap.Enlarge(Width, CharHeight);
             if (HToolTip != NULL)
             {
-                TOOLINFO ti;
+                TOOLINFOW ti; // feature 067: the tool is registered wide
                 ti.cbSize = sizeof(ti);
                 ti.hwnd = HWindow;
                 ti.uId = 1;
                 GetClientRect(HWindow, &ti.rect);
-                SendMessage(HToolTip, TTM_NEWTOOLRECT, 0, (LPARAM)&ti);
+                SendMessage(HToolTip, TTM_NEWTOOLRECTW, 0, (LPARAM)&ti);
             }
             break;
         }
@@ -563,15 +563,19 @@ CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         if (HToolTip != NULL)
         {
-            TOOLINFO ti;
+            // feature 067: the tool is registered wide (TTM_ADDTOOLW), so the
+            // control asks back with TTN_NEEDTEXTW - the offset tooltip text
+            // carries the UTF-8 locale thousands separator, which the ANSI
+            // TTN_NEEDTEXT path drew byte-wise as mojibake ("A-circumflex")
+            TOOLINFOW ti;
             ti.cbSize = sizeof(ti);
             ti.uFlags = TTF_SUBCLASS;
             ti.hwnd = HWindow;
             ti.uId = 1;
             ti.hinst = HInstance;
             GetClientRect(HWindow, &ti.rect);
-            ti.lpszText = LPSTR_TEXTCALLBACK;
-            SendMessage(HToolTip, TTM_ADDTOOL, 0, (LPARAM)&ti);
+            ti.lpszText = LPSTR_TEXTCALLBACKW;
+            SendMessage(HToolTip, TTM_ADDTOOLW, 0, (LPARAM)&ti);
             SendMessage(HToolTip, TTM_SETDELAYTIME, TTDT_INITIAL, 500);
             SendMessage(HToolTip, TTM_SETDELAYTIME, TTDT_AUTOPOP, 10000);
             SetWindowPos(HToolTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
@@ -691,12 +695,12 @@ CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             if (HToolTip != NULL)
             {
-                TOOLINFO ti;
+                TOOLINFOW ti; // feature 067: the tool is registered wide
                 ti.cbSize = sizeof(ti);
                 ti.hwnd = HWindow;
                 ti.uId = 1;
                 GetClientRect(HWindow, &ti.rect);
-                SendMessage(HToolTip, TTM_NEWTOOLRECT, 0, (LPARAM)&ti);
+                SendMessage(HToolTip, TTM_NEWTOOLRECTW, 0, (LPARAM)&ti);
             }
         }
         break;
@@ -3114,21 +3118,24 @@ CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_NOTIFY:
     {
-        if (((LPNMHDR)lParam)->code == TTN_NEEDTEXT)
+        if (((LPNMHDR)lParam)->code == TTN_NEEDTEXTW) // feature 067: the tool is registered wide
         {
+            LPTOOLTIPTEXTW ptr = (LPTOOLTIPTEXTW)lParam;
+            ptr->szText[0] = 0;
             if (ToolTipOffset != -1)
             {
-                LPTOOLTIPTEXT ptr = (LPTOOLTIPTEXT)lParam;
                 char number[100];
                 int dummy;
                 PrintHexOffset(number, ToolTipOffset, GetHexOffsetMode(FileSize, dummy));
                 strcat_s(number, " (");
                 NumberToStr(number + strlen(number), CQuadWord().SetUI64(ToolTipOffset));
                 strcat_s(number, ")");
-                sprintf(ptr->szText, LoadStr(IDS_VIEWEROFFSETTIP), number);
+                char u8[200];
+                _snprintf_s(u8, _TRUNCATE, LoadStrU8(IDS_VIEWEROFFSETTIP), number);
+                // the composition is UTF-8 throughout (LoadStrU8 template +
+                // NumberToStr number); one strict conversion fills the wide text
+                SalU8ToW(u8, -1, ptr->szText, _countof(ptr->szText));
             }
-            else
-                ((LPTOOLTIPTEXT)lParam)->szText[0] = 0;
             return 0;
         }
         break;

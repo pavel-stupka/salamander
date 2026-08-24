@@ -409,7 +409,9 @@ void CSizeResultsDlg::UpdateEstimate()
                          CQuadWord(bytesPerCluster - 1, 0);
         }
 
-        SalSetDlgItemTextU8(HWindow, IDC_EST_SIZE, PrintDiskSize(buf, estimated, 1));
+        // feature 067: u8=TRUE - the localized "bytes" plural must be UTF-8 to
+        // compose with the UTF-8 number into a string the U8 sink can convert
+        SalSetDlgItemTextU8(HWindow, IDC_EST_SIZE, PrintDiskSize(buf, estimated, 1, TRUE));
 
         if (estimated == CQuadWord(0, 0))
             strcpy(buf, "0 %");
@@ -449,7 +451,7 @@ CSizeResultsDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         if (Occupied != CQuadWord(-1, -1))
         {
-            SalSetDlgItemTextU8(HWindow, IDS_OCCUPIED, PrintDiskSize(buf, Occupied, 1));
+            SalSetDlgItemTextU8(HWindow, IDS_OCCUPIED, PrintDiskSize(buf, Occupied, 1, TRUE)); // feature 067: u8
             if (Occupied == CQuadWord(0, 0))
                 strcpy(buf, "0 %");
             else
@@ -472,10 +474,10 @@ CSizeResultsDlg::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             EnableWindow(GetDlgItem(HWindow, IDS_DISKUTILIZATION), FALSE);
         }
 
-        SalSetDlgItemTextU8(HWindow, IDS_SIZE, PrintDiskSize(buf, Size, 1));
+        SalSetDlgItemTextU8(HWindow, IDS_SIZE, PrintDiskSize(buf, Size, 1, TRUE)); // feature 067: u8
         if (Compressed != CQuadWord(-1, -1))
         {
-            SalSetDlgItemTextU8(HWindow, IDS_COMPSIZE, PrintDiskSize(buf, Compressed, 1));
+            SalSetDlgItemTextU8(HWindow, IDS_COMPSIZE, PrintDiskSize(buf, Compressed, 1, TRUE)); // feature 067: u8
             if (Size == CQuadWord(0, 0))
             {
                 strcpy(buf, "100 %");
