@@ -9,7 +9,41 @@ not restate Open Salamander's own history. Versions follow
 also carries an internal build number shared by the application and every
 plugin.
 
-## [Unreleased]
+## [0.1.5] — 2026-08-25
+
+**Build 189.** Bug-fix release built on a product-wide review of how the
+application handles accented and non-Latin text: files and folders with such
+names now work in Compare Directories, on the command line, with the external
+archivers, in the cloud entries of the drive bar, in shortcuts and Explorer
+drag-and-drop, in volume information and in the remaining dialogs and lists —
+and the crash that a long or non-Latin name on the command line could cause is
+gone. Files whose name contains a broken (unpaired-surrogate) character can be
+deleted, copied, moved, renamed and viewed at last, byte counts no longer show
+a stray `Â` in accented languages, and Markdown files open instantly after the
+first view of a session. Full Debug and Release builds and the unit test suite
+(1301/0) pass.
+
+### Added
+
+- **Markdown files open instantly after the first view in a session.** The
+  Markdown viewer (F3) renders through the Windows WebView2 engine, and the
+  engine used to shut down whenever the last viewer window closed — so almost
+  every open paid the engine's start-up wait as a visibly empty window before
+  content appeared. The engine is now kept ready in the background from the
+  first Markdown view until the application exits: only the first view of a
+  session (at most) shows the start-up wait; following links between documents
+  and every later F3 render immediately. Sessions that never view a Markdown
+  file are completely unaffected — nothing is started ahead of time. A new
+  option in Plugins Manager → Markdown Viewer → Configure ("Keep the rendering
+  engine ready for instant viewing", enabled by default) trades the instant
+  opening back for the lower memory use of the old behavior when disabled.
+
+### Changed
+
+- The Markdown viewer's browser cache moved to a product-wide location
+  (`%LOCALAPPDATA%\Tandem Commander\WebView2`); the old `mdview.WebView2`
+  cache folder is removed automatically on first use. The cache holds no
+  user data.
 
 ### Fixed
 

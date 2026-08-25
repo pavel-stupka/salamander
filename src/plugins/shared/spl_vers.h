@@ -34,7 +34,7 @@
 // where MINORB were hundredths appended without a dot (2.53) and a zero was dropped (5.0)
 #define VERSINFO_SALAMANDER_MAJOR 0
 #define VERSINFO_SALAMANDER_MINORA 1
-#define VERSINFO_SALAMANDER_MINORB 4
+#define VERSINFO_SALAMANDER_MINORB 5
 
 #define VERSINFO_SALAMANDER_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSION_TXT
 #define VERSINFO_SAL_SHORT_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSIONSHORT_TXT
@@ -117,10 +117,15 @@
 //       rotation, delete-to-Recycle-Bin and clipboard/text-copy fixes on
 //       non-ASCII paths/names, Tortoise overlay badges at scaled DPI -
 //       features 061-064; see CHANGELOG.md)
+// 189 - Tandem Commander 0.1.5 (product-wide encoding review and fixes -
+//       accented names in Compare Directories, the command line, external
+//       archivers, cloud drive entries, shortcuts, Explorer drops, volume
+//       information and the remaining dialogs; unpaired-surrogate names;
+//       instant Markdown viewing - features 065-069; see CHANGELOG.md)
 
 // ! DULEZITE: nova cisla buildu je nutne zapsat do vetve "default", a pak
 //             teprve do vedlejsi vetve (kompletni seznam je jen v "default" vetvi)
-#define VERSINFO_BUILDNUMBER 188
+#define VERSINFO_BUILDNUMBER 189
 
 // VERSINFO_BETAVERSION_TXT:
 //
