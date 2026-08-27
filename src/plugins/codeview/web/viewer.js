@@ -459,7 +459,7 @@ function applyView(m) {
   // engine's proportional default instead of Consolas.
   if (m.fontFamily)
     r.setProperty('--font-family',
-      JSON.stringify(String(m.fontFamily)) + ', "Cascadia Mono", Consolas, "Courier New", monospace')
+      JSON.stringify(String(m.fontFamily)) + ', Consolas, "Cascadia Mono", "Courier New", monospace')
   // 0 is the documented "use the page default" value, not an absent field --
   // testing for truthiness meant setting the size back to 0 never took effect.
   if (typeof m.fontSize === 'number')

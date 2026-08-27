@@ -24,7 +24,7 @@ extern char g_scheme[32];      // active colour scheme id (stable ASCII)
 extern int g_followApp;        // follow the application light/dark theme
 extern char g_schemeLight[32]; // per-polarity slot for follow mode
 extern char g_schemeDark[32];
-extern char g_fontFamily[64]; // monospace family (default "Cascadia Mono")
+extern char g_fontFamily[64]; // monospace family (default "Consolas")
 extern int g_fontSize;        // px, 0 = page default
 extern int g_tabWidth;        // 1..16, default 4
 extern int g_highlightLimitKB; // full-highlight size gate, default 1024

@@ -295,6 +295,40 @@ Ctrl+PgDn then Ctrl+PgUp must return to the original file; at either end the
 window stays on the boundary file and later steps in the opposite direction
 still work.
 
+## Defect 7, second attempt — the font, not the compositing
+
+Reported again after the third round: the text still reads soft next to mdview.
+
+The compositing fixes from the first attempt (no `translateY`/`will-change`,
+opaque scroller background, whole-pixel row heights) were right and stay — but
+they were not the whole cause. **The cause is which font wins.** On a machine
+with both installed:
+
+| | leading family | size |
+|---|---|---|
+| mdview code blocks | **Consolas**, then Cascadia Mono | ≈14.4 px |
+| codeview | **Cascadia Mono**, then Consolas | 13 px |
+
+Consolas is hand-hinted for ClearType at exactly these sizes; Cascadia Mono is
+a modern, lightly hinted face that renders visibly softer at 13–14 px. So the
+two viewers were being compared across two different typefaces, and the one
+that looked worse was the one that had picked the unhinted face first.
+
+**Fix:** Consolas leads in all three places the decision is stated — the
+stylesheet default (`web/viewer.css`), the stack the page appends to a
+configured family (`applyView`), and the host's own default
+(`config.cpp g_fontFamily`). A guard in `test_page.mjs` fails if the three ever
+drift apart, because each one alone still looks right in review.
+
+**Migration:** the default was already persisted for anyone who had run the
+plugin, so the change would have done nothing on their machine. The config
+version goes 1 → 2 and a stored family that is *still exactly the old default*
+("Cascadia Mono") is moved to the new one; a family the user typed themselves
+is left untouched.
+
+The size stays 13 px (Visual Studio's own default is ~13.3 px). If it still
+reads small, Configuration ▸ Size sets it per user without a rebuild.
+
 ---
 
 # Third round — the systematic sweep (session 2026-08-27)

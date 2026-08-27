@@ -192,5 +192,26 @@ appendPiece(frag2, '  \tif (x)', null)
 check(frag2.children.length === 1 && frag2.children[0].textContent === '  \tif (x)',
       'whitespace: off means one plain text node, as before')
 
+// ==========================================================================
+// 5. the monospace stack is one decision, stated in three places
+// ==========================================================================
+//
+// Consolas leads deliberately: it is hand-hinted for ClearType at the sizes a
+// code viewer uses, and mdview's code blocks pick it first. Cascadia Mono
+// leading made the text read visibly softer than mdview's, which is what
+// "the font looks blurry" meant. The stylesheet default, the stack the page
+// appends to a configured family, and the host's own default must not drift
+// apart -- each of the three alone would look right in review.
+const css = readFileSync(join(web, 'viewer.css'), 'utf-8')
+const config = readFileSync(join(here, '..', '..', 'config.cpp'), 'utf-8')
+const cssStack = (css.match(/--font-family:\s*([^;]+);/) || [])[1] || ''
+const jsStack = (src.match(/', (Consolas[^']*)'\)/) || [])[1] || ''
+const cppDefault = (config.match(/char g_fontFamily\[64\] = "([^"]*)"/) || [])[1] || ''
+check(/^Consolas\b/.test(cssStack.trim()), 'font: the stylesheet default leads with Consolas (' + cssStack.trim() + ')')
+check(/^Consolas\b/.test(jsStack.trim()), 'font: the page appends a stack led by Consolas (' + jsStack.trim() + ')')
+check(cppDefault === 'Consolas', 'font: the host default is Consolas (' + cppDefault + ')')
+check(/monospace\s*$/.test(cssStack.trim()) && /monospace\s*$/.test(jsStack.trim()),
+      'font: both stacks still end in the generic monospace family')
+
 console.log(failures ? 'RESULT: ' + failures + ' FAILURE(S)' : 'RESULT: ALL PASS')
 process.exit(failures ? 1 : 0)

@@ -16,7 +16,10 @@ char g_scheme[32] = "github-dark";
 int g_followApp = 1; // follow the application theme by default (FR-013)
 char g_schemeLight[32] = "github-light";
 char g_schemeDark[32] = "github-dark";
-char g_fontFamily[64] = "Cascadia Mono";
+// Consolas, not Cascadia Mono: it is hand-hinted for ClearType at the sizes a
+// code viewer uses, and it is what mdview's code blocks pick first. See the
+// note in web/viewer.css.
+char g_fontFamily[64] = "Consolas";
 int g_fontSize = 0; // 0 = the page's own default
 int g_tabWidth = 4;
 int g_highlightLimitKB = 1024;
@@ -32,7 +35,10 @@ BOOL g_keepReady = TRUE;
 BOOL g_hintShown = FALSE;
 BOOL g_restoreTypes = FALSE; // pending "restore default file types" (applied by Connect)
 
-#define CURRENT_CONFIG_VERSION 1
+// 2: the default font family became Consolas (sharper than Cascadia Mono at
+//    these sizes); a config still carrying the old DEFAULT is migrated, a
+//    family the user actually chose is left alone.
+#define CURRENT_CONFIG_VERSION 2
 static const char* CONFIG_VERSION = "Version";
 static const char* CONFIG_SCHEME = "ColorScheme";
 static const char* CONFIG_FOLLOWAPP = "FollowAppTheme";
@@ -108,6 +114,11 @@ void WINAPI CPluginInterface::LoadConfiguration(HWND parent, HKEY regKey, CSalam
         registry->GetValue(regKey, CONFIG_KEEPREADY, REG_DWORD, &g_keepReady, sizeof(DWORD));
         registry->GetValue(regKey, CONFIG_HINTSHOWN, REG_DWORD, &g_hintShown, sizeof(DWORD));
         registry->GetValue(regKey, CONFIG_RESTORETYPES, REG_DWORD, &g_restoreTypes, sizeof(DWORD));
+        // Version 1 shipped "Cascadia Mono" as the default. Only a stored
+        // value that is still exactly that default is moved to the new one --
+        // a family the user typed themselves is theirs to keep.
+        if (ver < 2 && strcmp(g_fontFamily, "Cascadia Mono") == 0)
+            lstrcpynA(g_fontFamily, "Consolas", 64);
     }
     // Corruption tolerance: every value is clamped to something usable, so a
     // hand-edited or partially written key can never make the viewer unusable.
@@ -116,7 +127,7 @@ void WINAPI CPluginInterface::LoadConfiguration(HWND parent, HKEY regKey, CSalam
     ClampSchemeSlot(g_schemeLight, FALSE, "github-light");
     ClampSchemeSlot(g_schemeDark, TRUE, "github-dark");
     if (g_fontFamily[0] == 0)
-        lstrcpynA(g_fontFamily, "Cascadia Mono", 64);
+        lstrcpynA(g_fontFamily, "Consolas", 64);
     ClampInt(&g_fontSize, 0, 72, 0);
     if (g_fontSize != 0 && g_fontSize < 6)
         g_fontSize = 6;

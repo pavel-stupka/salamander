@@ -20,7 +20,11 @@
   --notice-fg: #cccccc;
   --notice-border: #454545;
   --tab-size: 4;
-  --font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+  /* Consolas FIRST, as in mdview's code blocks. It is hand-hinted for
+     ClearType at small sizes on Windows; Cascadia Mono is a modern, lightly
+     hinted face that renders visibly softer at 13-14 px, which is exactly how
+     "the text is not as sharp as mdview" was reported. */
+  --font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
   --font-size: 13px;
   --line-height: 1.45;
 }
