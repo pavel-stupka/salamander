@@ -25,6 +25,9 @@ passes all 21 data checks. 42 of 59 tasks are code-complete.
 > chars). The §1 risk-table rows on line-height measurement and the STATIC
 > status bar are thereby resolved.
 
+> **Read `stabilization-review.md` first** — it is the current state of the
+> plugin. This file predates it and is kept for the reasoning it records.
+>
 > **Update 2026-08-27 (third round — systematic review):** the plugin was
 > reviewed end to end by twelve independent agents and the fixes accepted by
 > five more. **37 unique defects confirmed, 35 fixed**, including three

@@ -287,6 +287,36 @@ pass as the code-table work.
 
 ---
 
+## 6b. One more, reported after the review: the font
+
+The review's compositing work on text sharpness (fix-log defect 7: no
+`translateY`/`will-change`, an opaque scroller background, whole-pixel row
+heights) was correct but not the whole cause, and the text was reported soft
+again. The rest of it was not compositing at all — it was **which typeface
+wins**:
+
+| | leading family | size |
+|---|---|---|
+| mdview code blocks | **Consolas**, then Cascadia Mono | ≈14.4 px |
+| codeview (before) | **Cascadia Mono**, then Consolas | 13 px |
+
+Both faces are installed on the reporting machine, so the two viewers were
+being compared across two different typefaces. Consolas is hand-hinted for
+ClearType at exactly these sizes; Cascadia Mono is lightly hinted and renders
+visibly softer at 13–14 px.
+
+Consolas now leads in all three places the decision is stated — the stylesheet
+default, the stack the page appends to a configured family, and the host's own
+default — with a `test_page.mjs` guard that fails if they drift apart, because
+each one alone still reads correctly in review. The old default was already
+persisted, so the config version goes 1 → 2 and a stored family that is
+*exactly* the old default is migrated; a family the user chose is left alone.
+
+The lesson is worth keeping: **a defect can have two independent causes, and
+fixing the one you can prove does not retire the symptom.** The first fix was
+verifiable by reading the code (a transform forces a composited layer), so it
+looked complete. The second needed the machine's actual font list.
+
 ## 7. Deferred, with reasons
 
 - **F16 — code tables for the ANSI band (FR-024).** The plugin decodes a
@@ -328,3 +358,7 @@ honest remainder:
    viewer?" question.
 9. **`.py`, `.php`, `.cs`, `.java`** — the title must now read `[Python]`,
    `[PHP]`, `[C#]`, `[Java]`, and a PHP template must colour as PHP.
+10. **The font** — the text should now render in Consolas (the config
+    migration runs on the first start after this change). Side by side with
+    mdview the two should look like the same typeface. If it is sharp but
+    small, Configuration ▸ Size raises it without a rebuild.

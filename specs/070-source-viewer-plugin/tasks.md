@@ -1,5 +1,31 @@
 # Tasks: Source & Configuration File Viewer (codeview)
 
+> **Status as of 2026-08-27 — read this before trusting a checkbox.** The
+> plugin has been built, run and reviewed since these boxes were last touched,
+> so several are stale in both directions. What is actually true:
+>
+> - **T055 (translations) is DONE** — ticked below. 8 languages × 98 entries,
+>   0 validation failures; recorded in `fix-log.md`.
+> - **T034 is IMPLEMENTED WITH A DEVIATION**, so it stays unticked: the
+>   first-open hint and "Restore Default File Types" both work, but the hint is
+>   a modal message box, not the "dismissable, non-modal" notice the task asks
+>   for. Decide whether the deviation is acceptable before ticking it.
+> - **T058 (source hygiene) is HALF DONE**: `tools/check_encoding.py` is
+>   `TOTAL: 0` and comments are English, but clang-format has not been run over
+>   the plugin.
+> - **T006/T007 (mdview onto the shared host) are untouched** and remain the
+>   first thing to finish — the product still carries two copies of the
+>   WebView2 host, and only the shared one has the liveness guard added by the
+>   stabilization review.
+> - **Everything else unticked in Phase 10 needs the GUI**, which no agent can
+>   drive. The concrete list a human should run is
+>   `stabilization-review.md` §8 (10 scenarios), not the task text here.
+> - **37 defects were found and 35 fixed after these tasks were written** —
+>   including three features that were ticked as implemented but did not work
+>   at all (Copy/Select All, Word Wrap, Show Whitespace). A ticked box in this
+>   file means "code was written", not "verified to work". See
+>   `stabilization-review.md`.
+
 **Input**: Design documents from `/specs/070-source-viewer-plugin/`
 **Prerequisites**: plan.md, spec.md (7 user stories), research.md (D1–D18), data-model.md, contracts/ (4), quickstart.md
 
@@ -158,7 +184,7 @@
 
 ## Phase 10: Polish & Cross-Cutting Concerns
 
-- [ ] T055 [P] Translations: add `_DOMAINS["codeview"]` to `tools/translate/uicontext.py`, pin display name + scheme names in `translations/ui-overrides.json`, run the two-stage refresh (`build_langs.cmd --export-templates` → `python -m translate.merge --module codeview` → `build.cmd full`) producing `translations/<lang>/codeview.slt` for the 8 enabled languages (FR-039; D18 — sequence before the first full build with final strings)
+- [X] T055 [P] Translations: add `_DOMAINS["codeview"]` to `tools/translate/uicontext.py`, pin display name + scheme names in `translations/ui-overrides.json`, run the two-stage refresh (`build_langs.cmd --export-templates` → `python -m translate.merge --module codeview` → `build.cmd full`) producing `translations/<lang>/codeview.slt` for the 8 enabled languages (FR-039; D18 — sequence before the first full build with final strings)
 - [X] T056 [P] Docs: `doc/third_party.txt` (Shiki, tm-grammars, tm-themes + per-grammar notices from the licence manifest), repoint `architecture/11-webview2-integration.md` to `src/common/webhost/`, update `CLAUDE.md` and `architecture/02`/`09` plugin counts
 - [ ] T057 Full quickstart pass: all 10 scenarios on Debug + Release x64, results recorded in `specs/070-source-viewer-plugin/quickstart-results.md`; harness green (`src/plugins/codeview/test/build_and_run.cmd`)
 - [ ] T058 [P] Source hygiene: clang-format, UTF-8-BOM on all new sources, English comments, `tools/check_encoding.py` still TOTAL: 0 (plugin dir excluded but core/webhost changes are scanned)
