@@ -81,6 +81,8 @@
 #define IDB_PLUGINICO            1000
 
 // --- embedded web assets (RCDATA, generated block in web\assets.rc2) ---
+// Keep the value in step with IDR_WEB_FIRST in tools/codeview/build_web.py:
+// the generated .rc2 carries it resolved (rc.exe cannot do id arithmetic).
 #define IDR_WEB_FIRST            5000 // 5000.. one id per embedded asset
 
 // --- Find dialog ---

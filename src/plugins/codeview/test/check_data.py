@@ -164,6 +164,18 @@ def main() -> int:
                      if not os.path.exists(os.path.join(PLUGIN, 'web', u.replace('/', os.sep)))]
     check(not missing_files, 'every asset named in the table exists on disk', str(missing_files[:5]))
 
+    # rc.exe does not evaluate arithmetic in the resource-id position: a
+    # symbolic id like "IDR_WEB_FIRST+0" becomes a resource NAMED "5000+0"
+    # and FindResource(MAKEINTRESOURCE(...)) returns 403 for every page asset.
+    rc2 = open(os.path.join(PLUGIN, 'web', 'assets.rc2'), encoding='utf-8').read()
+    rc_ids = [int(i) for i in re.findall(r'^(\d+) RCDATA "', rc2, re.M)]
+    symbolic = re.findall(r'^([^/\s]\S*\+\S*)\s+RCDATA', rc2, re.M)
+    check(not symbolic, 'assets.rc2 ids are numeric literals (rc.exe would make "5000+0" a NAME)',
+          str(symbolic[:3]))
+    check(rc_ids == [5000 + i for i in range(len(urls))],
+          'assets.rc2 ids are IDR_WEB_FIRST (5000) + index, in table order',
+          f'{len(rc_ids)} rc entries vs {len(urls)} table entries, first={rc_ids[:1]}')
+
     print()
     if failures:
         print(f'FAILED: {len(failures)} rule(s) broken')
