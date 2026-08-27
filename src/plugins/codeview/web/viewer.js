@@ -15,6 +15,24 @@ const sizer = document.getElementById('sizer')
 const linesEl = document.getElementById('lines')
 const noticeEl = document.getElementById('notice')
 
+// First-paint colours: the host passes the active scheme in the URL fragment
+// (#bg=RRGGBB&fg=RRGGBB&polarity=...) so the page never paints the stylesheet
+// defaults in a scheme of the other polarity. This runs synchronously at
+// module evaluation, before the first paint (spec FR-015).
+;(function applyFragmentColors() {
+  const p = new URLSearchParams(location.hash.slice(1))
+  const hex = (v) => (v && /^[0-9a-fA-F]{6}$/.test(v)) ? '#' + v : null
+  const r = document.documentElement.style
+  const bg = hex(p.get('bg'))
+  const fg = hex(p.get('fg'))
+  if (bg) r.setProperty('--bg', bg)
+  if (fg) r.setProperty('--fg', fg)
+  const pol = p.get('polarity') === 'light' ? 'light' : 'dark'
+  document.documentElement.dataset.polarity = pol
+  const meta = document.querySelector('meta[name=color-scheme]')
+  if (meta) meta.setAttribute('content', pol)
+})()
+
 let lines = []              // logical lines of the document
 let lineHeight = 18         // measured
 let firstRendered = -1      // first materialised line index
@@ -25,6 +43,7 @@ let tokenSheet = null
 let worker = null
 let gen = 0
 let lang = null
+let themeId = null          // active scheme id (from init/setTheme)
 let showGutter = true
 let gutterDigits = 1
 let highlighting = false
@@ -198,6 +217,10 @@ function showNotice(text) {
 async function init(m) {
   gen++
   const myGen = gen
+  if (m.theme) themeId = m.theme
+  // The host-known colours apply NOW; the worker's full palette (selection,
+  // find, gutter) refines them once the theme module is loaded.
+  applyThemeColors(m.themeInfo || null)
   applyView(m)
   const res = await fetch('text', { cache: 'no-store' })
   const text = await res.text()
@@ -228,7 +251,8 @@ function startWorker(m) {
     }
   }
   worker.postMessage({
-    type: 'load', lines, lang, theme: m.theme, maxLineLength: m.maxLineLength || 20000,
+    type: 'load', lines, lang, theme: m.theme || themeId,
+    maxLineLength: m.maxLineLength || 20000,
     from: firstRendered, to: lastRendered, gen,
   })
 }
@@ -279,11 +303,15 @@ function setView(m) {
 }
 
 function setTheme(m) {
-  if (!highlighting) { applyThemeColors(m.themeInfo || null); return }
+  if (m.theme) themeId = m.theme
+  // Applies to plain files too -- the host always sends themeInfo, so a
+  // scheme switch recolours the page even when nothing is tokenized.
+  applyThemeColors(m.themeInfo || null)
+  if (!highlighting) return
   resetTokenClasses()
   tokens = new Array(lines.length)
   gen++
-  post0({ type: 'retheme', theme: m.theme, from: firstRendered, to: lastRendered, gen })
+  post0({ type: 'retheme', theme: themeId, from: firstRendered, to: lastRendered, gen })
   render(true)
 }
 
@@ -294,7 +322,7 @@ function setLanguage(next) {
   gen++
   if (!lang) { highlighting = false; render(true); return }
   highlighting = true
-  if (!worker) { startWorker({ theme: null }); return }
+  if (!worker) { startWorker({ theme: themeId }); return }
   post0({ type: 'relang', lang, from: firstRendered, to: lastRendered, gen })
   render(true)
 }

@@ -284,7 +284,25 @@ static void ApplyControllerReady(CTcWebHostImpl* impl, ICoreWebView2Controller* 
             })
             .Get(),
         &impl->resTok);
-    wv->AddWebResourceRequestedFilter(L"*", COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL);
+    // The deprecated filter raises WebResourceRequested only for requests
+    // issued by DOCUMENTS. A module worker's imports (codeview's tokenizer:
+    // shiki/engine.js, grammar and theme .mjs) come from the WORKER source
+    // kind and would bypass the interceptor entirely -- they'd hit the real
+    // network as https://<host>.invalid/..., fail, and kill the worker. Ask
+    // for all source kinds where the runtime can (111+); fall back for older.
+    {
+        ComPtr<ICoreWebView2_22> wv22;
+        HRESULT hrFilter = E_NOINTERFACE;
+        if (SUCCEEDED(wv->QueryInterface(IID_PPV_ARGS(&wv22))) && wv22)
+            hrFilter = wv22->AddWebResourceRequestedFilterWithRequestSourceKinds(
+                L"*", COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
+                COREWEBVIEW2_WEB_RESOURCE_REQUEST_SOURCE_KINDS_ALL);
+        if (FAILED(hrFilter))
+        {
+            TRACE_I(impl->cfg.TraceName << ": worker-request interception unavailable, document-only filter");
+            wv->AddWebResourceRequestedFilter(L"*", COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL);
+        }
+    }
 
     // --- newer-interface lockdowns: cancel anything that would take the user
     //     out of the viewer. Each is a QueryInterface, silently skipped on an

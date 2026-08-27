@@ -18,10 +18,22 @@ struct CvIntake;
 // owned by the viewer window and must outlive the host.
 void CvConfigureHost(TcWebHostConfig& cfg, const std::string** textProvider);
 
+struct CvScheme;
+
 // --- message building (host -> page). All values are host-controlled; file
 //     content never travels through here (contract S3). ---
-std::wstring CvMsgInit(const CvIntake& intake, const char* schemeId, BOOL swap);
-std::wstring CvMsgSetTheme(const char* schemeId);
+//
+// init and setTheme carry the scheme's editor colours ("themeInfo") so the
+// page can paint the right background/foreground IMMEDIATELY -- before (and
+// independently of) the worker loading the full theme. This is what keeps a
+// plain-band file re-themeable and what closes the colour gap between the
+// page's first paint and the first tokenized line (spec FR-015).
+std::wstring CvMsgInit(const CvIntake& intake, const CvScheme* scheme, BOOL swap);
+std::wstring CvMsgSetTheme(const CvScheme* scheme);
+
+// URL fragment "bg=RRGGBB&fg=RRGGBB&polarity=dark" for Navigate(): viewer.js
+// applies it synchronously at module start, before the page's first paint.
+std::wstring CvSchemeFragment(const CvScheme* scheme);
 std::wstring CvMsgSetView();
 std::wstring CvMsgSetLanguage(int language);
 std::wstring CvMsgFind(const wchar_t* term, BOOL caseSensitive, BOOL wholeWord, int dir);

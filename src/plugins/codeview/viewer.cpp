@@ -428,7 +428,7 @@ void CViewerWindow::OpenFile(const char* name, BOOL setLock)
     if (Web != NULL && Web->IsReady() && PageReady)
         SendInit(TRUE); // same window, next file: swap content, no navigation
     else if (Web != NULL && Web->IsReady())
-        Web->Navigate(DocVersion);
+        Web->Navigate(DocVersion, CvSchemeFragment(CvEffectiveScheme()));
 
     UpdateTitle();
     UpdateStatus();
@@ -466,8 +466,7 @@ void CViewerWindow::SendInit(BOOL swap)
 {
     if (Web == NULL || !Web->IsReady())
         return;
-    const CvScheme* s = CvEffectiveScheme();
-    Web->PostWebMessageJson(CvMsgInit(Intake, s->Id, swap));
+    Web->PostWebMessageJson(CvMsgInit(Intake, CvEffectiveScheme(), swap));
 }
 
 void CViewerWindow::BuildMenu()
@@ -660,7 +659,7 @@ void CViewerWindow::SelectScheme(int idx)
         lstrcpynA(g_schemeLight, CvSchemes[idx].Id, 32);
     ApplyScheme(TRUE);
     if (Web != NULL && Web->IsReady())
-        Web->PostWebMessageJson(CvMsgSetTheme(CvSchemes[idx].Id));
+        Web->PostWebMessageJson(CvMsgSetTheme(&CvSchemes[idx]));
     RefreshChecks();
 }
 
@@ -884,9 +883,8 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         CViewerWindow* self = this;
         cb.OnReady = [self]()
         {
-            self->ApplyScheme(FALSE);
             self->Web->SetZoomPercent(g_zoom);
-            self->Web->Navigate(self->DocVersion);
+            self->Web->Navigate(self->DocVersion, CvSchemeFragment(CvEffectiveScheme()));
         };
         cb.OnInitFailed = [self]() { self->EngineFailed(); };
         cb.OnProcessFailed = [self]() { self->EngineFailed(); };
@@ -900,6 +898,10 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         cb.OnActivateLink = [](const std::wstring&) {}; // nothing is linkable in a code view
 
         Web->Create(HWindow, TcWebUserDataFolder(), cfg, cb);
+        // BEFORE the controller exists (mdview's pattern): the shared host
+        // caches the colour and applies it before put_IsVisible, so the
+        // WebView surface never flashes its white default (spec FR-015).
+        Web->SetBackgroundColor(CvEffectiveScheme()->Bg);
         LayoutChildren();
 
         // The first view after installation explains where the built-in viewer
@@ -922,7 +924,7 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         if (Web != NULL && Web->IsReady())
         {
             Web->PostWebMessageJson(CvMsgSetView());
-            Web->PostWebMessageJson(CvMsgSetTheme(CvEffectiveScheme()->Id));
+            Web->PostWebMessageJson(CvMsgSetTheme(CvEffectiveScheme()));
         }
         RefreshChecks();
         UpdateStatus();
@@ -993,7 +995,7 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             g_followApp = !g_followApp;
             ApplyScheme(TRUE);
             if (Web != NULL && Web->IsReady())
-                Web->PostWebMessageJson(CvMsgSetTheme(CvEffectiveScheme()->Id));
+                Web->PostWebMessageJson(CvMsgSetTheme(CvEffectiveScheme()));
             RefreshChecks();
             return 0;
         case CM_SCHEME_NEXT:

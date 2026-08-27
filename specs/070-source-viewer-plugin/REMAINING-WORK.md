@@ -4,6 +4,14 @@
 unchanged and still building); `python src/plugins/codeview/test/check_data.py`
 passes all 21 data checks. 42 of 59 tasks are code-complete.
 
+> **Update 2026-08-27:** the plugin has now been run. Three defects found on
+> first use (no `.cpp` highlighting — the glsl licence stub; highlighting
+> lost on scheme switch — worker generation/race; colour flash on window
+> open) are diagnosed, fixed and harness-verified in **`fix-log.md`**, which
+> also records that **§4 below (translations) is done** — DeepL only, the
+> Anthropic key was never needed. A headless worker regression test now
+> lives at `test/harness/test_worker.mjs`.
+
 This file is the honest handoff: what is **not** done, and why. Nothing here is
 a discovered blocker — every item is either manual verification that needs a
 GUI session, a step that needs credentials, or a deliberate deferral.
@@ -111,8 +119,10 @@ the documented, wrong size.**
 
 - 18 grammars and 1 theme are excluded for licence reasons, so `.glsl`,
   `.matlab`, `.tcl`, nginx configs, Ada, gnuplot, Racket and org files open as
-  plain text. `glsl` additionally ships as an empty stub because C++, Elm and
-  Nim import it.
+  plain text. `glsl` additionally ships as a minimal no-op grammar stub
+  because C++, Elm and Nim declare it in `embeddedLangs` — shiki refuses to
+  load them if `glsl` is not registered (fix-log.md defect 1; an *empty*
+  stub is not enough).
 - The plain band (over 1 MB, or lines over 20 000 characters) has no
   highlighting by design.
 - "Restore default file types" takes effect at the next application start —

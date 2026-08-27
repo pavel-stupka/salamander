@@ -212,7 +212,36 @@ static std::wstring CvNum(int v)
     return b;
 }
 
-std::wstring CvMsgInit(const CvIntake& intake, const char* schemeId, BOOL swap)
+// "#rrggbb" from a COLORREF; manual shifts, not GetGValue/GetBValue -- their
+// (WORD) cast trips /RTCc in debug builds (same rule as webhost.cpp).
+static std::wstring CvHexColor(COLORREF c)
+{
+    wchar_t b[8];
+    swprintf_s(b, L"#%02x%02x%02x", (unsigned)(c & 0xFF), (unsigned)((c >> 8) & 0xFF),
+               (unsigned)((c >> 16) & 0xFF));
+    return b;
+}
+
+// {"type":"dark","bg":"#1e1e1e","fg":"#d4d4d4"} -- the host-known subset of
+// the theme; the worker's full palette refines it once tokenization is ready.
+static std::wstring CvJsonThemeInfo(const CvScheme* s)
+{
+    std::wstring m = L"{\"type\":";
+    m += s->Dark ? L"\"dark\"" : L"\"light\"";
+    m += L",\"bg\":\"" + CvHexColor(s->Bg) + L"\"";
+    m += L",\"fg\":\"" + CvHexColor(s->Fg) + L"\"}";
+    return m;
+}
+
+std::wstring CvSchemeFragment(const CvScheme* s)
+{
+    std::wstring f = L"bg=" + CvHexColor(s->Bg).substr(1);
+    f += L"&fg=" + CvHexColor(s->Fg).substr(1);
+    f += s->Dark ? L"&polarity=dark" : L"&polarity=light";
+    return f;
+}
+
+std::wstring CvMsgInit(const CvIntake& intake, const CvScheme* scheme, BOOL swap)
 {
     const char* grammar = NULL;
     if (intake.Language >= 0 && intake.Language < CvLanguageCount)
@@ -231,7 +260,8 @@ std::wstring CvMsgInit(const CvIntake& intake, const char* schemeId, BOOL swap)
     m += grammar ? CvJsonStrA(grammar) : L"null";
     m += L",\"highlight\":";
     m += highlight ? L"true" : L"false";
-    m += L",\"theme\":" + CvJsonStrA(schemeId);
+    m += L",\"theme\":" + CvJsonStrA(scheme->Id);
+    m += L",\"themeInfo\":" + CvJsonThemeInfo(scheme);
     m += L",\"wrap\":";
     m += g_wrap ? L"true" : L"false";
     m += L",\"lineNumbers\":";
@@ -251,9 +281,10 @@ std::wstring CvMsgInit(const CvIntake& intake, const char* schemeId, BOOL swap)
     return m;
 }
 
-std::wstring CvMsgSetTheme(const char* schemeId)
+std::wstring CvMsgSetTheme(const CvScheme* scheme)
 {
-    return L"{\"type\":\"setTheme\",\"theme\":" + CvJsonStrA(schemeId) + L"}";
+    return L"{\"type\":\"setTheme\",\"theme\":" + CvJsonStrA(scheme->Id) +
+           L",\"themeInfo\":" + CvJsonThemeInfo(scheme) + L"}";
 }
 
 std::wstring CvMsgSetView()

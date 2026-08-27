@@ -39,6 +39,19 @@ async function engine() {
   return enginePromise
 }
 
+// TRUE only when tokenization can actually run: the highlighter exists and
+// the ACTIVE lang and theme are loaded. A 'viewport' message that interleaves
+// with a pending load/retheme/relang (their ensureHighlighter await yields to
+// the event loop) must not reach tokenizeRange: it would fail, yet mark its
+// chunks done[] -- permanently untokenized. The pending control handler
+// re-runs the viewport itself once loading finishes.
+function cvReady() {
+  if (!highlighter || !lang) return false
+  if (!highlighter.getLoadedLanguages().includes(lang)) return false
+  if (theme && !highlighter.getLoadedThemes().includes(theme)) return false
+  return true
+}
+
 async function ensureHighlighter(nextLang, nextTheme) {
   const needLang = nextLang && (!highlighter || !highlighter.getLoadedLanguages().includes(nextLang))
   const needTheme = nextTheme && (!highlighter || !highlighter.getLoadedThemes().includes(nextTheme))
@@ -118,6 +131,7 @@ function emit(range, gen) {
 
 function sweepStep() {
   sweepTimer = 0
+  if (!cvReady()) return
   const gen = generation
   // The first chunk whose state is known and which has not been emitted.
   for (let c = 0; c * CHUNK < lines.length; c++) {
@@ -139,7 +153,8 @@ function scheduleSweep() {
 }
 
 async function onViewport(from, to, gen) {
-  if (gen !== generation || !lang) return
+  if (gen !== generation || !cvReady()) return
+  from = Math.max(0, from)
   const firstChunk = Math.floor(from / CHUNK)
   const lastChunk = Math.floor((to - 1) / CHUNK)
   for (let c = firstChunk; c <= lastChunk; c++) {
@@ -161,7 +176,11 @@ onmessage = async (e) => {
   const m = e.data
   try {
     if (m.type === 'load') {
-      generation++
+      // The PAGE owns the generation counter; the worker adopts it. Two
+      // independent counters drift apart (plain init terminates the worker, a
+      // later one starts at 1 again) and every emitted batch is then dropped
+      // by the page's gen check.
+      generation = typeof m.gen === 'number' ? m.gen : generation + 1
       const gen = generation
       lines = m.lines
       lang = m.lang || null
@@ -179,7 +198,7 @@ onmessage = async (e) => {
     } else if (m.type === 'viewport') {
       await onViewport(m.from | 0, m.to | 0, m.gen)
     } else if (m.type === 'retheme') {
-      generation++
+      generation = typeof m.gen === 'number' ? m.gen : generation + 1
       const gen = generation
       theme = m.theme
       states = []
@@ -189,7 +208,7 @@ onmessage = async (e) => {
       postMessage({ type: 'ready', gen, theme: themeInfo() })
       await onViewport(m.from | 0, m.to | 0, gen)
     } else if (m.type === 'relang') {
-      generation++
+      generation = typeof m.gen === 'number' ? m.gen : generation + 1
       const gen = generation
       lang = m.lang || null
       states = []
