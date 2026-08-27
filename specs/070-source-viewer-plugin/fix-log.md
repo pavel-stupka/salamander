@@ -271,6 +271,30 @@ run (`build_langs.cmd --export-templates` → `translate.merge --module
 codeview` → `build.cmd full`): 8 languages × 97 entries (was 99), 0 gaps,
 0 validation failures, **no DeepL characters sent** (removals only).
 
+## Defect 9 — Ctrl+PgUp navigates forward (reported after the second round)
+
+Reported: Ctrl+PgUp followed by Ctrl+PgDn should return to the same file, but
+navigation "runs to the end and then stops working".
+
+**Root cause:** `NextFile` used `GetNextFileNameForViewer` for BOTH
+directions, passing `dir > 0 ? FALSE : TRUE` as the 4th argument — which is
+**`preferSelected`, not a direction**. The API has a separate
+`GetPreviousFileNameForViewer` for stepping back (spl_gen.h:2711/2735; the
+built-in viewer in `src/viewer3.cpp` CM_PREVFILE/CM_NEXTFILE calls the pair).
+So Ctrl+PgUp also stepped *forward* (additionally restricted to selected
+files when any were selected), both keys marched to the last file, and from
+there every call returned FALSE with `noMoreFiles` — exactly "dojede
+nakonec a pak už to nejde".
+
+**Fix (`viewer.cpp NextFile`):** direction now selects the API call —
+`GetPreviousFileNameForViewer` for Ctrl+PgUp, `GetNextFileNameForViewer` for
+Ctrl+PgDn — with `preferSelected=FALSE` and `onlyAssociatedExtensions=TRUE`,
+matching the built-in viewer's plain prev/next commands. Build green
+(incremental Debug x64, 0 errors). GUI check: open a file mid-panel,
+Ctrl+PgDn then Ctrl+PgUp must return to the original file; at either end the
+window stays on the boundary file and later steps in the opposite direction
+still work.
+
 ## Status (second round)
 
 - [x] Shared host: pending-bounds fix (src/common/webhost/webhost.cpp) — mdview path unchanged

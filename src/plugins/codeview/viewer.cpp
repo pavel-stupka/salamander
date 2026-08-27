@@ -751,9 +751,19 @@ void CViewerWindow::NextFile(int dir)
     BOOL noMoreFiles = FALSE;
     BOOL srcBusy = FALSE;
     int index = EnumFilesCurrentIndex;
-    BOOL ok = SalamanderGeneral->GetNextFileNameForViewer(EnumFilesSourceUID, &index, Name,
-                                                          dir > 0 ? FALSE : TRUE, TRUE, fileName,
-                                                          &noMoreFiles, &srcBusy);
+    // Two separate API calls, one per direction (the built-in viewer's
+    // pattern, src/viewer3.cpp CM_PREVFILE/CM_NEXTFILE). The 4th parameter is
+    // preferSelected, NOT a direction -- passing TRUE there sent Ctrl+PgUp
+    // forward too (fix-log defect 9).
+    BOOL ok;
+    if (dir > 0)
+        ok = SalamanderGeneral->GetNextFileNameForViewer(EnumFilesSourceUID, &index, Name,
+                                                         FALSE, TRUE, fileName,
+                                                         &noMoreFiles, &srcBusy);
+    else
+        ok = SalamanderGeneral->GetPreviousFileNameForViewer(EnumFilesSourceUID, &index, Name,
+                                                             FALSE, TRUE, fileName,
+                                                             &noMoreFiles, &srcBusy);
     if (!ok || fileName[0] == 0)
         return;
     // The next file must pass the same gate as an F3 would; if it does not,
