@@ -63,6 +63,3 @@ BOOL CvLoadFile(const char* nameUtf8, int forcedEncoding, int forcedLanguage, Cv
 // Language identification from the name alone, then from content when the name
 // is silent or ambiguous (spec FR-005/006). 'head' may be empty.
 int CvIdentifyLanguage(const char* nameUtf8, const char* head, size_t headLen);
-
-// Display name of a language index, or the "plain text" string for -1.
-const char* CvLanguageDisplay(int language);

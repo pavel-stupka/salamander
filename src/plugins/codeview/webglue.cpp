@@ -248,11 +248,14 @@ std::wstring CvMsgInit(const CvIntake& intake, const CvScheme* scheme, BOOL swap
         grammar = CvLanguages[intake.Language].Grammar;
     BOOL highlight = (intake.Band == cvBandHighlight) && grammar != NULL;
 
-    const char* reason = NULL;
+    // LoadStrW, never LoadStr: the notice is localized, LoadStr returns ANSI
+    // and this channel is wide/UTF-8 -- an ANSI Czech string would reach the
+    // page as mojibake (fix-log defect 6).
+    const wchar_t* reason = NULL;
     if (intake.Band == cvBandPlainSize)
-        reason = LoadStr(IDS_PLAIN_TOO_LARGE);
+        reason = SalamanderGeneral->LoadStrW(HLanguage, IDS_PLAIN_TOO_LARGE);
     else if (intake.Band == cvBandPlainLine)
-        reason = LoadStr(IDS_PLAIN_LONG_LINES);
+        reason = SalamanderGeneral->LoadStrW(HLanguage, IDS_PLAIN_LONG_LINES);
 
     std::wstring m = L"{\"type\":";
     m += swap ? L"\"swapText\"" : L"\"init\"";
@@ -275,7 +278,7 @@ std::wstring CvMsgInit(const CvIntake& intake, const CvScheme* scheme, BOOL swap
     m += L",\"trailingNewline\":";
     m += intake.TrailingNewline ? L"true" : L"false";
     if (reason != NULL)
-        m += L",\"plainReason\":" + CvJsonStrA(reason);
+        m += L",\"plainReason\":" + CvJsonStr(reason);
     m += L",\"v\":" + CvNum((int)GetTickCount());
     m += L"}";
     return m;
@@ -298,17 +301,6 @@ std::wstring CvMsgSetView()
     m += L",\"tabSize\":" + CvNum(g_tabWidth);
     m += L",\"fontFamily\":" + CvJsonStrA(g_fontFamily);
     m += L",\"fontSize\":" + CvNum(g_fontSize);
-    m += L"}";
-    return m;
-}
-
-std::wstring CvMsgSetLanguage(int language)
-{
-    const char* grammar = NULL;
-    if (language >= 0 && language < CvLanguageCount)
-        grammar = CvLanguages[language].Grammar;
-    std::wstring m = L"{\"type\":\"setLanguage\",\"lang\":";
-    m += grammar ? CvJsonStrA(grammar) : L"null";
     m += L"}";
     return m;
 }

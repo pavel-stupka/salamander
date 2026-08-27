@@ -11,6 +11,19 @@ passes all 21 data checks. 42 of 59 tasks are code-complete.
 > also records that **§4 below (translations) is done** — DeepL only, the
 > Anthropic key was never needed. A headless worker regression test now
 > lives at `test/harness/test_worker.mjs`.
+>
+> **Update 2026-08-27 (second round):** five more defects from real use are
+> fixed and documented in **`fix-log.md` (defects 4–8)**: last lines cut off
+> (shared-host pending-bounds + fractional row height), keyboard scrolling
+> dead after F3 (unfocusable page scroller), empty status bar / stuck title
+> in non-English UI (ANSI `LoadStr` through the strict UTF-8 decoder —
+> `LoadStrW` now, plus theme + DPI treatment of the bar), blurry text
+> (composited transform + no opaque backdrop), and the unusable
+> View ▸ Language menu — **removed by an FR-007 amendment** (spec updated in
+> place; the detected language now shows in the title and status bar; the
+> two dropped strings required the two-stage translation refresh, 0 DeepL
+> chars). The §1 risk-table rows on line-height measurement and the STATIC
+> status bar are thereby resolved.
 
 This file is the honest handoff: what is **not** done, and why. Nothing here is
 a discovered blocker — every item is either manual verification that needs a

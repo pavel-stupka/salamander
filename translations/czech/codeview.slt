@@ -82,13 +82,11 @@ COMMENT,"Česká verze"
 2026,1,"Zalamování &textu\tF2"
 2027,1,"Čís&la řádků"
 2028,1,"&Zobrazit mezery"
-2029,1,"&Jazyk"
 2030,1,"&Kódování"
 
 [STRINGTABLE 4]
 2040,1,"&Nápověda"
 2041,1,"&O prohlížeči kódu"
-2042,1,"Automaticky"
 
 [STRINGTABLE 5]
 2100,1,"GitHub Light"

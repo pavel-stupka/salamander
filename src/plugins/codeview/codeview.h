@@ -65,8 +65,7 @@ extern BOOL g_restoreTypes; // pending "restore default file types" (applied by 
 #define CM_SCHEME_FIRST 200 // 200..219 (one per scheme)
 #define CM_SCHEME_NEXT 230
 #define CM_SCHEME_PREV 231
-#define CM_LANG_FIRST 1000  // 1000.. (one per known language, + auto at 999)
-#define CM_LANG_AUTO 999
+// (CM_LANG_* removed 2026-08-27 with the View > Language menu, FR-007 amendment)
 #define CM_ENCODING_FIRST 4000 // 4000.. (one per conversion table)
 #define CM_ENCODING_NEXT 3990
 #define CM_ENCODING_PREV 3991

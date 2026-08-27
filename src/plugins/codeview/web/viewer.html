@@ -12,7 +12,9 @@
      user-select:none so Select All yields exactly the file's text
      (contracts/host-page-interface.md S4, spec FR-021). -->
 <div id="notice" hidden></div>
-<div id="scroller">
+<!-- tabindex: the scroller must be focusable so the keyboard scrolls it;
+     the page has no other focus target (fix-log defect 5). -->
+<div id="scroller" tabindex="-1">
   <div id="sizer"><div id="lines" role="document"></div></div>
 </div>
 </body>

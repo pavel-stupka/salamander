@@ -82,13 +82,11 @@ COMMENT,"Version française"
 2026,1,"&Retour à la ligne automatique\tF2"
 2027,1,"&Numéros de ligne"
 2028,1,"Affic&her les espaces blancs"
-2029,1,"Lan&gue"
 2030,1,"&Encodage"
 
 [STRINGTABLE 4]
 2040,1,"&Aide"
 2041,1,"&À propos de Code Viewer"
-2042,1,"Automatique"
 
 [STRINGTABLE 5]
 2100,1,"GitHub Light"

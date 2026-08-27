@@ -43,11 +43,11 @@
 #define IDS_MENU_VIEW_WRAP       2026
 #define IDS_MENU_VIEW_LINENUMS   2027
 #define IDS_MENU_VIEW_WHITESPACE 2028
-#define IDS_MENU_VIEW_LANGUAGE   2029
+// (2029 IDS_MENU_VIEW_LANGUAGE and 2042 IDS_MENU_LANG_AUTO removed 2026-08-27
+//  with the View > Language menu, FR-007 amendment)
 #define IDS_MENU_VIEW_ENCODING   2030
 #define IDS_MENU_HELP            2040
 #define IDS_MENU_HELP_ABOUT      2041
-#define IDS_MENU_LANG_AUTO       2042
 
 // --- colour scheme display names (index order = g_schemes[]) ---
 #define IDS_SCHEME_FIRST         2100 // 2100..2119 reserved for up to 20 schemes

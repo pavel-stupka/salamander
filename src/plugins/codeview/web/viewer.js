@@ -168,12 +168,20 @@ function makeLine(i) {
 }
 
 function measure() {
+  const r = document.documentElement.style
+  r.removeProperty('--line-height')   // measure the font's natural height...
   const probe = document.createElement('div')
   probe.className = 'ln'
   probe.textContent = 'X'
   linesEl.appendChild(probe)
-  lineHeight = probe.getBoundingClientRect().height || 18
+  const natural = probe.getBoundingClientRect().height || 18
   probe.remove()
+  // ...then pin the row height to a whole pixel. Every row offset, the sizer
+  // height and the scroll range are then exact integers: no cumulative
+  // fraction can push the last lines beyond the reachable scroll range, and
+  // glyphs never land on half-pixel baselines (fix-log defects 4 and 7).
+  lineHeight = Math.max(1, Math.round(natural))
+  r.setProperty('--line-height', lineHeight + 'px')
 }
 
 function render(force) {
@@ -187,7 +195,9 @@ function render(force) {
   const frag = document.createDocumentFragment()
   for (let i = from; i < to; i++) frag.appendChild(makeLine(i))
   linesEl.replaceChildren(frag)
-  linesEl.style.transform = `translateY(${from * lineHeight}px)`
+  // Layout offset, not translateY: a transform would composite the text onto
+  // its own layer and cost subpixel antialiasing (fix-log defect 7).
+  linesEl.style.top = (from * lineHeight) + 'px'
   if (highlighting) {
     // Ask the worker for the window actually on screen (viewport-first).
     post0({ type: 'viewport', from, to, gen })
@@ -236,6 +246,7 @@ async function init(m) {
   measure()
   layout()
   post({ type: 'rendered', firstPaintMs: Math.round(performance.now()), lines: lines.length })
+  focusScroller()
   highlighting = !!lang
   if (highlighting) startWorker(m)
   else if (worker) { worker.terminate(); worker = null }
@@ -441,6 +452,41 @@ function gotoLine(line, col) {
 
 scroller.addEventListener('scroll', () => render(false), { passive: true })
 window.addEventListener('resize', () => { measure(); layout() })
+
+// Keyboard scrolling (fix-log defect 5). The scroller is the page's only focus
+// target, but the host's programmatic focus lands on <body>, so the viewer
+// keys are handled here explicitly instead of depending on where focus sits.
+function focusScroller() {
+  try { scroller.focus({ preventScroll: true }) } catch (e) {}
+}
+window.addEventListener('focus', focusScroller)
+
+document.addEventListener('keydown', (e) => {
+  if (e.defaultPrevented || e.altKey) return
+  const page = Math.max(lineHeight, scroller.clientHeight - lineHeight)
+  let handled = true
+  switch (e.key) {
+    case 'ArrowDown': scroller.scrollTop += lineHeight; break
+    case 'ArrowUp': scroller.scrollTop -= lineHeight; break
+    case 'ArrowRight': scroller.scrollLeft += 40; break
+    case 'ArrowLeft': scroller.scrollLeft -= 40; break
+    case 'PageDown': scroller.scrollTop += page; break
+    case 'PageUp': scroller.scrollTop -= page; break
+    case ' ': scroller.scrollTop += e.shiftKey ? -page : page; break
+    case 'Home':
+      if (e.shiftKey) { handled = false; break }
+      scroller.scrollTop = 0
+      scroller.scrollLeft = 0
+      break
+    case 'End':
+      if (e.shiftKey) { handled = false; break }
+      scroller.scrollTop = scroller.scrollHeight
+      break
+    default:
+      handled = false
+  }
+  if (handled) e.preventDefault()
+})
 
 document.addEventListener('selectionchange', throttle(() => {
   const sel = document.getSelection()

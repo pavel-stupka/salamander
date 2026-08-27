@@ -232,9 +232,11 @@ language or documented default.
    `.ts`, `.inc`, `.sql`, …), **When** files with distinguishing content are
    opened, **Then** each resolves per the documented default and
    disambiguation rules.
-5. **Given** an open file, **When** the user overrides the language from the
+5. ~~**Given** an open file, **When** the user overrides the language from the
    viewer's language picker, **Then** the view re-highlights in the selected
-   language for this view.
+   language for this view.~~ *(Removed 2026-08-27 with the FR-007 amendment:
+   the identified language is displayed in the window title and status bar
+   instead of being user-overridable.)*
 
 ---
 
@@ -428,9 +430,15 @@ views a source file.
   stated disambiguation rules MUST select the alternative (e.g. `.h` → C++
   unless Objective-C markers; `.ts` containing an XML translation header →
   XML, never TypeScript).
-- **FR-007**: The user MUST be able to override the identified language for
-  the open view from a language picker; the override applies to that view and
-  is not persisted per file.
+- **FR-007** *(amended 2026-08-27, user decision after first use)*: The
+  viewer MUST make the identified language visible — it is shown in the
+  window title (e.g. `name [C++] - Code Viewer`) and in the status bar.
+  ~~The user MUST be able to override the identified language for the open
+  view from a language picker.~~ The override menu shipped as letter-bucket
+  submenus that were unusable ("just letters, most of them repeated") and
+  the automatic identification (FR-005/FR-006) covers the real cases, so the
+  picker was removed; a language override can return as a flat, searchable
+  control if identification ever proves insufficient in practice.
 - **FR-008**: The claimed-type list and the name→language table MUST be
   generated from a versioned, pinned external source plus checked-in overlays,
   committed and reviewed like source; an automated check MUST fail when a

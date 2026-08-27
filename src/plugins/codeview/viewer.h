@@ -19,18 +19,18 @@ public:
     char* Name;      // full UTF-8 path (heap; may exceed MAX_PATH) or NULL
     CTcWebHost* Web; // the shared, locked-down rendering surface
 
-    HWND HStatus;    // native status bar (StatusWindow class)
+    HWND HStatus;     // native status bar (STATIC)
+    HFONT HStatusFont; // status-bar font (NONCLIENTMETRICS lfStatusFont); owned
+    int StatusHeight; // derived from the font at creation (DPI-correct)
     HBRUSH BgBrush;  // scheme background for WM_ERASEBKGND - the shared WinLib
                      // class brush is white and would flash before the page paints
 
     HMENU HSchemeMenu;
-    HMENU HLangMenu;
     HMENU HEncodingMenu;
 
     CvIntake Intake;
     const std::string* TextPtr; // stable address handed to the interceptor
     int ForcedEncoding; // -1 = detect
-    int ForcedLanguage; // -1 = identify
     int DocVersion;     // bumped whenever the served text changes
 
     wchar_t FindText[256];
@@ -61,7 +61,6 @@ protected:
     void ApplyScheme(BOOL rebuildBrush);
     void SelectScheme(int idx);
     void CycleScheme(int dir);
-    void SelectLanguage(int language);
     void SelectEncoding(int encoding);
     void CycleEncoding(int dir);
     void SendInit(BOOL swap);

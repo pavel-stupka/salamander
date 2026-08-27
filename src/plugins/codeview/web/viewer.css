@@ -66,12 +66,20 @@ body {
   overflow: auto;
   position: relative;
   contain: strict;
+  /* An OPAQUE background on the scrolled surface: without it the composited
+     scrolling contents have no known-opaque backdrop and Chromium falls back
+     to grayscale antialiasing -- the text looks washed out next to mdview's
+     (fix-log defect 7). */
+  background: var(--bg);
+  outline: none; /* focusable for keyboard scrolling; no focus ring */
 }
 
-/* #sizer carries the full scroll height of all lines; #lines is translated to
-   the first materialised line (virtual list). */
+/* #sizer carries the full scroll height of all lines; #lines is positioned
+   (top, in layout -- NOT a transform, which would promote the text onto its
+   own composited layer and again cost subpixel antialiasing) at the first
+   materialised line (virtual list). */
 #sizer { position: relative; width: max-content; min-width: 100%; }
-#lines { position: absolute; top: 0; left: 0; right: 0; will-change: transform; }
+#lines { position: absolute; top: 0; left: 0; right: 0; }
 
 .ln {
   display: flex;

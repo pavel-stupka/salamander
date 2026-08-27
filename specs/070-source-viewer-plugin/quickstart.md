@@ -53,7 +53,9 @@ src\plugins\codeview\test\build_and_run.cmd
    checks: `Dockerfile`, `CMakeLists.txt`, `.gitignore`, `x.d.ts`,
    `setup.iss`, `a.reg` (UTF-16), extension-less `#!/usr/bin/env python3`
    file, `.h` with `@interface` (→ Objective-C), Qt `.ts` XML (→ XML).
-   Language picker override re-highlights (menu ▸ Language).
+   The identified language is shown in the window title (e.g. `[C++]`) and
+   the status bar (the View ▸ Language override menu was removed by the
+   2026-08-27 FR-007 amendment — display instead of override).
 5. **Degradation (US5/SC-006)** — 3 MB SQL dump: plain band + notice, find/
    wrap/themes work; 25 MB file and `.ts` video: built-in viewer opens
    directly, < 1 s; single-line 2 MB minified JS: opens, scrolls, wrap

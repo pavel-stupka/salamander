@@ -82,13 +82,11 @@ COMMENT,"Nederlandse versie"
 2026,1,"&Tekstafbreking\tF2"
 2027,1,"Rege&lnummers"
 2028,1,"W&itruimte weergeven"
-2029,1,"T&aal"
 2030,1,"Cod&ering"
 
 [STRINGTABLE 4]
 2040,1,"&Help"
 2041,1,"&Over Code Viewer"
-2042,1,"Automatisch"
 
 [STRINGTABLE 5]
 2100,1,"GitHub Light"

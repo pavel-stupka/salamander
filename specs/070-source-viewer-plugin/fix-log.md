@@ -147,6 +147,144 @@ F9 scheme cycling on both plain and highlighted files, window open with a
 light scheme and a dark scheme (no flash at any hop: native window → WebView
 surface → page first paint → tokens).
 
+---
+
+# Second round — defects 4–8 (session 2026-08-27, after the first fixes)
+
+Reported (in the user's words, translated):
+
+4. Not all lines are shown — scrolling a `.cpp` file to the end leaves the
+   last 2–3 lines invisible.
+5. After F3 the view cannot be scrolled with the keyboard (arrows, PgDn) —
+   the WebView appears not to have focus.
+6. The bottom bar is empty — "what is it even for?" (screenshot
+   `temp/bottom.png`).
+7. The default rendering is not as sharp as mdview's — the text looks
+   "frayed"/washed out. (Follow-up: the font must stay monospace — it is the
+   sharpness, not the font choice.)
+8. View ▸ Language is incomprehensible — only letters, most repeated. If it
+   is a syntax switcher it is not needed; showing the detected type (e.g.
+   C++) in the window title is enough.
+
+## Defect 4 — last lines unreachable at the bottom
+
+Two independent causes, both fixed:
+
+- **Native (the main one):** `CTcWebHost::Resize` was a no-op while the
+  controller did not exist yet, and controller-ready sized the surface with
+  `GetClientRect(parent)` — mdview's geometry, where the WebView IS the whole
+  client area. codeview always calls `Resize(client minus status bar)` from
+  `WM_CREATE`, i.e. *before* the async controller exists, so the request was
+  dropped and the surface ended up `CV_STATUS_HEIGHT` taller than intended
+  until the first manual window resize — the page's bottom (its last lines
+  and its horizontal scrollbar) sat in/under the status-bar strip.
+  **Fix (shared host):** `Resize` records the size (`pendingCx/Cy`);
+  controller-ready applies the recorded size and falls back to
+  `GetClientRect` only if no `Resize` ever ran (mdview's case — behaviour
+  unchanged there).
+- **Page:** the virtual list measured a fractional row height
+  (13 px × 1.45 = 18.85 px) and used it in all offset math while the sizer
+  height, `scrollHeight` and `scrollTop` round through integers — sub-pixel
+  drift between the computed and the real geometry. **Fix:** `measure()` now
+  pins the row height to a whole pixel (`--line-height: <N>px` after
+  measuring the natural height), so row offsets, the sizer height and the
+  scroll range are exact integers by construction. (Re-measuring resets the
+  pin first, so font/zoom changes keep working.)
+
+## Defect 5 — keyboard cannot scroll
+
+The host side was fine (controller `MoveFocus` on ready and after every
+navigation; `WM_SETFOCUS` forwards). The gap was **inside the page**: the
+scrolling element is a `div#scroller` (the document itself is
+`overflow:hidden`), a div is not focusable and no element ever took focus, so
+arrow/PgDn keydowns hit `<body>` and scrolled the (unscrollable) document.
+**Fix (`viewer.html/.css/.js`):** `#scroller` is focusable (`tabindex="-1"`,
+no focus ring), is focused on init and whenever the page window regains
+focus, and a document-level keydown handler implements the viewer keys
+explicitly — Up/Down one line, PgUp/PgDn one page, Space/Shift+Space page,
+Left/Right horizontal, Home/End top/bottom (Shift+Home/End left alone) —
+with `preventDefault`, so behaviour no longer depends on where focus sits.
+
+## Defect 6 — empty status bar (and a stuck window title)
+
+**Root cause: `LoadStr` returns ANSI, and the status/title text was pushed
+through the *strict* UTF-8 decoder `SplU8ToWAlloc`.** In the English UI every
+string is ASCII and it happens to work; in the Czech UI "%d řádků" is CP1250,
+the strict decode fails, the function returns NULL — and `SetWindowTextW`
+was simply never called: the bar stayed forever empty and the window caption
+stayed at its creation default. (What the bar shows: lines, Ln/Col, encoding,
+EOL, language, zoom — spec FR-022.)
+
+**Fixes (`viewer.cpp`, `webglue.cpp`):**
+
+- `UpdateStatus`/`UpdateTitle` rebuilt wide end-to-end:
+  `SalamanderGeneral->LoadStrW` for every localized string, `SplU8ToWAlloc`
+  only for the UTF-8 file name, plain widening for the ASCII language display
+  names. Same class of fix in `CvMsgInit`: the plain-band notice
+  (`plainReason`) now uses `LoadStrW` — with ANSI `LoadStr` it reached the
+  page as mojibake in non-English UI.
+- While in there, the bar was made presentable: real status font
+  (`NONCLIENTMETRICS.lfStatusFont`, owned `HFONT`), height derived from the
+  font instead of a fixed 20 px (was clipped on high-DPI),
+  `SS_CENTERIMAGE`, and `WM_CTLCOLORSTATIC` routed through
+  `ThemeHandleCtlColor` (feature 049's two-touchpoint pattern) so it follows
+  the dark theme instead of flashing a light-grey strip.
+- `CvLanguageDisplay` (which mixed ANSI `LoadStr` into the same sink) became
+  dead code and was removed.
+
+**Rule reaffirmed:** `LoadStr` output must never enter a `Spl*U8*` converter
+or any wide/UTF-8 sink — use `LoadStrW` there (feature 069's caption rule).
+
+## Defect 7 — text less sharp than mdview
+
+Two Chromium compositing effects, not the font:
+
+- `#lines` was positioned with `transform: translateY(...)` +
+  `will-change: transform` — that promotes the text onto its own composited
+  layer, where Chromium abandons subpixel (ClearType) antialiasing.
+  **Fix:** position via `top:` (layout), no `will-change`.
+- The scrolled contents had no known-opaque backdrop (`#scroller` was
+  transparent; only `body` carried the colour), which also forces grayscale
+  antialiasing during composited scrolling. **Fix:** `#scroller` gets an
+  explicit opaque `background: var(--bg)`.
+
+Together with the integer row offsets from defect 4, glyphs now render in the
+main layer, on whole-pixel baselines, over an opaque background — the same
+conditions mdview's text renders under. The font stack stays monospace
+(`Cascadia Mono`, Consolas fallback) per the user's follow-up.
+
+## Defect 8 — View ▸ Language menu removed (FR-007 amendment)
+
+The picker grouped ~200 grammar-backed languages into submenus keyed by first
+letter, re-starting a bucket every 30 items — so the top level really was
+"only letters, most of them repeated". Per the user's decision the override
+is gone entirely: **the identified language is displayed instead** — in the
+window title (`name [C++] - Code Viewer`) and in the status bar. Removed:
+menu construction, `CM_LANG_*` commands, `SelectLanguage`, `ForcedLanguage`,
+`CvMsgSetLanguage` (the page keeps its `setLanguage` handler per the
+contract; the host just never sends it), `IDS_MENU_VIEW_LANGUAGE` +
+`IDS_MENU_LANG_AUTO`. Spec FR-007 and US4 scenario 5 are amended in place;
+quickstart scenario 4 updated.
+
+Because two strings left `lang.rc2`, the two-stage translation refresh was
+run (`build_langs.cmd --export-templates` → `translate.merge --module
+codeview` → `build.cmd full`): 8 languages × 97 entries (was 99), 0 gaps,
+0 validation failures, **no DeepL characters sent** (removals only).
+
+## Status (second round)
+
+- [x] Shared host: pending-bounds fix (src/common/webhost/webhost.cpp) — mdview path unchanged
+- [x] Page: integer row height + `top:` positioning + opaque scroller background (viewer.css/.js)
+- [x] Page: focusable scroller + explicit viewer keys (viewer.html/.css/.js)
+- [x] Host: wide status/title/plain-reason via LoadStrW; themed, DPI-correct status bar (viewer.cpp, webglue.cpp)
+- [x] Language menu removed; language shown in title + status bar (viewer.cpp, codeview.h/.rh2, lang.rc2, webglue.*)
+- [x] Translations refreshed after the string removal: 8 × 97 entries, 0 gaps, 0 failures
+- [x] Build green: incremental Debug x64 (0 errors) and `build.cmd full` (189 language modules OK)
+- [x] Headless worker harness still ALL PASS (`test/harness/test_worker.mjs`)
+- [ ] GUI re-check of quickstart scenarios 1, 2, 4, 6 (bottom line reachable,
+      PgDn/arrows scroll immediately after F3, status bar populated + dark,
+      Czech UI title/status text, sharpness vs mdview side by side)
+
 ## Translations (T055) — done 2026-08-27
 
 - `_DOMAINS["codeview"]` added to `tools/translate/uicontext.py`.

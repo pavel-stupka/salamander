@@ -352,12 +352,12 @@ CViewerWindow::CViewerWindow(int enumFilesSourceUID, int enumFilesCurrentIndex)
     Name = NULL;
     Web = NULL;
     HStatus = NULL;
+    HStatusFont = NULL;
+    StatusHeight = CV_STATUS_HEIGHT;
     BgBrush = NULL;
     HSchemeMenu = NULL;
-    HLangMenu = NULL;
     HEncodingMenu = NULL;
     ForcedEncoding = -1;
-    ForcedLanguage = -1;
     DocVersion = 0;
     FindText[0] = 0;
     FindCase = FALSE;
@@ -389,6 +389,11 @@ CViewerWindow::~CViewerWindow()
         DeleteObject(BgBrush);
         BgBrush = NULL;
     }
+    if (HStatusFont != NULL)
+    {
+        DeleteObject(HStatusFont);
+        HStatusFont = NULL;
+    }
 }
 
 HANDLE CViewerWindow::GetLock()
@@ -404,11 +409,10 @@ void CViewerWindow::OpenFile(const char* name, BOOL setLock)
         free(Name);
     Name = _strdup(name);
     ForcedEncoding = -1;
-    ForcedLanguage = -1;
     FindCurrent = FindTotal = 0;
     CaretLine = CaretCol = 1;
 
-    if (!CvLoadFile(Name, ForcedEncoding, ForcedLanguage, Intake))
+    if (!CvLoadFile(Name, ForcedEncoding, -1, Intake))
     {
         // Between CanViewFile and here the file changed, vanished, or turned
         // out binary: say so in the window instead of rendering garbage, and
@@ -498,41 +502,10 @@ void CViewerWindow::BuildMenu()
     AppendMenuA(HSchemeMenu, MF_STRING, CM_VIEW_FOLLOWAPP, LoadStr(IDS_MENU_VIEW_FOLLOWAPP));
     AppendMenuA(view, MF_POPUP | MF_STRING, (UINT_PTR)HSchemeMenu, LoadStr(IDS_MENU_VIEW_SCHEME));
 
-    // The language picker lists only what can actually be applied: the
-    // languages a shipped grammar backs, plus "Automatic" (spec FR-007).
-    HLangMenu = CreatePopupMenu();
-    AppendMenuA(HLangMenu, MF_STRING, CM_LANG_AUTO, LoadStr(IDS_MENU_LANG_AUTO));
-    AppendMenuA(HLangMenu, MF_SEPARATOR, 0, NULL);
-    {
-        HMENU sub = NULL;
-        int inSub = 0;
-        char group[2] = {0, 0};
-        for (int i = 0; i < CvLanguageCount; i++)
-        {
-            if (CvLanguages[i].Grammar == NULL)
-                continue;
-            char first = (char)toupper((unsigned char)CvLanguages[i].Display[0]);
-            if (sub == NULL || first != group[0] || inSub >= 30)
-            {
-                if (sub != NULL)
-                {
-                    char label[8] = {group[0], 0};
-                    AppendMenuA(HLangMenu, MF_POPUP | MF_STRING, (UINT_PTR)sub, label);
-                }
-                sub = CreatePopupMenu();
-                group[0] = first;
-                inSub = 0;
-            }
-            AppendMenuA(sub, MF_STRING, CM_LANG_FIRST + i, CvLanguages[i].Display);
-            inSub++;
-        }
-        if (sub != NULL)
-        {
-            char label[8] = {group[0], 0};
-            AppendMenuA(HLangMenu, MF_POPUP | MF_STRING, (UINT_PTR)sub, label);
-        }
-    }
-    AppendMenuA(view, MF_POPUP | MF_STRING, (UINT_PTR)HLangMenu, LoadStr(IDS_MENU_VIEW_LANGUAGE));
+    // No language picker (removed 2026-08-27, spec FR-007 amendment): the
+    // identified language is DISPLAYED (title + status bar) instead of being
+    // overridable -- the letter-bucket menu was unusable and identification
+    // covers the real cases.
 
     HEncodingMenu = CreatePopupMenu();
     static const char* encNames[] = {"UTF-8", "UTF-8 with BOM", "UTF-16 LE", "UTF-16 BE", "System code page"};
@@ -582,69 +555,88 @@ void CViewerWindow::RefreshChecks()
         for (int i = 0; i < 5; i++)
             CheckMenuItem(HEncodingMenu, CM_ENCODING_FIRST + i,
                           MF_BYCOMMAND | ((int)Intake.Encoding == i ? MF_CHECKED : MF_UNCHECKED));
-    if (HLangMenu != NULL)
-        CheckMenuItem(HLangMenu, CM_LANG_AUTO,
-                      MF_BYCOMMAND | (ForcedLanguage < 0 ? MF_CHECKED : MF_UNCHECKED));
 }
 
 void CViewerWindow::LayoutChildren()
 {
     RECT rc;
     GetClientRect(HWindow, &rc);
-    int statusH = (HStatus != NULL) ? CV_STATUS_HEIGHT : 0;
+    int statusH = (HStatus != NULL) ? StatusHeight : 0;
     if (HStatus != NULL)
         SetWindowPos(HStatus, NULL, 0, rc.bottom - statusH, rc.right, statusH, SWP_NOZORDER);
     if (Web != NULL)
         Web->Resize(rc.right, rc.bottom - statusH);
 }
 
+// Display names in CvLanguages are ASCII by construction (langmap.h), so a
+// plain widening is exact.
+static std::wstring CvAsciiToW(const char* s)
+{
+    std::wstring w;
+    if (s != NULL)
+        while (*s != 0)
+            w += (wchar_t)(unsigned char)*s++;
+    return w;
+}
+
 void CViewerWindow::UpdateTitle()
 {
-    // The name is UTF-8 and may be outside the code page, so the title is set
-    // through the wide API (feature 069's rule for every user-visible caption).
-    std::string title = Name != NULL ? Name : "";
-    title += " - ";
-    title += LoadStr(IDS_WINDOW_TITLE);
+    // Wide from end to end. The name is UTF-8 (may be outside the code page);
+    // the localized part must come from LoadStrW -- LoadStr returns ANSI, and
+    // routing it through the strict UTF-8 decoder made SetWindowTextW never
+    // run in a non-English UI (fix-log defect 6).
+    std::wstring title;
+    if (Name != NULL)
+    {
+        wchar_t* w = SplU8ToWAlloc(Name);
+        if (w != NULL)
+        {
+            title = w;
+            free(w);
+        }
+    }
+    // The identified language is shown here (and in the status bar) instead of
+    // offering a View > Language override menu (fix-log defect 8).
+    if (Intake.Language >= 0 && Intake.Language < CvLanguageCount)
+        title += L" [" + CvAsciiToW(CvLanguages[Intake.Language].Display) + L"]";
+    if (!title.empty())
+        title += L" - ";
+    title += SalamanderGeneral->LoadStrW(HLanguage, IDS_WINDOW_TITLE);
     if (g_zoom != 100)
     {
-        char z[16];
-        _snprintf_s(z, _TRUNCATE, " (%d%%)", g_zoom);
+        wchar_t z[16];
+        _snwprintf_s(z, _TRUNCATE, L" (%d%%)", g_zoom);
         title += z;
     }
-    wchar_t* w = SplU8ToWAlloc(title.c_str());
-    if (w != NULL)
-    {
-        SetWindowTextW(HWindow, w);
-        free(w);
-    }
+    SetWindowTextW(HWindow, title.c_str());
 }
 
 void CViewerWindow::UpdateStatus()
 {
     if (HStatus == NULL)
         return;
-    static const char* encNames[] = {"UTF-8", "UTF-8 BOM", "UTF-16 LE", "UTF-16 BE", "ANSI"};
-    const char* eol = LoadStr(Intake.Eol == cvEolCRLF    ? IDS_STATUS_EOL_CRLF
-                              : Intake.Eol == cvEolLF    ? IDS_STATUS_EOL_LF
-                              : Intake.Eol == cvEolCR    ? IDS_STATUS_EOL_CR
-                              : Intake.Eol == cvEolMixed ? IDS_STATUS_EOL_MIXED
-                                                         : IDS_STATUS_EOL_NONE);
-    char lines[64];
-    _snprintf_s(lines, _TRUNCATE, LoadStr(IDS_STATUS_LINES), Intake.LineCount);
-    char lncol[64];
-    _snprintf_s(lncol, _TRUNCATE, LoadStr(IDS_STATUS_LNCOL), CaretLine, CaretCol);
+    // Wide throughout -- see UpdateTitle for why LoadStr must not be used here.
+    static const wchar_t* encNames[] = {L"UTF-8", L"UTF-8 BOM", L"UTF-16 LE", L"UTF-16 BE", L"ANSI"};
+    const wchar_t* eol = SalamanderGeneral->LoadStrW(
+        HLanguage, Intake.Eol == cvEolCRLF    ? IDS_STATUS_EOL_CRLF
+                   : Intake.Eol == cvEolLF    ? IDS_STATUS_EOL_LF
+                   : Intake.Eol == cvEolCR    ? IDS_STATUS_EOL_CR
+                   : Intake.Eol == cvEolMixed ? IDS_STATUS_EOL_MIXED
+                                              : IDS_STATUS_EOL_NONE);
+    wchar_t lines[64];
+    _snwprintf_s(lines, _TRUNCATE, SalamanderGeneral->LoadStrW(HLanguage, IDS_STATUS_LINES), Intake.LineCount);
+    wchar_t lncol[64];
+    _snwprintf_s(lncol, _TRUNCATE, SalamanderGeneral->LoadStrW(HLanguage, IDS_STATUS_LNCOL), CaretLine, CaretCol);
+    std::wstring lang = Intake.Language >= 0 && Intake.Language < CvLanguageCount
+                            ? CvAsciiToW(CvLanguages[Intake.Language].Display)
+                            : std::wstring(SalamanderGeneral->LoadStrW(HLanguage, IDS_LANG_PLAIN));
 
-    char text[512];
-    _snprintf_s(text, _TRUNCATE, "%s | %s | %s | %s | %s | %d%%",
-                lines, lncol,
-                encNames[Intake.Encoding <= cvEncAnsi ? Intake.Encoding : 0], eol,
-                CvLanguageDisplay(Intake.Language), g_zoom);
-    wchar_t* w = SplU8ToWAlloc(text);
-    if (w != NULL)
-    {
-        SetWindowTextW(HStatus, w);
-        free(w);
-    }
+    wchar_t text[512];
+    _snwprintf_s(text, _TRUNCATE, L" %s | %s | %s | %s | %s | %d%%",
+                 lines, lncol,
+                 encNames[Intake.Encoding <= cvEncAnsi ? Intake.Encoding : 0], eol,
+                 lang.c_str(), g_zoom);
+    SetWindowTextW(HStatus, text);
 }
 
 void CViewerWindow::SelectScheme(int idx)
@@ -673,24 +665,12 @@ void CViewerWindow::CycleScheme(int dir)
     SelectScheme((cur + dir + CvSchemeCount) % CvSchemeCount);
 }
 
-void CViewerWindow::SelectLanguage(int language)
-{
-    ForcedLanguage = language;
-    Intake.Language = language >= 0 ? language
-                                    : CvIdentifyLanguage(Name != NULL ? Name : "", Intake.Utf8.c_str(),
-                                                         (std::min<size_t>)(Intake.Utf8.size(), 8192));
-    if (Web != NULL && Web->IsReady())
-        Web->PostWebMessageJson(CvMsgSetLanguage(Intake.Language));
-    UpdateStatus();
-    RefreshChecks();
-}
-
 void CViewerWindow::SelectEncoding(int encoding)
 {
     if (Name == NULL || encoding < 0 || encoding > cvEncAnsi)
         return;
     ForcedEncoding = encoding;
-    if (!CvLoadFile(Name, ForcedEncoding, ForcedLanguage, Intake))
+    if (!CvLoadFile(Name, ForcedEncoding, -1, Intake))
         return;
     DocVersion++;
     if (Web != NULL && Web->IsReady())
@@ -863,8 +843,33 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         BuildMenu();
         ApplyScheme(TRUE);
 
-        HStatus = CreateWindowExA(0, "STATIC", "", WS_CHILD | WS_VISIBLE | SS_LEFTNOWORDWRAP | SS_NOPREFIX,
+        HStatus = CreateWindowExA(0, "STATIC", "",
+                                  WS_CHILD | WS_VISIBLE | SS_LEFTNOWORDWRAP | SS_NOPREFIX | SS_CENTERIMAGE,
                                   0, 0, 0, 0, HWindow, NULL, DLLInstance, NULL);
+        if (HStatus != NULL)
+        {
+            // Real status font + a height derived from it: the previous fixed
+            // 20 px with the stock raster font clipped on high-DPI monitors.
+            NONCLIENTMETRICSW ncm;
+            ZeroMemory(&ncm, sizeof(ncm));
+            ncm.cbSize = sizeof(ncm);
+            if (SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0))
+                HStatusFont = CreateFontIndirectW(&ncm.lfStatusFont);
+            if (HStatusFont != NULL)
+            {
+                SendMessage(HStatus, WM_SETFONT, (WPARAM)HStatusFont, TRUE);
+                HDC dc = GetDC(HWindow);
+                if (dc != NULL)
+                {
+                    HFONT old = (HFONT)SelectObject(dc, HStatusFont);
+                    TEXTMETRICW tm;
+                    if (GetTextMetricsW(dc, &tm))
+                        StatusHeight = tm.tmHeight + 6;
+                    SelectObject(dc, old);
+                    ReleaseDC(HWindow, dc);
+                }
+            }
+        }
 
         if (!CTcWebHost::RuntimeAvailable())
         {
@@ -930,6 +935,16 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         UpdateStatus();
         return 0;
 
+    case WM_CTLCOLORSTATIC:
+    {
+        // feature 049's two-touchpoint pattern: under the dark theme the
+        // status bar is painted by the theme instead of the light 3D face.
+        INT_PTR brush;
+        if (SalamanderGeneral->ThemeHandleCtlColor(uMsg, wParam, lParam, &brush))
+            return brush;
+        break;
+    }
+
     case WM_ERASEBKGND:
     {
         // Paint the scheme colour, not the class brush's white: this is what
@@ -961,11 +976,6 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             SelectScheme(cmd - CM_SCHEME_FIRST);
             return 0;
         }
-        if (cmd >= CM_LANG_FIRST && cmd < CM_LANG_FIRST + CvLanguageCount)
-        {
-            SelectLanguage(cmd - CM_LANG_FIRST);
-            return 0;
-        }
         if (cmd >= CM_ENCODING_FIRST && cmd < CM_ENCODING_FIRST + 5)
         {
             SelectEncoding(cmd - CM_ENCODING_FIRST);
@@ -975,9 +985,6 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
         case CM_FILE_CLOSE:
             PostMessage(HWindow, WM_CLOSE, 0, 0);
-            return 0;
-        case CM_LANG_AUTO:
-            SelectLanguage(-1);
             return 0;
         case CM_EDIT_FIND:
             DoFind(TRUE, 0);

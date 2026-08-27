@@ -80,6 +80,12 @@ struct CTcWebHostImpl
     std::wstring baseUrl;      // https://<host>/<document>
     std::wstring originPrefix; // https://<host>/
     int pendingZoom = 100;
+    // Last size requested via Resize(). The controller is created
+    // asynchronously, so a plugin whose surface is NOT the whole client area
+    // (codeview: client minus status bar) has always called Resize() before
+    // the controller exists; falling back to GetClientRect here would size the
+    // surface over the plugin's other children until the next WM_SIZE.
+    int pendingCx = -1, pendingCy = -1; // -1 = never requested
 };
 
 static std::wstring PathOnly(const std::wstring& u)
@@ -426,7 +432,10 @@ static void ApplyControllerReady(CTcWebHostImpl* impl, ICoreWebView2Controller* 
         &impl->accelTok);
 
     RECT rc;
-    GetClientRect(impl->parent, &rc);
+    if (impl->pendingCx >= 0)
+        rc = {0, 0, impl->pendingCx, impl->pendingCy}; // the plugin's layout, not ours
+    else
+        GetClientRect(impl->parent, &rc);
     ctl->put_Bounds(rc);
     ctl->put_ZoomFactor(impl->pendingZoom / 100.0);
     ApplyBackgroundColor(impl); // must precede visibility: no white blip
@@ -523,6 +532,8 @@ bool CTcWebHost::IsReady() const { return p->ready; }
 
 void CTcWebHost::Resize(int cx, int cy)
 {
+    p->pendingCx = cx; // remembered: the controller may not exist yet
+    p->pendingCy = cy;
     if (p->controller)
     {
         RECT rc = {0, 0, cx, cy};

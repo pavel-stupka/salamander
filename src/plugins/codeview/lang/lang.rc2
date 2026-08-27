@@ -46,11 +46,9 @@ STRINGTABLE
  IDS_MENU_VIEW_WRAP,      "&Word Wrap\tF2"
  IDS_MENU_VIEW_LINENUMS,  "&Line Numbers"
  IDS_MENU_VIEW_WHITESPACE, "Show W&hitespace"
- IDS_MENU_VIEW_LANGUAGE,  "Lan&guage"
  IDS_MENU_VIEW_ENCODING,  "&Encoding"
  IDS_MENU_HELP,           "&Help"
  IDS_MENU_HELP_ABOUT,     "&About Code Viewer"
- IDS_MENU_LANG_AUTO,      "Automatic"
 
  IDS_SCHEME_FIRST+0,      "GitHub Light"
  IDS_SCHEME_FIRST+1,      "Visual Studio Light"

@@ -82,13 +82,11 @@ COMMENT,"Slovenská verzia"
 2026,1,"Zalamovanie &riadkov\tF2"
 2027,1,"Čís&la riadkov"
 2028,1,"&Zobraziť medzery"
-2029,1,"&Jazyk"
 2030,1,"Kódovani&e"
 
 [STRINGTABLE 4]
 2040,1,"&Pomoc"
 2041,1,"O prehli&adači kódu"
-2042,1,"Automaticky"
 
 [STRINGTABLE 5]
 2100,1,"GitHub Light"

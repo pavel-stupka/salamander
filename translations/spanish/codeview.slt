@@ -82,13 +82,11 @@ COMMENT,"Versión en español"
 2026,1,"A&justar a la línea\tF2"
 2027,1,"&Números de línea"
 2028,1,"&Mostrar espacios en blanco"
-2029,1,"I&dioma"
 2030,1,"&Codificación"
 
 [STRINGTABLE 4]
 2040,1,"A&yuda"
 2041,1,"&Acerca del visor de código"
-2042,1,"Automático"
 
 [STRINGTABLE 5]
 2100,1,"GitHub Light"

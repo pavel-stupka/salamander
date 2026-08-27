@@ -35,7 +35,8 @@ std::wstring CvMsgSetTheme(const CvScheme* scheme);
 // applies it synchronously at module start, before the page's first paint.
 std::wstring CvSchemeFragment(const CvScheme* scheme);
 std::wstring CvMsgSetView();
-std::wstring CvMsgSetLanguage(int language);
+// (setLanguage stays in the page contract, but since the FR-007 amendment of
+//  2026-08-27 removed the language override menu, the host never sends it.)
 std::wstring CvMsgFind(const wchar_t* term, BOOL caseSensitive, BOOL wholeWord, int dir);
 std::wstring CvMsgGotoLine(int line, int col);
 

@@ -82,13 +82,11 @@ COMMENT,"Magyar változat"
 2026,1,"S&zövegcsomagolás\tF2"
 2027,1,"S&orok számozása"
 2028,1,"Szóközök &megjelenítése"
-2029,1,"&Nyelv"
 2030,1,"&Kódolás"
 
 [STRINGTABLE 4]
 2040,1,"&Súgó"
 2041,1,"&A kódnézegetőről"
-2042,1,"Automatikus"
 
 [STRINGTABLE 5]
 2100,1,"GitHub Light"

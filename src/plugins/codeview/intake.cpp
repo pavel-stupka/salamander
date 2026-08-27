@@ -560,13 +560,6 @@ int CvIdentifyLanguage(const char* nameUtf8, const char* head, size_t headLen)
     return -1;
 }
 
-const char* CvLanguageDisplay(int language)
-{
-    if (language < 0 || language >= CvLanguageCount)
-        return LoadStr(IDS_LANG_PLAIN);
-    return CvLanguages[language].Display;
-}
-
 // ==========================================================================
 // full intake
 // ==========================================================================
