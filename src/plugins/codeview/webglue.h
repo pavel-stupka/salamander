@@ -39,6 +39,14 @@ std::wstring CvMsgSetView();
 //  2026-08-27 removed the language override menu, the host never sends it.)
 std::wstring CvMsgFind(const wchar_t* term, BOOL caseSensitive, BOOL wholeWord, int dir);
 std::wstring CvMsgGotoLine(int line, int col);
+// A bare {"type":"<name>"} command (currently "copy" and "selectAll"). The
+// page answers a copy with a "copyText" message; the HOST writes the
+// clipboard, because the page has no user activation when the command comes
+// from a native menu and the shared host denies every permission request.
+std::wstring CvMsgCommand(const wchar_t* type);
+// Shows a localized line in the page's notice bar (the same bar the plain-band
+// reason uses); an empty text hides it.
+std::wstring CvMsgNotice(const wchar_t* text);
 
 // --- message parsing (page -> host). Returns FALSE for anything that is not a
 //     known message with a well-formed payload; the caller then ignores it. ---
@@ -51,5 +59,7 @@ struct CvPageMessage
     BOOL HasSelection = FALSE;
     int Lines = 0;                // rendered
     std::wstring Reason;          // highlightAborted
+    std::wstring Text;            // copyText: the selected text
+    BOOL All = FALSE;             // copyText: copy the whole document instead
 };
 BOOL CvParsePageMessage(const std::wstring& json, CvPageMessage& out);

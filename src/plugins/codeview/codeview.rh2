@@ -68,6 +68,7 @@
 #define IDS_ENCODING_INVALID     2212
 #define IDS_LANG_PLAIN           2213
 #define IDS_RESTORE_TYPES_DONE   2214
+#define IDS_OPEN_BUILTIN_ASK     2215
 
 // --- status bar labels ---
 #define IDS_STATUS_LINES         2300

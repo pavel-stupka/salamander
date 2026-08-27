@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Pavel Stupka
+﻿// SPDX-FileCopyrightText: 2026 Pavel Stupka
 // SPDX-License-Identifier: GPL-2.0-or-later
 //
 // intake.cpp - text/binary classification, decoding and language
@@ -188,7 +188,10 @@ static void CvDecode(const BYTE* d, size_t n, CvEncoding enc, UINT codePage, CvI
     }
     else
     {
-        size_t start = (enc == cvEncUtf8Bom) ? 3 : 0;
+        // Skip the BOM only when there IS one: F8 can force "UTF-8 with BOM"
+        // on a file that has none, and skipping unconditionally ate its first
+        // three bytes (a lost "#!/" or "#in").
+        size_t start = (enc == cvEncUtf8Bom && n >= 3 && d[0] == 0xEF && d[1] == 0xBB && d[2] == 0xBF) ? 3 : 0;
         UINT cp = (enc == cvEncAnsi) ? codePage : CP_UTF8;
         if (n > start)
         {
@@ -403,7 +406,14 @@ static int CvRunAmbiguityProbe(const char* ruleId, const char* head, size_t n)
         return -1; // the default is right unless a stronger signal appears
     if (strcmp(ruleId, "asm-source") == 0)
     {
-        if (CvHeadContains(head, n, "riscv") || CvHeadContains(head, n, ".riscv"))
+        // RISC-V-specific DIRECTIVES, not the word "riscv" anywhere in the
+        // first 8 KB: a cross-compiler banner or a path like /opt/riscv-gnu/
+        // would otherwise flip an ordinary .s file to the RISC-V grammar.
+        // (The branch was dead until now -- "riscv" had no language row, so
+        // lang() returned -1 and the loose marker never showed.)
+        if (CvHeadContains(head, n, ".option rvc") || CvHeadContains(head, n, ".option norvc") ||
+            CvHeadContains(head, n, ".attribute arch, \"rv") || CvHeadContains(head, n, ".insn ") ||
+            CvHeadContains(head, n, "riscv,") || CvHeadContains(head, n, "-march=rv"))
             return lang("riscv");
         return -1;
     }
@@ -520,10 +530,13 @@ int CvIdentifyLanguage(const char* nameUtf8, const char* head, size_t headLen)
     {
         if (name[i] != '.')
             continue;
+        // Every dot is tried, left to right, so the LONGEST matching suffix
+        // wins. Stopping at the first dot meant a name carrying any extra dot
+        // ("my.app.d.ts", "jquery.min.js") lost its compound suffix entirely:
+        // 25 of the 26 shipped suffixes were unreachable that way.
         int l = CvLookup(CvCompoundSuffixes, CvCompoundSuffixCount, name.c_str() + i, NULL);
         if (l >= 0)
             return l;
-        break; // only the longest (leftmost dot) qualifies as a compound suffix
     }
 
     // 3. extension, with the ambiguity probe when the table names one
@@ -569,11 +582,15 @@ BOOL CvLoadFile(const char* nameUtf8, int forcedEncoding, int forcedLanguage, Cv
     out = CvIntake();
     HANDLE h = CvOpenRead(nameUtf8);
     if (h == INVALID_HANDLE_VALUE)
+    {
+        out.IoError = TRUE; // "could not be opened", not "not text"
         return FALSE;
+    }
     LARGE_INTEGER sz;
     if (!GetFileSizeEx(h, &sz))
     {
         CloseHandle(h);
+        out.IoError = TRUE;
         return FALSE;
     }
     out.FileSize = sz.QuadPart;
@@ -590,6 +607,7 @@ BOOL CvLoadFile(const char* nameUtf8, int forcedEncoding, int forcedLanguage, Cv
     if (out.FileSize > 0 && (!ReadFile(h, &raw[0], (DWORD)out.FileSize, &rd, NULL) || rd == 0))
     {
         CloseHandle(h);
+        out.IoError = TRUE;
         return FALSE;
     }
     CloseHandle(h);
@@ -643,10 +661,8 @@ BOOL CvLoadFile(const char* nameUtf8, int forcedEncoding, int forcedLanguage, Cv
     }
 
     // --- band (spec FR-026) ---
-    BOOL hasGrammar = out.Language >= 0 && CvLanguages[out.Language].Grammar != NULL;
-    if (!hasGrammar)
-        out.Band = cvBandHighlight; // "plain" is a rendering detail, not a band:
-                                    // the page simply has no grammar to apply
+    // A language with no grammar is NOT a band of its own: the page simply has
+    // nothing to apply, which is a rendering detail.
     if (out.FileSize > (__int64)g_highlightLimitKB * 1024)
         out.Band = cvBandPlainSize;
     else if (out.LongestLine > g_maxLineLength)

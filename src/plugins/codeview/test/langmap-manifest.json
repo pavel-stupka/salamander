@@ -172,12 +172,13 @@
  "counts": {
   "compound_suffixes": 26,
   "exact_names": 255,
-  "extensions": 747,
+  "extensions": 766,
   "interpreters": 104,
-  "languages": 737,
-  "mask_rows": 48,
-  "masks": 1028,
-  "with_grammar": 256
+  "languages": 748,
+  "linguist_bridged": 256,
+  "mask_rows": 49,
+  "masks": 1047,
+  "with_grammar": 204
  },
  "exact_names": {
   ".abbrev_defs": "emacs-lisp",
@@ -449,6 +450,7 @@
   ".adml": "xml",
   ".admx": "xml",
   ".ado": "stata",
+  ".adoc": "asciidoc",
   ".ahk": "ahk",
   ".ahkl": "ahk",
   ".al": "perl",
@@ -458,6 +460,7 @@
   ".apex": "apex",
   ".applescript": "applescript",
   ".as": "actionscript-3",
+  ".asciidoc": "asciidoc",
   ".asd": "common-lisp",
   ".asm": "asm",
   ".asset": "yaml",
@@ -477,6 +480,7 @@
   ".bbx": "latex",
   ".bdy": "plsql",
   ".be": "berry",
+  ".beancount": "beancount",
   ".bf": "csharp",
   ".bib": "bibtex",
   ".bibtex": "bibtex",
@@ -612,12 +616,20 @@
   ".ex": "elixir",
   ".exs": "elixir",
   ".eye": "ruby",
+  ".f": "fortran-fixed-form",
+  ".f03": "fortran-free-form",
+  ".f08": "fortran-free-form",
+  ".f18": "fortran-free-form",
+  ".f77": "fortran-fixed-form",
+  ".f90": "fortran-free-form",
+  ".f95": "fortran-free-form",
   ".fcgi": "lua",
   ".feature": "gherkin",
   ".filters": "xml",
   ".fish": "fish",
   ".fnc": "plsql",
   ".fnl": "fennel",
+  ".for": "fortran-fixed-form",
   ".fr": "haskell",
   ".frag": "javascript",
   ".frm": "ini",
@@ -675,6 +687,7 @@
   ".hh": "cpp",
   ".hhi": "hack",
   ".hic": "clojure",
+  ".hjson": "hjson",
   ".hlean": "lean",
   ".hlsl": "hlsl",
   ".hlsli": "hlsl",
@@ -767,6 +780,7 @@
   ".ll": "llvm",
   ".lmi": "python",
   ".log": "log",
+  ".logo": "logo",
   ".lookml": "yaml",
   ".lpr": "pascal",
   ".lsp": "common-lisp",
@@ -798,6 +812,7 @@
   ".mdx": "mdx",
   ".mermaid": "mermaid",
   ".meta": "yaml",
+  ".mips": "mipsasm",
   ".mir": "yaml",
   ".mirah": "ruby",
   ".mjml": "xml",
@@ -874,7 +889,7 @@
   ".perl": "perl",
   ".pgsql": "sql",
   ".ph": "perl",
-  ".php": "hack",
+  ".php": "php",
   ".php3": "php",
   ".php4": "php",
   ".php5": "php",
@@ -893,10 +908,12 @@
   ".plx": "perl",
   ".pm": "perl",
   ".pm6": "raku",
+  ".po": "po",
   ".podsl": "common-lisp",
   ".podspec": "ruby",
   ".polar": "polar",
   ".postcss": "postcss",
+  ".pot": "po",
   ".pp": "pascal",
   ".pq": "powerquery",
   ".prawn": "ruby",
@@ -933,6 +950,7 @@
   ".qll": "codeql",
   ".qml": "qml",
   ".qs": "javascript",
+  ".qss": "qss",
   ".r": "r",
   ".rabl": "ruby",
   ".rake": "ruby",
@@ -956,6 +974,7 @@
   ".reg": "reg",
   ".regex": "regexp",
   ".regexp": "regexp",
+  ".rest": "rst",
   ".resx": "xml",
   ".rg": "clojure",
   ".rh": "x-resource-script",
@@ -966,6 +985,7 @@
   ".rpy": "python",
   ".rs": "rust",
   ".rss": "xml",
+  ".rst": "rst",
   ".rsx": "r",
   ".ru": "ruby",
   ".ruby": "ruby",
@@ -1317,6 +1337,10 @@
    "display": "AppleScript",
    "grammar": "applescript"
   },
+  "asciidoc": {
+   "display": "AsciiDoc",
+   "grammar": "asciidoc"
+  },
   "asm": {
    "display": "Assembly",
    "grammar": "asm"
@@ -1336,6 +1360,10 @@
   "bat": {
    "display": "Batchfile",
    "grammar": "bat"
+  },
+  "beancount": {
+   "display": "Beancount",
+   "grammar": "beancount"
   },
   "berry": {
    "display": "Berry",
@@ -1402,7 +1430,7 @@
    "grammar": "codeql"
   },
   "coffee": {
-   "display": "CSON",
+   "display": "CoffeeScript",
    "grammar": "coffee"
   },
   "common-lisp": {
@@ -1422,7 +1450,7 @@
    "grammar": "crystal"
   },
   "csharp": {
-   "display": "Beef",
+   "display": "C#",
    "grammar": "csharp"
   },
   "css": {
@@ -1438,7 +1466,7 @@
    "grammar": "cue"
   },
   "cypher": {
-   "display": "CQL",
+   "display": "Cypher",
    "grammar": "cypher"
   },
   "d": {
@@ -1500,6 +1528,14 @@
   "fluent": {
    "display": "Fluent",
    "grammar": "fluent"
+  },
+  "fortran-fixed-form": {
+   "display": "Fortran (fixed form)",
+   "grammar": "fortran-fixed-form"
+  },
+  "fortran-free-form": {
+   "display": "Fortran (free form)",
+   "grammar": "fortran-free-form"
   },
   "fsharp": {
    "display": "F#",
@@ -1570,7 +1606,7 @@
    "grammar": "handlebars"
   },
   "haskell": {
-   "display": "C2hs Haskell",
+   "display": "Haskell",
    "grammar": "haskell"
   },
   "haxe": {
@@ -1580,6 +1616,10 @@
   "hcl": {
    "display": "HCL",
    "grammar": "hcl"
+  },
+  "hjson": {
+   "display": "Hjson",
+   "grammar": "hjson"
   },
   "hlsl": {
    "display": "HLSL",
@@ -1606,15 +1646,15 @@
    "grammar": "imba"
   },
   "ini": {
-   "display": "Altium Designer",
+   "display": "INI",
    "grammar": "ini"
   },
   "java": {
-   "display": "ChucK",
+   "display": "Java",
    "grammar": "java"
   },
   "javascript": {
-   "display": "Cycript",
+   "display": "JavaScript",
    "grammar": "javascript"
   },
   "jinja": {
@@ -1626,7 +1666,7 @@
    "grammar": "jison"
   },
   "json": {
-   "display": "Ecere Projects",
+   "display": "JSON",
    "grammar": "json"
   },
   "json5": {
@@ -1658,7 +1698,7 @@
    "grammar": "kdl"
   },
   "kotlin": {
-   "display": "Gradle Kotlin DSL",
+   "display": "Kotlin",
    "grammar": "kotlin"
   },
   "latex": {
@@ -1685,6 +1725,10 @@
    "display": "Log File",
    "grammar": "log"
   },
+  "logo": {
+   "display": "Logo",
+   "grammar": "logo"
+  },
   "lua": {
    "display": "Lua",
    "grammar": "lua"
@@ -1708,6 +1752,10 @@
   "mermaid": {
    "display": "Mermaid",
    "grammar": "mermaid"
+  },
+  "mipsasm": {
+   "display": "MIPS Assembly",
+   "grammar": "mipsasm"
   },
   "mojo": {
    "display": "Mojo",
@@ -1738,7 +1786,7 @@
    "grammar": "nsis"
   },
   "nushell": {
-   "display": "Nu",
+   "display": "Nushell",
    "grammar": "nushell"
   },
   "objective-c": {
@@ -1758,7 +1806,7 @@
    "grammar": "openscad"
   },
   "pascal": {
-   "display": "Component Pascal",
+   "display": "Pascal",
    "grammar": "pascal"
   },
   "perl": {
@@ -1776,6 +1824,10 @@
   "plsql": {
    "display": "PLSQL",
    "grammar": "plsql"
+  },
+  "po": {
+   "display": "Gettext Catalog",
+   "grammar": "po"
   },
   "polar": {
    "display": "Polar",
@@ -1818,12 +1870,16 @@
    "grammar": "purescript"
   },
   "python": {
-   "display": "Easybuild",
+   "display": "Python",
    "grammar": "python"
   },
   "qml": {
    "display": "QML",
    "grammar": "qml"
+  },
+  "qss": {
+   "display": "Qt Style Sheet",
+   "grammar": "qss"
   },
   "r": {
    "display": "R",
@@ -1849,6 +1905,10 @@
    "display": "Regular Expression",
    "grammar": "regexp"
   },
+  "riscv": {
+   "display": "RISC-V Assembly",
+   "grammar": "riscv"
+  },
   "ron": {
    "display": "RON",
    "grammar": "ron"
@@ -1857,8 +1917,12 @@
    "display": "ROS Interface",
    "grammar": "rosmsg"
   },
+  "rst": {
+   "display": "reStructuredText",
+   "grammar": "rst"
+  },
   "ruby": {
-   "display": "Mirah",
+   "display": "Ruby",
    "grammar": "ruby"
   },
   "rust": {
@@ -1890,7 +1954,7 @@
    "grammar": "shaderlab"
   },
   "shellscript": {
-   "display": "Alpine Abuild",
+   "display": "Shell Script",
    "grammar": "shellscript"
   },
   "shellsession": {
@@ -1914,7 +1978,7 @@
    "grammar": "soy"
   },
   "sql": {
-   "display": "PLpgSQL",
+   "display": "SQL",
    "grammar": "sql"
   },
   "ssh-config": {
@@ -1986,7 +2050,7 @@
    "grammar": "typst"
   },
   "v": {
-   "display": "Carbon",
+   "display": "V",
    "grammar": "v"
   },
   "vala": {
@@ -4222,7 +4286,7 @@
    "grammar": null
   },
   "xml": {
-   "display": "COLLADA",
+   "display": "XML",
    "grammar": "xml"
   },
   "xsl": {
@@ -4230,7 +4294,7 @@
    "grammar": "xsl"
   },
   "yaml": {
-   "display": "BuildStream",
+   "display": "YAML",
    "grammar": "yaml"
   },
   "zenscript": {
@@ -4256,37 +4320,37 @@
   {
    "bytes": 196,
    "family": "CODE_CORE",
-   "row": "*.escript;*.ex;*.exs;*.fnl;*.fr;*.fs;*.fsi;*.fsx;*.fx;*.fxh;*.gd;*.gdshader;*.gdshaderinc;*.gleam;*.go;*.groovy;*.grt;*.gs;*.gtpl;*.gvy;*.h;*.h++;*.hh;*.hic;*.hlean;*.hlsl;*.hlsli;*.hpp;*.hrl;*.hs"
-  },
-  {
-   "bytes": 193,
-   "family": "CODE_CORE",
-   "row": "*.hs-boot;*.hsc;*.hx;*.hxsl;*.hxx;*.hy;*.i;*.idc;*.ihlp;*.inl;*.ino;*.ipp;*.ixx;*.jav;*.java;*.jl;*.jsh;*.kojo;*.kt;*.ktm;*.kts;*.l;*.lean;*.linq;*.lisp;*.ll;*.lpr;*.lsp;*.m;*.ma;*.mata;*.matah"
+   "row": "*.escript;*.ex;*.exs;*.f;*.f03;*.f08;*.f18;*.f77;*.f90;*.f95;*.fnl;*.for;*.fr;*.fs;*.fsi;*.fsx;*.fx;*.fxh;*.gd;*.gdshader;*.gdshaderinc;*.gleam;*.go;*.groovy;*.grt;*.gs;*.gtpl;*.gvy;*.h;*.h++;*.hh"
   },
   {
    "bytes": 198,
    "family": "CODE_CORE",
-   "row": "*.mathematica;*.mbt;*.ml;*.ml4;*.mli;*.mll;*.mly;*.mojo;*.move;*.mt;*.nas;*.nasm;*.nb;*.nbp;*.nim;*.nimble;*.nimrod;*.nims;*.nqp;*.ny;*.odin;*.opencl;*.p6;*.p6l;*.p6m;*.pas;*.pascal;*.pc;*.pl6;*.plt"
-  },
-  {
-   "bytes": 196,
-   "family": "CODE_CORE",
-   "row": "*.pm6;*.podsl;*.pp;*.prolog;*.purs;*.ql;*.qll;*.raku;*.rakumod;*.re;*.rg;*.rs;*.s;*.sas;*.sbt;*.sc;*.scala;*.scm;*.sexp;*.shader;*.sld;*.sls;*.sol;*.sps;*.ss;*.sthlp;*.sv;*.svh;*.swift;*.tcc;*.tpp"
-  },
-  {
-   "bytes": 199,
-   "family": "CODE_CORE",
-   "row": "*.trigger;*.tsp;*.txx;*.uc;*.uno;*.upc;*.v;*.vala;*.vapi;*.veo;*.vh;*.vhd;*.vhdl;*.vhf;*.vhi;*.vho;*.vhs;*.vht;*.vhw;*.volt;*.vy;*.wast;*.wat;*.wgsl;*.wisp;*.wl;*.wls;*.wlt;*.x;*.xbm;*.xpm;*.xrl;*.xs"
+   "row": "*.hic;*.hlean;*.hlsl;*.hlsli;*.hpp;*.hrl;*.hs;*.hs-boot;*.hsc;*.hx;*.hxsl;*.hxx;*.hy;*.i;*.idc;*.ihlp;*.inl;*.ino;*.ipp;*.ixx;*.jav;*.java;*.jl;*.jsh;*.kojo;*.kt;*.ktm;*.kts;*.l;*.lean;*.linq;*.lisp"
   },
   {
    "bytes": 197,
    "family": "CODE_CORE",
-   "row": "*.yap;*.yrl;*.zig;*.app.src;*.cljs.hl;*.cs.pp;*.emacs.desktop;*.gradle.kts;*.h.in;*.nim.cfg;*.rs.in;*.zig.zon;.abbrev_defs;.emacs;.emacs.desktop;.gnus;.spacemacs;.viper;_emacs;abbrev_defs;cask;eask"
+   "row": "*.ll;*.lpr;*.lsp;*.m;*.ma;*.mata;*.matah;*.mathematica;*.mbt;*.mips;*.ml;*.ml4;*.mli;*.mll;*.mly;*.mojo;*.move;*.mt;*.nas;*.nasm;*.nb;*.nbp;*.nim;*.nimble;*.nimrod;*.nims;*.nqp;*.ny;*.odin;*.opencl"
   },
   {
-   "bytes": 121,
+   "bytes": 195,
    "family": "CODE_CORE",
-   "row": "emakefile;go.mod;go.sum;jenkinsfile;mix.lock;nim.cfg;project.ede;rebar.config;rebar.config.lock;rebar.lock;riemann.config"
+   "row": "*.p6;*.p6l;*.p6m;*.pas;*.pascal;*.pc;*.pl6;*.plt;*.pm6;*.podsl;*.pp;*.prolog;*.purs;*.ql;*.qll;*.raku;*.rakumod;*.re;*.rg;*.rs;*.s;*.sas;*.sbt;*.sc;*.scala;*.scm;*.sexp;*.shader;*.sld;*.sls;*.sol"
+  },
+  {
+   "bytes": 198,
+   "family": "CODE_CORE",
+   "row": "*.sps;*.ss;*.sthlp;*.sv;*.svh;*.swift;*.tcc;*.tpp;*.trigger;*.tsp;*.txx;*.uc;*.uno;*.upc;*.v;*.vala;*.vapi;*.veo;*.vh;*.vhd;*.vhdl;*.vhf;*.vhi;*.vho;*.vhs;*.vht;*.vhw;*.volt;*.vy;*.wast;*.wat;*.wgsl"
+  },
+  {
+   "bytes": 195,
+   "family": "CODE_CORE",
+   "row": "*.wisp;*.wl;*.wls;*.wlt;*.x;*.xbm;*.xpm;*.xrl;*.xs;*.yap;*.yrl;*.zig;*.app.src;*.cljs.hl;*.cs.pp;*.emacs.desktop;*.gradle.kts;*.h.in;*.nim.cfg;*.rs.in;*.zig.zon;.abbrev_defs;.emacs;.emacs.desktop"
+  },
+  {
+   "bytes": 174,
+   "family": "CODE_CORE",
+   "row": ".gnus;.spacemacs;.viper;_emacs;abbrev_defs;cask;eask;emakefile;go.mod;go.sum;jenkinsfile;mix.lock;nim.cfg;project.ede;rebar.config;rebar.config.lock;rebar.lock;riemann.config"
   },
   {
    "bytes": 194,
@@ -4294,14 +4358,14 @@
    "row": "*.ahk;*.ahkl;*.al;*.applescript;*.auk;*.awk;*.bash;*.bat;*.bats;*.builder;*.bzl;*.cgi;*.cmd;*.command;*.csh;*.druby;*.duby;*.eb;*.ebuild;*.eclass;*.eye;*.fcgi;*.fish;*.gawk;*.gemspec;*.god;*.gyp"
   },
   {
-   "bytes": 194,
+   "bytes": 195,
    "family": "SCRIPTS",
-   "row": "*.gypi;*.jbuilder;*.ksh;*.lmi;*.lua;*.luau;*.mawk;*.mirah;*.mspec;*.nawk;*.nse;*.nu;*.p8;*.pd_lua;*.perl;*.ph;*.pl;*.pluginspec;*.plx;*.pm;*.podspec;*.prawn;*.ps1;*.psd1;*.psgi;*.psm1;*.py;*.py3"
+   "row": "*.gypi;*.jbuilder;*.ksh;*.lmi;*.logo;*.lua;*.luau;*.mawk;*.mirah;*.mspec;*.nawk;*.nse;*.nu;*.p8;*.pd_lua;*.perl;*.ph;*.pl;*.pluginspec;*.plx;*.pm;*.podspec;*.prawn;*.ps1;*.psd1;*.psgi;*.psm1;*.py"
   },
   {
-   "bytes": 191,
+   "bytes": 197,
    "family": "SCRIPTS",
-   "row": "*.pyde;*.pyi;*.pyp;*.pyt;*.pyw;*.r;*.rabl;*.rake;*.rb;*.rbi;*.rbuild;*.rbw;*.rbx;*.rbxs;*.rd;*.rockspec;*.rpy;*.rsx;*.ru;*.ruby;*.sage;*.sagews;*.sbatch;*.scpt;*.sh;*.sh-session;*.slurm;*.smk"
+   "row": "*.py3;*.pyde;*.pyi;*.pyp;*.pyt;*.pyw;*.r;*.rabl;*.rake;*.rb;*.rbi;*.rbuild;*.rbw;*.rbx;*.rbxs;*.rd;*.rockspec;*.rpy;*.rsx;*.ru;*.ruby;*.sage;*.sagews;*.sbatch;*.scpt;*.sh;*.sh-session;*.slurm;*.smk"
   },
   {
    "bytes": 188,
@@ -4344,14 +4408,14 @@
    "row": "*.http;*.imba;*.j2;*.jade;*.jake;*.javascript;*.jinja;*.jinja2;*.js;*.jsb;*.jscad;*.jsfl;*.jslib;*.jsm;*.jsonld;*.jspre;*.jss;*.jsx;*.kit;*.less;*.liquid;*.marko;*.mdx;*.mjs;*.mtml;*.mts;*.njs;*.pac"
   },
   {
-   "bytes": 198,
+   "bytes": 197,
    "family": "WEB",
-   "row": "*.pcss;*.php;*.php3;*.php4;*.php5;*.phps;*.phpt;*.postcss;*.pug;*.qbs;*.qml;*.qs;*.razor;*.rhtml;*.sass;*.scss;*.sjs;*.soy;*.ssjs;*.styl;*.svelte;*.templ;*.ts;*.tsx;*.twig;*.vue;*.xht;*.xhtml;*.xsjs"
+   "row": "*.pcss;*.php;*.php3;*.php4;*.php5;*.phps;*.phpt;*.postcss;*.pug;*.qbs;*.qml;*.qs;*.qss;*.razor;*.rhtml;*.sass;*.scss;*.sjs;*.soy;*.ssjs;*.styl;*.svelte;*.templ;*.ts;*.tsx;*.twig;*.vue;*.xht;*.xhtml"
   },
   {
-   "bytes": 156,
+   "bytes": 163,
    "family": "WEB",
-   "row": "*.xsjslib;*.blade.php;*.erb.deface;*.haml.deface;*.html.hl;*.js.erb;.php;.php_cs;.php_cs.dist;installscript.qs;jakefile;phakefile;toolchain_installscript.qs"
+   "row": "*.xsjs;*.xsjslib;*.blade.php;*.erb.deface;*.haml.deface;*.html.hl;*.js.erb;.php;.php_cs;.php_cs.dist;installscript.qs;jakefile;phakefile;toolchain_installscript.qs"
   },
   {
    "bytes": 192,
@@ -4364,19 +4428,19 @@
    "row": "*.containerfile;*.cue;*.def;*.desktop;*.dlg;*.dockerfile;*.dockerignore;*.dof;*.editorconfig;*.env;*.epj;*.frm;*.ftl;*.ftlh;*.gdnlib;*.gdns;*.geojson;*.gitattributes;*.gitignore;*.gltf;*.har;*.hcl"
   },
   {
-   "bytes": 200,
+   "bytes": 198,
    "family": "DATA_CONFIG",
-   "row": "*.ice;*.inc;*.inf;*.ini;*.ipynb;*.isl;*.iss;*.json;*.json-tmlanguage;*.json5;*.jsonc;*.jsonl;*.jsonnet;*.kdl;*.ksy;*.lektorproject;*.libsonnet;*.lkml;*.lookml;*.mask;*.mat;*.maxhelp;*.maxpat;*.maxproj"
+   "row": "*.hjson;*.ice;*.inc;*.inf;*.ini;*.ipynb;*.isl;*.iss;*.json;*.json-tmlanguage;*.json5;*.jsonc;*.jsonl;*.jsonnet;*.kdl;*.ksy;*.lektorproject;*.libsonnet;*.lkml;*.lookml;*.mask;*.mat;*.maxhelp;*.maxpat"
   },
   {
-   "bytes": 199,
+   "bytes": 198,
    "family": "DATA_CONFIG",
-   "row": "*.mcmeta;*.meta;*.mir;*.mount;*.mxt;*.network;*.nix;*.nomad;*.npmignore;*.nsh;*.nsi;*.os;*.outjob;*.pcbdoc;*.polar;*.pq;*.prefab;*.prefs;*.prisma;*.prjpcb;*.pro;*.properties;*.proto;*.raml;*.rbs;*.rc"
+   "row": "*.maxproj;*.mcmeta;*.meta;*.mir;*.mount;*.mxt;*.network;*.nix;*.nomad;*.npmignore;*.nsh;*.nsi;*.os;*.outjob;*.pcbdoc;*.polar;*.pq;*.prefab;*.prefs;*.prisma;*.prjpcb;*.pro;*.properties;*.proto;*.raml"
   },
   {
-   "bytes": 182,
+   "bytes": 193,
    "family": "DATA_CONFIG",
-   "row": "*.rc2;*.reek;*.reg;*.rh;*.rh2;*.ron;*.rviz;*.sarif;*.schdoc;*.service;*.sln;*.slnf;*.slnlaunch;*.slt;*.smithy;*.socket;*.srv;*.sublime-build;*.sublime-color-scheme;*.sublime-commands"
+   "row": "*.rbs;*.rc;*.rc2;*.reek;*.reg;*.rh;*.rh2;*.ron;*.rviz;*.sarif;*.schdoc;*.service;*.sln;*.slnf;*.slnlaunch;*.slt;*.smithy;*.socket;*.srv;*.sublime-build;*.sublime-color-scheme;*.sublime-commands"
   },
   {
    "bytes": 196,
@@ -4454,14 +4518,14 @@
    "row": "settings.stylecop;web.config;web.debug.config;web.release.config"
   },
   {
-   "bytes": 191,
+   "bytes": 199,
    "family": "BUILD_CI",
-   "row": "*.cmake;*.feature;*.gn;*.gni;*.hxml;*.jison;*.just;*.mak;*.make;*.makefile;*.mk;*.mkfile;*.nf;*.regex;*.regexp;*.scad;*.story;*.wit;*.zs;*.cmake.in;.editorconfig;.gitattributes;.gitignore;.gn"
+   "row": "*.beancount;*.cmake;*.feature;*.gn;*.gni;*.hxml;*.jison;*.just;*.mak;*.make;*.makefile;*.mk;*.mkfile;*.nf;*.regex;*.regexp;*.scad;*.story;*.wit;*.zs;*.cmake.in;.editorconfig;.gitattributes;.gitignore"
   },
   {
-   "bytes": 194,
+   "bytes": 198,
    "family": "BUILD_CI",
-   "row": ".justfile;bsdmakefile;cmakelists.txt;gnumakefile;justfile;kbuild;makefile;makefile.am;makefile.boot;makefile.frag;makefile.in;makefile.inc;makefile.pc;makefile.sco;makefile.wat;mkfile;modulefile"
+   "row": ".gn;.justfile;bsdmakefile;cmakelists.txt;gnumakefile;justfile;kbuild;makefile;makefile.am;makefile.boot;makefile.frag;makefile.in;makefile.inc;makefile.pc;makefile.sco;makefile.wat;mkfile;modulefile"
   },
   {
    "bytes": 29,
@@ -4469,14 +4533,19 @@
    "row": "nextflow.config;project.godot"
   },
   {
-   "bytes": 198,
+   "bytes": 196,
    "family": "DOCS_ADJACENT",
-   "row": "*._coffee;*.aux;*.bbx;*.bdy;*.bib;*.bibtex;*.cbx;*.cjsx;*.coffee;*.cql;*.cson;*.cyp;*.cypher;*.db2;*.ddl;*.diff;*.em;*.emberscript;*.fnc;*.iced;*.ins;*.lbx;*.ltx;*.mermaid;*.mkii;*.mkiv;*.mkvi;*.mmd"
+   "row": "*._coffee;*.adoc;*.asciidoc;*.aux;*.bbx;*.bdy;*.bib;*.bibtex;*.cbx;*.cjsx;*.coffee;*.cql;*.cson;*.cyp;*.cypher;*.db2;*.ddl;*.diff;*.em;*.emberscript;*.fnc;*.iced;*.ins;*.lbx;*.ltx;*.mermaid;*.mkii"
   },
   {
-   "bytes": 161,
+   "bytes": 196,
    "family": "DOCS_ADJACENT",
-   "row": "*.mysql;*.patch;*.pck;*.pgsql;*.pkb;*.pks;*.plb;*.pls;*.plsql;*.prc;*.spc;*.sql;*.sty;*.surql;*.tab;*.tex;*.toc;*.tpb;*.tps;*.trg;*.typ;*.udf;*.viw;*.vw;cakefile"
+   "row": "*.mkiv;*.mkvi;*.mmd;*.mysql;*.patch;*.pck;*.pgsql;*.pkb;*.pks;*.plb;*.pls;*.plsql;*.po;*.pot;*.prc;*.rest;*.rst;*.spc;*.sql;*.sty;*.surql;*.tab;*.tex;*.toc;*.tpb;*.tps;*.trg;*.typ;*.udf;*.viw;*.vw"
+  },
+  {
+   "bytes": 8,
+   "family": "DOCS_ADJACENT",
+   "row": "cakefile"
   },
   {
    "bytes": 11,

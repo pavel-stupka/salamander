@@ -120,6 +120,7 @@ COMMENT,"Deutsche Version"
 2212,1,"Diese Datei enthält %d Byte-Sequenzen, die in der ausgewählten Kodierung ungültig sind; sie werden als Ersatzzeichen angezeigt."
 2213,1,"Klartext"
 2214,1,"Die Standarddateitypen des Code Viewers werden beim nächsten Start der Anwendung wiederhergestellt. Einträge, die du beibehalten hast, bleiben unverändert."
+2215,1,"Möchtest du die Datei im integrierten Viewer öffnen?"
 
 [STRINGTABLE 8]
 2300,1,"%d Zeilen"

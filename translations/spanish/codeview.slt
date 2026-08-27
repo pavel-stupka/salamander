@@ -120,6 +120,7 @@ COMMENT,"Versión en español"
 2212,1,"Este archivo contiene %d secuencias de bytes que no son válidas en la codificación seleccionada; se muestran como caracteres de sustitución."
 2213,1,"Texto sin formato"
 2214,1,"Los tipos de archivo predeterminados de Code Viewer se restablecerán la próxima vez que se inicie la aplicación. Las entradas que hayas conservado se mantendrán tal y como están."
+2215,1,"¿Quieres abrirlo en el visor integrado?"
 
 [STRINGTABLE 8]
 2300,1,"%d líneas"

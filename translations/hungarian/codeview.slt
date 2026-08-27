@@ -120,6 +120,7 @@ COMMENT,"Magyar változat"
 2212,1,"Ez a fájl%d-bájtos szekvenciát tartalmaz, amelyek a kiválasztott kódolásban érvénytelenek; ezek helyettesítő karakterként jelennek meg."
 2213,1,"Sima szöveg"
 2214,1,"A Code Viewer alapértelmezett fájltípusai az alkalmazás következő indításakor visszaállnak. A megőrzött bejegyzések változatlanok maradnak."
+2215,1,"Szeretné megnyitni a beépített nézőben?"
 
 [STRINGTABLE 8]
 2300,1,"%d sorok"

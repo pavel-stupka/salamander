@@ -86,6 +86,28 @@ public:
     virtual BOOL WINAPI CanViewFile(const char* name);
 };
 
+// A menu extension with NO menu items. It exists only so the viewer thread can
+// get one action executed on the MAIN thread: ViewFileInPluginViewer is
+// documented main-thread-only ("omezeni: hlavni thread", spl_gen.h:1912), and
+// PostMenuExtCommand is the one documented cross-thread route to it. The core
+// pulls this interface at load regardless of the FUNCTION_* flags
+// (src/plugins1.cpp:2289), so no menu ever shows.
+#define CV_MENUCMD_OPEN_BUILTIN 1
+
+// Hands 'nameUtf8' to the built-in viewer from any thread. Returns FALSE when
+// the request could not even be queued.
+BOOL CvRequestBuiltinViewer(const char* nameUtf8);
+
+class CPluginInterfaceForMenuExt : public CPluginInterfaceForMenuExtAbstract
+{
+public:
+    virtual DWORD WINAPI GetMenuItemState(int id, DWORD eventMask) { return 0; }
+    virtual BOOL WINAPI ExecuteMenuItem(CSalamanderForOperationsAbstract* salamander, HWND parent,
+                                        int id, DWORD eventMask);
+    virtual BOOL WINAPI HelpForMenuItem(HWND parent, int id) { return FALSE; }
+    virtual void WINAPI BuildMenu(HWND parent, CSalamanderBuildMenuAbstract* salamander) {}
+};
+
 class CPluginInterface : public CPluginInterfaceAbstract
 {
 public:
@@ -98,7 +120,7 @@ public:
     virtual void WINAPI ReleasePluginDataInterface(CPluginDataInterfaceAbstract* pluginData) {}
     virtual CPluginInterfaceForArchiverAbstract* WINAPI GetInterfaceForArchiver() { return NULL; }
     virtual CPluginInterfaceForViewerAbstract* WINAPI GetInterfaceForViewer();
-    virtual CPluginInterfaceForMenuExtAbstract* WINAPI GetInterfaceForMenuExt() { return NULL; }
+    virtual CPluginInterfaceForMenuExtAbstract* WINAPI GetInterfaceForMenuExt();
     virtual CPluginInterfaceForFSAbstract* WINAPI GetInterfaceForFS() { return NULL; }
     virtual CPluginInterfaceForThumbLoaderAbstract* WINAPI GetInterfaceForThumbLoader() { return NULL; }
     virtual void WINAPI Event(int event, DWORD param);

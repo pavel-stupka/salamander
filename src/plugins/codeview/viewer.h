@@ -38,6 +38,10 @@ public:
     BOOL FindWholeWord;
     int FindCurrent, FindTotal;
 
+    // Zoom is PER WINDOW; g_zoom is only the persisted starting value. Sharing
+    // one live value made a second window report the first window's percentage
+    // in its title and status bar over text it was not rendering at.
+    int Zoom;
     int CaretLine, CaretCol;
     BOOL PageReady;   // the page reported "ready": messages may be sent
     BOOL DarkMenus;   // IsDarkThemeActive() snapshot at creation (036 convention)
@@ -70,8 +74,10 @@ protected:
     void UpdateTitle();
     void UpdateStatus();
     void ShowContextMenu(int x, int y, BOOL hasSelection);
+    void CopyToClipboard(const std::wstring& text);
+    void CopyWholeDocument();
     void OnPageMessage(const std::wstring& json);
     void NextFile(int dir);
     void EngineFailed();
-    void ShowBlockedNotice(const char* text);
+    void ShowBlockedNotice(const char* text, const char* nameUtf8 = NULL);
 };

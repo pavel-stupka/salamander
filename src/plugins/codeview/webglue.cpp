@@ -134,16 +134,33 @@ void CvConfigureHost(TcWebHostConfig& cfg, const std::string** textProvider)
             return shift ? CM_ENCODING_PREV : CM_ENCODING_NEXT;
         if (ctrl)
         {
+            // Ctrl+C / Ctrl+A are what the Edit menu advertises, so they must
+            // do what the menu items do. Left to the engine they act on the
+            // DOM, which holds only the materialised rows -- Ctrl+A on a long
+            // file selected a fraction of it and Ctrl+C then copied that
+            // fraction, the very truncation FR-021 forbids.
+            if (vk == 'C')
+                return CM_EDIT_COPY;
+            if (vk == 'A')
+                return CM_EDIT_SELALL;
             if (vk == 'F')
                 return CM_EDIT_FIND;
             if (vk == 'G')
                 return CM_EDIT_GOTO;
             if (vk == 'W')
                 return CM_VIEW_WRAP;
-            // Ctrl+wheel / Ctrl+- / Ctrl++ are the engine's (IsZoomControlEnabled);
-            // Ctrl+0 is a browser accelerator the lockdown disables, so it is ours.
+            // Ctrl+wheel stays the engine's (IsZoomControlEnabled), but the
+            // zoom KEYS are browser accelerators and the shared lockdown turns
+            // those off (webhost.cpp put_AreBrowserAcceleratorKeysEnabled) --
+            // the same reason Ctrl+0 is claimed here. Focus lives inside the
+            // WebView, so the frame's accelerator table never sees them and
+            // Ctrl+Plus/Minus did nothing at all (spec FR-020).
             if (vk == '0' || vk == VK_NUMPAD0)
                 return CM_VIEW_ZOOMRESET;
+            if (vk == VK_OEM_PLUS || vk == VK_ADD)
+                return CM_VIEW_ZOOMIN;
+            if (vk == VK_OEM_MINUS || vk == VK_SUBTRACT)
+                return CM_VIEW_ZOOMOUT;
             if (vk == VK_NEXT)
                 return CM_NEXTFILE;
             if (vk == VK_PRIOR)
@@ -321,6 +338,16 @@ std::wstring CvMsgGotoLine(int line, int col)
     return L"{\"type\":\"gotoLine\",\"line\":" + CvNum(line) + L",\"col\":" + CvNum(col) + L"}";
 }
 
+std::wstring CvMsgCommand(const wchar_t* type)
+{
+    return L"{\"type\":" + CvJsonStr(type ? type : L"") + L"}";
+}
+
+std::wstring CvMsgNotice(const wchar_t* text)
+{
+    return L"{\"type\":\"notice\",\"text\":" + CvJsonStr(text ? text : L"") + L"}";
+}
+
 // ==========================================================================
 // messages: page -> host
 // ==========================================================================
@@ -385,11 +412,48 @@ static std::wstring CvJsonString(const std::wstring& j, const wchar_t* key, size
         return std::wstring();
     pos++;
     std::wstring out;
+    // Real unescaping. The lenient "skip the backslash, take the next
+    // character" version turned \n into the letter 'n', which was invisible
+    // while this only read short "type"/"reason" values but destroys every
+    // line break of a copied selection.
     while (pos < j.size() && j[pos] != L'"' && out.size() < maxLen)
     {
-        if (j[pos] == L'\\' && pos + 1 < j.size())
-            pos++;
-        out += j[pos++];
+        wchar_t c = j[pos++];
+        if (c != L'\\')
+        {
+            out += c;
+            continue;
+        }
+        if (pos >= j.size())
+            break;
+        wchar_t e = j[pos++];
+        switch (e)
+        {
+        case L'n': out += L'\n'; break;
+        case L'r': out += L'\r'; break;
+        case L't': out += L'\t'; break;
+        case L'b': out += L'\b'; break;
+        case L'f': out += L'\f'; break;
+        case L'u':
+        {
+            unsigned v = 0;
+            int k = 0;
+            for (; k < 4 && pos < j.size(); k++, pos++)
+            {
+                wchar_t h = j[pos];
+                unsigned d;
+                if (h >= L'0' && h <= L'9') d = (unsigned)(h - L'0');
+                else if (h >= L'a' && h <= L'f') d = (unsigned)(h - L'a') + 10;
+                else if (h >= L'A' && h <= L'F') d = (unsigned)(h - L'A') + 10;
+                else break;
+                v = v * 16 + d;
+            }
+            if (k == 4)
+                out += (wchar_t)v; // surrogates pass through as their own units
+            break;
+        }
+        default: out += e; break; // covers \" \\ \/
+        }
     }
     return out;
 }
@@ -422,6 +486,17 @@ BOOL CvParsePageMessage(const std::wstring& json, CvPageMessage& out)
     if (out.Type == L"rendered")
     {
         out.Lines = CvJsonInt(json, L"lines", 0, 0, 1000000000);
+        return TRUE;
+    }
+    if (out.Type == L"copyText")
+    {
+        // Bounded by the virtual list: only materialised rows can be selected
+        // with the mouse, so a selection cannot be document-sized. A whole-file
+        // copy travels as "all":true and is built by the host from its own
+        // intake instead of crossing this channel.
+        out.All = CvJsonBool(json, L"all");
+        if (!out.All)
+            out.Text = CvJsonString(json, L"text", 4 * 1024 * 1024);
         return TRUE;
     }
     if (out.Type == L"ready" || out.Type == L"highlightDone")

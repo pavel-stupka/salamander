@@ -28,7 +28,10 @@ let lang = null              // active language id, or null for plain
 let theme = null             // active theme id
 let maxLineLength = 20000
 let states = []              // states[i] = grammar state BEFORE line i*CHUNK
-let done = []                // done[chunkIndex] = true once emitted
+let done = []                // done[chunkIndex] = true once emitted AUTHORITATIVELY
+let cold = []                // cold[chunkIndex] = already answered without the
+                             // predecessor state; not authoritative, but it must
+                             // not be recomputed on every scroll frame either
 let sweepTimer = 0
 let generation = 0           // bumped on every reset; stale results are dropped
 
@@ -52,19 +55,49 @@ function cvReady() {
   return true
 }
 
+// Creation and every module load are memoized by their in-flight promise.
+// Without that, two control messages arriving before the first one resolves
+// (a cold start takes hundreds of ms, and F9/Ctrl+PgDn are one keystroke away)
+// each start their own createHighlighterCore and the LAST to resolve wins:
+// the survivor lacks the live lang/theme, cvReady() then answers false for
+// ever and the document stays plain with no error anywhere.
+let highlighterPromise = null
+const langLoads = new Map()
+const themeLoads = new Map()
+
 async function ensureHighlighter(nextLang, nextTheme) {
-  const needLang = nextLang && (!highlighter || !highlighter.getLoadedLanguages().includes(nextLang))
-  const needTheme = nextTheme && (!highlighter || !highlighter.getLoadedThemes().includes(nextTheme))
   if (!highlighter) {
-    highlighter = await createHighlighterCore({
-      langs: nextLang ? [import(`./shiki/langs/${nextLang}.mjs`)] : [],
-      themes: nextTheme ? [import(`./shiki/themes/${nextTheme}.mjs`)] : [],
-      engine: await engine(),
-    })
-    return
+    if (!highlighterPromise) {
+      highlighterPromise = (async () => await createHighlighterCore({
+        langs: nextLang ? [import(`./shiki/langs/${nextLang}.mjs`)] : [],
+        themes: nextTheme ? [import(`./shiki/themes/${nextTheme}.mjs`)] : [],
+        engine: await engine(),
+      }))()
+      // A failed creation must not poison every later attempt.
+      highlighterPromise.catch(() => { highlighterPromise = null })
+    }
+    highlighter = await highlighterPromise
+    // Fall through: a caller that joined someone else's creation still has to
+    // make sure ITS language and theme are loaded.
   }
-  if (needLang) await highlighter.loadLanguage(import(`./shiki/langs/${nextLang}.mjs`))
-  if (needTheme) await highlighter.loadTheme(import(`./shiki/themes/${nextTheme}.mjs`))
+  if (nextLang && !highlighter.getLoadedLanguages().includes(nextLang)) {
+    let p = langLoads.get(nextLang)
+    if (!p) {
+      p = highlighter.loadLanguage(import(`./shiki/langs/${nextLang}.mjs`))
+      langLoads.set(nextLang, p)
+      p.catch(() => {}).then(() => langLoads.delete(nextLang))
+    }
+    await p
+  }
+  if (nextTheme && !highlighter.getLoadedThemes().includes(nextTheme)) {
+    let p = themeLoads.get(nextTheme)
+    if (!p) {
+      p = highlighter.loadTheme(import(`./shiki/themes/${nextTheme}.mjs`))
+      themeLoads.set(nextTheme, p)
+      p.catch(() => {}).then(() => themeLoads.delete(nextTheme))
+    }
+    await p
+  }
 }
 
 // Shiki returns a token per style run with an absolute offset inside the chunk.
@@ -114,8 +147,12 @@ function tokenizeRange(from, to) {
       return null
     }
   }
-  // Record the state for the NEXT chunk boundary so the sweep can continue.
-  if (to % CHECKPOINT === 0) {
+  // Record the state for the NEXT chunk boundary so the sweep can continue --
+  // but ONLY when this chunk itself resumed a valid state. A checkpoint taken
+  // after a cold viewport tokenization (see onViewport) would hand the sweep a
+  // wrong state and its error would then propagate down the whole file.
+  const resumed = from === 0 || state !== undefined;
+  if (resumed && to % CHECKPOINT === 0) {
     try {
       const s = highlighter.getLastGrammarState(slice.join('\n'), o)
       states[chunkIndex + 1] = s
@@ -137,7 +174,12 @@ function sweepStep() {
   for (let c = 0; c * CHUNK < lines.length; c++) {
     if (done[c]) continue
     const from = c * CHUNK
-    if (from > 0 && states[c] === undefined) break   // must wait for the predecessor
+    // Wait for the predecessor -- but only while it is still pending. If it
+    // has been emitted and still left no checkpoint (getLastGrammarState can
+    // throw), waiting is forever: the sweep would stall here and report
+    // sweepDone with the rest of the file permanently plain.
+    if (from > 0 && states[c] === undefined && !done[c - 1])
+      break
     const packed = tokenizeRange(from, Math.min(from + CHUNK, lines.length))
     done[c] = true
     emit(packed, gen)
@@ -160,13 +202,24 @@ async function onViewport(from, to, gen) {
   for (let c = firstChunk; c <= lastChunk; c++) {
     if (done[c]) continue
     const start = c * CHUNK
-    if (start > 0 && states[c] === undefined) {
-      // Not swept this far yet: let the sequential sweep catch up. The viewport
-      // stays plain until it arrives -- correct colours beat fast wrong ones.
-      break
-    }
+    const isCold = start > 0 && states[c] === undefined
+    // A chunk the sweep has not reached yet is tokenized WITHOUT the previous
+    // chunk's grammar state: colours are right except for constructs that
+    // began above (a long block comment, a here-doc). It is emitted but NOT
+    // marked done, so the sequential sweep re-emits it authoritatively later.
+    // Before this, the visible window simply stayed plain until the sweep had
+    // walked the whole file to it -- the opposite of the viewport-first
+    // promise in this module's header and research D6.
+    // Answering it ONCE is the point: without the cold[] mark, every scroll
+    // event covering the same chunk re-ran a 128-line tokenization that the
+    // page already has.
+    if (isCold && cold[c])
+      continue
     const packed = tokenizeRange(start, Math.min(start + CHUNK, lines.length))
-    done[c] = true
+    if (isCold)
+      cold[c] = true
+    else
+      done[c] = true
     emit(packed, gen)
   }
   scheduleSweep()
@@ -188,6 +241,7 @@ onmessage = async (e) => {
       maxLineLength = m.maxLineLength || 20000
       states = []
       done = []
+      cold = []
       if (sweepTimer) { clearTimeout(sweepTimer); sweepTimer = 0 }
       if (!lang) { postMessage({ type: 'sweepDone', gen }); return }
       await ensureHighlighter(lang, theme)
@@ -203,6 +257,7 @@ onmessage = async (e) => {
       theme = m.theme
       states = []
       done = []
+      cold = []
       await ensureHighlighter(lang, theme)
       if (gen !== generation) return
       postMessage({ type: 'ready', gen, theme: themeInfo() })
@@ -213,6 +268,7 @@ onmessage = async (e) => {
       lang = m.lang || null
       states = []
       done = []
+      cold = []
       if (!lang) { postMessage({ type: 'sweepDone', gen }); return }
       await ensureHighlighter(lang, theme)
       if (gen !== generation) return

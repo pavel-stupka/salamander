@@ -113,9 +113,29 @@ body.wrap .tx { white-space: pre-wrap; overflow-wrap: anywhere; }
 body.wrap #sizer { width: auto; }
 
 /* Whitespace rendering is paint-only: the DOM text keeps the real spaces and
-   tabs, so Copy is unaffected (spec FR-021). */
-body.ws .tx { position: relative; }
-body.ws .sp::before { content: "\00B7"; position: absolute; color: var(--gutter-fg); opacity: .45; }
+   tabs, so Copy is unaffected (spec FR-021). The page wraps runs of spaces in
+   .sp and runs of tabs in .tb; nothing is inserted into the text.
+   One dot per character CELL comes from a repeating gradient -- the font is
+   monospace, so a cell is exactly 1ch wide and the dots line up with the
+   spaces without one element per character. */
+body.ws .sp {
+  background-image: radial-gradient(circle at 50% 50%,
+                    var(--gutter-fg) 0 0.055em, transparent 0.056em);
+  background-size: 1ch 100%;
+  background-repeat: repeat-x;
+}
+/* A tab spans to the next tab stop, so a per-cell pattern would not line up:
+   its run is marked once, at the start. */
+body.ws .tb { position: relative; }
+body.ws .tb::before {
+  content: "\2192";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--gutter-fg);
+  opacity: .55;
+  pointer-events: none;
+}
 
 ::selection { background: var(--sel-bg); }
 

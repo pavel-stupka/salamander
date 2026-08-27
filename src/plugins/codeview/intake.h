@@ -44,6 +44,7 @@ struct CvIntake
     int Language = -1;      // index into CvLanguages, or -1 = unidentified
     BOOL LanguageForced = FALSE;
     int InvalidBytes = 0;   // sequences replaced with U+FFFD (spec FR-024)
+    BOOL IoError = FALSE;   // could not be opened/read (vs. "declined: not text")
     __int64 FileSize = 0;
     int LineCount = 0;
     int LongestLine = 0;

@@ -78,6 +78,7 @@ STRINGTABLE
  IDS_ENCODING_INVALID,    "This file contains %d byte sequences that are not valid in the selected encoding; they are shown as replacement characters."
  IDS_LANG_PLAIN,          "Plain Text"
  IDS_RESTORE_TYPES_DONE,  "The default file types of Code Viewer will be restored the next time the application starts. Entries you kept are left as they are."
+ IDS_OPEN_BUILTIN_ASK,    "Do you want to open it in the built-in viewer?"
 
  IDS_STATUS_LINES,        "%d lines"
  IDS_STATUS_LNCOL,        "Ln %d, Col %d"

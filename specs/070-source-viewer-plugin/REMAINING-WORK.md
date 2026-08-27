@@ -25,6 +25,21 @@ passes all 21 data checks. 42 of 59 tasks are code-complete.
 > chars). The §1 risk-table rows on line-height measurement and the STATIC
 > status bar are thereby resolved.
 
+> **Update 2026-08-27 (third round — systematic review):** the plugin was
+> reviewed end to end by twelve independent agents and the fixes accepted by
+> five more. **37 unique defects confirmed, 35 fixed**, including three
+> advertised features that did not work at all (Copy/Select All, Word Wrap,
+> Show Whitespace), a use-after-free when the window is closed during a cold
+> engine start, and the language label being a *different* language's name for
+> most common file types. Two new headless harnesses run everything without a
+> GUI: `src\plugins\codeview\test\run_tests.cmd`. Full record:
+> **`stabilization-review.md`**. §1 below is therefore obsolete — the plugin
+> has been run and reviewed — but its risk table is worth keeping as the record
+> of what was predicted: the line-height and STATIC-status-bar rows both turned
+> out to be real defects. **Two things it did NOT cover remain open: §2 (mdview
+> on the shared host) and the code-table gap (FR-024), now recorded as F16 in
+> the review.**
+
 This file is the honest handoff: what is **not** done, and why. Nothing here is
 a discovered blocker — every item is either manual verification that needs a
 GUI session, a step that needs credentials, or a deliberate deferral.

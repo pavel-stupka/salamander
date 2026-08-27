@@ -120,6 +120,7 @@ COMMENT,"Versiunea romana"
 2212,1,"Acest fișier conține secvențe de octeți de tip „%d” care nu sunt valide în codificarea selectată; acestea sunt afișate ca caractere de înlocuire."
 2213,1,"Text simplu"
 2214,1,"Tipurile de fișiere implicite ale Code Viewer vor fi restabilite la următoarea pornire a aplicației. Intrările pe care le-ați păstrat rămân neschimbate."
+2215,1,"Doriți să îl deschideți în vizualizatorul încorporat?"
 
 [STRINGTABLE 8]
 2300,1,"%d linii"

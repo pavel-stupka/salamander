@@ -120,6 +120,7 @@ COMMENT,"Nederlandse versie"
 2212,1,"Dit bestand bevat %d byte-reeksen die niet geldig zijn in de geselecteerde codering; ze worden weergegeven als vervangende tekens."
 2213,1,"Plain Text"
 2214,1,"De standaardbestandstypen van Code Viewer worden hersteld wanneer je de app de volgende keer start. De instellingen die je hebt behouden, blijven zoals ze zijn."
+2215,1,"Wil je het openen in de ingebouwde viewer?"
 
 [STRINGTABLE 8]
 2300,1,"%d regels"

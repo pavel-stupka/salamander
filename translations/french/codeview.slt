@@ -120,6 +120,7 @@ COMMENT,"Version française"
 2212,1,"Ce fichier contient %d séquences d’octets non valides dans l’encodage sélectionné ; elles sont affichées sous forme de caractères de remplacement."
 2213,1,"Texte brut"
 2214,1,"Les types de fichiers par défaut de Code Viewer seront restaurés au prochain démarrage de l'application. Les entrées que tu as conservées resteront telles quelles."
+2215,1,"Tu veux l'ouvrir dans la visionneuse intégrée ?"
 
 [STRINGTABLE 8]
 2300,1,"%d lignes"

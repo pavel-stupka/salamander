@@ -120,6 +120,7 @@ COMMENT,"Česká verze"
 2212,1,"Tento soubor obsahuje %d sekvencí bajtů, které nejsou platné ve vybraném kódování; jsou zobrazeny jako náhradní znaky."
 2213,1,"Prostý text"
 2214,1,"Při příštím spuštění aplikace budou obnoveny výchozí typy souborů prohlížeče kódu. Položky, které jste zachovali, zůstanou beze změny."
+2215,1,"Chcete soubor otevřít ve vestavěném prohlížeči?"
 
 [STRINGTABLE 8]
 2300,1,"%d řádky"

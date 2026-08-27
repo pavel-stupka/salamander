@@ -295,6 +295,40 @@ Ctrl+PgDn then Ctrl+PgUp must return to the original file; at either end the
 window stays on the boundary file and later steps in the opposite direction
 still work.
 
+---
+
+# Third round — the systematic sweep (session 2026-08-27)
+
+Defect 9 was the turning point: it was not a subtle race but a **misread API
+parameter** that anyone could have caught by reading the header next to the
+call. Rather than wait for the next one to be reported, the whole plugin was
+reviewed by twelve independent agents and then the fixes were reviewed by five
+more.
+
+**37 unique defects confirmed, 35 fixed** — including three shipped features
+that did not work at all (Copy/Select All, Word Wrap, Show Whitespace), a
+use-after-free on closing the window during a cold engine start, and the
+language name shown in the title being the name of a *different* language for
+most common file types (`.py` said "Easybuild").
+
+The full record — method, every finding with its verdict, what was fixed, the
+two findings fixed differently from their own suggestion, the new tests and
+the proof that they are not vacuous, what is deferred and why — is in
+**`stabilization-review.md`**. It is the document to read; this file stays the
+chronological log.
+
+Two process notes worth keeping:
+
+- **The verifiers refuted nothing** (38 of 38 findings CONFIRMED). A 0 %
+  refutation rate means they were not an independent gate, so every finding
+  was re-checked against the code before it was fixed. Two were then handled
+  differently from their own suggestion (`stabilization-review.md` §4).
+- **A vacuous test is worse than no test.** The data harness's SC-001 coverage
+  rule had been passing on a generator counter that was 63 languages too high;
+  it could not have failed on the regression it exists to catch. The counter is
+  now derived from the shipped data, and the gap it revealed was closed rather
+  than legislated away.
+
 ## Status (second round)
 
 - [x] Shared host: pending-bounds fix (src/common/webhost/webhost.cpp) — mdview path unchanged

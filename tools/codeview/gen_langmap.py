@@ -72,7 +72,8 @@ FAMILY_OF_LANG = {
                   'cobol', 'fortran-free-form', 'fortran-fixed-form', 'common-lisp', 'emacs-lisp',
                   'scheme', 'racket', 'fennel', 'hy', 'prolog', 'smalltalk', 'apl', 'abap', 'sas',
                   'stata', 'matlab', 'wolfram', 'apex', 'ballerina', 'chapel', 'clarity', 'codeql',
-                  'lean', 'coq', 'asm', 'llvm', 'wasm', 'cuda', 'verilog', 'system-verilog', 'vhdl',
+                  'lean', 'coq', 'asm', 'mipsasm', 'llvm', 'wasm', 'cuda', 'verilog',
+                  'system-verilog', 'vhdl',
                   'glsl', 'hlsl', 'wgsl', 'shaderlab', 'gdshader', 'gdscript', 'haxe', 'vala',
                   'genie', 'riscv', 'smali', 'erlang', 'elixir', 'julia', 'raku', 'typespec'},
     'SCRIPTS': {'python', 'cython', 'ruby', 'perl', 'lua', 'luau', 'tcl', 'r', 'shellscript', 'fish',
@@ -144,23 +145,52 @@ def main() -> int:
     ext_map = {}        # ".ext" -> lang id
     name_map = {}       # exact lower-case file name -> lang id
     multidot = {}       # ".d.ts" -> lang id
+    ext_claim = {}      # ".ext" -> (rank, lang id) while resolving conflicts
+    multidot_claim = {}
     shebang = {}        # interpreter -> lang id
     bridged = 0
 
     def want(l) -> bool:
         return l.get('type') in ('programming', 'markup', 'data')
 
-    for lname, l in sorted(ling.items()):
+    def bridge(lname, l):
+        """The grammar this linguist language maps to, or None."""
+        if l.get('tmScope') and l['tmScope'] in by_scope:
+            return by_scope[l['tmScope']]
+        for cand in [lname.lower()] + [a.lower() for a in (l.get('aliases') or [])]:
+            if cand in by_name:
+                return by_name[cand]
+        return None
+
+    # MANY linguist languages collapse onto ONE grammar (Python and Easybuild
+    # both tokenize as `python`; Hack and PHP both as their own grammars but
+    # both claim *.php). Everything below is setdefault-based, so whichever
+    # entry is seen FIRST wins the display name and the extension. Seen in
+    # plain alphabetical order that is the wrong one: the viewer showed
+    # ".py [Easybuild]", ".js [Cycript]", ".cs [Beef]" and tokenized *.php with
+    # the Hack grammar. The CANONICAL language of a grammar -- the one whose own
+    # name or alias IS the grammar name -- is therefore visited first; ties
+    # inside each rank keep the alphabetical order, so the output stays
+    # byte-reproducible.
+    def norm_name(s):
+        # Grammar ids are hyphenless-or-hyphenated ascii, linguist names are
+        # prose ("Common Lisp" vs the grammar `common-lisp`), so the comparison
+        # has to ignore separators -- without this, Common Lisp did not count as
+        # canonical for its own grammar and lost .cl to OpenCL.
+        return ''.join(c for c in s.lower() if c.isalnum())
+
+    def canonical_first(item):
+        lname, l = item
+        g = bridge(lname, l)
+        if not g:
+            return (2, lname)
+        names = [norm_name(lname)] + [norm_name(a) for a in (l.get('aliases') or [])]
+        return (0 if norm_name(g) in names else 1, lname)
+
+    for lname, l in sorted(ling.items(), key=canonical_first):
         if not want(l):
             continue
-        gname = None
-        if l.get('tmScope') and l['tmScope'] in by_scope:
-            gname = by_scope[l['tmScope']]
-        if not gname:
-            for cand in [lname.lower()] + [a.lower() for a in (l.get('aliases') or [])]:
-                if cand in by_name:
-                    gname = by_name[cand]
-                    break
+        gname = bridge(lname, l)
         lang_id = gname or ('x-' + lname.lower().replace(' ', '-').replace('/', '-')
                             .replace('+', 'p').replace('#', 'sharp').replace("'", ''))
         if gname:
@@ -174,18 +204,42 @@ def main() -> int:
         # Windows/dev formats that are claimed deliberately.
         if not gname:
             continue
-        for e in (l.get('extensions') or []):
+        # An extension goes to the language it is PRIMARY for. Canonical-first
+        # ordering alone cannot settle this: Hack and PHP each own their own
+        # grammar, both list ".php", and alphabetically Hack came first -- so
+        # every .php file was tokenized with the Hack grammar and labelled
+        # "Hack". Linguist lists a language's own extensions in order, so
+        # index 0 is its primary one; claims are ranked and the best wins.
+        for e_idx, e in enumerate(l.get('extensions') or []):
             e = e.lower()
             if e in NEVER_CLAIM:
                 continue
-            if e.count('.') > 1:
-                multidot.setdefault(e, lang_id)
-            else:
-                ext_map.setdefault(e, lang_id)
+            # CANONICAL-ness ranks ABOVE primary-ness. The other order looked
+            # equally sensible and quietly moved two extensions to a marginal
+            # language that happened to list them first: .cp (C++ -> Component
+            # Pascal) and .cl (Common Lisp -> OpenCL, which bridges to the C
+            # grammar). PHP still wins .php on canonical rank alone, because
+            # Hack's canonical extension is .hack.
+            # Two more extensions this contest would move -- .pp (to puppet)
+            # and .sch (to scheme) -- are held where they were by explicit
+            # pins in overlay-editor.json, NOT by this ordering; .sql is
+            # settled later by ambiguity.json. Change the ranking and those
+            # four are what to re-check.
+            claim = (canonical_first((lname, l))[0], 0 if e_idx == 0 else 1, lname)
+            best = (multidot_claim if e.count('.') > 1 else ext_claim)
+            if e not in best or claim < best[e][0]:
+                best[e] = (claim, lang_id)
         for f in (l.get('filenames') or []):
             name_map.setdefault(f.lower(), lang_id)
         for i in (l.get('interpreters') or []):
             shebang.setdefault(i.lower(), lang_id)
+
+    # Materialise the resolved extension claims before the overlays run: the
+    # overlays are authored decisions and must still be able to override them.
+    for e, (_rank, lid) in ext_claim.items():
+        ext_map.setdefault(e, lid)
+    for e, (_rank, lid) in multidot_claim.items():
+        multidot.setdefault(e, lid)
 
     # ---- overlays --------------------------------------------------------
     for src in (overlay_editor, overlay_win):
@@ -370,7 +424,14 @@ def main() -> int:
 
     manifest = {
         'generated_by': 'tools/codeview/gen_langmap.py',
-        'counts': {'languages': len(lang_ids), 'with_grammar': bridged,
+        # with_grammar counts the language ROWS a grammar actually backs. The
+        # old value was `bridged`, the number of linguist languages that found
+        # a grammar -- and since many of them collapse onto one row it reported
+        # 256 where the shipped table has far fewer, which made the harness's
+        # SC-001 coverage gate unable to fail.
+        'counts': {'languages': len(lang_ids),
+                   'with_grammar': sum(1 for i in lang_ids if langs[i].get('grammar')),
+                   'linguist_bridged': bridged,
                    'extensions': len(ext_map), 'compound_suffixes': len(multidot),
                    'exact_names': len(name_map), 'interpreters': len(shebang),
                    'mask_rows': len(mask_rows),

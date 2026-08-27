@@ -11,6 +11,15 @@
 // plugin interface objects
 CPluginInterface PluginInterface;
 CPluginInterfaceForViewer InterfaceForViewer;
+CPluginInterfaceForMenuExt InterfaceForMenuExt;
+
+// Files a viewer thread asked to hand to the built-in viewer (spec FR-029).
+// Written on viewer threads, drained on the main thread inside ExecuteMenuItem,
+// so it is guarded -- and it is a QUEUE, because each window has its own thread
+// and two of them can answer the notice before the main thread is idle once.
+static CRITICAL_SECTION CvPendingCS;
+static BOOL CvPendingCSReady = FALSE;
+static std::vector<std::string> CvPendingBuiltin;
 
 const char* PluginNameEN = "CodeView";
 
@@ -34,12 +43,65 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
         DLLInstance = hinstDLL;
+        InitializeCriticalSection(&CvPendingCS);
+        CvPendingCSReady = TRUE;
         INITCOMMONCONTROLSEX ic;
         ic.dwSize = sizeof(ic);
         ic.dwICC = ICC_BAR_CLASSES; // no ICC_STANDARD_CLASSES (constitution VI)
         InitCommonControlsEx(&ic);
     }
+    else if (fdwReason == DLL_PROCESS_DETACH && CvPendingCSReady)
+    {
+        CvPendingCSReady = FALSE;
+        DeleteCriticalSection(&CvPendingCS);
+    }
     return TRUE;
+}
+
+BOOL CvRequestBuiltinViewer(const char* nameUtf8)
+{
+    if (!CvPendingCSReady || nameUtf8 == NULL || *nameUtf8 == 0)
+        return FALSE;
+    EnterCriticalSection(&CvPendingCS);
+    CvPendingBuiltin.push_back(nameUtf8);
+    LeaveCriticalSection(&CvPendingCS);
+    // waitForSalIdle=TRUE: runs once the main thread is idle, which is exactly
+    // what ViewFileInPluginViewer's "not from a busy main thread" needs.
+    SalamanderGeneral->PostMenuExtCommand(CV_MENUCMD_OPEN_BUILTIN, TRUE);
+    return TRUE;
+}
+
+BOOL WINAPI CPluginInterfaceForMenuExt::ExecuteMenuItem(CSalamanderForOperationsAbstract* salamander,
+                                                        HWND parent, int id, DWORD eventMask)
+{
+    if (id != CV_MENUCMD_OPEN_BUILTIN)
+        return FALSE;
+    std::string name;
+    if (CvPendingCSReady)
+    {
+        EnterCriticalSection(&CvPendingCS);
+        if (!CvPendingBuiltin.empty())
+        {
+            name.swap(CvPendingBuiltin.front()); // one per posted command
+            CvPendingBuiltin.erase(CvPendingBuiltin.begin());
+        }
+        LeaveCriticalSection(&CvPendingCS);
+    }
+    if (name.empty())
+        return FALSE;
+    // Main thread here (the core calls ExecuteMenuItem there), so the
+    // main-thread-only viewer API may finally be used.
+    CSalamanderPluginInternalViewerData data;
+    ZeroMemory(&data, sizeof(data));
+    data.Size = sizeof(data);
+    data.FileName = name.c_str();
+    data.Mode = 0;
+    data.Caption = NULL;
+    data.WholeCaption = FALSE;
+    int err = 0;
+    if (!SalamanderGeneral->ViewFileInPluginViewer(NULL, &data, FALSE, NULL, NULL, err))
+        TRACE_E("codeview: built-in viewer could not be opened, error " << err);
+    return FALSE;
 }
 
 char* LoadStr(int resID)
@@ -168,4 +230,9 @@ void WINAPI CPluginInterface::Event(int event, DWORD param)
 CPluginInterfaceForViewerAbstract* WINAPI CPluginInterface::GetInterfaceForViewer()
 {
     return &InterfaceForViewer;
+}
+
+CPluginInterfaceForMenuExtAbstract* WINAPI CPluginInterface::GetInterfaceForMenuExt()
+{
+    return &InterfaceForMenuExt; // no menu items; see codeview.h
 }

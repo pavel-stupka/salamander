@@ -28,6 +28,53 @@
   "x-editorconfig": {
    "display": "EditorConfig",
    "grammar": "ini"
+  },
+  "shellscript": {
+   "display": "Shell Script"
+  },
+  "riscv": {
+   "display": "RISC-V Assembly",
+   "grammar": "riscv"
+  },
+  "fortran-free-form": {
+   "display": "Fortran (free form)",
+   "grammar": "fortran-free-form"
+  },
+  "fortran-fixed-form": {
+   "display": "Fortran (fixed form)",
+   "grammar": "fortran-fixed-form"
+  },
+  "hjson": {
+   "display": "Hjson",
+   "grammar": "hjson"
+  },
+  "rst": {
+   "display": "reStructuredText",
+   "grammar": "rst"
+  },
+  "asciidoc": {
+   "display": "AsciiDoc",
+   "grammar": "asciidoc"
+  },
+  "po": {
+   "display": "Gettext Catalog",
+   "grammar": "po"
+  },
+  "qss": {
+   "display": "Qt Style Sheet",
+   "grammar": "qss"
+  },
+  "beancount": {
+   "display": "Beancount",
+   "grammar": "beancount"
+  },
+  "mipsasm": {
+   "display": "MIPS Assembly",
+   "grammar": "mipsasm"
+  },
+  "logo": {
+   "display": "Logo",
+   "grammar": "logo"
   }
  },
  "extensions": {
@@ -47,7 +94,28 @@
   ".gitignore": "x-gitignore",
   ".gitattributes": "x-gitignore",
   ".dockerignore": "x-gitignore",
-  ".npmignore": "x-gitignore"
+  ".npmignore": "x-gitignore",
+  ".f90": "fortran-free-form",
+  ".f95": "fortran-free-form",
+  ".f03": "fortran-free-form",
+  ".f08": "fortran-free-form",
+  ".f18": "fortran-free-form",
+  ".f": "fortran-fixed-form",
+  ".for": "fortran-fixed-form",
+  ".f77": "fortran-fixed-form",
+  ".hjson": "hjson",
+  ".rst": "rst",
+  ".rest": "rst",
+  ".adoc": "asciidoc",
+  ".asciidoc": "asciidoc",
+  ".po": "po",
+  ".pot": "po",
+  ".qss": "qss",
+  ".beancount": "beancount",
+  ".mips": "mipsasm",
+  ".logo": "logo",
+  ".pp": "pascal",
+  ".sch": "xml"
  },
  "filenames": {
   "dockerfile": "docker",
@@ -101,5 +169,6 @@
   ".csv",
   ".tsv",
   ".dbf"
- ]
+ ],
+ "_comment_pins": "Two entries below OVERRIDE the generator's canonical/primary contest rather than correcting it: '.pp' would resolve to puppet (Puppet's primary extension) and '.sch' to scheme. A file manager on Windows meets Free Pascal units and Eagle/KiCad schematics (which are XML) far more often than Puppet manifests and Scheme sources, and both were what the plugin shipped from the start. Removing these pins silently changes both file types."
 }

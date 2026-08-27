@@ -24,6 +24,8 @@
 
 #include "webhost.h"
 
+#include <memory>
+
 using namespace Microsoft::WRL;
 
 // ==========================================================================
@@ -80,6 +82,14 @@ struct CTcWebHostImpl
     std::wstring baseUrl;      // https://<host>/<document>
     std::wstring originPrefix; // https://<host>/
     int pendingZoom = 100;
+    // Liveness token for the ASYNC creation callbacks. Environment and
+    // controller creation complete on this thread's message pump, which keeps
+    // dispatching posted messages after DestroyWindow and before the loop
+    // exits -- so a window closed during a cold engine start can free this
+    // impl while a completion is still queued. The callbacks capture a COPY of
+    // this shared_ptr (it therefore outlives the impl) and return early once
+    // Destroy() clears the flag.
+    std::shared_ptr<bool> alive = std::make_shared<bool>(true);
     // Last size requested via Resize(). The controller is created
     // asynchronously, so a plugin whose surface is NOT the whole client area
     // (codeview: client minus status bar) has always called Resize() before
@@ -486,11 +496,15 @@ bool CTcWebHost::Create(HWND parent, const std::wstring& userDataFolder,
     auto options = TcWebBuildEnvOptions();
 
     CTcWebHostImpl* impl = p;
+    p->alive = std::make_shared<bool>(true);
+    std::shared_ptr<bool> alive = p->alive; // copied into the callbacks, outlives impl
     HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(
         NULL, userDataFolder.empty() ? NULL : userDataFolder.c_str(), options.Get(),
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-            [impl](HRESULT r, ICoreWebView2Environment* env) -> HRESULT
+            [impl, alive](HRESULT r, ICoreWebView2Environment* env) -> HRESULT
             {
+                if (!*alive)
+                    return S_OK; // the host was destroyed while we were starting
                 if (FAILED(r) || !env)
                 {
                     if (impl->cb.OnInitFailed)
@@ -501,8 +515,14 @@ bool CTcWebHost::Create(HWND parent, const std::wstring& userDataFolder,
                 HRESULT r2 = env->CreateCoreWebView2Controller(
                     impl->parent,
                     Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
-                        [impl](HRESULT rc, ICoreWebView2Controller* ctl) -> HRESULT
+                        [impl, alive](HRESULT rc, ICoreWebView2Controller* ctl) -> HRESULT
                         {
+                            if (!*alive)
+                            {
+                                if (ctl != NULL)
+                                    ctl->Close(); // nobody left to own it
+                                return S_OK;
+                            }
                             if (FAILED(rc) || !ctl)
                             {
                                 if (impl->cb.OnInitFailed)
@@ -587,6 +607,8 @@ void CTcWebHost::Focus()
 
 void CTcWebHost::Destroy()
 {
+    if (p->alive)
+        *p->alive = false; // in-flight creation completions become no-ops
     if (p->controller)
     {
         p->controller->Close();

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Pavel Stupka
+﻿// SPDX-FileCopyrightText: 2026 Pavel Stupka
 // SPDX-License-Identifier: GPL-2.0-or-later
 //
 // viewer.cpp - the codeview viewer window: thread/lock plumbing, the shared
@@ -43,6 +43,8 @@ BOOL InitViewer()
     // routed by the host's accelerator callback (webglue.cpp) to the same
     // commands, so both paths agree (contracts/host-page-interface.md S5).
     ACCEL acc[] = {
+        {FVIRTKEY | FCONTROL, 'C', CM_EDIT_COPY},
+        {FVIRTKEY | FCONTROL, 'A', CM_EDIT_SELALL},
         {FVIRTKEY | FCONTROL, 'F', CM_EDIT_FIND},
         {FVIRTKEY, VK_F3, CM_EDIT_FINDNEXT},
         {FVIRTKEY | FSHIFT, VK_F3, CM_EDIT_FINDPREV},
@@ -159,7 +161,13 @@ unsigned CViewerThread::Body()
                 *Success = TRUE;
             }
             else if (ReturnLock && *Lock != NULL)
+            {
                 HANDLES(CloseHandle(*Lock));
+                // ...and forget it here too: the destructor below signals
+                // CViewerWindow::Lock unconditionally, which on this path was
+                // a SetEvent on a closed (possibly recycled) handle.
+                window->Lock = NULL;
+            }
         }
     }
 
@@ -218,13 +226,20 @@ BOOL WINAPI CPluginInterfaceForViewer::ViewFile(const char* name, int left, int 
         data.Caption = NULL;
         data.WholeCaption = FALSE;
         int err = 0;
-        SalamanderGeneral->ViewFileInPluginViewer(NULL, &data, FALSE, NULL, NULL, err);
+        // Report what actually happened: returning TRUE unconditionally told
+        // the core the file had been viewed, so a failure to open the built-in
+        // viewer left the user pressing F3 with no window and no diagnostic.
+        BOOL opened = SalamanderGeneral->ViewFileInPluginViewer(NULL, &data, FALSE, NULL, NULL, err);
+        if (!opened)
+            TRACE_E("codeview: fallback to the built-in viewer failed, error " << err);
         if (returnLock)
         {
+            // No lock: the built-in viewer opened synchronously above and has
+            // taken its own copy, so the (possibly temporary) file may go.
             *lock = NULL;
             *lockOwner = FALSE;
         }
-        return TRUE;
+        return opened;
     }
 
     TRACE_I("codeview: ViewFile (t=" << GetTickCount64() << " ms)");
@@ -359,6 +374,7 @@ CViewerWindow::CViewerWindow(int enumFilesSourceUID, int enumFilesCurrentIndex)
     HEncodingMenu = NULL;
     ForcedEncoding = -1;
     DocVersion = 0;
+    Zoom = g_zoom;
     FindText[0] = 0;
     FindCase = FALSE;
     FindWholeWord = FALSE;
@@ -374,6 +390,12 @@ CViewerWindow::CViewerWindow(int enumFilesSourceUID, int enumFilesCurrentIndex)
 
 CViewerWindow::~CViewerWindow()
 {
+    if (Web != NULL) // after the message loop drained -- see WM_DESTROY
+    {
+        Web->Destroy(); // idempotent; covers the never-shown-window path
+        delete Web;
+        Web = NULL;
+    }
     if (Lock != NULL)
     {
         SetEvent(Lock);
@@ -416,8 +438,10 @@ void CViewerWindow::OpenFile(const char* name, BOOL setLock)
     {
         // Between CanViewFile and here the file changed, vanished, or turned
         // out binary: say so in the window instead of rendering garbage, and
-        // offer the built-in viewer (spec FR-029).
-        ShowBlockedNotice(LoadStr(Intake.Band == cvBandDeclined ? IDS_BINARY_NOTICE : IDS_LOAD_ERROR));
+        // offer the built-in viewer (spec FR-029). The I/O flag is what makes
+        // the two messages distinguishable -- the band alone is cvBandDeclined
+        // in both cases, so an unreadable file used to be reported as binary.
+        ShowBlockedNotice(LoadStr(Intake.IoError ? IDS_LOAD_ERROR : IDS_BINARY_NOTICE), Name);
         UpdateTitle();
         UpdateStatus();
         if (setLock && Lock != NULL)
@@ -446,10 +470,24 @@ void CViewerWindow::OpenFile(const char* name, BOOL setLock)
     }
 }
 
-void CViewerWindow::ShowBlockedNotice(const char* text)
+// spec FR-029: a declined file is not a dead end -- the notice offers the
+// built-in viewer, which has hex mode and no size limit. Answering it runs on
+// the MAIN thread (CvRequestBuiltinViewer), because the viewer API that opens
+// it may not be called from this one.
+void CViewerWindow::ShowBlockedNotice(const char* text, const char* nameUtf8)
 {
-    SalamanderGeneral->SalMessageBox(HWindow, text, LoadStr(IDS_PLUGINNAME),
-                                     MB_OK | MB_ICONINFORMATION);
+    if (nameUtf8 == NULL || *nameUtf8 == 0)
+    {
+        SalamanderGeneral->SalMessageBox(HWindow, text, LoadStr(IDS_PLUGINNAME),
+                                         MB_OK | MB_ICONINFORMATION);
+        return;
+    }
+    std::string msg = text;
+    msg += "\n\n";
+    msg += LoadStr(IDS_OPEN_BUILTIN_ASK);
+    if (SalamanderGeneral->SalMessageBox(HWindow, msg.c_str(), LoadStr(IDS_PLUGINNAME),
+                                         MB_YESNO | MB_ICONQUESTION) == IDYES)
+        CvRequestBuiltinViewer(nameUtf8);
 }
 
 void CViewerWindow::ApplyScheme(BOOL rebuildBrush)
@@ -477,8 +515,12 @@ void CViewerWindow::BuildMenu()
 {
     HMENU menu = CreateMenu();
     HMENU file = CreatePopupMenu();
-    AppendMenuA(file, MF_STRING, CM_NEXTFILE, LoadStr(IDS_MENU_FILE_NEXTFILE));
-    AppendMenuA(file, MF_STRING, CM_PREVFILE, LoadStr(IDS_MENU_FILE_PREVFILE));
+    // A file opened from an archive or a plugin file system has no enumeration
+    // source (spl_view.h: "-1 = zdroj neznamy"), so panel navigation can never
+    // work there -- the items say so instead of doing nothing when clicked.
+    UINT navFlags = MF_STRING | (EnumFilesSourceUID == -1 ? MF_GRAYED : 0);
+    AppendMenuA(file, navFlags, CM_NEXTFILE, LoadStr(IDS_MENU_FILE_NEXTFILE));
+    AppendMenuA(file, navFlags, CM_PREVFILE, LoadStr(IDS_MENU_FILE_PREVFILE));
     AppendMenuA(file, MF_SEPARATOR, 0, NULL);
     AppendMenuA(file, MF_STRING, CM_FILE_CLOSE, LoadStr(IDS_MENU_FILE_CLOSE));
     AppendMenuA(menu, MF_POPUP | MF_STRING, (UINT_PTR)file, LoadStr(IDS_MENU_FILE));
@@ -602,10 +644,10 @@ void CViewerWindow::UpdateTitle()
     if (!title.empty())
         title += L" - ";
     title += SalamanderGeneral->LoadStrW(HLanguage, IDS_WINDOW_TITLE);
-    if (g_zoom != 100)
+    if (Zoom != 100)
     {
         wchar_t z[16];
-        _snwprintf_s(z, _TRUNCATE, L" (%d%%)", g_zoom);
+        _snwprintf_s(z, _TRUNCATE, L" (%d%%)", Zoom);
         title += z;
     }
     SetWindowTextW(HWindow, title.c_str());
@@ -635,7 +677,7 @@ void CViewerWindow::UpdateStatus()
     _snwprintf_s(text, _TRUNCATE, L" %s | %s | %s | %s | %s | %d%%",
                  lines, lncol,
                  encNames[Intake.Encoding <= cvEncAnsi ? Intake.Encoding : 0], eol,
-                 lang.c_str(), g_zoom);
+                 lang.c_str(), Zoom);
     SetWindowTextW(HStatus, text);
 }
 
@@ -649,10 +691,10 @@ void CViewerWindow::SelectScheme(int idx)
         lstrcpynA(g_schemeDark, CvSchemes[idx].Id, 32);
     else
         lstrcpynA(g_schemeLight, CvSchemes[idx].Id, 32);
-    ApplyScheme(TRUE);
-    if (Web != NULL && Web->IsReady())
-        Web->PostWebMessageJson(CvMsgSetTheme(&CvSchemes[idx]));
-    RefreshChecks();
+    // One scheme for the whole plugin: every open window follows (the setting
+    // is a single persisted value, so leaving other windows behind made their
+    // menu check marks lie about it).
+    ViewerWindowQueue.BroadcastMessage(WM_USER_VIEWERCFGCHNG, 0, 0);
 }
 
 void CViewerWindow::CycleScheme(int dir)
@@ -669,9 +711,19 @@ void CViewerWindow::SelectEncoding(int encoding)
 {
     if (Name == NULL || encoding < 0 || encoding > cvEncAnsi)
         return;
-    ForcedEncoding = encoding;
-    if (!CvLoadFile(Name, ForcedEncoding, -1, Intake))
+    // CvLoadFile resets its output before doing anything, so a failed re-read
+    // would leave the window with an EMPTY intake over content it is still
+    // showing (blank status bar, find over nothing). Work on a copy and keep
+    // the live one until the new read has succeeded.
+    int prevEncoding = ForcedEncoding;
+    CvIntake next;
+    if (!CvLoadFile(Name, encoding, -1, next))
+    {
+        ForcedEncoding = prevEncoding;
         return;
+    }
+    ForcedEncoding = encoding;
+    Intake = std::move(next); // the decoded text can be megabytes
     DocVersion++;
     if (Web != NULL && Web->IsReady())
         SendInit(TRUE);
@@ -724,9 +776,10 @@ void CViewerWindow::DoGotoLine()
 
 void CViewerWindow::SetZoom(int pct)
 {
-    g_zoom = (std::max)(50, (std::min)(300, pct));
+    Zoom = (std::max)(50, (std::min)(300, pct));
+    g_zoom = Zoom; // persisted as the starting value for the next window
     if (Web != NULL)
-        Web->SetZoomPercent(g_zoom);
+        Web->SetZoomPercent(Zoom);
     UpdateTitle();
     UpdateStatus();
 }
@@ -766,12 +819,31 @@ void CViewerWindow::NextFile(int dir)
                                                              &noMoreFiles, &srcBusy);
     if (!ok || fileName[0] == 0)
         return;
-    // The next file must pass the same gate as an F3 would; if it does not,
-    // say so in place instead of rendering it (spec FR-029).
-    if (!CvCanView(fileName))
+    // The next file must pass the same gate as an F3 would. A file that does
+    // not is SKIPPED, not refused: the anchor used to stay put, so a binary
+    // file carrying a claimed extension (the corpus has an MPEG-TS ".ts")
+    // blocked the direction for good -- every further Ctrl+PgDn re-offered the
+    // same file. The scan is bounded so a directory of such files cannot spin.
+    std::vector<char> lastBuf(kMaxPathUtf8, 0); // separate: the API reads
+    char* lastName = &lastBuf[0];               // 'lastFileName' while filling
+                                                // 'fileName', so they must not alias
+    for (int guard = 0; !CvCanView(fileName); guard++)
     {
-        ShowBlockedNotice(LoadStr(IDS_BINARY_NOTICE));
-        return;
+        EnumFilesCurrentIndex = index; // step over the declined file
+        if (guard >= 512)
+            return;
+        lstrcpynA(lastName, fileName, (int)kMaxPathUtf8);
+        noMoreFiles = FALSE;
+        srcBusy = FALSE;
+        fileName[0] = 0;
+        ok = dir > 0 ? SalamanderGeneral->GetNextFileNameForViewer(EnumFilesSourceUID, &index, lastName,
+                                                                   FALSE, TRUE, fileName,
+                                                                   &noMoreFiles, &srcBusy)
+                     : SalamanderGeneral->GetPreviousFileNameForViewer(EnumFilesSourceUID, &index, lastName,
+                                                                       FALSE, TRUE, fileName,
+                                                                       &noMoreFiles, &srcBusy);
+        if (!ok || fileName[0] == 0)
+            return;
     }
     EnumFilesCurrentIndex = index;
     OpenFile(fileName, FALSE);
@@ -796,6 +868,48 @@ void CViewerWindow::ShowContextMenu(int x, int y, BOOL hasSelection)
     if (DarkMenus)
         DarkMenuRelease(menu); // free the owner-draw paint data before the menu goes
     DestroyMenu(menu);
+}
+
+// Copy sinks. The clipboard is written HERE, not in the page: a command coming
+// from a native menu gives the page no user activation, and the shared host
+// denies every permission request, so navigator.clipboard would fail silently
+// (contracts/host-page-interface.md S3).
+void CViewerWindow::CopyToClipboard(const std::wstring& text)
+{
+    if (text.empty())
+        return;
+    // CRLF, always: the intake normalises every line end to LF, and the
+    // clipboard convention on Windows is CRLF (spec FR-021). It is also what
+    // the engine's own Ctrl+C produces, so the two copy routes agree.
+    std::wstring out;
+    out.reserve(text.size() + text.size() / 16);
+    for (size_t i = 0; i < text.size(); i++)
+    {
+        if (text[i] == L'\n' && (i == 0 || text[i - 1] != L'\r'))
+            out += L'\r';
+        out += text[i];
+    }
+    // Explicit length: the text may legitimately contain U+0000 (a UTF-16 file
+    // whose NUL is past the sniff window), and a NUL-terminated copy would put
+    // only the prefix on the clipboard without saying so.
+    SalamanderGeneral->CopyTextToClipboardW(out.c_str(), (int)out.size(), FALSE, HWindow);
+}
+
+void CViewerWindow::CopyWholeDocument()
+{
+    // Built from the intake, never from the page: only the materialised rows
+    // exist in the DOM, so a document-wide copy assembled there would silently
+    // stop at the render window -- and would carry the gutter's line numbers.
+    if (Intake.Utf8.empty())
+        return;
+    // Length-driven, not NUL-terminated: Intake.Utf8 is a std::string that may
+    // contain a 0 byte, and the page renders all of it.
+    int need = MultiByteToWideChar(CP_UTF8, 0, Intake.Utf8.data(), (int)Intake.Utf8.size(), NULL, 0);
+    if (need <= 0)
+        return;
+    std::wstring w((size_t)need, 0);
+    MultiByteToWideChar(CP_UTF8, 0, Intake.Utf8.data(), (int)Intake.Utf8.size(), &w[0], need);
+    CopyToClipboard(w);
 }
 
 void CViewerWindow::OnPageMessage(const std::wstring& json)
@@ -825,6 +939,13 @@ void CViewerWindow::OnPageMessage(const std::wstring& json)
     }
     else if (m.Type == L"contextMenu")
         ShowContextMenu(m.X, m.Y, m.HasSelection);
+    else if (m.Type == L"copyText")
+    {
+        if (m.All)
+            CopyWholeDocument();
+        else
+            CopyToClipboard(m.Text);
+    }
     else if (m.Type == L"highlightAborted")
     {
         // TRACE streams into a narrow ostream, so the reason is narrowed here
@@ -833,6 +954,10 @@ void CViewerWindow::OnPageMessage(const std::wstring& json)
         if (!m.Reason.empty())
             WideCharToMultiByte(CP_ACP, 0, m.Reason.c_str(), -1, reason, sizeof(reason) - 1, NULL, NULL);
         TRACE_I("codeview: highlighting aborted (" << (reason[0] ? reason : "?") << ")");
+        // ...and TELL the user: without a notice, a file whose tokenizer failed
+        // is indistinguishable from a plain-text file (contract S3).
+        if (Web != NULL && Web->IsReady())
+            Web->PostWebMessageJson(CvMsgNotice(SalamanderGeneral->LoadStrW(HLanguage, IDS_HIGHLIGHT_ABORTED)));
     }
 }
 
@@ -898,13 +1023,14 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         CViewerWindow* self = this;
         cb.OnReady = [self]()
         {
-            self->Web->SetZoomPercent(g_zoom);
+            self->Web->SetZoomPercent(self->Zoom);
             self->Web->Navigate(self->DocVersion, CvSchemeFragment(CvEffectiveScheme()));
         };
         cb.OnInitFailed = [self]() { self->EngineFailed(); };
         cb.OnProcessFailed = [self]() { self->EngineFailed(); };
         cb.OnZoomChanged = [self](int pct)
         {
+            self->Zoom = pct;
             g_zoom = pct;
             self->UpdateTitle();
             self->UpdateStatus();
@@ -996,6 +1122,18 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case CM_FILE_CLOSE:
             PostMessage(HWindow, WM_CLOSE, 0, 0);
             return 0;
+        case CM_EDIT_COPY:
+            // Both menu commands were inert: they were appended to the Edit and
+            // context menus but had no handler at all, so clicking them did
+            // nothing (only the engine's own Ctrl+C/Ctrl+A appeared to work,
+            // and those cover just the materialised rows).
+            if (Web != NULL && Web->IsReady())
+                Web->PostWebMessageJson(CvMsgCommand(L"copy"));
+            return 0;
+        case CM_EDIT_SELALL:
+            if (Web != NULL && Web->IsReady())
+                Web->PostWebMessageJson(CvMsgCommand(L"selectAll"));
+            return 0;
         case CM_EDIT_FIND:
             DoFind(TRUE, 0);
             return 0;
@@ -1010,10 +1148,7 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             return 0;
         case CM_VIEW_FOLLOWAPP:
             g_followApp = !g_followApp;
-            ApplyScheme(TRUE);
-            if (Web != NULL && Web->IsReady())
-                Web->PostWebMessageJson(CvMsgSetTheme(CvEffectiveScheme()));
-            RefreshChecks();
+            ViewerWindowQueue.BroadcastMessage(WM_USER_VIEWERCFGCHNG, 0, 0); // global setting
             return 0;
         case CM_SCHEME_NEXT:
             CycleScheme(+1);
@@ -1037,15 +1172,18 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             g_whitespace = !g_whitespace;
             goto viewChanged;
         viewChanged:
-            if (Web != NULL && Web->IsReady())
-                Web->PostWebMessageJson(CvMsgSetView());
-            RefreshChecks();
+            // These settings are process-wide (one registry value each), so the
+            // change must reach EVERY open window. Applying it only here left a
+            // second window rendering the old state with a menu check mark that
+            // disagreed with the global -- so its next toggle silently flipped
+            // the global back and appeared to do nothing.
+            ViewerWindowQueue.BroadcastMessage(WM_USER_VIEWERCFGCHNG, 0, 0);
             return 0;
         case CM_VIEW_ZOOMIN:
-            SetZoom(g_zoom + 10);
+            SetZoom(Zoom + 10);
             return 0;
         case CM_VIEW_ZOOMOUT:
-            SetZoom(g_zoom - 10);
+            SetZoom(Zoom - 10);
             return 0;
         case CM_VIEW_ZOOMRESET:
             SetZoom(100);
@@ -1074,12 +1212,14 @@ LRESULT CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         if (DarkMenus)
             DarkMenuRelease(GetMenu(HWindow)); // free owner-draw paint data
+        // Destroy the surface here, but DELETE the host in the destructor
+        // (mdview's ordering, viewer.cpp:401): PostQuitMessage only ends the
+        // loop once the queue drains, so messages -- including a WebView2
+        // creation completion posted before Destroy -- are still dispatched
+        // after this returns. Freeing the host here is a use-after-free when
+        // the window is closed during a cold engine start.
         if (Web != NULL)
-        {
             Web->Destroy();
-            delete Web;
-            Web = NULL;
-        }
         ViewerWindowQueue.Remove(HWindow);
         PostQuitMessage(0);
         return 0;

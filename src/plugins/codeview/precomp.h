@@ -46,6 +46,8 @@
 #include "spl_base.h"
 #include "spl_gen.h"
 #include "spl_view.h"
+#include "spl_menu.h" // menu-ext interface: the cross-thread route to the
+                      // built-in viewer (see codeview.h), no menu items
 #include "spl_vers.h"
 #include "spl_gui.h"
 

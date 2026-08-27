@@ -120,6 +120,7 @@ COMMENT,"Slovenská verzia"
 2212,1,"Tento súbor obsahuje %d sekvencií bajtov, ktoré nie sú platné vo vybranom kódovaní; sú zobrazené ako náhradné znaky."
 2213,1,"Obyčajný text"
 2214,1,"Pri ďalšom spustení aplikácie sa obnovia predvolené typy súborov programu Code Viewer. Položky, ktoré ste si ponechali, zostanú nezmenené."
+2215,1,"Chcete to otvoriť vo vstavanom prehliadači?"
 
 [STRINGTABLE 8]
 2300,1,"%d riadky"
