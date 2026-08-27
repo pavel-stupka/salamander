@@ -1,0 +1,136 @@
+﻿[EXPORTINFO]
+PROJECTNAME,"translator\projects\_template\codeview\codeview.atp"
+TEXTVERSION,"1.0 (x64)"
+VERSION,"1,0,0,189"
+
+[TRANSLATION]
+LANGID,1043
+AUTHOR,"Cor van der Smissen, Marco Fung, Patrick Vijgeboom, S.V. (Stephan) Rietveld"
+WEB,"www.tandemcommander.org"
+COMMENT,"Nederlandse versie"
+
+[DIALOG 300]
+240,76,1,"Zoeken"
+3000,7,9,60,8,1,"Zoek &tekst:"
+301,7,21,226,12,1,""
+302,7,39,123,10,1,"&Hoofdletters en kleine letters"
+303,7,51,100,10,1,"Alleen hele &woorden"
+1,128,56,53,14,1,"Volge&nde zoeken"
+2,183,56,50,14,1,"Annuleren"
+
+[DIALOG 310]
+300,190,1,"Configuratie van de Code Viewer"
+3002,7,9,60,8,1,"L&ettertype:"
+312,70,7,150,12,1,""
+3003,7,25,61,8,1,"&Grootte (0 = standaard):"
+313,70,23,40,12,1,""
+3004,7,41,60,8,1,"&Tabbreedte:"
+314,70,39,40,12,1,""
+3005,7,61,101,8,1,"&Limiet voor markeren (KB):"
+315,110,59,40,12,1,""
+3006,155,61,141,8,1,"Grotere bestanden worden als platte tekst weergegeven."
+3007,7,77,90,8,1,"&Maximale regellengte:"
+317,110,75,40,12,1,""
+3008,155,77,141,8,1,"Bestanden met langere regels worden als platte tekst weergegeven."
+3009,7,93,91,8,1,"Beperking &viewer (MB):"
+316,110,91,40,12,1,""
+3010,155,93,141,8,1,"Grotere bestanden worden geopend in de ingebouwde viewer."
+311,7,113,286,10,1,"Houd de weergave-engine &klaar voor onmiddellijke weergave"
+3011,18,127,278,17,1,"Bestanden openen dan direct na de eerste weergave in een sessie, ten koste van een klein beetje geheugen dat de rest van de sessie wordt vastgehouden."
+318,7,150,135,14,1,"Standaa&rdbestandstypen herstellen"
+1,188,169,50,14,0,"OK"
+2,243,169,50,14,1,"Annuleren"
+
+[DIALOG 320]
+200,60,1,"Ga naar regel"
+3001,7,9,186,8,1,"Rege&lnummer (of regel:kolom):"
+321,7,21,186,12,1,""
+1,88,40,50,14,0,"OK"
+2,143,40,50,14,1,"Annuleren"
+
+[STRINGTABLE 0]
+46,1,"Code Viewer"
+47,1,"Over de plug-in"
+
+[STRINGTABLE 1]
+48,1,"Toont broncode en configuratiebestanden met syntaxisaccentuering wanneer je op F3 drukt."
+49,1,"www.tandemcommander.org"
+50,1,"Er is een fout opgetreden in de Code Viewer-plugin. Breng de makers op de hoogte en voeg, indien mogelijk, het bestand toe dat je aan het bekijken was."
+53,1,"Er zijn enkele Code Viewer-vensters open. Wil je ze sluiten?"
+55,1,"Ongeldig getal!"
+
+[STRINGTABLE 2]
+2000,1,"B&estand"
+2001,1,"Volge&nd bestand\tCtrl+PgDn"
+2002,1,"Vorige &bestand\tCtrl+PgUp"
+2003,1,"&Sluiten\tEsc"
+2010,1,"Be&werken"
+2011,1,"&Kopiëren\tCtrl+C"
+2012,1,"&Alles selecteren\tCtrl+A"
+2013,1,"Z&oeken...\tCtrl+F"
+2014,1,"Volgende &zoeken\tF3"
+2015,1,"&Vorige zoeken\tShift+F3"
+
+[STRINGTABLE 3]
+2016,1,"&Ga naar regel...\tCtrl+G"
+2020,1,"&Weergave"
+2021,1,"Kleuren&schema"
+2022,1,"&Volg het thema van de app"
+2023,1,"I&nzoomen\tCtrl++"
+2024,1,"Uitz&oomen\tCtrl+-"
+2025,1,"Zoom &resetten\tCtrl+0"
+2026,1,"&Tekstafbreking\tF2"
+2027,1,"Rege&lnummers"
+2028,1,"W&itruimte weergeven"
+2029,1,"T&aal"
+2030,1,"Cod&ering"
+
+[STRINGTABLE 4]
+2040,1,"&Help"
+2041,1,"&Over Code Viewer"
+2042,1,"Automatisch"
+
+[STRINGTABLE 5]
+2100,1,"GitHub Light"
+2101,1,"Visual Studio Light"
+2102,1,"One Light"
+2103,1,"Solarized Light"
+2104,1,"Catppuccin Latte"
+2105,1,"GitHub Dark"
+2106,1,"Visual Studio Dark"
+2107,1,"One Dark Pro"
+2108,1,"Solarized Dark"
+2109,1,"Catppuccin Mocha"
+2110,1,"Gruvbox Dark"
+2111,1,"Nord"
+
+[STRINGTABLE 6]
+2200,1,"Het bestand kon niet worden geopend."
+2201,1,"Zoek tekst:"
+2202,1,"Tekst niet gevonden."
+2203,1,"Code Viewer"
+2204,1,"De WebView2-runtime is niet beschikbaar. Het bestand wordt in plaats daarvan als platte tekst geopend."
+2205,1,"Syntaxisaccentuering is uitgeschakeld voor dit bestand: het is groter dan de limiet voor accentuering."
+2206,1,"Syntaxisaccentuering is uitgeschakeld voor dit bestand: het bevat regels die langer zijn dan de limiet."
+2207,1,"Dit bestand is geen tekst en kan hier niet worden weergegeven."
+
+[STRINGTABLE 7]
+2208,1,"Openen in ingebouwde viewer"
+2209,1,"Code Viewer opent nu bron- en configuratiebestanden. Druk op Alt+F3 voor de ingebouwde viewer; pas de bestandstypen aan in Opties > Viewers."
+2210,1,"Syntaxisaccentuering is voor dit bestand uitgeschakeld; er wordt nu gewone tekst weergegeven."
+2211,1,"Regelnummer (of regel:kolom):"
+2212,1,"Dit bestand bevat %d byte-reeksen die niet geldig zijn in de geselecteerde codering; ze worden weergegeven als vervangende tekens."
+2213,1,"Plain Text"
+2214,1,"De standaardbestandstypen van Code Viewer worden hersteld wanneer je de app de volgende keer start. De instellingen die je hebt behouden, blijven zoals ze zijn."
+
+[STRINGTABLE 8]
+2300,1,"%d regels"
+2301,1,"Ln %d, Col %d"
+2302,1,"CRLF"
+2303,1,"LF"
+
+[STRINGTABLE 9]
+2304,1,"CR"
+2305,1,"Gemengd"
+2306,1,"Geen"
+

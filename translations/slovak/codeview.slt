@@ -1,0 +1,136 @@
+﻿[EXPORTINFO]
+PROJECTNAME,"translator\projects\_template\codeview\codeview.atp"
+TEXTVERSION,"1.0 (x64)"
+VERSION,"1,0,0,189"
+
+[TRANSLATION]
+LANGID,1051
+AUTHOR,"Roman Paholík"
+WEB,"www.tandemcommander.org"
+COMMENT,"Slovenská verzia"
+
+[DIALOG 300]
+240,76,1,"Vyhľadať"
+3000,7,9,60,8,1,"Hľadať &text:"
+301,7,21,226,12,1,""
+302,7,39,127,10,1,"&Rozlišovať veľké a malé písmená"
+303,7,51,100,10,1,"&Iba celé slová"
+1,128,56,50,14,1,"&Nájsť ďalšie"
+2,183,56,50,14,1,"Zrušiť"
+
+[DIALOG 310]
+300,190,1,"Konfigurácia prehliadača kódu"
+3002,7,9,60,8,1,"&Písmo:"
+312,70,7,150,12,1,""
+3003,7,25,61,8,1,"&Veľkosť (0 = predvolené):"
+313,70,23,40,12,1,""
+3004,7,41,61,8,1,"Šírka &tabuľátora:"
+314,70,39,40,12,1,""
+3005,7,61,95,8,1,"Limit &zvýraznenia (KB):"
+315,110,59,40,12,1,""
+3006,155,61,141,8,1,"Väčšie súbory sa zobrazujú ako čistý text."
+3007,7,77,95,8,1,"&Maximálna dĺžka riadku:"
+317,110,75,40,12,1,""
+3008,155,77,141,8,1,"Súbory s dlhšími riadkami sa zobrazujú ako obyčajný text."
+3009,7,93,95,8,1,"&Limit prehliadača (MB):"
+316,110,91,40,12,1,""
+3010,155,93,141,8,1,"Väčšie súbory sa otvárajú vo vstavanom prehliadači."
+311,7,113,286,10,1,"Udržujte vy&kresľovací modul pripravený na okamžité zobrazenie"
+3011,18,127,278,17,1,"Súbory sa potom po prvom zobrazení v relácii otvoria okamžite, za cenu malého množstva pamäte, ktorá zostane vyhradenej po zvyšok relácie."
+318,7,150,127,14,1,"Obnoviť p&redvolené typy súborov"
+1,188,169,50,14,0,"OK"
+2,243,169,50,14,1,"Zrušiť"
+
+[DIALOG 320]
+200,60,1,"Prejsť na riadok"
+3001,7,9,186,8,1,"Čís&lo riadku (alebo riadok:stĺpec):"
+321,7,21,186,12,1,""
+1,88,40,50,14,0,"OK"
+2,143,40,50,14,1,"Zrušiť"
+
+[STRINGTABLE 0]
+46,1,"Code Viewer"
+47,1,"O doplnku"
+
+[STRINGTABLE 1]
+48,1,"Po stlačení klávesy F3 zobrazuje zdrojový kód a konfiguračné súbory so zvýraznením syntaxe."
+49,1,"www.tandemcommander.org"
+50,1,"V doplnku Code Viewer došlo k výnimke. Informujte prosím autorov a, ak je to možné, priložte súbor, ktorý ste prezerali."
+53,1,"Niektoré okná prehliadača kódu sú otvorené. Chcete ich zatvoriť?"
+55,1,"Neplatné číslo!"
+
+[STRINGTABLE 2]
+2000,1,"Sú&bor"
+2001,1,"&Ďalší súbor\tCtrl+PgDn"
+2002,1,"Predchádzajúci &súbor\tCtrl+PgUp"
+2003,1,"&Zatvoriť\tEsc"
+2010,1,"&Úpravy"
+2011,1,"&Kopírovať\tCtrl+C"
+2012,1,"Vybr&ať všetko\tCtrl+A"
+2013,1,"Ná&jsť...\tCtrl+F"
+2014,1,"&Nájsť ďalej\tF3"
+2015,1,"Nájsť &predchádzajúce\tShift+F3"
+
+[STRINGTABLE 3]
+2016,1,"&Prejsť na riadok...\tCtrl+G"
+2020,1,"Z&obrazenie"
+2021,1,"Farebná &schéma"
+2022,1,"Použiť motív &aplikácie"
+2023,1,"Zväčš&iť\tCtrl++"
+2024,1,"Z&menšiť zobrazenie\tCtrl+-"
+2025,1,"O&bnoviť zväčšenie\tCtrl+0"
+2026,1,"Zalamovanie &riadkov\tF2"
+2027,1,"Čís&la riadkov"
+2028,1,"&Zobraziť medzery"
+2029,1,"&Jazyk"
+2030,1,"Kódovani&e"
+
+[STRINGTABLE 4]
+2040,1,"&Pomoc"
+2041,1,"O prehli&adači kódu"
+2042,1,"Automaticky"
+
+[STRINGTABLE 5]
+2100,1,"GitHub Light"
+2101,1,"Visual Studio Light"
+2102,1,"One Light"
+2103,1,"Solarized Light"
+2104,1,"Catppuccin Latte"
+2105,1,"GitHub Dark"
+2106,1,"Visual Studio Dark"
+2107,1,"One Dark Pro"
+2108,1,"Solarized Dark"
+2109,1,"Catppuccin Mocha"
+2110,1,"Gruvbox Dark"
+2111,1,"Nord"
+
+[STRINGTABLE 6]
+2200,1,"Súbor sa nepodarilo otvoriť."
+2201,1,"Vyhľadávanie textu:"
+2202,1,"Text nebol nájdený."
+2203,1,"Prehliadač kódu"
+2204,1,"Runtime WebView2 nie je k dispozícii. Namiesto toho sa súbor otvorí ako čistý text."
+2205,1,"Zvýrazňovanie syntaxe je pre tento súbor vypnuté: súbor je väčší ako limit pre zvýrazňovanie."
+2206,1,"Zvýrazňovanie syntaxe je pre tento súbor vypnuté: obsahuje riadky dlhšie, ako je limit."
+2207,1,"Tento súbor nie je textový a nemôže sa tu zobraziť."
+
+[STRINGTABLE 7]
+2208,1,"Otvoriť vo vstavanom prehliadači"
+2209,1,"Program Code Viewer teraz otvára zdrojové a konfiguračné súbory. Stlačte klávesy Alt+F3 pre vstavaný prehliadač; typy súborov môžete zmeniť v ponuke Možnosti > Prehliadače."
+2210,1,"Zvýrazňovanie syntaxe bolo pre tento súbor vypnuté; zobrazuje sa obyčajný text."
+2211,1,"Číslo riadku (alebo riadok:stĺpec):"
+2212,1,"Tento súbor obsahuje %d sekvencií bajtov, ktoré nie sú platné vo vybranom kódovaní; sú zobrazené ako náhradné znaky."
+2213,1,"Obyčajný text"
+2214,1,"Pri ďalšom spustení aplikácie sa obnovia predvolené typy súborov programu Code Viewer. Položky, ktoré ste si ponechali, zostanú nezmenené."
+
+[STRINGTABLE 8]
+2300,1,"%d riadky"
+2301,1,"Ln %d, Col %d"
+2302,1,"CRLF"
+2303,1,"LF"
+
+[STRINGTABLE 9]
+2304,1,"CR"
+2305,1,"Mixed"
+2306,1,"Žiadne"
+

@@ -51,7 +51,9 @@
       "IDS_MENU_VIEW": "&Zobraziť",
       "IDS_MENU_VIEW_FOLLOWSYS": "Použiť motív s&ystému"
     },
-    "german": { "IDS_MENU_VIEW_FOLLOWSYS": "S&ystemdesign folgen" },
+    "german": {
+      "IDS_MENU_VIEW_FOLLOWSYS": "S&ystemdesign folgen"
+    },
     "french": {
       "IDS_MENU_VIEW": "Afficha&ge",
       "IDS_MENU_VIEW_FOLLOWSYS": "Suivre le thème du s&ystème"
@@ -73,21 +75,169 @@
       "IDS_MENU_VIEW_FOLLOWSYS": "Seguir el tema del s&istema"
     }
   },
+  "codeview": {
+    "czech": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    },
+    "german": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    },
+    "french": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    },
+    "dutch": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    },
+    "hungarian": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    },
+    "romanian": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    },
+    "slovak": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    },
+    "spanish": {
+      "IDS_PLUGINNAME": "Code Viewer",
+      "#GitHub Light": "GitHub Light",
+      "#Visual Studio Light": "Visual Studio Light",
+      "#One Light": "One Light",
+      "#Solarized Light": "Solarized Light",
+      "#Catppuccin Latte": "Catppuccin Latte",
+      "#GitHub Dark": "GitHub Dark",
+      "#Visual Studio Dark": "Visual Studio Dark",
+      "#One Dark Pro": "One Dark Pro",
+      "#Solarized Dark": "Solarized Dark",
+      "#Catppuccin Mocha": "Catppuccin Mocha",
+      "#Gruvbox Dark": "Gruvbox Dark",
+      "#Nord": "Nord"
+    }
+  },
   "salamand": {
-    "czech": { "IDS_FINDLOG_TEXT": "Text" },
-    "slovak": { "IDS_FINDLOG_TEXT": "Text" }
+    "czech": {
+      "IDS_FINDLOG_TEXT": "Text"
+    },
+    "slovak": {
+      "IDS_FINDLOG_TEXT": "Text"
+    }
   },
   "zip": {
-    "czech": { "IDS_PLUGINNAME": "ZIP" },
-    "slovak": { "IDS_PLUGINNAME": "ZIP" },
-    "german": { "IDS_PLUGINNAME": "ZIP" },
-    "french": { "IDS_PLUGINNAME": "ZIP" },
-    "spanish": { "IDS_PLUGINNAME": "ZIP" },
-    "dutch": { "IDS_PLUGINNAME": "ZIP" },
-    "hungarian": { "IDS_PLUGINNAME": "ZIP" },
-    "romanian": { "IDS_PLUGINNAME": "ZIP" },
-    "russian": { "IDS_PLUGINNAME": "ZIP" },
-    "ukrainian": { "IDS_PLUGINNAME": "ZIP" },
-    "chinesesimplified": { "IDS_PLUGINNAME": "ZIP" }
+    "czech": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "slovak": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "german": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "french": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "spanish": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "dutch": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "hungarian": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "romanian": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "russian": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "ukrainian": {
+      "IDS_PLUGINNAME": "ZIP"
+    },
+    "chinesesimplified": {
+      "IDS_PLUGINNAME": "ZIP"
+    }
   }
 }

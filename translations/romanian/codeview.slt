@@ -1,0 +1,136 @@
+﻿[EXPORTINFO]
+PROJECTNAME,"translator\projects\_template\codeview\codeview.atp"
+TEXTVERSION,"1.0 (x64)"
+VERSION,"1,0,0,189"
+
+[TRANSLATION]
+LANGID,1048
+AUTHOR,"Ioan Stefancu, Donca Radu"
+WEB,"www.tandemcommander.org"
+COMMENT,"Versiunea romana"
+
+[DIALOG 300]
+240,76,1,"Căutare"
+3000,7,9,62,8,1,"&Text de căutat:"
+301,7,21,226,12,1,""
+302,7,39,115,10,1,"&Respectă majuscule/minuscule"
+303,7,51,100,10,1,"&Numai cuvinte întregi"
+1,128,56,53,14,1,"&Căutare următoare"
+2,183,56,50,14,1,"Anulare"
+
+[DIALOG 310]
+300,190,1,"Configurarea vizualizatorului de cod"
+3002,7,9,60,8,1,"&Font:"
+312,70,7,150,12,1,""
+3003,7,25,61,8,1,"Dimensiune (&0 = implicită):"
+313,70,23,40,12,1,""
+3004,7,41,61,8,1,"Lățimea &tab-ului:"
+314,70,39,40,12,1,""
+3005,7,61,101,8,1,"Limită &de evidențiere (KB):"
+315,110,59,40,12,1,""
+3006,155,61,141,8,1,"Fișierele mai mari sunt afișate ca text simplu."
+3007,7,77,101,8,1,"&Lungimea maximă a liniei:"
+317,110,75,40,12,1,""
+3008,155,77,141,8,1,"Fișierele cu linii mai lungi sunt afișate ca text simplu."
+3009,7,93,101,8,1,"Limită &vizualizator (MB):"
+316,110,91,40,12,1,""
+3010,155,93,141,8,1,"Fișierele mai mari se deschid în vizualizatorul încorporat."
+311,7,113,286,10,1,"&Menține motorul de redare pregătit pentru vizualizare instantanee"
+3011,18,127,278,17,1,"Fișierele se deschid apoi instantaneu după prima vizualizare dintr-o sesiune, cu prețul unei cantități mici de memorie reținută pentru restul sesiunii."
+318,7,150,159,14,1,"&Restabilire tipuri de fișiere implicite"
+1,188,169,50,14,0,"OK"
+2,243,169,50,14,1,"Anulare"
+
+[DIALOG 320]
+200,60,1,"Mergi la linie"
+3001,7,9,186,8,1,"Număr de &linie (sau linie:coloană):"
+321,7,21,186,12,1,""
+1,88,40,50,14,0,"OK"
+2,143,40,50,14,1,"Anulare"
+
+[STRINGTABLE 0]
+46,1,"Code Viewer"
+47,1,"Despre plugin"
+
+[STRINGTABLE 1]
+48,1,"Afișează codul sursă și fișierele de configurare cu evidențierea sintaxei atunci când apăsați tasta F3."
+49,1,"www.tandemcommander.org"
+50,1,"A apărut o excepție în pluginul Code Viewer. Vă rugăm să informați autorii și, dacă este posibil, atașați fișierul pe care îl vizualizați."
+53,1,"Sunt deschise câteva ferestre ale Code Viewer. Doriți să le închideți?"
+55,1,"Număr nevalid!"
+
+[STRINGTABLE 2]
+2000,1,"F&ișier"
+2001,1,"&Fișierul următor\tCtrl+PgDn"
+2002,1,"Fișierul &anterior\tCtrl+PgUp"
+2003,1,"&Închidere\tEsc"
+2010,1,"&Editare"
+2011,1,"C&opiere\tCtrl+C"
+2012,1,"&Selectează tot\tCtrl+A"
+2013,1,"Cău&tare...\tCtrl+F"
+2014,1,"Căutare &următoare\tF3"
+2015,1,"&Căutare anterioară\tShift+F3"
+
+[STRINGTABLE 3]
+2016,1,"Mer&gi la linia...\tCtrl+G"
+2020,1,"&Vizualizare"
+2021,1,"&Schema de culori"
+2022,1,"&Urmează tema aplicației"
+2023,1,"Măr&ire\tCtrl++"
+2024,1,"&Mărire\tCtrl+-"
+2025,1,"&Resetare zoom\tCtrl+0"
+2026,1,"&Încadrare text\tF2"
+2027,1,"&Numere de linie"
+2028,1,"&Afișează spațiile albe"
+2029,1,"&Limba"
+2030,1,"Codificar&e"
+
+[STRINGTABLE 4]
+2040,1,"A&jutor"
+2041,1,"Despre vizu&alizatorul de cod"
+2042,1,"Automat"
+
+[STRINGTABLE 5]
+2100,1,"GitHub Light"
+2101,1,"Visual Studio Light"
+2102,1,"One Light"
+2103,1,"Solarized Light"
+2104,1,"Catppuccin Latte"
+2105,1,"GitHub Dark"
+2106,1,"Visual Studio Dark"
+2107,1,"One Dark Pro"
+2108,1,"Solarized Dark"
+2109,1,"Catppuccin Mocha"
+2110,1,"Gruvbox Dark"
+2111,1,"Nord"
+
+[STRINGTABLE 6]
+2200,1,"Fișierul nu a putut fi deschis."
+2201,1,"Căutare text:"
+2202,1,"Textul nu a fost găsit."
+2203,1,"Vizualizator de cod"
+2204,1,"Mediul de execuție WebView2 nu este disponibil. Se deschide fișierul ca text simplu în schimb."
+2205,1,"Evidențierea sintaxei este dezactivată pentru acest fișier: este mai mare decât limita de evidențiere."
+2206,1,"Evidențierea sintaxei este dezactivată pentru acest fișier: acesta conține linii mai lungi decât limita."
+2207,1,"Acest fișier nu este text și nu poate fi afișat aici."
+
+[STRINGTABLE 7]
+2208,1,"Deschide în vizualizatorul încorporat"
+2209,1,"Code Viewer deschide acum fișierele sursă și de configurare. Apăsați Alt+F3 pentru vizualizatorul încorporat; modificați tipurile de fișiere în Opțiuni > Vizualizatoare."
+2210,1,"Evidențierea sintaxei a fost oprită pentru acest fișier; se afișează text simplu."
+2211,1,"Număr de linie (sau linie:coloană):"
+2212,1,"Acest fișier conține secvențe de octeți de tip „%d” care nu sunt valide în codificarea selectată; acestea sunt afișate ca caractere de înlocuire."
+2213,1,"Text simplu"
+2214,1,"Tipurile de fișiere implicite ale Code Viewer vor fi restabilite la următoarea pornire a aplicației. Intrările pe care le-ați păstrat rămân neschimbate."
+
+[STRINGTABLE 8]
+2300,1,"%d linii"
+2301,1,"Ln %d, Col %d"
+2302,1,"CRLF"
+2303,1,"LF"
+
+[STRINGTABLE 9]
+2304,1,"CR"
+2305,1,"Mixed"
+2306,1,"Niciunul"
+

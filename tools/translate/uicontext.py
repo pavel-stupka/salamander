@@ -62,6 +62,8 @@ _DOMAINS: dict[str, str] = {
     "zip": "an archive plugin that opens and creates ZIP archives",
     "checksum": "a plugin that computes and verifies file checksums",
     "mdview": "a Markdown file viewer",
+    "codeview": "a source-code viewer with syntax highlighting (colour "
+                "schemes, language selection, text encodings)",
     "pictview": "an image viewer",
     "salamand": "a two-panel file manager for Windows",
     "7zip": "an archive plugin that creates, browses and extracts "

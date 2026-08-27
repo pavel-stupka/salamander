@@ -1,0 +1,136 @@
+﻿[EXPORTINFO]
+PROJECTNAME,"translator\projects\_template\codeview\codeview.atp"
+TEXTVERSION,"1.0 (x64)"
+VERSION,"1,0,0,189"
+
+[TRANSLATION]
+LANGID,3082
+AUTHOR,"Juan Pablo Barrio Lera"
+WEB,"www.tandemcommander.org"
+COMMENT,"Versión en español"
+
+[DIALOG 300]
+240,76,1,"Buscar"
+3000,7,9,62,8,1,"&Texto a buscar:"
+301,7,21,226,12,1,""
+302,7,39,131,10,1,"Respetar mayús&culas y minúsculas"
+303,7,51,100,10,1,"&Solo palabras completas"
+1,128,56,53,14,1,"Buscar siguie&nte"
+2,183,56,50,14,1,"Cancelar"
+
+[DIALOG 310]
+300,190,1,"Configuración del visor de código"
+3002,7,9,60,8,1,"&Fuente:"
+312,70,7,150,12,1,""
+3003,7,25,61,8,1,"Tamaño (&0 = predeterminado):"
+313,70,23,40,12,1,""
+3004,7,41,61,8,1,"Ancho de &tabulación:"
+314,70,39,40,12,1,""
+3005,7,61,101,8,1,"Límite &de resaltado (KB):"
+315,110,59,40,12,1,""
+3006,155,61,141,8,1,"Los archivos más grandes se muestran como texto sin formato."
+3007,7,77,101,8,1,"&Longitud máxima de línea:"
+317,110,75,40,12,1,""
+3008,155,77,141,8,1,"Los archivos con líneas más largas se muestran como texto sin formato."
+3009,7,93,91,8,1,"Límite del &visor (MB):"
+316,110,91,40,12,1,""
+3010,155,93,141,8,1,"Los archivos más grandes se abren en el visor integrado."
+311,7,113,289,10,1,"&Mantener el motor de renderizado listo para la visualización instantánea"
+3011,18,127,278,17,1,"Los archivos se abren al instante tras la primera visualización en una sesión, a cambio de que se reserve una pequeña cantidad de memoria durante el resto de la sesión."
+318,7,150,172,14,1,"&Restaurar tipos de archivo predeterminados"
+1,188,169,50,14,0,"OK"
+2,243,169,50,14,1,"Cancelar"
+
+[DIALOG 320]
+200,60,1,"Ir a la línea"
+3001,7,9,186,8,1,"Número de &línea (o línea:columna):"
+321,7,21,186,12,1,""
+1,88,40,50,14,0,"OK"
+2,143,40,50,14,1,"Cancelar"
+
+[STRINGTABLE 0]
+46,1,"Code Viewer"
+47,1,"Acerca del complemento"
+
+[STRINGTABLE 1]
+48,1,"Muestra el código fuente y los archivos de configuración con resaltado de sintaxis al pulsar F3."
+49,1,"www.tandemcommander.org"
+50,1,"Se ha producido una excepción en el complemento Code Viewer. Por favor, avisa a los autores y, si puedes, adjunta el archivo que estabas viendo."
+53,1,"Hay algunas ventanas de Code Viewer abiertas. ¿Quieres cerrarlas?"
+55,1,"¡Número no válido!"
+
+[STRINGTABLE 2]
+2000,1,"Ar&chivo"
+2001,1,"&Archivo siguiente\tCtrl+PgDn"
+2002,1,"A&rchivo anterior\tCtrl+PgUp"
+2003,1,"C&errar\tEsc"
+2010,1,"E&ditar"
+2011,1,"C&opiar\tCtrl+C"
+2012,1,"&Seleccionar todo\tCtrl+A"
+2013,1,"B&uscar...\tCtrl+F"
+2014,1,"Buscar siguie&nte\tF3"
+2015,1,"&Buscar anterior\tShift+F3"
+
+[STRINGTABLE 3]
+2016,1,"&Ir a la línea...\tCtrl+G"
+2020,1,"&Vista"
+2021,1,"&Esquema de colores"
+2022,1,"&Seguir el tema de la aplicación"
+2023,1,"&Acercar\tCtrl++"
+2024,1,"A&lejar\tCtrl+-"
+2025,1,"&Restablecer zoom\tCtrl+0"
+2026,1,"A&justar a la línea\tF2"
+2027,1,"&Números de línea"
+2028,1,"&Mostrar espacios en blanco"
+2029,1,"I&dioma"
+2030,1,"&Codificación"
+
+[STRINGTABLE 4]
+2040,1,"A&yuda"
+2041,1,"&Acerca del visor de código"
+2042,1,"Automático"
+
+[STRINGTABLE 5]
+2100,1,"GitHub Light"
+2101,1,"Visual Studio Light"
+2102,1,"One Light"
+2103,1,"Solarized Light"
+2104,1,"Catppuccin Latte"
+2105,1,"GitHub Dark"
+2106,1,"Visual Studio Dark"
+2107,1,"One Dark Pro"
+2108,1,"Solarized Dark"
+2109,1,"Catppuccin Mocha"
+2110,1,"Gruvbox Dark"
+2111,1,"Nord"
+
+[STRINGTABLE 6]
+2200,1,"No se ha podido abrir el archivo."
+2201,1,"Buscar texto:"
+2202,1,"Texto no encontrado."
+2203,1,"Visor de código"
+2204,1,"El entorno de ejecución de WebView2 no está disponible. En su lugar, se abrirá el archivo como texto sin formato."
+2205,1,"El resaltado de sintaxis está desactivado para este archivo: supera el límite de resaltado."
+2206,1,"El resaltado de sintaxis está desactivado para este archivo: contiene líneas más largas que el límite."
+2207,1,"Este archivo no es de texto y no se puede mostrar aquí."
+
+[STRINGTABLE 7]
+2208,1,"Abrir en el visor integrado"
+2209,1,"Ahora Code Viewer abre los archivos fuente y de configuración. Pulsa Alt+F3 para abrir el visor integrado; cambia los tipos de archivo en Opciones > Visores."
+2210,1,"Se ha desactivado el resaltado de sintaxis para este archivo; se muestra texto sin formato."
+2211,1,"Número de línea (o línea:columna):"
+2212,1,"Este archivo contiene %d secuencias de bytes que no son válidas en la codificación seleccionada; se muestran como caracteres de sustitución."
+2213,1,"Texto sin formato"
+2214,1,"Los tipos de archivo predeterminados de Code Viewer se restablecerán la próxima vez que se inicie la aplicación. Las entradas que hayas conservado se mantendrán tal y como están."
+
+[STRINGTABLE 8]
+2300,1,"%d líneas"
+2301,1,"Línea %d, Columna %d"
+2302,1,"CRLF"
+2303,1,"LF"
+
+[STRINGTABLE 9]
+2304,1,"CR"
+2305,1,"Mixed"
+2306,1,"Ninguno"
+

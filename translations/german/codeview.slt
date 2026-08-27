@@ -1,0 +1,136 @@
+﻿[EXPORTINFO]
+PROJECTNAME,"translator\projects\_template\codeview\codeview.atp"
+TEXTVERSION,"1.0 (x64)"
+VERSION,"1,0,0,189"
+
+[TRANSLATION]
+LANGID,1031
+AUTHOR,"Dirk Bornhütter, Thomas Kelso, Thomas Pagels, Thomas Wölk, Marko Meister und Mick Weiss"
+WEB,"www.tandemcommander.org"
+COMMENT,"Deutsche Version"
+
+[DIALOG 300]
+240,76,1,"Suchen"
+3000,7,9,60,8,1,"&Text suchen:"
+301,7,21,226,12,1,""
+302,7,39,123,10,1,"Groß-/Kleins&chreibung beachten"
+303,7,51,100,10,1,"Nur ganze &Wörter"
+1,128,56,53,14,1,"Weiter suche&n"
+2,183,56,50,14,1,"Abbrechen"
+
+[DIALOG 310]
+300,190,1,"Konfiguration des Code-Viewers"
+3002,7,9,60,8,1,"Schri&ftart:"
+312,70,7,150,12,1,""
+3003,7,25,61,8,1,"&Größe (0 = Standard):"
+313,70,23,40,12,1,""
+3004,7,41,61,8,1,"&Tabulatorbreite:"
+314,70,39,40,12,1,""
+3005,7,61,101,8,1,"&Hervorhebungsgrenze (KB):"
+315,110,59,40,12,1,""
+3006,155,61,141,8,1,"Größere Dateien werden als Klartext angezeigt."
+3007,7,77,90,8,1,"&Maximale Zeilenlänge:"
+317,110,75,40,12,1,""
+3008,155,77,141,8,1,"Dateien mit längeren Zeilen werden als Klartext angezeigt."
+3009,7,93,90,8,1,"&Viewer-Limit (MB):"
+316,110,91,40,12,1,""
+3010,155,93,141,8,1,"Größere Dateien werden im integrierten Viewer geöffnet."
+311,7,113,286,10,1,"&Die Rendering-Engine für die sofortige Anzeige bereit halten"
+3011,18,127,278,17,1,"Dateien werden dann nach dem ersten Aufruf in einer Sitzung sofort geöffnet, wobei für den Rest der Sitzung eine geringe Menge an Arbeitsspeicher belegt bleibt."
+318,7,150,147,14,1,"Standa&rd-Dateitypen wiederherstellen"
+1,188,169,50,14,0,"OK"
+2,243,169,50,14,1,"Abbrechen"
+
+[DIALOG 320]
+200,60,1,"Zur Zeile springen"
+3001,7,9,186,8,1,"Zei&lennummer (oder Zeile:Spalte):"
+321,7,21,186,12,1,""
+1,88,40,50,14,0,"OK"
+2,143,40,50,14,1,"Abbrechen"
+
+[STRINGTABLE 0]
+46,1,"Code Viewer"
+47,1,"Über das Plugin"
+
+[STRINGTABLE 1]
+48,1,"Zeigt Quellcode und Konfigurationsdateien mit Syntaxhervorhebung an, wenn du F3 drückst."
+49,1,"www.tandemcommander.org"
+50,1,"Im Code Viewer-Plugin ist eine Ausnahme aufgetreten. Bitte informiere die Autoren und füge, wenn möglich, die Datei bei, die du gerade angesehen hast."
+53,1,"Es sind einige Code-Viewer-Fenster geöffnet. Möchtest du sie schließen?"
+55,1,"Ungültige Zahl!"
+
+[STRINGTABLE 2]
+2000,1,"D&atei"
+2001,1,"&Nächste Datei\tCtrl+PgDn"
+2002,1,"Vorherige &Datei\tCtrl+PgUp"
+2003,1,"S&chließen\tEsc"
+2010,1,"B&earbeiten"
+2011,1,"&Kopieren\tCtrl+C"
+2012,1,"A&lles auswählen\tCtrl+A"
+2013,1,"S&uchen…\tCtrl+F"
+2014,1,"Nächste &suchen\tF3"
+2015,1,"&Vorheriges suchen\tShift+F3"
+
+[STRINGTABLE 3]
+2016,1,"Zur Zeile sprin&gen...\tCtrl+G"
+2020,1,"A&nsicht"
+2021,1,"&Farbschema"
+2022,1,"&Anwendungsdesign beibehalten"
+2023,1,"&Vergrößern\tCtrl++"
+2024,1,"Ve&rkleinern\tCtrl+-"
+2025,1,"&Zoom zurücksetzen\tCtrl+0"
+2026,1,"Ze&ilenumbruch\tF2"
+2027,1,"Zei&lennummern"
+2028,1,"Leerzeic&hen anzeigen"
+2029,1,"&Sprache"
+2030,1,"Kodi&erung"
+
+[STRINGTABLE 4]
+2040,1,"&Hilfe"
+2041,1,"&Über den Code-Viewer"
+2042,1,"Automatisch"
+
+[STRINGTABLE 5]
+2100,1,"GitHub Light"
+2101,1,"Visual Studio Light"
+2102,1,"One Light"
+2103,1,"Solarized Light"
+2104,1,"Catppuccin Latte"
+2105,1,"GitHub Dark"
+2106,1,"Visual Studio Dark"
+2107,1,"One Dark Pro"
+2108,1,"Solarized Dark"
+2109,1,"Catppuccin Mocha"
+2110,1,"Gruvbox Dark"
+2111,1,"Nord"
+
+[STRINGTABLE 6]
+2200,1,"Die Datei konnte nicht geöffnet werden."
+2201,1,"Text suchen:"
+2202,1,"Text nicht gefunden."
+2203,1,"Code-Viewer"
+2204,1,"Die WebView2-Laufzeitumgebung ist nicht verfügbar. Die Datei wird stattdessen als reiner Text geöffnet."
+2205,1,"Die Syntaxhervorhebung ist für diese Datei deaktiviert: Sie ist größer als das Limit für die Hervorhebung."
+2206,1,"Die Syntaxhervorhebung ist für diese Datei deaktiviert: Sie enthält Zeilen, die länger als das Limit sind."
+2207,1,"Diese Datei ist kein Text und kann hier nicht angezeigt werden."
+
+[STRINGTABLE 7]
+2208,1,"Im integrierten Viewer öffnen"
+2209,1,"Der Code Viewer öffnet nun Quell- und Konfigurationsdateien. Drücke Alt+F3 für den integrierten Viewer; ändere die Dateitypen unter „Optionen > Viewer“."
+2210,1,"Die Syntaxhervorhebung wurde für diese Datei deaktiviert; es wird reiner Text angezeigt."
+2211,1,"Zeilennummer (oder Zeile:Spalte):"
+2212,1,"Diese Datei enthält %d Byte-Sequenzen, die in der ausgewählten Kodierung ungültig sind; sie werden als Ersatzzeichen angezeigt."
+2213,1,"Klartext"
+2214,1,"Die Standarddateitypen des Code Viewers werden beim nächsten Start der Anwendung wiederhergestellt. Einträge, die du beibehalten hast, bleiben unverändert."
+
+[STRINGTABLE 8]
+2300,1,"%d Zeilen"
+2301,1,"Zeil%d, Spalte %d"
+2302,1,"CRLF"
+2303,1,"LF"
+
+[STRINGTABLE 9]
+2304,1,"CR"
+2305,1,"Gemischt"
+2306,1,"Keine"
+
