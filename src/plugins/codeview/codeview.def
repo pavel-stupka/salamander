@@ -1,0 +1,4 @@
+LIBRARY CODEVIEW.SPL
+
+EXPORTS SalamanderPluginEntry
+EXPORTS SalamanderPluginGetReqVer

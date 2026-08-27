@@ -1,0 +1,2206 @@
+{
+ "counts": {
+  "assets": 255,
+  "grammars_excluded": 18,
+  "grammars_shipped": 224,
+  "language_modules": 237,
+  "licence_stubs": 1,
+  "themes": 12
+ },
+ "excluded": {
+  "ada": {
+   "kind": "grammar",
+   "licence": "GPL-3.0",
+   "reason": "incompatible licence",
+   "source": "https://github.com/AdaCore/ada_language_server/blob/e984d2233630f0a3ea422e86bfa97b36f80fe038/integration/vscode/ada/advanced/ada.tmLanguage.json"
+  },
+  "ahk2": {
+   "kind": "grammar",
+   "licence": "GNU",
+   "reason": "incompatible licence",
+   "source": "https://github.com/thqby/vscode-autohotkey2-lsp/blob/60b30aa89671198bca0d3ba9777008f8c2b2983e/syntaxes/ahk2.tmLanguage.json"
+  },
+  "apl": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/kimmolinna/vscode-apl-language/blob/13541242d9ffae225e89ebba23f9abaa4c60697e/syntaxes/apl.tmLanguage.json"
+  },
+  "dax": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/huyza/dax-language/blob/7fd39aa84552617daa258189b2550dcdbd14149a/syntaxes/dax.grammer.json"
+  },
+  "dream-maker": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/gbasood/vscode-atomic-dreams/blob/22d2bf0325f65697ea542856280f66e9e098f4a2/syntaxes/dm.tmLanguage.json"
+  },
+  "glsl": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/polym0rph/GLSL.tmbundle/blob/6998d3bbd204e26746a5ca580cda4c650b9057b1/Syntaxes/GLSL.tmLanguage"
+  },
+  "gnuplot": {
+   "kind": "grammar",
+   "licence": "GPL-3.0",
+   "reason": "incompatible licence",
+   "source": "https://github.com/MarioSchwalbe/vscode-gnuplot/blob/c62c1a61c9b6b4658b43d76c397dc2ad43523b6a/syntaxes/gnuplot.tmLanguage"
+  },
+  "hurl": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/nikeee/language-hurl/blob/dec5d90bea8a13d21fd8365d5a0d2d35453653c1/grammars/hurl.tmlanguage.json"
+  },
+  "kusto": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/rosshamish/kuskus/blob/2a5d25aa9e1680b90e77b2477d710d11af8fcd88/kusto-syntax-highlighting/syntaxes/kusto.tmLanguage.json"
+  },
+  "matlab": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/mathworks/MATLAB-Language-grammar/blob/69dbf20c1eb19efd629c0438a2a493e60617e8de/Matlab.tmbundle/Syntaxes/MATLAB.tmLanguage"
+  },
+  "nginx": {
+   "kind": "grammar",
+   "licence": "GPL-3.0",
+   "reason": "incompatible licence",
+   "source": "https://github.com/hangxingliu/vscode-nginx-conf-hint/blob/49159c02fd09dce264ded7802c9499a0f09646f5/src/syntax/nginx.tmLanguage"
+  },
+  "org": {
+   "kind": "grammar",
+   "licence": "GPL-3.0",
+   "reason": "incompatible licence",
+   "source": "https://github.com/vscode-org-mode/vscode-org-mode/blob/98f123a97eca8d0cc1d9e3f313dc2a8be8f25d46/syntaxes/org.tmLanguage.json"
+  },
+  "racket": {
+   "kind": "grammar",
+   "licence": "GPL-3.0",
+   "reason": "incompatible licence",
+   "source": "https://github.com/Eugleo/magic-racket/blob/1b850db7f6e7c3ba8a1b47fe2781800a21f669a8/syntaxes/racket.tmLanguage.json"
+  },
+  "rel": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/relationalai-oss/rel_vscode/blob/63dda4dee48c67b037357f47b562185484555ea9/syntaxes/rel.tmLanguage.json"
+  },
+  "sparql": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/stardog-union/stardog-vsc/blob/a1963c610cde0eab23c44fc01ab36652565524de/stardog-rdf-grammars/syntaxes/sparql.tmLanguage.json"
+  },
+  "tcl": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/sleutho/tcl/blob/f18820ad14678bc033f0a35524820c90fe50f18b/syntaxes/tcl.tmLanguage"
+  },
+  "ts-tags": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": ""
+  },
+  "turtle": {
+   "kind": "grammar",
+   "metadata": null,
+   "reason": "licence unresolved",
+   "source": "https://github.com/stardog-union/stardog-vsc/blob/3f1364b08bdbf4b4d77f123682db7d2b708b2f6e/stardog-rdf-grammars/syntaxes/turtle.tmLanguage.json"
+  }
+ },
+ "generated_by": "tools/codeview/build_web.py",
+ "or_later_notices": [
+  "actionscript-3: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "ara: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "ballerina: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "cadence: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "cairo: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "chapel: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "elixir: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "erlang: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "gleam: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "gn: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "jsonnet: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "kdl: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "lean: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "llvm: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "mojo: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "moonbit: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "ocaml: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "pkl: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "polar: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "prisma: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "puppet: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "smithy: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "surrealql: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)",
+  "typst: Apache-2.0 (GPLv2-or-later compatible only via the 'or later' clause)"
+ ],
+ "pins": {
+  "@shikijs/core": "4.4.3",
+  "@shikijs/engine-oniguruma": "4.4.3",
+  "@shikijs/langs": "4.4.3",
+  "@shikijs/themes": "4.4.3",
+  "esbuild": "0.25.10",
+  "linguist-languages": "9.4.0",
+  "shiki": "4.4.3",
+  "tm-grammars": "1.32.8",
+  "tm-themes": "1.12.9"
+ },
+ "policy": "GPLv2-or-later compatible only; GPL-3.0-only refused (spec clarification 2026-08-26)",
+ "shipped": {
+  "abap": {
+   "aliases": [],
+   "displayName": "ABAP",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.abap",
+   "source": "https://raw.githubusercontent.com/pvl/abap.tmbundle/92e17e62a9449d2a6f87bfb30b4f920986c24018/README.md"
+  },
+  "actionscript-3": {
+   "aliases": [
+    "actionscript",
+    "as3"
+   ],
+   "displayName": "ActionScript",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.actionscript.3",
+   "source": "https://github.com/BowlerHatLLC/vscode-as3mxml/blob/11ccf88dc1ec08a55c262a96676d507b354f19b5/distribution/src/assembly/syntaxes/AS3.tmLanguage"
+  },
+  "ahk": {
+   "aliases": [
+    "ahk1"
+   ],
+   "displayName": "AutoHotkey",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ahk",
+   "source": "https://github.com/mark-wiemer/ahkpp/blob/14855ed6635fd7a7db55c9d219496832d1495a76/language/ahk.tmLanguage.yaml"
+  },
+  "angular-html": {
+   "aliases": [],
+   "displayName": "Angular HTML",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.derivative.ng",
+   "source": "https://github.com/onivim/vscode-exthost/blob/cfc2a2212de9ea10943af58ebd1817a5ad196463/extensions/html/syntaxes/html-derivative.tmLanguage.json"
+  },
+  "angular-ts": {
+   "aliases": [],
+   "displayName": "Angular TypeScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ts.ng",
+   "source": "https://github.com/microsoft/vscode/blob/210541906e5a96ab39f9c753f921b1bd35f4138b/extensions/typescript-basics/syntaxes/TypeScript.tmLanguage.json"
+  },
+  "apache": {
+   "aliases": [],
+   "displayName": "Apache Conf",
+   "kind": "grammar",
+   "licence": "BSD-2-Clause",
+   "scopeName": "source.apacheconf",
+   "source": "https://raw.githubusercontent.com/colinta/ApacheConf.tmLanguage/1fdb47b6fe2cea20cfedbc522bff3ff1ed656c07/LICENSE"
+  },
+  "apex": {
+   "aliases": [],
+   "displayName": "Apex",
+   "kind": "grammar",
+   "licence": "BSD-3-Clause",
+   "scopeName": "source.apex",
+   "source": "https://raw.githubusercontent.com/forcedotcom/apex-tmLanguage/611becc66c4553876ac6fd0287f57135581e2e59/LICENSE"
+  },
+  "applescript": {
+   "aliases": [],
+   "displayName": "AppleScript",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.applescript",
+   "source": "https://raw.githubusercontent.com/textmate/applescript.tmbundle/4947cad7494eba084c21cfe04689b4efce96700f/README.mdown"
+  },
+  "ara": {
+   "aliases": [],
+   "displayName": "Ara",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.ara",
+   "source": "https://github.com/ara-lang/highlighting/blob/ed1dbedcf03d0b67207e41fe2e11218cc925dc0d/syntaxes/ara.json"
+  },
+  "asciidoc": {
+   "aliases": [
+    "adoc"
+   ],
+   "displayName": "AsciiDoc",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.asciidoc",
+   "source": "https://raw.githubusercontent.com/asciidoctor/asciidoctor-vscode/09c406fcd67a300cfc1f49267c70cc97db978986/LICENSE"
+  },
+  "asm": {
+   "aliases": [],
+   "displayName": "Assembly",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.asm.x86_64",
+   "source": "https://github.com/13xforever/x86_64-assembly-vscode/blob/5c1958f4283d260f5dc88fa4f5f31c620e061a5a/syntaxes/language-x86_64-assembly.tmLanguage"
+  },
+  "astro": {
+   "aliases": [],
+   "displayName": "Astro",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.astro",
+   "source": "https://github.com/withastro/language-tools/blob/8e55c37cbcf134dedf0068781245da5a9d46d081/packages/vscode/syntaxes/astro.tmLanguage.src.yaml"
+  },
+  "awk": {
+   "aliases": [],
+   "displayName": "AWK",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.awk",
+   "source": "https://github.com/luggage66/vscode-awk/blob/eff8c0f160ae16592c8d9963fd77046137fd2612/syntaxes/awk.tmLanguage"
+  },
+  "ballerina": {
+   "aliases": [],
+   "displayName": "Ballerina",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.ballerina",
+   "source": "https://github.com/ballerina-platform/ballerina-grammar/blob/4bf70d328ae9e5a93219e44c031ab3776c76727a/syntaxes/ballerina.tmLanguage"
+  },
+  "bat": {
+   "aliases": [
+    "batch",
+    "cmd"
+   ],
+   "displayName": "Batch File",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.batchfile",
+   "source": "https://github.com/microsoft/vscode/blob/df15c8e832a341633acd2e9bb26e1b275d09cfe0/extensions/bat/syntaxes/batchfile.tmLanguage.json"
+  },
+  "beancount": {
+   "aliases": [],
+   "displayName": "Beancount",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.beancount",
+   "source": "https://github.com/Lencerf/vscode-beancount/blob/75fc29960fcf6666e4b06310fac4d49a16c57ca0/syntaxes/beancount.tmLanguage"
+  },
+  "berry": {
+   "aliases": [
+    "be"
+   ],
+   "displayName": "Berry",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.berry",
+   "source": "https://github.com/berry-lang/berry/blob/74611286b8d2d2c2ee16ea187029f2a9c4257f5f/tools/plugins/vscode/skiars.berry-1.2.0/syntaxes/berry.json"
+  },
+  "bibtex": {
+   "aliases": [],
+   "displayName": "BibTeX",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.bibtex",
+   "source": "https://github.com/microsoft/vscode/blob/9a2c94d213696a4453b6d9988b003d98e7646e75/extensions/latex/syntaxes/Bibtex.tmLanguage.json"
+  },
+  "bicep": {
+   "aliases": [],
+   "displayName": "Bicep",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.bicep",
+   "source": "https://github.com/Azure/bicep/blob/6252abb94141fc6e774a53652404be30f1cb9000/src/textmate/bicep.tmlanguage"
+  },
+  "bird2": {
+   "aliases": [
+    "bird"
+   ],
+   "displayName": "BIRD2 Configuration",
+   "kind": "grammar",
+   "licence": "MPL-2.0",
+   "scopeName": "source.bird2",
+   "source": "https://github.com/bird-chinese-community/BIRD-tm-language-grammar/blob/42fec06af41a569aa4c7d055ed9751603354b5e4/grammars/bird2.tmLanguage.json"
+  },
+  "blade": {
+   "aliases": [],
+   "displayName": "Blade",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.php.blade",
+   "source": "https://github.com/laravel/vs-code-extension/blob/80726f64975dc935d6b925d8230cdc1ea075802a/syntaxes/blade.tmLanguage.json"
+  },
+  "bsl": {
+   "aliases": [
+    "1c"
+   ],
+   "displayName": "1C (Enterprise)",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.bsl",
+   "source": "https://github.com/1c-syntax/vsc-language-1c-bsl/blob/c93f87c76d8a536a494039e9dc78a684b14b4e4c/syntaxes/1c.tmLanguage.json"
+  },
+  "c": {
+   "aliases": [],
+   "displayName": "C",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.c",
+   "source": "https://github.com/microsoft/vscode/blob/bd1abe08c38bb5deccf65610f8f3c03d2338d20d/extensions/cpp/syntaxes/c.tmLanguage.json"
+  },
+  "c3": {
+   "aliases": [],
+   "displayName": "C3",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.c3",
+   "source": "https://github.com/c3lang/vscode-c3/blob/38dcc9ae665da32dea3e391f342478668d44e16f/syntaxes/c3.tmLanguage.json"
+  },
+  "cadence": {
+   "aliases": [
+    "cdc"
+   ],
+   "displayName": "Cadence",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.cadence",
+   "source": "https://github.com/onflow/vscode-cadence/blob/bc7e5d3bb613e01789584283d7911cfd6b616dc4/extension/language/syntaxes/cadence.tmGrammar.json"
+  },
+  "cairo": {
+   "aliases": [],
+   "displayName": "Cairo",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.cairo0",
+   "source": "https://github.com/starkware-libs/cairo-lang/blob/4ea4fe8e167845a3402ae2ea0a8b6004aad18dd5/src/starkware/cairo/lang/ide/vscode-cairo/syntaxes/cairo.tmLanguage.json"
+  },
+  "chapel": {
+   "aliases": [
+    "chpl"
+   ],
+   "displayName": "Chapel",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.chapel",
+   "source": "https://github.com/chapel-lang/chapel-vscode/blob/c933a6c379df844d564644ee6c6df4e6055ceb33/syntaxes/chapel.tmLanguage.json"
+  },
+  "clarity": {
+   "aliases": [],
+   "displayName": "Clarity",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.clar",
+   "source": "https://github.com/hirosystems/clarity.tmbundle/blob/623ab02ac06f3fc27172503f64726bf0b107e5ee/Syntaxes/clarity.JSON-tmLanguage"
+  },
+  "clojure": {
+   "aliases": [
+    "clj"
+   ],
+   "displayName": "Clojure",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.clojure",
+   "source": "https://github.com/microsoft/vscode/blob/a1a4c0a63b1ad59e84f54b874744fe35dea9abe1/extensions/clojure/syntaxes/clojure.tmLanguage.json"
+  },
+  "cmake": {
+   "aliases": [],
+   "displayName": "CMake",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.cmake",
+   "source": "https://github.com/twxs/vs.language.cmake/blob/19b1b8fe2d68d72cf294d0c3c22f0a3fc54f8f6f/syntaxes/CMake.tmLanguage"
+  },
+  "cobol": {
+   "aliases": [],
+   "displayName": "COBOL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.cobol",
+   "source": "https://github.com/spgennard/vscode_cobol/blob/7020540cc77e04fb2edc8503f906d51fa840bbe5/syntaxes/COBOL.tmLanguage.json"
+  },
+  "codeowners": {
+   "aliases": [],
+   "displayName": "CODEOWNERS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.codeowners",
+   "source": "https://github.com/jasonnutter/vscode-codeowners/blob/219dee0ab25c1bfad0b9de84180117e71221a653/syntaxes/codeowners.tmLanguage.json"
+  },
+  "codeql": {
+   "aliases": [
+    "ql"
+   ],
+   "displayName": "CodeQL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ql",
+   "source": "https://github.com/github/vscode-codeql/blob/a6266bbcc88702619ceb580253a65e8f83333c1b/syntaxes/ql.tmLanguage.json"
+  },
+  "coffee": {
+   "aliases": [
+    "coffeescript"
+   ],
+   "displayName": "CoffeeScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.coffee",
+   "source": "https://github.com/microsoft/vscode/blob/ff58f5083f57b50e6a100ab60454dfb72fe21e80/extensions/coffeescript/syntaxes/coffeescript.tmLanguage.json"
+  },
+  "common-lisp": {
+   "aliases": [
+    "lisp"
+   ],
+   "displayName": "Common Lisp",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.commonlisp",
+   "source": "https://github.com/qingpeng9802/vscode-common-lisp/blob/79d04dc9ca80d98e65c4f28b3d67a24a7829b18f/syntaxes/commonlisp.tmLanguage.json"
+  },
+  "coq": {
+   "aliases": [],
+   "displayName": "Rocq",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.rocq",
+   "source": "https://github.com/rocq-prover/vsrocq/blob/ebf8835e7a01237c243c06984466aaab17872c62/client/syntax/rocq.tmLanguage.json"
+  },
+  "cpp": {
+   "aliases": [
+    "c++"
+   ],
+   "displayName": "C++",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.cpp",
+   "source": "https://github.com/microsoft/vscode/blob/8623a79836fba2e7e058e3493345ee068d28ce4f/extensions/cpp/syntaxes/cpp.tmLanguage.json"
+  },
+  "crystal": {
+   "aliases": [],
+   "displayName": "Crystal",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.crystal",
+   "source": "https://github.com/crystal-lang-tools/vscode-crystal-lang/blob/c920b0931ec5f05b78447dbff31b172c64f1d734/syntaxes/crystal.json"
+  },
+  "csharp": {
+   "aliases": [
+    "c#",
+    "cs"
+   ],
+   "displayName": "C#",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.cs",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/csharp/syntaxes/csharp.tmLanguage.json"
+  },
+  "css": {
+   "aliases": [],
+   "displayName": "CSS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.css",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/css/syntaxes/css.tmLanguage.json"
+  },
+  "csv": {
+   "aliases": [],
+   "displayName": "CSV",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.csv",
+   "source": "https://github.com/mechatroner/vscode_rainbow_csv/blob/3bdafafa12940a75166089b64bdd80b1d3b071db/syntaxes/csv.tmLanguage.json"
+  },
+  "cue": {
+   "aliases": [],
+   "displayName": "CUE",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.cue",
+   "source": "https://raw.githubusercontent.com/cue-lang/vscode-cue/a9ee96a7e61fb8acd39f7403144d0b6f45652987/LICENSE"
+  },
+  "cypher": {
+   "aliases": [
+    "cql"
+   ],
+   "displayName": "Cypher",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.cypher",
+   "source": "https://github.com/adam-cowley/neo4j-vscode/blob/ad90d275ac76c740018e78f78722343f730270e0/cypher/cypher.tmLanguage"
+  },
+  "d": {
+   "aliases": [],
+   "displayName": "D",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.d",
+   "source": "https://github.com/Pure-D/code-d/blob/71992a1a52a3025f3333e4025eee0f255a8cda03/syntaxes/d.json"
+  },
+  "dart": {
+   "aliases": [],
+   "displayName": "Dart",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.dart",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/dart/syntaxes/dart.tmLanguage.json"
+  },
+  "desktop": {
+   "aliases": [],
+   "displayName": "Desktop",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.desktop",
+   "source": "https://github.com/nico-castell/desktop-file-support/blob/63720f5f05313de22b68ecbd0ca3d3ed8ba57e7e/syntaxes/desktop.tmLanguage.json"
+  },
+  "diff": {
+   "aliases": [],
+   "displayName": "Diff",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.diff",
+   "source": "https://github.com/microsoft/vscode/blob/4549bd26c7b799284e0ebd8dc1e0310e6a8707a1/extensions/diff/syntaxes/diff.tmLanguage.json"
+  },
+  "docker": {
+   "aliases": [
+    "dockerfile"
+   ],
+   "displayName": "Dockerfile",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.dockerfile",
+   "source": "https://github.com/microsoft/vscode/blob/8270a86019db7551da42b71d15c6080a414d8c81/extensions/docker/syntaxes/docker.tmLanguage.json"
+  },
+  "dotenv": {
+   "aliases": [],
+   "displayName": "dotEnv",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.dotenv",
+   "source": "https://github.com/dotenv-org/dotenv-vscode/blob/e7e41baa5b23e01c1ff0567a4e596c24860e7def/syntaxes/dotenv.tmLanguage.json"
+  },
+  "edge": {
+   "aliases": [],
+   "displayName": "Edge",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.edge",
+   "source": "https://github.com/edge-js/edge-vscode/blob/04352c41981ca664598674556afa63bd393a10f3/syntaxes/edge.tmLanguage.json"
+  },
+  "elixir": {
+   "aliases": [],
+   "displayName": "Elixir",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.elixir",
+   "source": "https://raw.githubusercontent.com/elixir-editors/elixir-tmbundle/43c8cd957d5ac6e1abbd8730fc7a08c81a6e76c9/LICENSE"
+  },
+  "elm": {
+   "aliases": [],
+   "displayName": "Elm",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.elm",
+   "source": "https://github.com/elm-tooling/elm-language-client-vscode/blob/c70351314682c2e0fae8a402ebb301da79821c37/syntaxes/elm-syntax.json"
+  },
+  "emacs-lisp": {
+   "aliases": [
+    "elisp"
+   ],
+   "displayName": "Emacs Lisp",
+   "kind": "grammar",
+   "licence": "ISC",
+   "scopeName": "source.emacs.lisp",
+   "source": "https://github.com/Alhadis/language-emacs-lisp/blob/5f8504f97be6abe3da62060f6f57ce2ae1ceb12b/grammars/emacs-lisp.cson"
+  },
+  "erb": {
+   "aliases": [],
+   "displayName": "ERB",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "text.html.erb",
+   "source": "https://raw.githubusercontent.com/textmate/ruby.tmbundle/ecf0f1df23984bcff9b51552e35d9696cb0d9539/README.mdown"
+  },
+  "erlang": {
+   "aliases": [
+    "erl"
+   ],
+   "displayName": "Erlang",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.erlang",
+   "source": "https://github.com/erlang-ls/grammar/blob/fe898becd3004bcb4947ab50d6b6b830fbfb9228/Erlang.plist"
+  },
+  "fennel": {
+   "aliases": [],
+   "displayName": "Fennel",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.fnl",
+   "source": "https://github.com/kongeor/vsc-fennel/blob/664148923d7bd72531120d0cba712c6dba6f698d/syntaxes/fennel.tmLanguage.json"
+  },
+  "fish": {
+   "aliases": [],
+   "displayName": "Fish",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.fish",
+   "source": "https://github.com/bmalehorn/vscode-fish/blob/8288b88c46ebe1ef2876fd4275450fc80c5a176a/syntaxes/fish.tmLanguage.json"
+  },
+  "fluent": {
+   "aliases": [
+    "ftl"
+   ],
+   "displayName": "Fluent",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ftl",
+   "source": "https://github.com/macabeus/vscode-fluent/blob/8544ea296a7769a359f43ddff4dc4b6c61f5cf59/syntaxes/fluent.tmLanguage.json"
+  },
+  "fortran-fixed-form": {
+   "aliases": [
+    "f",
+    "for",
+    "f77"
+   ],
+   "displayName": "Fortran (Fixed Form)",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.fortran.fixed",
+   "source": "https://github.com/fortran-lang/vscode-fortran-support/blob/002eaa90668fd7d63cd073e8ca21b1388357ed62/syntaxes/fortran_fixed-form.tmLanguage.json"
+  },
+  "fortran-free-form": {
+   "aliases": [
+    "f90",
+    "f95",
+    "f03",
+    "f08",
+    "f18"
+   ],
+   "displayName": "Fortran (Free Form)",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.fortran.free",
+   "source": "https://github.com/fortran-lang/vscode-fortran-support/blob/f5fbf935d709e165922b307885a6106e32624018/syntaxes/fortran_free-form.tmLanguage.json"
+  },
+  "fsharp": {
+   "aliases": [
+    "f#",
+    "fs"
+   ],
+   "displayName": "F#",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.fsharp",
+   "source": "https://github.com/microsoft/vscode/blob/e6cffb21362b6d7addb977ff7db14f0681228780/extensions/fsharp/syntaxes/fsharp.tmLanguage.json"
+  },
+  "gdresource": {
+   "aliases": [
+    "tscn",
+    "tres"
+   ],
+   "displayName": "GDResource",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.gdresource",
+   "source": "https://github.com/godotengine/godot-vscode-plugin/blob/e7e2d0439dea0fb3a568378554c81e0a17348a84/syntaxes/GDResource.tmLanguage.json"
+  },
+  "gdscript": {
+   "aliases": [
+    "gd"
+   ],
+   "displayName": "GDScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.gdscript",
+   "source": "https://github.com/godotengine/godot-vscode-plugin/blob/3f2860fd76c591a6010f0d35220490933e41d01d/syntaxes/GDScript.tmLanguage.json"
+  },
+  "gdshader": {
+   "aliases": [],
+   "displayName": "GDShader",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.gdshader",
+   "source": "https://github.com/godotengine/godot-vscode-plugin/blob/e7e2d0439dea0fb3a568378554c81e0a17348a84/syntaxes/GDShader.tmLanguage.json"
+  },
+  "genie": {
+   "aliases": [],
+   "displayName": "Genie",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.genie",
+   "source": "https://github.com/vala-lang/vala-vscode/blob/8f825e95648326df2572d0522632251cdff4a43b/syntaxes/genie.YAML-tmLanguage"
+  },
+  "gherkin": {
+   "aliases": [],
+   "displayName": "Gherkin",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.gherkin.feature",
+   "source": "https://github.com/alexkrechik/VSCucumberAutoComplete/blob/fbb554addf81e8961b58b1577924af10fecf9694/syntaxes/feature.tmLanguage.json"
+  },
+  "git-commit": {
+   "aliases": [],
+   "displayName": "Git Commit Message",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.git-commit",
+   "source": "https://github.com/microsoft/vscode/blob/f8c3f89468fea14103d8790d59ea8594d6e644eb/extensions/git-base/syntaxes/git-commit.tmLanguage.json"
+  },
+  "git-rebase": {
+   "aliases": [],
+   "displayName": "Git Rebase Message",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.git-rebase",
+   "source": "https://github.com/microsoft/vscode/blob/e95c74c4c7af876e79ec58df262464467c06df28/extensions/git-base/syntaxes/git-rebase.tmLanguage.json"
+  },
+  "gleam": {
+   "aliases": [],
+   "displayName": "Gleam",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.gleam",
+   "source": "https://github.com/gleam-lang/vscode-gleam/blob/aa487ed82aeaec8dbac62e796689daf55abf1aa9/syntaxes/gleam.tmLanguage.json"
+  },
+  "glimmer-js": {
+   "aliases": [
+    "gjs"
+   ],
+   "displayName": "Glimmer JS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.gjs",
+   "source": "https://github.com/lifeart/vsc-ember-syntax/blob/76fce7b360ce09a78789e7d5217b8955d1a5d95f/syntaxes/source.gjs.json"
+  },
+  "glimmer-ts": {
+   "aliases": [
+    "gts"
+   ],
+   "displayName": "Glimmer TS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.gts",
+   "source": "https://github.com/lifeart/vsc-ember-syntax/blob/76fce7b360ce09a78789e7d5217b8955d1a5d95f/syntaxes/source.gts.json"
+  },
+  "gn": {
+   "aliases": [],
+   "displayName": "GN",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.gn",
+   "source": "https://github.com/google/gn-language-server/blob/ee64196343a29893f4707e21a8ea7bca0bc135b1/vscode-gn/syntaxes/gn.tmLanguage.json"
+  },
+  "go": {
+   "aliases": [],
+   "displayName": "Go",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.go",
+   "source": "https://github.com/microsoft/vscode/blob/091ef378baaa141c8bc4bbe9775d4cb3bd655a80/extensions/go/syntaxes/go.tmLanguage.json"
+  },
+  "graphql": {
+   "aliases": [
+    "gql"
+   ],
+   "displayName": "GraphQL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.graphql",
+   "source": "https://github.com/prisma-labs/vscode-graphql/blob/4569aef2364b42b6acd8188e4a6ca9b0ba3c6a1d/grammars/graphql.json"
+  },
+  "groovy": {
+   "aliases": [],
+   "displayName": "Groovy",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.groovy",
+   "source": "https://github.com/microsoft/vscode/blob/8fdf170a0850c1cc027382f31650aaf300d3ae2a/extensions/groovy/syntaxes/groovy.tmLanguage.json"
+  },
+  "hack": {
+   "aliases": [],
+   "displayName": "Hack",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.hack",
+   "source": "https://github.com/slackhq/vscode-hack/blob/f92d6a49ce03a4ed16d342e6bd9e8be65af0b623/syntaxes/hack.json"
+  },
+  "haml": {
+   "aliases": [],
+   "displayName": "Ruby Haml",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.haml",
+   "source": "https://github.com/karuna/haml-vscode/blob/aa45415aefd691af0a501ea4f98e434490623e0d/syntaxes/haml.json"
+  },
+  "handlebars": {
+   "aliases": [
+    "hbs"
+   ],
+   "displayName": "Handlebars",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.handlebars",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/handlebars/syntaxes/Handlebars.tmLanguage.json"
+  },
+  "haskell": {
+   "aliases": [
+    "hs"
+   ],
+   "displayName": "Haskell",
+   "kind": "grammar",
+   "licence": "BSD-3-Clause",
+   "scopeName": "source.haskell",
+   "source": "https://github.com/octref/language-haskell/blob/ae87982aac2bf5cf6334c067e49c5ec8fc08b871/syntaxes/haskell.json"
+  },
+  "haxe": {
+   "aliases": [],
+   "displayName": "Haxe",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.hx",
+   "source": "https://github.com/vshaxe/haxe-TmLanguage/blob/7f2e6feda8aa74ae5edebb04607f63f762bfc365/haxe.YAML-tmLanguage"
+  },
+  "hcl": {
+   "aliases": [],
+   "displayName": "HashiCorp HCL",
+   "kind": "grammar",
+   "licence": "MPL-2.0",
+   "scopeName": "source.hcl",
+   "source": "https://github.com/hashicorp/syntax/blob/2ec7cd10c9d6134e836bf85eb0f5aa010512bff4/syntaxes/hcl.tmGrammar.json"
+  },
+  "hjson": {
+   "aliases": [],
+   "displayName": "Hjson",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.hjson",
+   "source": "https://github.com/hjson/textmate-hjson/blob/196075169c9a9f9ab04c8e7423b67ea72c976237/Syntaxes/Hjson.tmLanguage"
+  },
+  "hlsl": {
+   "aliases": [],
+   "displayName": "HLSL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.hlsl",
+   "source": "https://github.com/microsoft/vscode/blob/efa12b2f49ec6ee84ed1e7bbd948808efec452f6/extensions/hlsl/syntaxes/hlsl.tmLanguage.json"
+  },
+  "html": {
+   "aliases": [],
+   "displayName": "HTML",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.basic",
+   "source": "https://github.com/microsoft/vscode/blob/45324363153075dab0482312ae24d8c068d81e4f/extensions/html/syntaxes/html.tmLanguage.json"
+  },
+  "html-derivative": {
+   "aliases": [],
+   "displayName": "HTML (Derivative)",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.derivative",
+   "source": "https://github.com/microsoft/vscode/blob/4064f172528461afc6944383d07521f6a30da89c/extensions/html/syntaxes/html-derivative.tmLanguage.json"
+  },
+  "http": {
+   "aliases": [],
+   "displayName": "HTTP",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.http",
+   "source": "https://github.com/Huachao/vscode-restclient/blob/6649589e4d3f97d9c0d68a4f7ffe03fa2919c4df/syntaxes/http.tmLanguage.json"
+  },
+  "hxml": {
+   "aliases": [],
+   "displayName": "HXML",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.hxml",
+   "source": "https://github.com/vshaxe/haxe-TmLanguage/blob/365040ca52f480c5a9d7bfe87aaaead06fc08fed/hxml.YAML-tmLanguage"
+  },
+  "hy": {
+   "aliases": [],
+   "displayName": "Hy",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.hy",
+   "source": "https://github.com/hylang/vscode-hy/blob/8f99630793b7483cf4cac10a655da6fed08a4f9f/syntaxes/hy.tmLanguage.json"
+  },
+  "imba": {
+   "aliases": [],
+   "displayName": "Imba",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.imba",
+   "source": "https://github.com/imba/imba/blob/183643518e567f0e125046b47b6d81f1aa7bdbb1/packages/vscode-imba/syntaxes/imba.tmLanguage.json"
+  },
+  "ini": {
+   "aliases": [
+    "properties"
+   ],
+   "displayName": "INI",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ini",
+   "source": "https://github.com/microsoft/vscode/blob/8fdf170a0850c1cc027382f31650aaf300d3ae2a/extensions/ini/syntaxes/ini.tmLanguage.json"
+  },
+  "java": {
+   "aliases": [],
+   "displayName": "Java",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.java",
+   "source": "https://github.com/microsoft/vscode/blob/3c86ede5f554f6e196c832394e126b291a1de606/extensions/java/syntaxes/java.tmLanguage.json"
+  },
+  "javascript": {
+   "aliases": [
+    "js",
+    "cjs",
+    "mjs"
+   ],
+   "displayName": "JavaScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.js",
+   "source": "https://github.com/microsoft/vscode/blob/210541906e5a96ab39f9c753f921b1bd35f4138b/extensions/javascript/syntaxes/JavaScript.tmLanguage.json"
+  },
+  "jinja": {
+   "aliases": [],
+   "displayName": "Jinja",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.jinja",
+   "source": "https://github.com/samuelcolvin/jinjahtml-vscode/blob/be729c88f723602e7b5df2e9dc5e8c016c31c38f/syntaxes/jinja.tmLanguage.json"
+  },
+  "jison": {
+   "aliases": [],
+   "displayName": "Jison",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.jison",
+   "source": "https://github.com/cdibbs/language-jison/blob/9d4cb4b044832320a51fabb6e533fc299425f552/grammars/jison.cson"
+  },
+  "json": {
+   "aliases": [],
+   "displayName": "JSON",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.json",
+   "source": "https://github.com/microsoft/vscode/blob/d6af4893ed9a3545163a4cb748fa5548bd1e51a5/extensions/json/syntaxes/JSON.tmLanguage.json"
+  },
+  "json5": {
+   "aliases": [],
+   "displayName": "JSON5",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.json5",
+   "source": "https://github.com/mrmlnc/vscode-json5/blob/e884b89929103ff009322c393080ff45a4544e88/syntaxes/json5.json"
+  },
+  "jsonc": {
+   "aliases": [],
+   "displayName": "JSON with Comments",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.json.comments",
+   "source": "https://github.com/microsoft/vscode/blob/0adddd82816db666c52038e8277312dc55da2756/extensions/json/syntaxes/JSONC.tmLanguage.json"
+  },
+  "jsonl": {
+   "aliases": [],
+   "displayName": "JSON Lines",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.json.lines",
+   "source": "https://github.com/microsoft/vscode/blob/0adddd82816db666c52038e8277312dc55da2756/extensions/json/syntaxes/JSONL.tmLanguage.json"
+  },
+  "jsonnet": {
+   "aliases": [],
+   "displayName": "Jsonnet",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.jsonnet",
+   "source": "https://github.com/heptio/vscode-jsonnet/blob/39088f9cde9f483c8e0efeb67a3fd561cd873aad/syntaxes/jsonnet.tmLanguage.json"
+  },
+  "jssm": {
+   "aliases": [
+    "fsl"
+   ],
+   "displayName": "JSSM",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.jssm",
+   "source": "https://github.com/StoneCypher/sublime-jssm/blob/2be02a59d284229bbbfb3dc6c2bdcec9b2c263ef/jssm.tmLanguage"
+  },
+  "jsx": {
+   "aliases": [],
+   "displayName": "JSX",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.js.jsx",
+   "source": "https://github.com/microsoft/vscode/blob/210541906e5a96ab39f9c753f921b1bd35f4138b/extensions/javascript/syntaxes/JavaScriptReact.tmLanguage.json"
+  },
+  "julia": {
+   "aliases": [
+    "jl"
+   ],
+   "displayName": "Julia",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.julia",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/julia/syntaxes/julia.tmLanguage.json"
+  },
+  "just": {
+   "aliases": [
+    "justfile"
+   ],
+   "displayName": "Just",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.just",
+   "source": "https://github.com/nefrob/vscode-just/blob/2253973135a5cdc34e44df876fecd30aff605150/syntaxes/just.tmLanguage.json"
+  },
+  "kdl": {
+   "aliases": [],
+   "displayName": "KDL",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.kdl",
+   "source": "https://github.com/kdl-org/vscode-kdl/blob/b986286d526d3dba7f5121956a52ce300c3418f0/syntaxes/kdl.tmLanguage.json"
+  },
+  "kotlin": {
+   "aliases": [
+    "kt",
+    "kts"
+   ],
+   "displayName": "Kotlin",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.kotlin",
+   "source": "https://github.com/fwcd/vscode-kotlin/blob/626e20d5c51a4379c4c0ee293aa89e58b5232aec/syntaxes/kotlin.tmLanguage.json"
+  },
+  "latex": {
+   "aliases": [],
+   "displayName": "LaTeX",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.tex.latex",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/latex/syntaxes/LaTeX.tmLanguage.json"
+  },
+  "lean": {
+   "aliases": [
+    "lean4"
+   ],
+   "displayName": "Lean 4",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.lean4",
+   "source": "https://github.com/leanprover/vscode-lean4/blob/2ca585c47d447682452bd72f528feffd03ef4971/vscode-lean4/syntaxes/lean4.json"
+  },
+  "less": {
+   "aliases": [],
+   "displayName": "Less",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.css.less",
+   "source": "https://github.com/microsoft/vscode/blob/03dc55030b3b2b5c4779d4ac1e2e46cd1f5a6b7c/extensions/less/syntaxes/less.tmLanguage.json"
+  },
+  "liquid": {
+   "aliases": [],
+   "displayName": "Liquid",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.liquid",
+   "source": "https://github.com/Shopify/liquid-tm-grammar/blob/099adcf0d4beacd078a22432eaeab08d6f1e6da5/grammars/liquid.tmLanguage.json"
+  },
+  "llvm": {
+   "aliases": [],
+   "displayName": "LLVM IR",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.llvm",
+   "source": "https://raw.githubusercontent.com/llvm/llvm-project/c07bc2962c5f76ebcbd040c4e97fe5d129530087/LICENSE.TXT"
+  },
+  "log": {
+   "aliases": [],
+   "displayName": "Log file",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.log",
+   "source": "https://github.com/emilast/vscode-logfile-highlighter/blob/396c8552ff99d0e07142fdd940d75dae212dd28c/syntaxes/log.tmLanguage"
+  },
+  "logo": {
+   "aliases": [],
+   "displayName": "Logo",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.logo",
+   "source": "https://raw.githubusercontent.com/textmate/logo.tmbundle/3205e987ed2a2aa11accdd55a7d094832441f89c/README.mdown"
+  },
+  "lua": {
+   "aliases": [],
+   "displayName": "Lua",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.lua",
+   "source": "https://github.com/microsoft/vscode/blob/c8fdd1650c06321d687ddfd1eff06aae4b616256/extensions/lua/syntaxes/lua.tmLanguage.json"
+  },
+  "luau": {
+   "aliases": [],
+   "displayName": "Luau",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.luau",
+   "source": "https://raw.githubusercontent.com/JohnnyMorganz/Luau.tmLanguage/2565337787d6d4df5cdfdc14bfb25521d55b7c4e/LICENSE.md"
+  },
+  "make": {
+   "aliases": [
+    "makefile"
+   ],
+   "displayName": "Makefile",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.makefile",
+   "source": "https://github.com/microsoft/vscode/blob/91db8ea85fee30ebb3c7a5e7939aa2a8d79811c5/extensions/make/syntaxes/make.tmLanguage.json"
+  },
+  "markdown": {
+   "aliases": [
+    "md"
+   ],
+   "displayName": "Markdown",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.markdown",
+   "source": "https://github.com/microsoft/vscode/blob/6d8ab9737d58fc5eaf07e2ae6553b38183a5de47/extensions/markdown-basics/syntaxes/markdown.tmLanguage.json"
+  },
+  "marko": {
+   "aliases": [],
+   "displayName": "Marko",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.marko",
+   "source": "https://github.com/marko-js/language-server/blob/9b627df21b63f9aeecd04780b9336ac3b734fa17/packages/vscode/syntaxes/marko.tmLanguage.json"
+  },
+  "mdc": {
+   "aliases": [],
+   "displayName": "MDC",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.markdown.mdc.standalone",
+   "source": "https://github.com/nuxt-content/vscode-mdc/blob/97c4924c847eea22e50188a5127d893262a66019/syntaxes/mdc.standalone.tmLanguage.json"
+  },
+  "mdx": {
+   "aliases": [],
+   "displayName": "MDX",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.mdx",
+   "source": "https://github.com/wooorm/markdown-tm-language/blob/c78b1e5df644d24fa76716bbe26f4b48a6fc1610/source.mdx.tmLanguage"
+  },
+  "mermaid": {
+   "aliases": [
+    "mmd"
+   ],
+   "displayName": "Mermaid",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "markdown.mermaid.codeblock",
+   "source": "https://github.com/bpruitt-goddard/vscode-mermaid-syntax-highlight/blob/8b62f487cb7a89afcd152febfbf47f5d4787657f/syntaxes/mermaid.tmLanguage.yaml"
+  },
+  "mipsasm": {
+   "aliases": [
+    "mips"
+   ],
+   "displayName": "MIPS Assembly",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.mips",
+   "source": "https://raw.githubusercontent.com/textmate/mips.tmbundle/eb7601016a109bf912a48a1c21988f3c4a59fb3a/README.mdown"
+  },
+  "mojo": {
+   "aliases": [],
+   "displayName": "Mojo",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.mojo",
+   "source": "https://github.com/modular/vscode-mojo/blob/7661e4e6157718ab1ecc700441138738f4fcbc9b/syntaxes/mojo.syntax.json"
+  },
+  "moonbit": {
+   "aliases": [
+    "mbt",
+    "mbti"
+   ],
+   "displayName": "MoonBit",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.moonbit",
+   "source": "https://github.com/moonbitlang/moonbit-tmLanguage/blob/e19b5bd265bacd5eeae6462c9fc152b696029198/grammars/moonbit.tmLanguage.json"
+  },
+  "move": {
+   "aliases": [],
+   "displayName": "Move",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.move",
+   "source": "https://github.com/damirka/move-syntax/blob/01aeb9284635195a4861cfa7d46759320bb6609c/syntaxes/move.tmLanguage.json"
+  },
+  "narrat": {
+   "aliases": [
+    "nar"
+   ],
+   "displayName": "Narrat Language",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.narrat",
+   "source": "https://github.com/liana-p/narrat-syntax-highlighting-vscode/blob/00d4b410338fc50ca0ce77a1f7e873c1fb66d376/syntaxes/narrat.tmLanguage.yaml"
+  },
+  "nextflow": {
+   "aliases": [
+    "nf"
+   ],
+   "displayName": "Nextflow",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.nextflow",
+   "source": "https://github.com/nextflow-io/vscode-language-nextflow/blob/928fc02dd8d082d489a5cec0c019268894719339/syntaxes/nextflow.tmLanguage.json"
+  },
+  "nextflow-groovy": {
+   "aliases": [],
+   "displayName": "Nextflow Groovy",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.nextflow-groovy",
+   "source": "https://github.com/nextflow-io/vscode-language-nextflow/blob/928fc02dd8d082d489a5cec0c019268894719339/syntaxes/groovy.tmLanguage.json"
+  },
+  "nim": {
+   "aliases": [],
+   "displayName": "Nim",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.nim",
+   "source": "https://raw.githubusercontent.com/pragmagic/vscode-nim/0272a0544ddf147fde98f8a8f2b624b7dcb19eb3/LICENSE"
+  },
+  "nix": {
+   "aliases": [],
+   "displayName": "Nix",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.nix",
+   "source": "https://github.com/nix-community/vscode-nix-ide/blob/effbf3494a43250a537834805b305793994b9ca8/dist/nix.tmLanguage.json"
+  },
+  "nsis": {
+   "aliases": [],
+   "displayName": "NSIS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.nsis",
+   "source": "https://raw.githubusercontent.com/idleberg/vscode-nsis/9adaf15a501157c1d3b73730c08a7bcbb057f812/LICENSE"
+  },
+  "nushell": {
+   "aliases": [
+    "nu"
+   ],
+   "displayName": "nushell",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.nushell",
+   "source": "https://github.com/nushell/vscode-nushell-lang/blob/dd6145171b0e51963f1e3b0f92ade7e9ddfd1628/syntaxes/nushell.tmLanguage.json"
+  },
+  "objective-c": {
+   "aliases": [
+    "objc"
+   ],
+   "displayName": "Objective-C",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.objc",
+   "source": "https://github.com/microsoft/vscode/blob/bd1abe08c38bb5deccf65610f8f3c03d2338d20d/extensions/objective-c/syntaxes/objective-c.tmLanguage.json"
+  },
+  "objective-cpp": {
+   "aliases": [],
+   "displayName": "Objective-C++",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.objcpp",
+   "source": "https://github.com/microsoft/vscode/blob/bd1abe08c38bb5deccf65610f8f3c03d2338d20d/extensions/objective-c/syntaxes/objective-c++.tmLanguage.json"
+  },
+  "ocaml": {
+   "aliases": [],
+   "displayName": "OCaml",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.ocaml",
+   "source": "https://github.com/reasonml-editor/vscode-reasonml/blob/14af625ec50ed9968b957b4d6336c5338d81af45/syntaxes/ocaml.json"
+  },
+  "odin": {
+   "aliases": [],
+   "displayName": "Odin",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.odin",
+   "source": "https://github.com/DanielGavin/ols/blob/d26a19b38c581e28f67609cbb2d5ac933a9373d1/editors/vscode/syntaxes/odin.tmLanguage.json"
+  },
+  "openscad": {
+   "aliases": [
+    "scad"
+   ],
+   "displayName": "OpenSCAD",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.scad",
+   "source": "https://github.com/tbuser/openscad.tmbundle/blob/5962175ed355c2d58dc1991801c229809363e999/Syntaxes/OpenSCAD.tmLanguage"
+  },
+  "pascal": {
+   "aliases": [],
+   "displayName": "Pascal",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.pascal",
+   "source": "https://github.com/alefragnani/vscode-language-pascal/blob/f2d6345bd9fe83932f4d04fcacf98ce7d74b8034/syntaxes/pascal.tmLanguage"
+  },
+  "perl": {
+   "aliases": [],
+   "displayName": "Perl",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.perl",
+   "source": "https://github.com/microsoft/vscode/blob/e637ff1bf7f481134849625e982ec80df9b35bc8/extensions/perl/syntaxes/perl.tmLanguage.json"
+  },
+  "php": {
+   "aliases": [],
+   "displayName": "PHP",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.php",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/php/syntaxes/php.tmLanguage.json"
+  },
+  "pkl": {
+   "aliases": [],
+   "displayName": "Pkl",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.pkl",
+   "source": "https://github.com/apple/pkl.tmbundle/blob/4ed6ca67ec7579b7a3a86b96ee89874ae825f15f/Syntaxes/pkl.tmLanguage"
+  },
+  "plsql": {
+   "aliases": [],
+   "displayName": "PL/SQL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.plsql.oracle",
+   "source": "https://github.com/zabel-xyz/plsql-language/blob/256a6b8f04f2bdc5e60ce921646a5068957078d7/syntaxes/plsql.tmLanguage"
+  },
+  "po": {
+   "aliases": [
+    "pot",
+    "potx"
+   ],
+   "displayName": "Gettext PO",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.po",
+   "source": "https://raw.githubusercontent.com/textmate/gettext.tmbundle/08bb69558d82ada8d4f36b8869f871ce69014749/README.mdown"
+  },
+  "polar": {
+   "aliases": [],
+   "displayName": "Polar",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.polar",
+   "source": "https://github.com/osohq/polar-grammar/blob/1a87b3a7f2b47aea681a0f627b2297f77171d1c3/syntaxes/polar.tmLanguage.json"
+  },
+  "postcss": {
+   "aliases": [],
+   "displayName": "PostCSS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.css.postcss",
+   "source": "https://github.com/vuejs/vetur/blob/8ccae3ba50b65837d4cd4acc71a3b84cd3bee27c/syntaxes/vue-postcss.json"
+  },
+  "powerquery": {
+   "aliases": [],
+   "displayName": "PowerQuery",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.powerquery",
+   "source": "https://github.com/microsoft/powerquery-language/blob/eed9810b5f78dfb63319bdbce80bca50419dfa50/PowerQuery.tmLanguage.json"
+  },
+  "powershell": {
+   "aliases": [
+    "ps",
+    "ps1",
+    "pwsh"
+   ],
+   "displayName": "PowerShell",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.powershell",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/powershell/syntaxes/powershell.tmLanguage.json"
+  },
+  "prisma": {
+   "aliases": [],
+   "displayName": "Prisma",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.prisma",
+   "source": "https://github.com/prisma/language-tools/blob/eca96bfdfa03bde79465e831e502481d386934be/packages/vscode/syntaxes/prisma.tmLanguage.json"
+  },
+  "prolog": {
+   "aliases": [],
+   "displayName": "Prolog",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.prolog",
+   "source": "https://github.com/arthwang/vsc-prolog/blob/5e15f731d5ef8e0f3974589b84ddefe6a2bf78c7/syntaxes/prolog.swi.tmLanguage.json"
+  },
+  "proto": {
+   "aliases": [
+    "protobuf"
+   ],
+   "displayName": "Protocol Buffer 3",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.proto",
+   "source": "https://github.com/zxh0/vscode-proto3/blob/274be763ecae7055505354b44f4892a2669e1da8/syntaxes/proto3.tmLanguage.json"
+  },
+  "pug": {
+   "aliases": [
+    "jade"
+   ],
+   "displayName": "Pug",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.pug",
+   "source": "https://github.com/microsoft/vscode/blob/6ac83c7c7dda9f27ca1fe9d98675253e010b75d1/extensions/pug/syntaxes/pug.tmLanguage.json"
+  },
+  "puppet": {
+   "aliases": [],
+   "displayName": "Puppet",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.puppet",
+   "source": "https://github.com/octref/puppet-vscode/blob/42e02ef6c02aefb0dcf03f8367fdc106d7213a6c/syntaxes/puppet.tmLanguage"
+  },
+  "purescript": {
+   "aliases": [],
+   "displayName": "PureScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.purescript",
+   "source": "https://raw.githubusercontent.com/nwolverson/vscode-language-purescript/b7641936190d6d8eb346660284dab3a5d1cc636f/LICENSE.md"
+  },
+  "python": {
+   "aliases": [
+    "py"
+   ],
+   "displayName": "Python",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.python",
+   "source": "https://github.com/microsoft/vscode/blob/cf4c9e469d521fa5f33353737e8157eb0789ad02/extensions/python/syntaxes/MagicPython.tmLanguage.json"
+  },
+  "qml": {
+   "aliases": [],
+   "displayName": "QML",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.qml",
+   "source": "https://github.com/seanwu1105/vscode-qt-for-python/blob/51408001e908800c00ce9f68f66e511545ea29fe/syntaxes/qml.tmLanguage.json"
+  },
+  "qmldir": {
+   "aliases": [],
+   "displayName": "QML Directory",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.qmldir",
+   "source": "https://github.com/seanwu1105/vscode-qt-for-python/blob/b301e7b18493ba59c4f52e49c3f73b6cd23d4c4b/syntaxes/qmldir.tmLanguage.json"
+  },
+  "qss": {
+   "aliases": [],
+   "displayName": "Qt Style Sheets",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.qss",
+   "source": "https://github.com/seanwu1105/vscode-qt-for-python/blob/f0a56a97d10f58ab7b4b6e2ab6ce34ca4c9d521d/syntaxes/qss.tmLanguage.json"
+  },
+  "r": {
+   "aliases": [],
+   "displayName": "R",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.r",
+   "source": "https://github.com/posit-dev/positron/blob/c4d6bab60dd914427a2d47a4b64e75e025d94059/extensions/positron-r/syntaxes/r.tmGrammar.gen.json"
+  },
+  "raku": {
+   "aliases": [
+    "perl6"
+   ],
+   "displayName": "Raku",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.perl.6",
+   "source": "https://github.com/microsoft/vscode/blob/8fdf170a0850c1cc027382f31650aaf300d3ae2a/extensions/perl/syntaxes/perl6.tmLanguage.json"
+  },
+  "razor": {
+   "aliases": [],
+   "displayName": "ASP.NET Razor",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.aspnetcorerazor",
+   "source": "https://github.com/dotnet/razor/blob/743f32a68c61809b22fd84e8748c3686ef1bb8b8/src/Razor/src/Microsoft.VisualStudio.RazorExtension/EmbeddedGrammars/aspnetcorerazor.tmLanguage.json"
+  },
+  "rbs": {
+   "aliases": [
+    "ruby-signature"
+   ],
+   "displayName": "RBS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.rbs",
+   "source": "https://github.com/soutaro/vscode-rbs-syntax/blob/d945dc76ec7eee172c51eb8bea1f206aa2e52925/syntaxes/rbs.tmLanguage.json"
+  },
+  "reg": {
+   "aliases": [],
+   "displayName": "Windows Registry Script",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.reg",
+   "source": "https://github.com/mihai-vlc/reg-vscode/blob/896096fc6756329d82c71a913663a1c0ac678f74/syntaxes/reg.tmLanguage"
+  },
+  "regexp": {
+   "aliases": [
+    "regex"
+   ],
+   "displayName": "RegExp",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.regexp.python",
+   "source": "https://github.com/MagicStack/MagicPython/blob/c9b3409deb69acec31bbf7913830e93a046b30cc/grammars/MagicRegExp.tmLanguage"
+  },
+  "riscv": {
+   "aliases": [],
+   "displayName": "RISC-V",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.riscv",
+   "source": "https://github.com/zhuanhao-wu/vscode-riscv-support/blob/2736b60e45ff2ef738d784055e136cf38d6290cd/syntaxes/riscv.tmLanguage"
+  },
+  "ron": {
+   "aliases": [],
+   "displayName": "RON",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ron",
+   "source": "https://github.com/a5huynh/vscode-ron/blob/3acb0d97348c972b3b6f04b4e92901a541b22022/syntaxes/ron.tmGrammar.json"
+  },
+  "rosmsg": {
+   "aliases": [],
+   "displayName": "ROS Interface",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.rosmsg",
+   "source": "https://github.com/jtbandes/ros-tmlanguage/blob/d8ae27bc0d04498c01cb8dc77bfe2884474d9aba/ROS%20Interface.tmLanguage.yaml"
+  },
+  "rst": {
+   "aliases": [],
+   "displayName": "reStructuredText",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.rst",
+   "source": "https://github.com/microsoft/vscode/blob/48e93f756b764991ede33ad09781a863aca6907a/extensions/restructuredtext/syntaxes/rst.tmLanguage.json"
+  },
+  "ruby": {
+   "aliases": [
+    "rb"
+   ],
+   "displayName": "Ruby",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ruby",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/ruby/syntaxes/ruby.tmLanguage.json"
+  },
+  "rust": {
+   "aliases": [
+    "rs"
+   ],
+   "displayName": "Rust",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.rust",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/rust/syntaxes/rust.tmLanguage.json"
+  },
+  "sas": {
+   "aliases": [],
+   "displayName": "SAS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.sas",
+   "source": "https://github.com/rpardee/sas/blob/49f6e733c6c0b918a2a825ca2f63dba704f3e8c0/syntaxes/sas.tmLanguage"
+  },
+  "sass": {
+   "aliases": [],
+   "displayName": "Sass",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.sass",
+   "source": "https://raw.githubusercontent.com/TheRealSyler/vscode-sass-indented/f0e50cfaca4b64a1d49f8d938f188d6fd0bcfb6f/LICENSE"
+  },
+  "scala": {
+   "aliases": [],
+   "displayName": "Scala",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.scala",
+   "source": "https://github.com/scala/vscode-scala-syntax/blob/672fa16c64e12b2cc8b98da011411463968de727/syntaxes/Scala.tmLanguage.json"
+  },
+  "scheme": {
+   "aliases": [],
+   "displayName": "Scheme",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.scheme",
+   "source": "https://github.com/sjhuangx/vscode-scheme/blob/4e21683666e1e2edfa21d040ecd427f628e7b5ff/syntaxes/scheme.tmLanguage"
+  },
+  "scss": {
+   "aliases": [],
+   "displayName": "SCSS",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.css.scss",
+   "source": "https://github.com/microsoft/vscode/blob/cf8d61ebd2f022f4ce8280171f0360d1fe0a206d/extensions/scss/syntaxes/scss.tmLanguage.json"
+  },
+  "sdbl": {
+   "aliases": [
+    "1c-query"
+   ],
+   "displayName": "1C (Query)",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.sdbl",
+   "source": "https://github.com/1c-syntax/vsc-language-1c-bsl/blob/c60d42089e5139942ff5b1db3a0a3ca8dd094ce6/syntaxes/1c-query.tmLanguage.json"
+  },
+  "shaderlab": {
+   "aliases": [
+    "shader"
+   ],
+   "displayName": "ShaderLab",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.shaderlab",
+   "source": "https://github.com/microsoft/vscode/blob/8fdf170a0850c1cc027382f31650aaf300d3ae2a/extensions/shaderlab/syntaxes/shaderlab.tmLanguage.json"
+  },
+  "shellscript": {
+   "aliases": [
+    "bash",
+    "sh",
+    "shell",
+    "zsh"
+   ],
+   "displayName": "Shell",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.shell",
+   "source": "https://github.com/microsoft/vscode/blob/9473445f7d3dcb5c579f42ece8b6c18c43c63ed3/extensions/shellscript/syntaxes/shell-unix-bash.tmLanguage.json"
+  },
+  "shellsession": {
+   "aliases": [
+    "console"
+   ],
+   "displayName": "Shell Session",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.shell-session",
+   "source": "https://github.com/hronro/sublime-linguist-syntax/blob/9c84f1d69dbe89bc23292f129cf2d408a9c7afe1/syntaxes/ShellSession.tmLanguage"
+  },
+  "smalltalk": {
+   "aliases": [],
+   "displayName": "GNU Smalltalk",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.smalltalk.gnu",
+   "source": "https://github.com/leocamello/vscode-smalltalk/blob/241ae15a15643a7728ddf6c5c1771e340e731041/syntaxes/gnu-smalltalk.YAML-tmLanguage"
+  },
+  "smithy": {
+   "aliases": [],
+   "displayName": "Smithy",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.smithy",
+   "source": "https://github.com/smithy-lang/smithy-vscode/blob/207935eefd01821565e86f115b928fa44992830f/syntaxes/smithy.tmLanguage.json"
+  },
+  "solidity": {
+   "aliases": [],
+   "displayName": "Solidity",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.solidity",
+   "source": "https://github.com/juanfranblanco/vscode-solidity/blob/54ae302551a095e3f34371bb15f654f574e10fac/syntaxes/solidity.json"
+  },
+  "soy": {
+   "aliases": [
+    "closure-templates"
+   ],
+   "displayName": "Closure Templates",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.soy",
+   "source": "https://github.com/mthadley/language-closure-templates/blob/7caf3a1fad0245c4196d3766ba0f481762fbc92e/grammars/closure-templates.json"
+  },
+  "splunk": {
+   "aliases": [
+    "spl"
+   ],
+   "displayName": "Splunk Query Language",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.splunk_search",
+   "source": "https://github.com/arcsector/vscode-splunk-search-syntax/blob/b1f68ff035950e6a98e0db4af1a338cb1c3c1858/syntaxes/splunk_search.tmLanguage"
+  },
+  "sql": {
+   "aliases": [],
+   "displayName": "SQL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.sql",
+   "source": "https://github.com/microsoft/vscode/blob/af600487b1e94374d9f48f57cbf2cad24656b07f/extensions/sql/syntaxes/sql.tmLanguage.json"
+  },
+  "ssh-config": {
+   "aliases": [],
+   "displayName": "SSH Config",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.ssh-config",
+   "source": "https://raw.githubusercontent.com/textmate/ssh-config.tmbundle/212a0000c50e0c877303b2c4fcead539d2af2670/README.mdown"
+  },
+  "stata": {
+   "aliases": [],
+   "displayName": "Stata",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.stata",
+   "source": "https://github.com/kylebarron/language-stata/blob/dd98de502bc1bf2a205f3f023afb98c7aa5b42ee/grammars/stata.json"
+  },
+  "stylus": {
+   "aliases": [
+    "styl"
+   ],
+   "displayName": "Stylus",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.stylus",
+   "source": "https://github.com/d4rkr00t/language-stylus/blob/198a851f385aee857332f3ce5dd981ff67720ead/syntaxes/stylus.json"
+  },
+  "surrealql": {
+   "aliases": [
+    "surql"
+   ],
+   "displayName": "SurrealQL",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.surrealql",
+   "source": "https://github.com/surrealdb/surrealql-grammar/blob/d7594cbe432daaa51d30723a63fb63888d5073a0/syntaxes/surrealql.tmLanguage.json"
+  },
+  "svelte": {
+   "aliases": [],
+   "displayName": "Svelte",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.svelte",
+   "source": "https://github.com/sveltejs/language-tools/blob/32bd44e5af1eea464198cc6e841281b045e0f04d/packages/svelte-vscode/syntaxes/svelte.tmLanguage.src.yaml"
+  },
+  "swift": {
+   "aliases": [],
+   "displayName": "Swift",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.swift",
+   "source": "https://github.com/jtbandes/swift-tmlanguage/blob/2be007b6bc88e54a0edfd3c313ff31276edc923d/Swift.tmLanguage.yaml"
+  },
+  "system-verilog": {
+   "aliases": [],
+   "displayName": "SystemVerilog",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.systemverilog",
+   "source": "https://github.com/mshr-h/vscode-verilog-hdl-support/blob/e6a5a2b76055dd7acbdc7420060e0314cb86e8dd/syntaxes/systemverilog.tmLanguage.json"
+  },
+  "systemd": {
+   "aliases": [],
+   "displayName": "Systemd Units",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.systemd",
+   "source": "https://github.com/hangxingliu/vscode-systemd/blob/62ace1156b5afa0ec9932e3a55cfc00c0123c457/src/syntax/systemd.tmLanguage"
+  },
+  "talonscript": {
+   "aliases": [
+    "talon"
+   ],
+   "displayName": "TalonScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.talon",
+   "source": "https://github.com/mrob95/vscode-TalonScript/blob/91f3a6faaf926c02582f36ee155f2c4a02b9cc48/syntaxes/talon.tmLanguage.json"
+  },
+  "tasl": {
+   "aliases": [],
+   "displayName": "Tasl",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.tasl",
+   "source": "https://github.com/underlay/vscode-tasl/blob/dde4b7c0b762c2e667584095362dd49ebfacece7/syntaxes/tasl.tmLanguage.json"
+  },
+  "templ": {
+   "aliases": [],
+   "displayName": "Templ",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.templ",
+   "source": "https://github.com/templ-go/templ-vscode/blob/d0af70c97ed384e93892c46b93d622ffaba5d93c/syntaxes/templ.tmLanguage.json"
+  },
+  "terraform": {
+   "aliases": [
+    "tf",
+    "tfvars"
+   ],
+   "displayName": "Terraform",
+   "kind": "grammar",
+   "licence": "MPL-2.0",
+   "scopeName": "source.hcl.terraform",
+   "source": "https://github.com/hashicorp/syntax/blob/cc2b4d4fe389f14b8a13937f4e0d7b2811b57588/syntaxes/terraform.tmGrammar.json"
+  },
+  "tex": {
+   "aliases": [],
+   "displayName": "TeX",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.tex",
+   "source": "https://github.com/microsoft/vscode/blob/609f17a76734f092792a33c891af40bbcaea0c64/extensions/latex/syntaxes/TeX.tmLanguage.json"
+  },
+  "theme:catppuccin-latte": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/catppuccin/vscode/blob/befc9e6fc41980f4241408f7049755d47c06ff45/packages/catppuccin-vsc/package.json",
+   "type": "light"
+  },
+  "theme:catppuccin-mocha": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/catppuccin/vscode/blob/befc9e6fc41980f4241408f7049755d47c06ff45/packages/catppuccin-vsc/package.json",
+   "type": "dark"
+  },
+  "theme:dark-plus": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/microsoft/vscode/blob/e061feef09c2a09a59d0a88ab186aa880b3c56c3/extensions/theme-defaults/themes/dark_plus.json",
+   "type": "dark"
+  },
+  "theme:github-dark": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/primer/github-vscode-theme/blob/f7a67d67fc2302a0ec36ddfb7bdd57142f4575e8/src/theme.js",
+   "type": "dark"
+  },
+  "theme:github-light": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/primer/github-vscode-theme/blob/f7a67d67fc2302a0ec36ddfb7bdd57142f4575e8/src/theme.js",
+   "type": "light"
+  },
+  "theme:gruvbox-dark-medium": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/jdinhify/vscode-theme-gruvbox/blob/f0d6e1fc1f325da636b90591eccc45d2f44738fd/src/main.ts",
+   "type": "dark"
+  },
+  "theme:light-plus": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/microsoft/vscode/blob/09fe3fcbc1514bc35742dc4325d05b7d7adfcad2/extensions/theme-defaults/themes/light_plus.json",
+   "type": "light"
+  },
+  "theme:nord": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/arcticicestudio/nord-visual-studio-code/blob/27045851c5154fe2d9b116e7491c596cdcd72275/themes/nord-color-theme.json",
+   "type": "dark"
+  },
+  "theme:one-dark-pro": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/Binaryify/OneDark-Pro/blob/194ac088df050c97ff0dd64f8a6a38221d2971ca/themes/OneDark-Pro.json",
+   "type": "dark"
+  },
+  "theme:one-light": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/akamud/vscode-theme-onelight/blob/f1ff6b87c6379a22b34354bbf64d355cd2adc611/themes/OneLight.json",
+   "type": "light"
+  },
+  "theme:solarized-dark": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/microsoft/vscode/blob/00c6beca4414ad306a03138e573a164bcc0f0912/extensions/theme-solarized-dark/themes/solarized-dark-color-theme.json",
+   "type": "dark"
+  },
+  "theme:solarized-light": {
+   "kind": "theme",
+   "licence": "MIT",
+   "source": "https://github.com/microsoft/vscode/blob/30491a4bcd22ba2e51632ae383ad87f966e504e9/extensions/theme-solarized-light/themes/solarized-light-color-theme.json",
+   "type": "light"
+  },
+  "toml": {
+   "aliases": [],
+   "displayName": "TOML",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.toml",
+   "source": "https://raw.githubusercontent.com/textmate/toml.tmbundle/e82b64c1e86396220786846201e9aa3f0a2d9ca2/README.mdown"
+  },
+  "tsv": {
+   "aliases": [],
+   "displayName": "TSV",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.tsv",
+   "source": "https://github.com/mechatroner/vscode_rainbow_csv/blob/00d4c947f1bbe6a4a73599bd97fb31bdfbe262f3/syntaxes/tsv.tmLanguage.json"
+  },
+  "tsx": {
+   "aliases": [],
+   "displayName": "TSX",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.tsx",
+   "source": "https://github.com/microsoft/vscode/blob/210541906e5a96ab39f9c753f921b1bd35f4138b/extensions/typescript-basics/syntaxes/TypeScriptReact.tmLanguage.json"
+  },
+  "twig": {
+   "aliases": [],
+   "displayName": "Twig",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.twig",
+   "source": "https://github.com/mblode/vscode-twig-language-2/blob/b4f2809d6f75850ee7350b03f8b1d439d741ebf5/src/syntaxes/twig.tmLanguage"
+  },
+  "typescript": {
+   "aliases": [
+    "ts",
+    "cts",
+    "mts"
+   ],
+   "displayName": "TypeScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.ts",
+   "source": "https://github.com/microsoft/vscode/blob/210541906e5a96ab39f9c753f921b1bd35f4138b/extensions/typescript-basics/syntaxes/TypeScript.tmLanguage.json"
+  },
+  "typespec": {
+   "aliases": [
+    "tsp"
+   ],
+   "displayName": "TypeSpec",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.tsp",
+   "source": "https://github.com/microsoft/typespec/blob/9bca04b6dd0c966b982b1ca920b59e245c050bed/grammars/typespec.json"
+  },
+  "typst": {
+   "aliases": [
+    "typ"
+   ],
+   "displayName": "Typst",
+   "kind": "grammar",
+   "licence": "Apache-2.0",
+   "scopeName": "source.typst",
+   "source": "https://github.com/Myriad-Dreamin/tinymist/blob/e54ace4f49a84baf60d9d1b059fd0cab7a780295/editors/vscode/package.json"
+  },
+  "v": {
+   "aliases": [],
+   "displayName": "V",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.v",
+   "source": "https://github.com/vlang/vscode-vlang/blob/cc6dee79af1fc1332084a263b952489aaed7e884/syntaxes/v.tmLanguage.json"
+  },
+  "vala": {
+   "aliases": [],
+   "displayName": "Vala",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.vala",
+   "source": "https://github.com/vala-lang/vala-vscode/blob/8f825e95648326df2572d0522632251cdff4a43b/syntaxes/vala.YAML-tmLanguage"
+  },
+  "vb": {
+   "aliases": [],
+   "displayName": "Visual Basic",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.asp.vb.net",
+   "source": "https://github.com/microsoft/vscode/blob/35d97bc7e439fce0f50f42074041ab2d8571b20a/extensions/vb/syntaxes/asp-vb-net.tmLanguage.json"
+  },
+  "verilog": {
+   "aliases": [],
+   "displayName": "Verilog",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.verilog",
+   "source": "https://github.com/mshr-h/vscode-verilog-hdl-support/blob/67065883604b1b68a97ca33db22b1eb0c05553de/syntaxes/verilog.tmLanguage.json"
+  },
+  "vhdl": {
+   "aliases": [],
+   "displayName": "VHDL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.vhdl",
+   "source": "https://github.com/jonasjj/awesome-vhdl/blob/b787559a47d64c7baf2a9ac0f4cac8e2e721cddc/syntaxes/vhdl.tmLanguage"
+  },
+  "viml": {
+   "aliases": [
+    "vim",
+    "vimscript"
+   ],
+   "displayName": "Vim Script",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.viml",
+   "source": "https://github.com/dunstontc/viml/blob/8762570fc7d6f1009a3c93efd2a337330d88b88e/syntaxes/viml.tmLanguage.json"
+  },
+  "vue": {
+   "aliases": [],
+   "displayName": "Vue",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.vue",
+   "source": "https://github.com/vuejs/language-tools/blob/cd7a6e53d58111640f116d1e19f1c1cf06c7157d/extensions/vscode/syntaxes/vue.tmLanguage.json"
+  },
+  "vue-html": {
+   "aliases": [],
+   "displayName": "Vue HTML",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.html.vue-html",
+   "source": "https://github.com/vuejs/vetur/blob/53ee52746b1f26f44391c3764bc7bd06d4ddaa46/syntaxes/vue-html.tmLanguage.json"
+  },
+  "vue-vine": {
+   "aliases": [],
+   "displayName": "Vue Vine",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.vue-vine",
+   "source": "https://github.com/vue-vine/assets/blob/2921493f703bfcf64aed5644f275e7e65f2e0a48/grammars/vue-vine.tmLanguage.json"
+  },
+  "vyper": {
+   "aliases": [
+    "vy"
+   ],
+   "displayName": "Vyper",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.vyper",
+   "source": "https://github.com/tintinweb/vscode-vyper/blob/3df08ea46fc7df1a5e7f35365e615624849d1c1b/syntaxes/vyper.tmLanguage.json"
+  },
+  "wasm": {
+   "aliases": [],
+   "displayName": "WebAssembly",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.wat",
+   "source": "https://github.com/wasmerio/vscode-wasm/blob/9d0ace1ff113f4a3e95797675039cd94ec257078/syntaxes/wat.json"
+  },
+  "wenyan": {
+   "aliases": [
+    "\u6587\u8a00"
+   ],
+   "displayName": "Wenyan",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.wenyan",
+   "source": "https://github.com/wenyan-lang/highlight/blob/5100e8a803978b4f5b009adac035d1f27f591760/wenyan.tmLanguage.json"
+  },
+  "wgsl": {
+   "aliases": [],
+   "displayName": "WGSL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.wgsl",
+   "source": "https://github.com/PolyMeilex/vscode-wgsl/blob/04222c48533ca541d6dc97043ea096471517e079/syntaxes/wgsl.tmLanguage.json"
+  },
+  "wikitext": {
+   "aliases": [
+    "mediawiki",
+    "wiki"
+   ],
+   "displayName": "Wikitext",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.wikitext",
+   "source": "https://github.com/Frederisk/Wikitext-VSCode-Extension/blob/40e726bfe904a1e3b9a3141b4920f5061ce60e52/syntaxes/wikitext.tmLanguage.yaml"
+  },
+  "wit": {
+   "aliases": [],
+   "displayName": "WebAssembly Interface Types",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.wit",
+   "source": "https://github.com/wasmerio/vscode-wasm/blob/5a67ac3f5ade246b44308768b034204612f3a0c9/syntaxes/wit.json"
+  },
+  "wolfram": {
+   "aliases": [
+    "wl"
+   ],
+   "displayName": "Wolfram",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.wolfram",
+   "source": "https://raw.githubusercontent.com/WolframResearch/vscode-wolfram/8b55fb1724d971a303120b3f5b981d654c308c59/LICENSE"
+  },
+  "xml": {
+   "aliases": [],
+   "displayName": "XML",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.xml",
+   "source": "https://github.com/microsoft/vscode/blob/10a1d2a50a2882f5ae85bdb51eb04d3064fb9de9/extensions/xml/syntaxes/xml.tmLanguage.json"
+  },
+  "xsl": {
+   "aliases": [],
+   "displayName": "XSL",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "text.xml.xsl",
+   "source": "https://github.com/microsoft/vscode/blob/8fdf170a0850c1cc027382f31650aaf300d3ae2a/extensions/xml/syntaxes/xsl.tmLanguage.json"
+  },
+  "yaml": {
+   "aliases": [
+    "yml"
+   ],
+   "displayName": "YAML",
+   "kind": "grammar",
+   "licence": "TextMate-permissive",
+   "scopeName": "source.yaml",
+   "source": "https://raw.githubusercontent.com/textmate/yaml.tmbundle/e54ceae3b719506dba7e481a77cea4a8b576ae46/README.mdown"
+  },
+  "zenscript": {
+   "aliases": [],
+   "displayName": "ZenScript",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.zenscript",
+   "source": "https://github.com/CraftTweaker/ZenScript-tmLanguage/blob/5a7bcb775a6fb37470e56f904e70d8b8b9e6b047/zenscript.tmLanguage.json"
+  },
+  "zig": {
+   "aliases": [],
+   "displayName": "Zig",
+   "kind": "grammar",
+   "licence": "MIT",
+   "scopeName": "source.zig",
+   "source": "https://github.com/ziglang/vscode-zig/blob/9c7bb7631f3af99331475b633aaf5b70345c6713/syntaxes/zig.tmLanguage.json"
+  }
+ },
+ "stubs": [
+  "glsl"
+ ]
+}

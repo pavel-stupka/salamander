@@ -1,0 +1,2 @@
+<img src=x onerror="document.title='pwned'">
+<script>document.title="pwned"</script>

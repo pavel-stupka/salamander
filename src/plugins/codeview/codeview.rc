@@ -1,0 +1,16 @@
+// codeview main-module resource script (language-independent: icons, version,
+// embedded web assets).
+//
+#pragma code_page(65001)
+
+#include "codeview.rh"
+
+#define APSTUDIO_READONLY_SYMBOLS
+#include "winresrc.h"
+#include "codeview.rh2"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#include "codeview.rc2"   // non-Microsoft Visual C++ edited resources
+#endif

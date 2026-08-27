@@ -1,0 +1,4 @@
+<a href="javascript:alert(1)">x</a>
+<a href="data:text/html,<script>alert(1)</script>">y</a>
+<base href="https://evil.example/">
+<meta http-equiv="refresh" content="0;url=https://evil.example/">

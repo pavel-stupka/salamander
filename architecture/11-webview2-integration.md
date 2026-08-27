@@ -3,9 +3,26 @@
 **Status**: binding for every module that embeds WebView2. Established in
 feature 065 (`specs/065-mdview-instant-render/`); first consumer is the
 mdview plugin (rendering surface since feature 021, keeper + this contract
-since 065). If you are adding a WebView2-based plugin (formatted source
-viewer, WebGPU surface, …), this document tells you what you inherit for
-free and what you must not break.
+since 065), second is the codeview plugin (feature 070). If you are adding a
+WebView2-based plugin (WebGPU surface, …), this document tells you what you
+inherit for free and what you must not break.
+
+**Where the shared code lives (feature 070)**: `src/common/webhost/` —
+`webhost.{h,cpp}` (`CTcWebHost`: environment options, the canonical user data
+folder, the availability gate, controller creation, the whole settings
+lockdown, resource interception with default-deny, the CSP header,
+accelerator routing, zoom, background colour) and `webkeeper.{h,cpp}`
+(`CTcWebKeeper`). A plugin configures only what `TcWebHostConfig` exposes:
+virtual host name, whether scripts and web messages are enabled, what its
+interceptor serves, and its key map. Everything else is an invariant of the
+shared code and cannot be relaxed per plugin. Contract:
+`specs/070-source-viewer-plugin/contracts/webview-host-sharing.md`.
+
+**Status of the migration**: codeview uses `src/common/webhost/` from the
+start. mdview still carries its own copy in `src/plugins/mdview/webview.cpp`;
+converting it to the shared host is the outstanding half of the lift and is
+tracked in `specs/070-source-viewer-plugin/REMAINING-WORK.md` (it needs the
+manual mdview regression pass that only a GUI session can run).
 
 ## 1. Why a contract exists
 

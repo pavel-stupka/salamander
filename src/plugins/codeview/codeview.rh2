@@ -1,0 +1,120 @@
+//****************************************************************************
+//
+// Copyright (c) 2026 Open Salamander Authors
+//
+//****************************************************************************
+
+// WARNING: cannot be replaced by "#pragma once" (included from .rc; RC has no pragma once)
+#ifndef __CODEVIEW_RH2
+#define __CODEVIEW_RH2
+
+#if defined(APSTUDIO_INVOKED) && !defined(APSTUDIO_READONLY_SYMBOLS)
+#error this file is not editable by Microsoft Visual C++
+#endif
+
+// --- plugin identity / messages ---
+#define IDS_PLUGINNAME           46
+#define IDS_ABOUT                47
+#define IDS_PLUGIN_DESCRIPTION   48
+#define IDS_PLUGIN_HOME          49
+#define IDS_PLUGIN_BUGREP        50
+#define IDS_PLUGIN_EMAIL         51
+#define IDS_VIEWER_OPENWNDS      53
+#define IDS_INVALID_NUM          55
+
+// --- menu labels ---
+#define IDS_MENU_FILE            2000
+#define IDS_MENU_FILE_NEXTFILE   2001
+#define IDS_MENU_FILE_PREVFILE   2002
+#define IDS_MENU_FILE_CLOSE      2003
+#define IDS_MENU_EDIT            2010
+#define IDS_MENU_EDIT_COPY       2011
+#define IDS_MENU_EDIT_SELALL     2012
+#define IDS_MENU_EDIT_FIND       2013
+#define IDS_MENU_EDIT_FINDNEXT   2014
+#define IDS_MENU_EDIT_FINDPREV   2015
+#define IDS_MENU_EDIT_GOTO       2016
+#define IDS_MENU_VIEW            2020
+#define IDS_MENU_VIEW_SCHEME     2021
+#define IDS_MENU_VIEW_FOLLOWAPP  2022
+#define IDS_MENU_VIEW_ZOOMIN     2023
+#define IDS_MENU_VIEW_ZOOMOUT    2024
+#define IDS_MENU_VIEW_ZOOMRESET  2025
+#define IDS_MENU_VIEW_WRAP       2026
+#define IDS_MENU_VIEW_LINENUMS   2027
+#define IDS_MENU_VIEW_WHITESPACE 2028
+#define IDS_MENU_VIEW_LANGUAGE   2029
+#define IDS_MENU_VIEW_ENCODING   2030
+#define IDS_MENU_HELP            2040
+#define IDS_MENU_HELP_ABOUT      2041
+#define IDS_MENU_LANG_AUTO       2042
+
+// --- colour scheme display names (index order = g_schemes[]) ---
+#define IDS_SCHEME_FIRST         2100 // 2100..2119 reserved for up to 20 schemes
+
+// --- runtime messages ---
+#define IDS_LOAD_ERROR           2200
+#define IDS_FIND_PROMPT          2201
+#define IDS_NOT_FOUND            2202
+#define IDS_WINDOW_TITLE         2203
+#define IDS_ENGINE_UNAVAILABLE   2204
+#define IDS_PLAIN_TOO_LARGE      2205
+#define IDS_PLAIN_LONG_LINES     2206
+#define IDS_BINARY_NOTICE        2207
+#define IDS_OPEN_BUILTIN         2208
+#define IDS_FIRSTRUN_HINT        2209
+#define IDS_HIGHLIGHT_ABORTED    2210
+#define IDS_GOTO_PROMPT          2211
+#define IDS_ENCODING_INVALID     2212
+#define IDS_LANG_PLAIN           2213
+#define IDS_RESTORE_TYPES_DONE   2214
+
+// --- status bar labels ---
+#define IDS_STATUS_LINES         2300
+#define IDS_STATUS_LNCOL         2301
+#define IDS_STATUS_EOL_CRLF      2302
+#define IDS_STATUS_EOL_LF        2303
+#define IDS_STATUS_EOL_CR        2304
+#define IDS_STATUS_EOL_MIXED     2305
+#define IDS_STATUS_EOL_NONE      2306
+
+#define IDB_PLUGINICO            1000
+
+// --- embedded web assets (RCDATA, generated block in web\assets.rc2) ---
+#define IDR_WEB_FIRST            5000 // 5000.. one id per embedded asset
+
+// --- Find dialog ---
+#define IDD_FIND                 300
+#define IDC_FIND_TEXT            301
+#define IDC_FIND_CASE            302
+#define IDC_FIND_WHOLEWORD       303
+
+// --- Configuration dialog ---
+#define IDD_CFG                  310
+#define IDC_CFG_KEEPREADY        311
+#define IDC_CFG_FONTNAME         312
+#define IDC_CFG_FONTSIZE         313
+#define IDC_CFG_TABWIDTH         314
+#define IDC_CFG_HLLIMIT          315
+#define IDC_CFG_VIEWLIMIT        316
+#define IDC_CFG_MAXLINE          317
+#define IDC_CFG_RESTORETYPES     318
+
+// --- Go to line dialog ---
+#define IDD_GOTO                 320
+#define IDC_GOTO_TEXT            321
+
+// Static controls in translatable dialogs MUST have a unique, non-negative ID
+// per dialog -- the Translator stores control IDs as WORD and rejects a
+// DIALOGEX template whose control ID has a non-zero high word ("32-bit IDs are
+// not supported", datadlg.cpp:1050). IDC_STATIC is (-1) = 0xFFFFFFFF, so a
+// dialog using it cannot be translated at all. Every other translatable module
+// reserves a 40-ID block and uses IDC_STATIC_1..40 from shared/statics.rh2.
+#define IDC_STATIC_1             3000
+#include "statics.rh2" // 3000 to 3039 are reserved by this !!!
+
+#ifndef IDC_STATIC
+#define IDC_STATIC               (-1)
+#endif
+
+#endif // __CODEVIEW_RH2

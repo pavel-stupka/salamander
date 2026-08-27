@@ -1,0 +1,4511 @@
+{
+ "ambiguity": {
+  "_comment": "Ambiguous extensions and their disambiguation, feature 070 FR-006. Every extension here resolves to 'default' unless the named rule's probe matches; the probes are implemented in src/plugins/codeview/intake.cpp (CvProbe*) and each is a test case in the harness. Source: specs/070-source-viewer-plugin/research/language-detection.md S3.",
+  "extensions": {
+   ".cls": {
+    "default": "x-vb-class",
+    "rule": "cls-file"
+   },
+   ".h": {
+    "default": "cpp",
+    "rule": "h-header"
+   },
+   ".inc": {
+    "default": "x-plain-include",
+    "rule": "inc-include"
+   },
+   ".m": {
+    "default": "objective-c",
+    "rule": "m-source"
+   },
+   ".pl": {
+    "default": "perl",
+    "rule": "pl-script"
+   },
+   ".r": {
+    "default": "r",
+    "rule": "r-source"
+   },
+   ".s": {
+    "default": "asm",
+    "rule": "asm-source"
+   },
+   ".sql": {
+    "default": "sql",
+    "rule": "sql-dialect"
+   },
+   ".t": {
+    "default": "perl",
+    "rule": "t-test"
+   },
+   ".ts": {
+    "default": "typescript",
+    "rule": "ts-source"
+   },
+   ".v": {
+    "default": "verilog",
+    "rule": "v-source"
+   }
+  },
+  "rules": {
+   "asm-source": {
+    "candidates": [
+     "asm",
+     "riscv"
+    ],
+    "fallback": "asm",
+    "probe": "'.include' / '.globl' / 'section .text' -> assembler; a leading '#' comment block with 'riscv' -> riscv."
+   },
+   "cls-file": {
+    "candidates": [
+     "latex",
+     "x-vb-class",
+     "apex"
+    ],
+    "fallback": "x-vb-class",
+    "probe": "'\\\\documentclass' or '\\\\NeedsTeXFormat' -> LaTeX class; 'VERSION 1.0 CLASS' -> VB class; 'public with sharing class' -> Apex."
+   },
+   "h-header": {
+    "candidates": [
+     "objective-c",
+     "c",
+     "cpp"
+    ],
+    "fallback": "cpp",
+    "probe": "Objective-C markers (@interface / @implementation / #import <Foundation) -> objective-c; a C-only marker set with no C++ token -> c; otherwise C++."
+   },
+   "inc-include": {
+    "candidates": [
+     "php",
+     "asm",
+     "cpp",
+     "x-plain-include"
+    ],
+    "fallback": "x-plain-include",
+    "probe": "'<?php' -> PHP; a leading assembler directive -> asm; C/C++ preprocessor lines -> cpp; otherwise plain."
+   },
+   "m-source": {
+    "candidates": [
+     "objective-c",
+     "x-matlab"
+    ],
+    "fallback": "objective-c",
+    "probe": "MATLAB markers (a leading 'function [' / '%%' cell marker and no @interface) -> matlab-plain; otherwise Objective-C."
+   },
+   "pl-script": {
+    "candidates": [
+     "perl",
+     "prolog"
+    ],
+    "fallback": "perl",
+    "probe": "A Prolog clause (':-' at the start of a line) with no Perl sigil line -> prolog."
+   },
+   "r-source": {
+    "candidates": [
+     "r"
+    ],
+    "fallback": "r",
+    "probe": "'\\\\name{' / '\\\\alias{' -> R documentation (Rd); otherwise R."
+   },
+   "sql-dialect": {
+    "candidates": [
+     "sql",
+     "plsql"
+    ],
+    "fallback": "sql",
+    "probe": "'DECLARE @' or 'GO' batch separators -> T-SQL flavour; PL/SQL 'CREATE OR REPLACE PACKAGE' -> plsql."
+   },
+   "t-test": {
+    "candidates": [
+     "perl"
+    ],
+    "fallback": "perl",
+    "probe": "'use strict' / 'use Test' -> Perl test; 'unit ' -> Turing; otherwise Perl."
+   },
+   "ts-source": {
+    "candidates": [
+     "typescript",
+     "xml"
+    ],
+    "fallback": "typescript",
+    "probe": "'<TS ' or '<!DOCTYPE TS' in the first bytes -> Qt translation XML; the MPEG transport-stream signature (0x47 at 188-byte stride) is caught by the binary rule before this."
+   },
+   "v-source": {
+    "candidates": [
+     "verilog",
+     "coq",
+     "v"
+    ],
+    "fallback": "verilog",
+    "probe": "'module <name> (' -> Verilog; 'Require Import' / 'Theorem ' -> Coq; 'fn ' + 'pub struct' -> V."
+   }
+  }
+ },
+ "compound_suffixes": {
+  ".app.src": "erlang",
+  ".blade.php": "blade",
+  ".cljs.hl": "clojure",
+  ".cmake.in": "cmake",
+  ".cs.pp": "csharp",
+  ".desktop.in": "desktop",
+  ".dll.config": "xml",
+  ".emacs.desktop": "emacs-lisp",
+  ".erb.deface": "erb",
+  ".gradle.kts": "kotlin",
+  ".h.in": "c",
+  ".haml.deface": "haml",
+  ".html.hl": "html",
+  ".js.erb": "javascript",
+  ".json.example": "json",
+  ".nim.cfg": "nim",
+  ".rs.in": "rust",
+  ".sh.in": "shellscript",
+  ".tfstate.backup": "json",
+  ".toml.example": "toml",
+  ".tsconfig.json": "jsonc",
+  ".xml.dist": "xml",
+  ".xsp.metadata": "xml",
+  ".yaml.sed": "yaml",
+  ".yml.mysql": "yaml",
+  ".zig.zon": "zig"
+ },
+ "counts": {
+  "compound_suffixes": 26,
+  "exact_names": 255,
+  "extensions": 747,
+  "interpreters": 104,
+  "languages": 737,
+  "mask_rows": 48,
+  "masks": 1028,
+  "with_grammar": 256
+ },
+ "exact_names": {
+  ".abbrev_defs": "emacs-lisp",
+  ".all-contributorsrc": "json",
+  ".arcconfig": "json",
+  ".auto-changelog": "json",
+  ".babelrc": "json",
+  ".bash_aliases": "shellscript",
+  ".bash_functions": "shellscript",
+  ".bash_history": "shellscript",
+  ".bash_logout": "shellscript",
+  ".bash_profile": "shellscript",
+  ".bashrc": "shellscript",
+  ".buckconfig": "ini",
+  ".c8rc": "json",
+  ".clang-format": "yaml",
+  ".clang-tidy": "yaml",
+  ".clangd": "yaml",
+  ".classpath": "xml",
+  ".coveragerc": "ini",
+  ".cproject": "xml",
+  ".cshrc": "shellscript",
+  ".devcontainer.json": "jsonc",
+  ".editorconfig": "x-editorconfig",
+  ".emacs": "emacs-lisp",
+  ".emacs.desktop": "emacs-lisp",
+  ".env": "dotenv",
+  ".env.ci": "dotenv",
+  ".env.dev": "dotenv",
+  ".env.development": "dotenv",
+  ".env.development.local": "dotenv",
+  ".env.example": "dotenv",
+  ".env.local": "dotenv",
+  ".env.prod": "dotenv",
+  ".env.production": "dotenv",
+  ".env.sample": "dotenv",
+  ".env.staging": "dotenv",
+  ".env.template": "dotenv",
+  ".env.test": "dotenv",
+  ".env.testing": "dotenv",
+  ".envrc": "shellscript",
+  ".eslintrc": "json",
+  ".eslintrc.json": "jsonc",
+  ".exrc": "viml",
+  ".flake8": "ini",
+  ".flaskenv": "shellscript",
+  ".gclient": "python",
+  ".gemrc": "yaml",
+  ".gitattributes": "x-gitignore",
+  ".gitconfig": "ini",
+  ".gitignore": "x-gitignore",
+  ".gitmodules": "ini",
+  ".gn": "gn",
+  ".gnus": "emacs-lisp",
+  ".gvimrc": "viml",
+  ".htaccess": "apache",
+  ".htmlhintrc": "json",
+  ".imgbotconfig": "json",
+  ".irbrc": "ruby",
+  ".jscsrc": "jsonc",
+  ".jshintrc": "jsonc",
+  ".jslintrc": "jsonc",
+  ".justfile": "just",
+  ".kshrc": "shellscript",
+  ".latexmkrc": "perl",
+  ".login": "shellscript",
+  ".luacheckrc": "lua",
+  ".npmrc": "ini",
+  ".nvimrc": "viml",
+  ".nycrc": "json",
+  ".oxlintrc.json": "jsonc",
+  ".php": "php",
+  ".php_cs": "php",
+  ".php_cs.dist": "php",
+  ".prettierrc": "json",
+  ".profile": "shellscript",
+  ".project": "xml",
+  ".pryrc": "ruby",
+  ".pylintrc": "ini",
+  ".rprofile": "r",
+  ".simplecov": "ruby",
+  ".spacemacs": "emacs-lisp",
+  ".swcrc": "jsonc",
+  ".tern-config": "json",
+  ".tern-project": "json",
+  ".tmux.conf": "shellscript",
+  ".vimrc": "viml",
+  ".viper": "emacs-lisp",
+  ".watchmanconfig": "json",
+  ".xinitrc": "shellscript",
+  ".xsession": "shellscript",
+  ".zlogin": "shellscript",
+  ".zlogout": "shellscript",
+  ".zprofile": "shellscript",
+  ".zshenv": "shellscript",
+  ".zshrc": "shellscript",
+  "9fs": "shellscript",
+  "_emacs": "emacs-lisp",
+  "_vimrc": "viml",
+  "abbrev_defs": "emacs-lisp",
+  "ack": "perl",
+  "apache2.conf": "apache",
+  "api-extractor.json": "jsonc",
+  "apkbuild": "shellscript",
+  "app.config": "xml",
+  "appraisals": "ruby",
+  "bash_aliases": "shellscript",
+  "bash_logout": "shellscript",
+  "bash_profile": "shellscript",
+  "bashrc": "shellscript",
+  "berksfile": "ruby",
+  "brewfile": "ruby",
+  "bsdmakefile": "make",
+  "buck": "python",
+  "build": "python",
+  "build.bazel": "python",
+  "buildfile": "ruby",
+  "buildozer.spec": "ini",
+  "bun.lock": "json",
+  "cakefile": "coffee",
+  "capfile": "ruby",
+  "cargo.lock": "toml",
+  "cargo.toml.orig": "toml",
+  "cask": "emacs-lisp",
+  "citation.cff": "yaml",
+  "cmakelists.txt": "cmake",
+  "codeowners": "codeowners",
+  "codesign.cfg": "ini",
+  "commit_editmsg": "git-commit",
+  "composer.lock": "json",
+  "containerfile": "docker",
+  "cpanfile": "perl",
+  "cshrc": "shellscript",
+  "dangerfile": "ruby",
+  "deliverfile": "ruby",
+  "deno.lock": "json",
+  "deps": "python",
+  "devcontainer.json": "jsonc",
+  "dockerfile": "docker",
+  "eask": "emacs-lisp",
+  "emakefile": "erlang",
+  "expr-dist": "r",
+  "fastfile": "ruby",
+  "flake.lock": "json",
+  "gemfile": "ruby",
+  "glide.lock": "yaml",
+  "gnumakefile": "make",
+  "go.mod": "go",
+  "go.sum": "go",
+  "gopkg.lock": "toml",
+  "gradlew": "shellscript",
+  "gradlew.bat": "bat",
+  "guardfile": "ruby",
+  "gvimrc": "viml",
+  "hosts": "ini",
+  "httpd.conf": "apache",
+  "installscript.qs": "javascript",
+  "jakefile": "javascript",
+  "jarfile": "ruby",
+  "jenkinsfile": "groovy",
+  "jsconfig.json": "jsonc",
+  "justfile": "just",
+  "kbuild": "make",
+  "kshrc": "shellscript",
+  "language-configuration.json": "jsonc",
+  "languages.cfg": "ini",
+  "latexmkrc": "perl",
+  "login": "shellscript",
+  "makefile": "make",
+  "makefile.am": "make",
+  "makefile.boot": "make",
+  "makefile.frag": "make",
+  "makefile.in": "make",
+  "makefile.inc": "make",
+  "makefile.pc": "make",
+  "makefile.pl": "perl",
+  "makefile.sco": "make",
+  "makefile.wat": "make",
+  "man": "shellscript",
+  "manifest.mf": "yaml",
+  "mavenfile": "ruby",
+  "mcmod.info": "json",
+  "mise.local.lock": "toml",
+  "mise.lock": "toml",
+  "mix.lock": "elixir",
+  "mkfile": "make",
+  "module.bazel": "python",
+  "module.bazel.lock": "json",
+  "modulefile": "puppet",
+  "mvnw": "shellscript",
+  "mvnw.cmd": "bat",
+  "nextflow.config": "nextflow",
+  "nim.cfg": "nim",
+  "notebook": "json",
+  "nuget.config": "xml",
+  "nukefile": "nushell",
+  "nvimrc": "viml",
+  "package.json": "json",
+  "package.resolved": "json",
+  "packages.config": "xml",
+  "pdm.lock": "toml",
+  "phakefile": "php",
+  "pipfile": "toml",
+  "pipfile.lock": "json",
+  "pixi.lock": "yaml",
+  "pkgbuild": "shellscript",
+  "plugins.cfg": "ini",
+  "podfile": "ruby",
+  "poetry.lock": "toml",
+  "profile": "shellscript",
+  "project.ede": "emacs-lisp",
+  "project.godot": "gdresource",
+  "puppetfile": "ruby",
+  "pylintrc": "ini",
+  "rakefile": "ruby",
+  "rebar.config": "erlang",
+  "rebar.config.lock": "erlang",
+  "rebar.lock": "erlang",
+  "rexfile": "perl",
+  "riemann.config": "clojure",
+  "sconscript": "python",
+  "sconstruct": "python",
+  "settings.stylecop": "xml",
+  "snakefile": "python",
+  "snapfile": "ruby",
+  "ssh-config": "ssh-config",
+  "ssh_config": "ssh-config",
+  "sshconfig": "ssh-config",
+  "sshconfig.snip": "ssh-config",
+  "sshd-config": "ssh-config",
+  "sshd_config": "ssh-config",
+  "steepfile": "ruby",
+  "thorfile": "ruby",
+  "tiltfile": "python",
+  "tmux.conf": "shellscript",
+  "toolchain_installscript.qs": "javascript",
+  "tsconfig.json": "jsonc",
+  "tslint.json": "jsonc",
+  "uv.lock": "toml",
+  "vagrantfile": "ruby",
+  "vimrc": "viml",
+  "vlcrc": "ini",
+  "web.config": "xml",
+  "web.debug.config": "xml",
+  "web.release.config": "xml",
+  "workspace": "python",
+  "workspace.bazel": "python",
+  "workspace.bzlmod": "python",
+  "wscript": "python",
+  "xinitrc": "shellscript",
+  "xsession": "shellscript",
+  "yarn.lock": "yaml",
+  "zlogin": "shellscript",
+  "zlogout": "shellscript",
+  "zprofile": "shellscript",
+  "zshenv": "shellscript",
+  "zshrc": "shellscript"
+ },
+ "extensions": {
+  ".4dform": "json",
+  ".4dproject": "json",
+  ".6pl": "raku",
+  ".6pm": "raku",
+  "._coffee": "coffee",
+  "._js": "javascript",
+  ".a51": "asm",
+  ".abap": "abap",
+  ".action": "rosmsg",
+  ".adml": "xml",
+  ".admx": "xml",
+  ".ado": "stata",
+  ".ahk": "ahk",
+  ".ahkl": "ahk",
+  ".al": "perl",
+  ".anim": "yaml",
+  ".ant": "xml",
+  ".apacheconf": "apache",
+  ".apex": "apex",
+  ".applescript": "applescript",
+  ".as": "actionscript-3",
+  ".asd": "common-lisp",
+  ".asm": "asm",
+  ".asset": "yaml",
+  ".astro": "astro",
+  ".auk": "awk",
+  ".aux": "latex",
+  ".avsc": "json",
+  ".aw": "php",
+  ".awk": "awk",
+  ".axaml": "xml",
+  ".axml": "xml",
+  ".bal": "ballerina",
+  ".bash": "shellscript",
+  ".bat": "bat",
+  ".bats": "shellscript",
+  ".bb": "clojure",
+  ".bbx": "latex",
+  ".bdy": "plsql",
+  ".be": "berry",
+  ".bf": "csharp",
+  ".bib": "bibtex",
+  ".bibtex": "bibtex",
+  ".bicep": "bicep",
+  ".bicepparam": "bicep",
+  ".blade": "blade",
+  ".bones": "javascript",
+  ".boot": "clojure",
+  ".brd": "xml",
+  ".bsl": "bsl",
+  ".bst": "yaml",
+  ".builder": "ruby",
+  ".builds": "xml",
+  ".bzl": "python",
+  ".c": "c",
+  ".c++": "cpp",
+  ".c3": "c3",
+  ".cairo": "cairo",
+  ".cake": "csharp",
+  ".carbon": "v",
+  ".cats": "c",
+  ".cbl": "cobol",
+  ".cbx": "latex",
+  ".cc": "cpp",
+  ".ccp": "cobol",
+  ".ccproj": "xml",
+  ".ccxml": "xml",
+  ".cdc": "cadence",
+  ".cfg": "ini",
+  ".cgi": "perl",
+  ".cginc": "hlsl",
+  ".chpl": "chapel",
+  ".chs": "haskell",
+  ".cjs": "javascript",
+  ".cjsx": "coffee",
+  ".ck": "java",
+  ".cl": "common-lisp",
+  ".cl2": "clojure",
+  ".clar": "clarity",
+  ".clixml": "xml",
+  ".clj": "clojure",
+  ".cljc": "clojure",
+  ".cljs": "clojure",
+  ".cljscm": "clojure",
+  ".cljx": "clojure",
+  ".cls": "x-vb-class",
+  ".cmake": "cmake",
+  ".cmd": "bat",
+  ".cnf": "ini",
+  ".cob": "cobol",
+  ".cobol": "cobol",
+  ".code-snippets": "jsonc",
+  ".code-workspace": "jsonc",
+  ".coffee": "coffee",
+  ".command": "shellscript",
+  ".conf": "ini",
+  ".config": "ini",
+  ".container": "ini",
+  ".containerfile": "docker",
+  ".coq": "coq",
+  ".cp": "cpp",
+  ".cpp": "cpp",
+  ".cppm": "cpp",
+  ".cproject": "xml",
+  ".cps": "pascal",
+  ".cpy": "cobol",
+  ".cql": "cypher",
+  ".cr": "crystal",
+  ".cs": "csharp",
+  ".cscfg": "xml",
+  ".csdef": "xml",
+  ".csh": "shellscript",
+  ".cshtml": "razor",
+  ".csl": "xml",
+  ".cson": "coffee",
+  ".csproj": "xml",
+  ".css": "css",
+  ".csx": "csharp",
+  ".ct": "xml",
+  ".ctp": "php",
+  ".cts": "typescript",
+  ".cue": "cue",
+  ".cxx": "cpp",
+  ".cy": "javascript",
+  ".cyp": "cypher",
+  ".cypher": "cypher",
+  ".d": "d",
+  ".dae": "xml",
+  ".dart": "dart",
+  ".db2": "sql",
+  ".ddl": "plsql",
+  ".def": "x-module-def",
+  ".depproj": "xml",
+  ".desktop": "desktop",
+  ".dfm": "pascal",
+  ".dhall": "haskell",
+  ".di": "d",
+  ".diff": "diff",
+  ".dita": "xml",
+  ".ditamap": "xml",
+  ".ditaval": "xml",
+  ".dlg": "x-resource-script",
+  ".do": "stata",
+  ".dockerfile": "docker",
+  ".dockerignore": "x-gitignore",
+  ".dof": "ini",
+  ".doh": "stata",
+  ".dotsettings": "xml",
+  ".dpr": "pascal",
+  ".druby": "ruby",
+  ".duby": "ruby",
+  ".eb": "python",
+  ".ebuild": "shellscript",
+  ".eclass": "shellscript",
+  ".edge": "edge",
+  ".editorconfig": "x-editorconfig",
+  ".edn": "clojure",
+  ".el": "emacs-lisp",
+  ".eliom": "ocaml",
+  ".eliomi": "ocaml",
+  ".elm": "elm",
+  ".em": "coffee",
+  ".emacs": "emacs-lisp",
+  ".emberscript": "coffee",
+  ".env": "dotenv",
+  ".epj": "json",
+  ".eq": "csharp",
+  ".erb": "erb",
+  ".erl": "erlang",
+  ".es": "erlang",
+  ".es6": "javascript",
+  ".escript": "erlang",
+  ".ex": "elixir",
+  ".exs": "elixir",
+  ".eye": "ruby",
+  ".fcgi": "lua",
+  ".feature": "gherkin",
+  ".filters": "xml",
+  ".fish": "fish",
+  ".fnc": "plsql",
+  ".fnl": "fennel",
+  ".fr": "haskell",
+  ".frag": "javascript",
+  ".frm": "ini",
+  ".fs": "fsharp",
+  ".fsi": "fsharp",
+  ".fsproj": "xml",
+  ".fsx": "fsharp",
+  ".ftl": "fluent",
+  ".ftlh": "fluent",
+  ".fx": "hlsl",
+  ".fxh": "hlsl",
+  ".fxml": "xml",
+  ".gawk": "awk",
+  ".gd": "gdscript",
+  ".gdnlib": "gdresource",
+  ".gdns": "gdresource",
+  ".gdshader": "gdshader",
+  ".gdshaderinc": "gdshader",
+  ".gemspec": "ruby",
+  ".geojson": "json",
+  ".gitattributes": "x-gitignore",
+  ".gitignore": "x-gitignore",
+  ".gjs": "glimmer-js",
+  ".glade": "xml",
+  ".gleam": "gleam",
+  ".gltf": "json",
+  ".gml": "xml",
+  ".gmx": "xml",
+  ".gn": "gn",
+  ".gni": "gn",
+  ".go": "go",
+  ".god": "ruby",
+  ".gpx": "xml",
+  ".gql": "graphql",
+  ".graphql": "graphql",
+  ".graphqls": "graphql",
+  ".groovy": "groovy",
+  ".grt": "groovy",
+  ".grxml": "xml",
+  ".gs": "genie",
+  ".gst": "xml",
+  ".gtpl": "groovy",
+  ".gts": "glimmer-ts",
+  ".gvy": "groovy",
+  ".gyp": "python",
+  ".gypi": "python",
+  ".h": "cpp",
+  ".h++": "cpp",
+  ".hack": "hack",
+  ".haml": "haml",
+  ".handlebars": "handlebars",
+  ".har": "json",
+  ".hbs": "handlebars",
+  ".hcl": "hcl",
+  ".hh": "cpp",
+  ".hhi": "hack",
+  ".hic": "clojure",
+  ".hlean": "lean",
+  ".hlsl": "hlsl",
+  ".hlsli": "hlsl",
+  ".hpp": "cpp",
+  ".hrl": "erlang",
+  ".hs": "haskell",
+  ".hs-boot": "haskell",
+  ".hsc": "haskell",
+  ".hta": "html",
+  ".htm": "html",
+  ".html": "html",
+  ".http": "http",
+  ".hx": "haxe",
+  ".hxml": "hxml",
+  ".hxsl": "haxe",
+  ".hxx": "cpp",
+  ".hy": "hy",
+  ".hzp": "xml",
+  ".i": "asm",
+  ".ice": "json",
+  ".iced": "coffee",
+  ".icls": "xml",
+  ".idc": "c",
+  ".ihlp": "stata",
+  ".imba": "imba",
+  ".iml": "xml",
+  ".inc": "x-plain-include",
+  ".inf": "ini",
+  ".ini": "ini",
+  ".inl": "cpp",
+  ".ino": "cpp",
+  ".ins": "latex",
+  ".ipp": "cpp",
+  ".ipynb": "json",
+  ".isl": "x-inno-setup",
+  ".iss": "x-inno-setup",
+  ".ivy": "xml",
+  ".ixx": "cpp",
+  ".j2": "jinja",
+  ".jade": "pug",
+  ".jake": "javascript",
+  ".jav": "java",
+  ".java": "java",
+  ".javascript": "javascript",
+  ".jbuilder": "ruby",
+  ".jelly": "xml",
+  ".jinja": "jinja",
+  ".jinja2": "jinja",
+  ".jison": "jison",
+  ".jl": "julia",
+  ".js": "javascript",
+  ".jsb": "javascript",
+  ".jscad": "javascript",
+  ".jsfl": "javascript",
+  ".jsh": "java",
+  ".jslib": "javascript",
+  ".jsm": "javascript",
+  ".json": "json",
+  ".json-tmlanguage": "json",
+  ".json5": "json5",
+  ".jsonc": "jsonc",
+  ".jsonl": "jsonl",
+  ".jsonld": "javascript",
+  ".jsonnet": "jsonnet",
+  ".jspre": "javascript",
+  ".jsproj": "xml",
+  ".jss": "javascript",
+  ".jsx": "javascript",
+  ".just": "just",
+  ".kdl": "kdl",
+  ".kit": "html",
+  ".kml": "xml",
+  ".kojo": "scala",
+  ".ksh": "shellscript",
+  ".ksy": "yaml",
+  ".kt": "kotlin",
+  ".ktm": "kotlin",
+  ".kts": "kotlin",
+  ".l": "common-lisp",
+  ".launch": "xml",
+  ".lbx": "latex",
+  ".lean": "lean",
+  ".lektorproject": "ini",
+  ".less": "less",
+  ".libsonnet": "jsonnet",
+  ".linq": "csharp",
+  ".liquid": "liquid",
+  ".lisp": "common-lisp",
+  ".lkml": "yaml",
+  ".ll": "llvm",
+  ".lmi": "python",
+  ".log": "log",
+  ".lookml": "yaml",
+  ".lpr": "pascal",
+  ".lsp": "common-lisp",
+  ".ltx": "latex",
+  ".lua": "lua",
+  ".luau": "luau",
+  ".lvclass": "xml",
+  ".lvlib": "xml",
+  ".lvproj": "xml",
+  ".m": "objective-c",
+  ".ma": "wolfram",
+  ".mak": "make",
+  ".make": "make",
+  ".makefile": "make",
+  ".manifest": "xml",
+  ".marko": "marko",
+  ".mask": "yaml",
+  ".mat": "yaml",
+  ".mata": "stata",
+  ".matah": "stata",
+  ".mathematica": "wolfram",
+  ".mawk": "awk",
+  ".maxhelp": "json",
+  ".maxpat": "json",
+  ".maxproj": "json",
+  ".mbt": "moonbit",
+  ".mcmeta": "json",
+  ".mdpolicy": "xml",
+  ".mdx": "mdx",
+  ".mermaid": "mermaid",
+  ".meta": "yaml",
+  ".mir": "yaml",
+  ".mirah": "ruby",
+  ".mjml": "xml",
+  ".mjs": "javascript",
+  ".mk": "make",
+  ".mkfile": "make",
+  ".mkii": "latex",
+  ".mkiv": "latex",
+  ".mkvi": "latex",
+  ".ml": "ocaml",
+  ".ml4": "ocaml",
+  ".mli": "ocaml",
+  ".mll": "ocaml",
+  ".mly": "ocaml",
+  ".mm": "xml",
+  ".mmd": "mermaid",
+  ".mod": "xml",
+  ".mojo": "mojo",
+  ".mount": "ini",
+  ".move": "move",
+  ".mspec": "ruby",
+  ".mt": "wolfram",
+  ".mtml": "html",
+  ".mts": "typescript",
+  ".mxml": "xml",
+  ".mxt": "json",
+  ".mysql": "sql",
+  ".nas": "asm",
+  ".nasm": "asm",
+  ".natvis": "xml",
+  ".nawk": "awk",
+  ".nb": "wolfram",
+  ".nbp": "wolfram",
+  ".ncl": "xml",
+  ".ndproj": "xml",
+  ".network": "ini",
+  ".nf": "nextflow",
+  ".nim": "nim",
+  ".nimble": "nim",
+  ".nimrod": "nim",
+  ".nims": "nim",
+  ".nix": "nix",
+  ".njs": "javascript",
+  ".nomad": "hcl",
+  ".npmignore": "x-gitignore",
+  ".nproj": "xml",
+  ".nqp": "raku",
+  ".nse": "lua",
+  ".nsh": "nsis",
+  ".nsi": "nsis",
+  ".nu": "nushell",
+  ".nuspec": "xml",
+  ".ny": "common-lisp",
+  ".odd": "xml",
+  ".odin": "odin",
+  ".opencl": "c",
+  ".os": "bsl",
+  ".osm": "xml",
+  ".outjob": "ini",
+  ".owl": "xml",
+  ".p6": "raku",
+  ".p6l": "raku",
+  ".p6m": "raku",
+  ".p8": "lua",
+  ".pac": "javascript",
+  ".pas": "pascal",
+  ".pascal": "pascal",
+  ".patch": "diff",
+  ".pc": "c",
+  ".pcbdoc": "ini",
+  ".pck": "plsql",
+  ".pcss": "postcss",
+  ".pd_lua": "lua",
+  ".perl": "perl",
+  ".pgsql": "sql",
+  ".ph": "perl",
+  ".php": "hack",
+  ".php3": "php",
+  ".php4": "php",
+  ".php5": "php",
+  ".phps": "php",
+  ".phpt": "php",
+  ".pkb": "plsql",
+  ".pkgproj": "xml",
+  ".pks": "plsql",
+  ".pl": "perl",
+  ".pl6": "raku",
+  ".plb": "plsql",
+  ".pls": "plsql",
+  ".plsql": "plsql",
+  ".plt": "prolog",
+  ".pluginspec": "ruby",
+  ".plx": "perl",
+  ".pm": "perl",
+  ".pm6": "raku",
+  ".podsl": "common-lisp",
+  ".podspec": "ruby",
+  ".polar": "polar",
+  ".postcss": "postcss",
+  ".pp": "pascal",
+  ".pq": "powerquery",
+  ".prawn": "ruby",
+  ".prc": "plsql",
+  ".prefab": "yaml",
+  ".prefs": "ini",
+  ".prisma": "prisma",
+  ".prjpcb": "ini",
+  ".pro": "ini",
+  ".proj": "xml",
+  ".prolog": "prolog",
+  ".properties": "ini",
+  ".props": "xml",
+  ".proto": "proto",
+  ".ps1": "powershell",
+  ".ps1xml": "xml",
+  ".psc1": "xml",
+  ".psd1": "powershell",
+  ".psgi": "perl",
+  ".psm1": "powershell",
+  ".pubxml": "xml",
+  ".pug": "pug",
+  ".purs": "purescript",
+  ".py": "python",
+  ".py3": "python",
+  ".pyde": "python",
+  ".pyi": "python",
+  ".pyp": "python",
+  ".pyt": "python",
+  ".pyw": "python",
+  ".qbs": "qml",
+  ".qhelp": "xml",
+  ".ql": "codeql",
+  ".qll": "codeql",
+  ".qml": "qml",
+  ".qs": "javascript",
+  ".r": "r",
+  ".rabl": "ruby",
+  ".rake": "ruby",
+  ".raku": "raku",
+  ".rakumod": "raku",
+  ".raml": "yaml",
+  ".razor": "razor",
+  ".rb": "ruby",
+  ".rbi": "ruby",
+  ".rbs": "rbs",
+  ".rbuild": "ruby",
+  ".rbw": "ruby",
+  ".rbx": "ruby",
+  ".rbxs": "lua",
+  ".rc": "x-resource-script",
+  ".rc2": "x-resource-script",
+  ".rd": "r",
+  ".rdf": "xml",
+  ".re": "cpp",
+  ".reek": "yaml",
+  ".reg": "reg",
+  ".regex": "regexp",
+  ".regexp": "regexp",
+  ".resx": "xml",
+  ".rg": "clojure",
+  ".rh": "x-resource-script",
+  ".rh2": "x-resource-script",
+  ".rhtml": "erb",
+  ".rockspec": "lua",
+  ".ron": "ron",
+  ".rpy": "python",
+  ".rs": "rust",
+  ".rss": "xml",
+  ".rsx": "r",
+  ".ru": "ruby",
+  ".ruby": "ruby",
+  ".rviz": "yaml",
+  ".s": "asm",
+  ".sage": "python",
+  ".sagews": "python",
+  ".sarif": "json",
+  ".sas": "sas",
+  ".sass": "sass",
+  ".sbatch": "shellscript",
+  ".sbt": "scala",
+  ".sc": "scala",
+  ".scad": "openscad",
+  ".scala": "scala",
+  ".sch": "xml",
+  ".schdoc": "ini",
+  ".scm": "scheme",
+  ".scpt": "applescript",
+  ".scss": "scss",
+  ".scxml": "xml",
+  ".service": "ini",
+  ".sexp": "common-lisp",
+  ".sfproj": "xml",
+  ".sh": "shellscript",
+  ".sh-session": "shellsession",
+  ".shader": "shaderlab",
+  ".shproj": "xml",
+  ".sjs": "javascript",
+  ".sld": "scheme",
+  ".sln": "x-vs-solution",
+  ".slnf": "json",
+  ".slnlaunch": "json",
+  ".slnx": "xml",
+  ".sls": "scheme",
+  ".slt": "x-slt",
+  ".slurm": "shellscript",
+  ".smithy": "smithy",
+  ".smk": "python",
+  ".snakefile": "python",
+  ".socket": "ini",
+  ".sol": "solidity",
+  ".soy": "soy",
+  ".spc": "plsql",
+  ".spec": "python",
+  ".sps": "scheme",
+  ".sql": "sql",
+  ".srdf": "xml",
+  ".srv": "rosmsg",
+  ".ss": "scheme",
+  ".ssjs": "javascript",
+  ".star": "python",
+  ".sthlp": "stata",
+  ".story": "gherkin",
+  ".storyboard": "xml",
+  ".sty": "latex",
+  ".styl": "stylus",
+  ".sublime-build": "jsonc",
+  ".sublime-color-scheme": "jsonc",
+  ".sublime-commands": "jsonc",
+  ".sublime-completions": "jsonc",
+  ".sublime-keymap": "jsonc",
+  ".sublime-macro": "jsonc",
+  ".sublime-menu": "jsonc",
+  ".sublime-mousemap": "jsonc",
+  ".sublime-project": "jsonc",
+  ".sublime-settings": "jsonc",
+  ".sublime-snippet": "xml",
+  ".sublime-syntax": "yaml",
+  ".sublime-theme": "jsonc",
+  ".sublime-workspace": "jsonc",
+  ".sublime_metrics": "jsonc",
+  ".sublime_session": "jsonc",
+  ".surql": "surrealql",
+  ".sv": "system-verilog",
+  ".svelte": "svelte",
+  ".svh": "system-verilog",
+  ".sw": "xml",
+  ".swift": "swift",
+  ".syntax": "yaml",
+  ".t": "perl",
+  ".tab": "sql",
+  ".tac": "python",
+  ".tact": "json",
+  ".talon": "talonscript",
+  ".target": "ini",
+  ".targets": "xml",
+  ".tcc": "cpp",
+  ".tcsh": "shellscript",
+  ".templ": "templ",
+  ".tex": "latex",
+  ".tf": "hcl",
+  ".tfstate": "json",
+  ".tftpl": "terraform",
+  ".tfvars": "hcl",
+  ".thor": "ruby",
+  ".timer": "ini",
+  ".tml": "xml",
+  ".tmux": "shellscript",
+  ".toc": "latex",
+  ".tofu": "hcl",
+  ".toml": "toml",
+  ".tool": "shellscript",
+  ".topojson": "json",
+  ".tpb": "plsql",
+  ".tpp": "cpp",
+  ".tps": "plsql",
+  ".tres": "gdresource",
+  ".trg": "plsql",
+  ".trigger": "apex",
+  ".ts": "typescript",
+  ".tscn": "gdresource",
+  ".tsp": "typespec",
+  ".tsx": "tsx",
+  ".twig": "twig",
+  ".txt": "x-plain-text",
+  ".txx": "cpp",
+  ".typ": "typst",
+  ".uc": "java",
+  ".udf": "sql",
+  ".ui": "xml",
+  ".unity": "yaml",
+  ".uno": "csharp",
+  ".upc": "c",
+  ".urdf": "xml",
+  ".url": "ini",
+  ".ux": "xml",
+  ".v": "verilog",
+  ".vala": "vala",
+  ".vapi": "vala",
+  ".vba": "viml",
+  ".vbproj": "xml",
+  ".vcf": "tsv",
+  ".vcxproj": "xml",
+  ".veo": "verilog",
+  ".vh": "system-verilog",
+  ".vhd": "vhdl",
+  ".vhdl": "vhdl",
+  ".vhf": "vhdl",
+  ".vhi": "vhdl",
+  ".vho": "vhdl",
+  ".vhost": "apache",
+  ".vhs": "vhdl",
+  ".vht": "vhdl",
+  ".vhw": "vhdl",
+  ".vim": "viml",
+  ".vimrc": "viml",
+  ".viw": "sql",
+  ".vmb": "viml",
+  ".volt": "d",
+  ".vsixmanifest": "xml",
+  ".vssettings": "xml",
+  ".vstemplate": "xml",
+  ".vue": "vue",
+  ".vw": "plsql",
+  ".vxml": "xml",
+  ".vy": "vyper",
+  ".wast": "wasm",
+  ".wat": "wasm",
+  ".watchr": "ruby",
+  ".webapp": "json",
+  ".webmanifest": "json",
+  ".wgsl": "wgsl",
+  ".wisp": "clojure",
+  ".wit": "wit",
+  ".wixproj": "xml",
+  ".wl": "wolfram",
+  ".wls": "wolfram",
+  ".wlt": "wolfram",
+  ".wlua": "lua",
+  ".workflow": "hcl",
+  ".wsdl": "xml",
+  ".wsf": "xml",
+  ".wsgi": "python",
+  ".wxi": "xml",
+  ".wxl": "xml",
+  ".wxs": "xml",
+  ".x": "c",
+  ".x3d": "xml",
+  ".xacro": "xml",
+  ".xaml": "xml",
+  ".xbm": "c",
+  ".xht": "html",
+  ".xhtml": "html",
+  ".xib": "xml",
+  ".xlf": "xml",
+  ".xliff": "xml",
+  ".xmi": "xml",
+  ".xml": "xml",
+  ".xmp": "xml",
+  ".xpl": "xml",
+  ".xpm": "c",
+  ".xproc": "xml",
+  ".xproj": "xml",
+  ".xpy": "python",
+  ".xrl": "erlang",
+  ".xs": "c",
+  ".xsd": "xml",
+  ".xsh": "python",
+  ".xsjs": "javascript",
+  ".xsjslib": "javascript",
+  ".xsl": "xsl",
+  ".xslt": "xsl",
+  ".xsp-config": "xml",
+  ".xspec": "xml",
+  ".xul": "xml",
+  ".yaml": "yaml",
+  ".yaml-tmlanguage": "yaml",
+  ".yap": "prolog",
+  ".yml": "yaml",
+  ".yrl": "erlang",
+  ".yy": "json",
+  ".yyp": "json",
+  ".zcml": "xml",
+  ".zig": "zig",
+  ".zs": "zenscript",
+  ".zsh": "shellscript",
+  ".zsh-theme": "shellscript"
+ },
+ "generated_by": "tools/codeview/gen_langmap.py",
+ "interpreters": {
+  "ash": "shellscript",
+  "awk": "awk",
+  "bash": "shellscript",
+  "bb": "clojure",
+  "bigloo": "scheme",
+  "bun": "typescript",
+  "ccl": "common-lisp",
+  "chakra": "javascript",
+  "chicken": "scheme",
+  "clisp": "common-lisp",
+  "coffee": "coffee",
+  "cperl": "perl",
+  "crystal": "crystal",
+  "csh": "shellscript",
+  "csi": "scheme",
+  "d8": "javascript",
+  "dart": "dart",
+  "dash": "shellscript",
+  "deno": "typescript",
+  "dtrace": "c",
+  "ecl": "common-lisp",
+  "elixir": "elixir",
+  "escript": "erlang",
+  "fennel": "fennel",
+  "fish": "fish",
+  "gawk": "awk",
+  "gjs": "javascript",
+  "gn": "gn",
+  "gosh": "scheme",
+  "groovy": "groovy",
+  "guile": "scheme",
+  "hy": "hy",
+  "instantfpc": "pascal",
+  "jruby": "ruby",
+  "js": "javascript",
+  "julia": "julia",
+  "ksh": "shellscript",
+  "lisp": "common-lisp",
+  "lua": "lua",
+  "luajit": "lua",
+  "luau": "luau",
+  "macruby": "ruby",
+  "make": "make",
+  "math": "wolfram",
+  "mathematica": "wolfram",
+  "mathematicascript": "wolfram",
+  "mathkernel": "wolfram",
+  "mawk": "awk",
+  "mksh": "shellscript",
+  "nawk": "awk",
+  "nextflow": "nextflow",
+  "node": "javascript",
+  "nodejs": "javascript",
+  "nu": "nushell",
+  "nush": "nushell",
+  "ocaml": "ocaml",
+  "ocamlrun": "ocaml",
+  "ocamlscript": "ocaml",
+  "openrc-run": "shellscript",
+  "osascript": "applescript",
+  "pdksh": "shellscript",
+  "perl": "perl",
+  "perl6": "raku",
+  "php": "php",
+  "pkl": "pkl",
+  "pwsh": "powershell",
+  "py": "python",
+  "pypy": "python",
+  "pypy3": "python",
+  "python": "python",
+  "python2": "python",
+  "python3": "python",
+  "qjs": "javascript",
+  "r6rs": "scheme",
+  "rake": "ruby",
+  "raku": "raku",
+  "rakudo": "raku",
+  "rbx": "ruby",
+  "rc": "shellscript",
+  "rhino": "javascript",
+  "rscript": "r",
+  "ruby": "ruby",
+  "runghc": "haskell",
+  "runhaskell": "haskell",
+  "runhugs": "haskell",
+  "rust-script": "rust",
+  "sbcl": "common-lisp",
+  "scala": "scala",
+  "scheme": "scheme",
+  "sh": "shellscript",
+  "swipl": "prolog",
+  "tcc": "c",
+  "tcsh": "shellscript",
+  "ts-node": "typescript",
+  "tsx": "typescript",
+  "uv": "python",
+  "v8": "javascript",
+  "v8-shell": "javascript",
+  "wolfram": "wolfram",
+  "wolframkernel": "wolfram",
+  "wolframnb": "wolfram",
+  "wolframscript": "wolfram",
+  "yap": "prolog",
+  "zsh": "shellscript"
+ },
+ "languages": {
+  "abap": {
+   "display": "ABAP",
+   "grammar": "abap"
+  },
+  "actionscript-3": {
+   "display": "ActionScript",
+   "grammar": "actionscript-3"
+  },
+  "ahk": {
+   "display": "AutoHotkey",
+   "grammar": "ahk"
+  },
+  "apache": {
+   "display": "ApacheConf",
+   "grammar": "apache"
+  },
+  "apex": {
+   "display": "Apex",
+   "grammar": "apex"
+  },
+  "applescript": {
+   "display": "AppleScript",
+   "grammar": "applescript"
+  },
+  "asm": {
+   "display": "Assembly",
+   "grammar": "asm"
+  },
+  "astro": {
+   "display": "Astro",
+   "grammar": "astro"
+  },
+  "awk": {
+   "display": "Awk",
+   "grammar": "awk"
+  },
+  "ballerina": {
+   "display": "Ballerina",
+   "grammar": "ballerina"
+  },
+  "bat": {
+   "display": "Batchfile",
+   "grammar": "bat"
+  },
+  "berry": {
+   "display": "Berry",
+   "grammar": "berry"
+  },
+  "bibtex": {
+   "display": "BibTeX",
+   "grammar": "bibtex"
+  },
+  "bicep": {
+   "display": "Bicep",
+   "grammar": "bicep"
+  },
+  "blade": {
+   "display": "Blade",
+   "grammar": "blade"
+  },
+  "bsl": {
+   "display": "1C Enterprise",
+   "grammar": "bsl"
+  },
+  "c": {
+   "display": "C",
+   "grammar": "c"
+  },
+  "c3": {
+   "display": "C3",
+   "grammar": "c3"
+  },
+  "cadence": {
+   "display": "Cadence",
+   "grammar": "cadence"
+  },
+  "cairo": {
+   "display": "Cairo",
+   "grammar": "cairo"
+  },
+  "chapel": {
+   "display": "Chapel",
+   "grammar": "chapel"
+  },
+  "clarity": {
+   "display": "Clarity",
+   "grammar": "clarity"
+  },
+  "clojure": {
+   "display": "Clojure",
+   "grammar": "clojure"
+  },
+  "cmake": {
+   "display": "CMake",
+   "grammar": "cmake"
+  },
+  "cobol": {
+   "display": "COBOL",
+   "grammar": "cobol"
+  },
+  "codeowners": {
+   "display": "CODEOWNERS",
+   "grammar": "codeowners"
+  },
+  "codeql": {
+   "display": "CodeQL",
+   "grammar": "codeql"
+  },
+  "coffee": {
+   "display": "CSON",
+   "grammar": "coffee"
+  },
+  "common-lisp": {
+   "display": "Common Lisp",
+   "grammar": "common-lisp"
+  },
+  "coq": {
+   "display": "Rocq Prover",
+   "grammar": "coq"
+  },
+  "cpp": {
+   "display": "C++",
+   "grammar": "cpp"
+  },
+  "crystal": {
+   "display": "Crystal",
+   "grammar": "crystal"
+  },
+  "csharp": {
+   "display": "Beef",
+   "grammar": "csharp"
+  },
+  "css": {
+   "display": "CSS",
+   "grammar": "css"
+  },
+  "csv": {
+   "display": "CSV",
+   "grammar": "csv"
+  },
+  "cue": {
+   "display": "CUE",
+   "grammar": "cue"
+  },
+  "cypher": {
+   "display": "CQL",
+   "grammar": "cypher"
+  },
+  "d": {
+   "display": "D",
+   "grammar": "d"
+  },
+  "dart": {
+   "display": "Dart",
+   "grammar": "dart"
+  },
+  "desktop": {
+   "display": "desktop",
+   "grammar": "desktop"
+  },
+  "diff": {
+   "display": "Diff",
+   "grammar": "diff"
+  },
+  "docker": {
+   "display": "Dockerfile",
+   "grammar": "docker"
+  },
+  "dotenv": {
+   "display": "Dotenv",
+   "grammar": "dotenv"
+  },
+  "edge": {
+   "display": "Edge",
+   "grammar": "edge"
+  },
+  "elixir": {
+   "display": "Elixir",
+   "grammar": "elixir"
+  },
+  "elm": {
+   "display": "Elm",
+   "grammar": "elm"
+  },
+  "emacs-lisp": {
+   "display": "Emacs Lisp",
+   "grammar": "emacs-lisp"
+  },
+  "erb": {
+   "display": "HTML+ERB",
+   "grammar": "erb"
+  },
+  "erlang": {
+   "display": "Erlang",
+   "grammar": "erlang"
+  },
+  "fennel": {
+   "display": "Fennel",
+   "grammar": "fennel"
+  },
+  "fish": {
+   "display": "fish",
+   "grammar": "fish"
+  },
+  "fluent": {
+   "display": "Fluent",
+   "grammar": "fluent"
+  },
+  "fsharp": {
+   "display": "F#",
+   "grammar": "fsharp"
+  },
+  "gdresource": {
+   "display": "Godot Resource",
+   "grammar": "gdresource"
+  },
+  "gdscript": {
+   "display": "GDScript",
+   "grammar": "gdscript"
+  },
+  "gdshader": {
+   "display": "GDShader",
+   "grammar": "gdshader"
+  },
+  "genie": {
+   "display": "Genie",
+   "grammar": "genie"
+  },
+  "gherkin": {
+   "display": "Gherkin",
+   "grammar": "gherkin"
+  },
+  "git-commit": {
+   "display": "Git Commit",
+   "grammar": "git-commit"
+  },
+  "gleam": {
+   "display": "Gleam",
+   "grammar": "gleam"
+  },
+  "glimmer-js": {
+   "display": "Glimmer JS",
+   "grammar": "glimmer-js"
+  },
+  "glimmer-ts": {
+   "display": "Glimmer TS",
+   "grammar": "glimmer-ts"
+  },
+  "gn": {
+   "display": "GN",
+   "grammar": "gn"
+  },
+  "go": {
+   "display": "Go",
+   "grammar": "go"
+  },
+  "graphql": {
+   "display": "GraphQL",
+   "grammar": "graphql"
+  },
+  "groovy": {
+   "display": "Groovy",
+   "grammar": "groovy"
+  },
+  "hack": {
+   "display": "Hack",
+   "grammar": "hack"
+  },
+  "haml": {
+   "display": "Haml",
+   "grammar": "haml"
+  },
+  "handlebars": {
+   "display": "Handlebars",
+   "grammar": "handlebars"
+  },
+  "haskell": {
+   "display": "C2hs Haskell",
+   "grammar": "haskell"
+  },
+  "haxe": {
+   "display": "Haxe",
+   "grammar": "haxe"
+  },
+  "hcl": {
+   "display": "HCL",
+   "grammar": "hcl"
+  },
+  "hlsl": {
+   "display": "HLSL",
+   "grammar": "hlsl"
+  },
+  "html": {
+   "display": "HTML",
+   "grammar": "html"
+  },
+  "http": {
+   "display": "HTTP",
+   "grammar": "http"
+  },
+  "hxml": {
+   "display": "HXML",
+   "grammar": "hxml"
+  },
+  "hy": {
+   "display": "Hy",
+   "grammar": "hy"
+  },
+  "imba": {
+   "display": "Imba",
+   "grammar": "imba"
+  },
+  "ini": {
+   "display": "Altium Designer",
+   "grammar": "ini"
+  },
+  "java": {
+   "display": "ChucK",
+   "grammar": "java"
+  },
+  "javascript": {
+   "display": "Cycript",
+   "grammar": "javascript"
+  },
+  "jinja": {
+   "display": "Jinja",
+   "grammar": "jinja"
+  },
+  "jison": {
+   "display": "Jison",
+   "grammar": "jison"
+  },
+  "json": {
+   "display": "Ecere Projects",
+   "grammar": "json"
+  },
+  "json5": {
+   "display": "JSON5",
+   "grammar": "json5"
+  },
+  "jsonc": {
+   "display": "JSON with Comments",
+   "grammar": "jsonc"
+  },
+  "jsonl": {
+   "display": "JSON Lines",
+   "grammar": "jsonl"
+  },
+  "jsonnet": {
+   "display": "Jsonnet",
+   "grammar": "jsonnet"
+  },
+  "julia": {
+   "display": "Julia",
+   "grammar": "julia"
+  },
+  "just": {
+   "display": "Just",
+   "grammar": "just"
+  },
+  "kdl": {
+   "display": "KDL",
+   "grammar": "kdl"
+  },
+  "kotlin": {
+   "display": "Gradle Kotlin DSL",
+   "grammar": "kotlin"
+  },
+  "latex": {
+   "display": "TeX",
+   "grammar": "latex"
+  },
+  "lean": {
+   "display": "Lean",
+   "grammar": "lean"
+  },
+  "less": {
+   "display": "Less",
+   "grammar": "less"
+  },
+  "liquid": {
+   "display": "Liquid",
+   "grammar": "liquid"
+  },
+  "llvm": {
+   "display": "LLVM",
+   "grammar": "llvm"
+  },
+  "log": {
+   "display": "Log File",
+   "grammar": "log"
+  },
+  "lua": {
+   "display": "Lua",
+   "grammar": "lua"
+  },
+  "luau": {
+   "display": "Luau",
+   "grammar": "luau"
+  },
+  "make": {
+   "display": "Makefile",
+   "grammar": "make"
+  },
+  "marko": {
+   "display": "Marko",
+   "grammar": "marko"
+  },
+  "mdx": {
+   "display": "MDX",
+   "grammar": "mdx"
+  },
+  "mermaid": {
+   "display": "Mermaid",
+   "grammar": "mermaid"
+  },
+  "mojo": {
+   "display": "Mojo",
+   "grammar": "mojo"
+  },
+  "moonbit": {
+   "display": "MoonBit",
+   "grammar": "moonbit"
+  },
+  "move": {
+   "display": "Move",
+   "grammar": "move"
+  },
+  "nextflow": {
+   "display": "Nextflow",
+   "grammar": "nextflow"
+  },
+  "nim": {
+   "display": "Nim",
+   "grammar": "nim"
+  },
+  "nix": {
+   "display": "Nix",
+   "grammar": "nix"
+  },
+  "nsis": {
+   "display": "NSIS",
+   "grammar": "nsis"
+  },
+  "nushell": {
+   "display": "Nu",
+   "grammar": "nushell"
+  },
+  "objective-c": {
+   "display": "Objective-C",
+   "grammar": "objective-c"
+  },
+  "ocaml": {
+   "display": "OCaml",
+   "grammar": "ocaml"
+  },
+  "odin": {
+   "display": "Odin",
+   "grammar": "odin"
+  },
+  "openscad": {
+   "display": "OpenSCAD",
+   "grammar": "openscad"
+  },
+  "pascal": {
+   "display": "Component Pascal",
+   "grammar": "pascal"
+  },
+  "perl": {
+   "display": "Perl",
+   "grammar": "perl"
+  },
+  "php": {
+   "display": "PHP",
+   "grammar": "php"
+  },
+  "pkl": {
+   "display": "Pkl",
+   "grammar": "pkl"
+  },
+  "plsql": {
+   "display": "PLSQL",
+   "grammar": "plsql"
+  },
+  "polar": {
+   "display": "Polar",
+   "grammar": "polar"
+  },
+  "postcss": {
+   "display": "PostCSS",
+   "grammar": "postcss"
+  },
+  "powerquery": {
+   "display": "Power Query",
+   "grammar": "powerquery"
+  },
+  "powershell": {
+   "display": "PowerShell",
+   "grammar": "powershell"
+  },
+  "prisma": {
+   "display": "Prisma",
+   "grammar": "prisma"
+  },
+  "prolog": {
+   "display": "Prolog",
+   "grammar": "prolog"
+  },
+  "proto": {
+   "display": "Protocol Buffer",
+   "grammar": "proto"
+  },
+  "pug": {
+   "display": "Pug",
+   "grammar": "pug"
+  },
+  "puppet": {
+   "display": "Puppet",
+   "grammar": "puppet"
+  },
+  "purescript": {
+   "display": "PureScript",
+   "grammar": "purescript"
+  },
+  "python": {
+   "display": "Easybuild",
+   "grammar": "python"
+  },
+  "qml": {
+   "display": "QML",
+   "grammar": "qml"
+  },
+  "r": {
+   "display": "R",
+   "grammar": "r"
+  },
+  "raku": {
+   "display": "Raku",
+   "grammar": "raku"
+  },
+  "razor": {
+   "display": "HTML+Razor",
+   "grammar": "razor"
+  },
+  "rbs": {
+   "display": "RBS",
+   "grammar": "rbs"
+  },
+  "reg": {
+   "display": "Windows Registry Entries",
+   "grammar": "reg"
+  },
+  "regexp": {
+   "display": "Regular Expression",
+   "grammar": "regexp"
+  },
+  "ron": {
+   "display": "RON",
+   "grammar": "ron"
+  },
+  "rosmsg": {
+   "display": "ROS Interface",
+   "grammar": "rosmsg"
+  },
+  "ruby": {
+   "display": "Mirah",
+   "grammar": "ruby"
+  },
+  "rust": {
+   "display": "Rust",
+   "grammar": "rust"
+  },
+  "sas": {
+   "display": "SAS",
+   "grammar": "sas"
+  },
+  "sass": {
+   "display": "Sass",
+   "grammar": "sass"
+  },
+  "scala": {
+   "display": "Scala",
+   "grammar": "scala"
+  },
+  "scheme": {
+   "display": "Scheme",
+   "grammar": "scheme"
+  },
+  "scss": {
+   "display": "SCSS",
+   "grammar": "scss"
+  },
+  "shaderlab": {
+   "display": "ShaderLab",
+   "grammar": "shaderlab"
+  },
+  "shellscript": {
+   "display": "Alpine Abuild",
+   "grammar": "shellscript"
+  },
+  "shellsession": {
+   "display": "ShellSession",
+   "grammar": "shellsession"
+  },
+  "smalltalk": {
+   "display": "Smalltalk",
+   "grammar": "smalltalk"
+  },
+  "smithy": {
+   "display": "Smithy",
+   "grammar": "smithy"
+  },
+  "solidity": {
+   "display": "Solidity",
+   "grammar": "solidity"
+  },
+  "soy": {
+   "display": "Closure Templates",
+   "grammar": "soy"
+  },
+  "sql": {
+   "display": "PLpgSQL",
+   "grammar": "sql"
+  },
+  "ssh-config": {
+   "display": "SSH Config",
+   "grammar": "ssh-config"
+  },
+  "stata": {
+   "display": "Stata",
+   "grammar": "stata"
+  },
+  "stylus": {
+   "display": "Stylus",
+   "grammar": "stylus"
+  },
+  "surrealql": {
+   "display": "SurrealQL",
+   "grammar": "surrealql"
+  },
+  "svelte": {
+   "display": "Svelte",
+   "grammar": "svelte"
+  },
+  "swift": {
+   "display": "Swift",
+   "grammar": "swift"
+  },
+  "system-verilog": {
+   "display": "SystemVerilog",
+   "grammar": "system-verilog"
+  },
+  "talonscript": {
+   "display": "Talon",
+   "grammar": "talonscript"
+  },
+  "templ": {
+   "display": "templ",
+   "grammar": "templ"
+  },
+  "terraform": {
+   "display": "Terraform Template",
+   "grammar": "terraform"
+  },
+  "toml": {
+   "display": "TOML",
+   "grammar": "toml"
+  },
+  "tsv": {
+   "display": "TSV",
+   "grammar": "tsv"
+  },
+  "tsx": {
+   "display": "TSX",
+   "grammar": "tsx"
+  },
+  "twig": {
+   "display": "Twig",
+   "grammar": "twig"
+  },
+  "typescript": {
+   "display": "TypeScript",
+   "grammar": "typescript"
+  },
+  "typespec": {
+   "display": "TypeSpec",
+   "grammar": "typespec"
+  },
+  "typst": {
+   "display": "Typst",
+   "grammar": "typst"
+  },
+  "v": {
+   "display": "Carbon",
+   "grammar": "v"
+  },
+  "vala": {
+   "display": "Vala",
+   "grammar": "vala"
+  },
+  "verilog": {
+   "display": "Verilog",
+   "grammar": "verilog"
+  },
+  "vhdl": {
+   "display": "VHDL",
+   "grammar": "vhdl"
+  },
+  "viml": {
+   "display": "Vim Script",
+   "grammar": "viml"
+  },
+  "vue": {
+   "display": "Vue",
+   "grammar": "vue"
+  },
+  "vyper": {
+   "display": "Vyper",
+   "grammar": "vyper"
+  },
+  "wasm": {
+   "display": "WebAssembly",
+   "grammar": "wasm"
+  },
+  "wgsl": {
+   "display": "WGSL",
+   "grammar": "wgsl"
+  },
+  "wit": {
+   "display": "WebAssembly Interface Type",
+   "grammar": "wit"
+  },
+  "wolfram": {
+   "display": "Wolfram Language",
+   "grammar": "wolfram"
+  },
+  "x-2-dimensional-array": {
+   "display": "2-Dimensional Array",
+   "grammar": null
+  },
+  "x-4d": {
+   "display": "4D",
+   "grammar": null
+  },
+  "x-abap-cds": {
+   "display": "ABAP CDS",
+   "grammar": null
+  },
+  "x-abnf": {
+   "display": "ABNF",
+   "grammar": null
+  },
+  "x-ada": {
+   "display": "Ada",
+   "grammar": null
+  },
+  "x-adblock-filter-list": {
+   "display": "Adblock Filter List",
+   "grammar": null
+  },
+  "x-adobe-font-metrics": {
+   "display": "Adobe Font Metrics",
+   "grammar": null
+  },
+  "x-agda": {
+   "display": "Agda",
+   "grammar": null
+  },
+  "x-ags-script": {
+   "display": "AGS Script",
+   "grammar": null
+  },
+  "x-aidl": {
+   "display": "AIDL",
+   "grammar": null
+  },
+  "x-aiken": {
+   "display": "Aiken",
+   "grammar": null
+  },
+  "x-al": {
+   "display": "AL",
+   "grammar": null
+  },
+  "x-algol": {
+   "display": "ALGOL",
+   "grammar": null
+  },
+  "x-alloy": {
+   "display": "Alloy",
+   "grammar": null
+  },
+  "x-ampl": {
+   "display": "AMPL",
+   "grammar": null
+  },
+  "x-angelscript": {
+   "display": "AngelScript",
+   "grammar": null
+  },
+  "x-answer-set-programming": {
+   "display": "Answer Set Programming",
+   "grammar": null
+  },
+  "x-ant-build-system": {
+   "display": "Ant Build System",
+   "grammar": null
+  },
+  "x-antlers": {
+   "display": "Antlers",
+   "grammar": null
+  },
+  "x-antlr": {
+   "display": "ANTLR",
+   "grammar": null
+  },
+  "x-api-blueprint": {
+   "display": "API Blueprint",
+   "grammar": null
+  },
+  "x-apl": {
+   "display": "APL",
+   "grammar": null
+  },
+  "x-apollo-guidance-computer": {
+   "display": "Apollo Guidance Computer",
+   "grammar": null
+  },
+  "x-arc": {
+   "display": "Arc",
+   "grammar": null
+  },
+  "x-asl": {
+   "display": "ASL",
+   "grammar": null
+  },
+  "x-asn.1": {
+   "display": "ASN.1",
+   "grammar": null
+  },
+  "x-asp.net": {
+   "display": "ASP.NET",
+   "grammar": null
+  },
+  "x-aspectj": {
+   "display": "AspectJ",
+   "grammar": null
+  },
+  "x-asymptote": {
+   "display": "Asymptote",
+   "grammar": null
+  },
+  "x-ats": {
+   "display": "ATS",
+   "grammar": null
+  },
+  "x-augeas": {
+   "display": "Augeas",
+   "grammar": null
+  },
+  "x-autoit": {
+   "display": "AutoIt",
+   "grammar": null
+  },
+  "x-avro-idl": {
+   "display": "Avro IDL",
+   "grammar": null
+  },
+  "x-b-(formal-method)": {
+   "display": "B (Formal Method)",
+   "grammar": null
+  },
+  "x-b4x": {
+   "display": "B4X",
+   "grammar": null
+  },
+  "x-baml": {
+   "display": "BAML",
+   "grammar": null
+  },
+  "x-basic": {
+   "display": "BASIC",
+   "grammar": null
+  },
+  "x-befunge": {
+   "display": "Befunge",
+   "grammar": null
+  },
+  "x-bibtex-style": {
+   "display": "BibTeX Style",
+   "grammar": null
+  },
+  "x-bikeshed": {
+   "display": "Bikeshed",
+   "grammar": null
+  },
+  "x-bison": {
+   "display": "Bison",
+   "grammar": null
+  },
+  "x-bitbake": {
+   "display": "BitBake",
+   "grammar": null
+  },
+  "x-blitzbasic": {
+   "display": "BlitzBasic",
+   "grammar": null
+  },
+  "x-blitzmax": {
+   "display": "BlitzMax",
+   "grammar": null
+  },
+  "x-bluespec": {
+   "display": "Bluespec",
+   "grammar": null
+  },
+  "x-bluespec-bh": {
+   "display": "Bluespec BH",
+   "grammar": null
+  },
+  "x-boo": {
+   "display": "Boo",
+   "grammar": null
+  },
+  "x-boogie": {
+   "display": "Boogie",
+   "grammar": null
+  },
+  "x-bqn": {
+   "display": "BQN",
+   "grammar": null
+  },
+  "x-brainfuck": {
+   "display": "Brainfuck",
+   "grammar": null
+  },
+  "x-brighterscript": {
+   "display": "BrighterScript",
+   "grammar": null
+  },
+  "x-brightscript": {
+   "display": "Brightscript",
+   "grammar": null
+  },
+  "x-browserslist": {
+   "display": "Browserslist",
+   "grammar": null
+  },
+  "x-bru": {
+   "display": "Bru",
+   "grammar": null
+  },
+  "x-c-objdump": {
+   "display": "C-ObjDump",
+   "grammar": null
+  },
+  "x-cabal-config": {
+   "display": "Cabal Config",
+   "grammar": null
+  },
+  "x-caddyfile": {
+   "display": "Caddyfile",
+   "grammar": null
+  },
+  "x-cameligo": {
+   "display": "CameLIGO",
+   "grammar": null
+  },
+  "x-cangjie": {
+   "display": "Cangjie",
+   "grammar": null
+  },
+  "x-cap-cds": {
+   "display": "CAP CDS",
+   "grammar": null
+  },
+  "x-capn-proto": {
+   "display": "Cap'n Proto",
+   "grammar": null
+  },
+  "x-cartocss": {
+   "display": "CartoCSS",
+   "grammar": null
+  },
+  "x-ceylon": {
+   "display": "Ceylon",
+   "grammar": null
+  },
+  "x-charity": {
+   "display": "Charity",
+   "grammar": null
+  },
+  "x-checksums": {
+   "display": "Checksums",
+   "grammar": null
+  },
+  "x-cil": {
+   "display": "CIL",
+   "grammar": null
+  },
+  "x-circom": {
+   "display": "Circom",
+   "grammar": null
+  },
+  "x-cirru": {
+   "display": "Cirru",
+   "grammar": null
+  },
+  "x-clarion": {
+   "display": "Clarion",
+   "grammar": null
+  },
+  "x-classic-asp": {
+   "display": "Classic ASP",
+   "grammar": null
+  },
+  "x-clean": {
+   "display": "Clean",
+   "grammar": null
+  },
+  "x-click": {
+   "display": "Click",
+   "grammar": null
+  },
+  "x-clips": {
+   "display": "CLIPS",
+   "grammar": null
+  },
+  "x-cloud-firestore-security-rules": {
+   "display": "Cloud Firestore Security Rules",
+   "grammar": null
+  },
+  "x-clue": {
+   "display": "Clue",
+   "grammar": null
+  },
+  "x-coldfusion": {
+   "display": "ColdFusion",
+   "grammar": null
+  },
+  "x-coldfusion-cfc": {
+   "display": "ColdFusion CFC",
+   "grammar": null
+  },
+  "x-common-workflow-language": {
+   "display": "Common Workflow Language",
+   "grammar": null
+  },
+  "x-conll-u": {
+   "display": "CoNLL-U",
+   "grammar": null
+  },
+  "x-cooklang": {
+   "display": "Cooklang",
+   "grammar": null
+  },
+  "x-cool": {
+   "display": "Cool",
+   "grammar": null
+  },
+  "x-cpp-objdump": {
+   "display": "Cpp-ObjDump",
+   "grammar": null
+  },
+  "x-crontab": {
+   "display": "crontab",
+   "grammar": null
+  },
+  "x-csound": {
+   "display": "Csound",
+   "grammar": null
+  },
+  "x-csound-document": {
+   "display": "Csound Document",
+   "grammar": null
+  },
+  "x-csound-score": {
+   "display": "Csound Score",
+   "grammar": null
+  },
+  "x-cuda": {
+   "display": "Cuda",
+   "grammar": null
+  },
+  "x-cue-sheet": {
+   "display": "Cue Sheet",
+   "grammar": null
+  },
+  "x-curl-config": {
+   "display": "cURL Config",
+   "grammar": null
+  },
+  "x-curry": {
+   "display": "Curry",
+   "grammar": null
+  },
+  "x-cweb": {
+   "display": "CWeb",
+   "grammar": null
+  },
+  "x-cylc": {
+   "display": "Cylc",
+   "grammar": null
+  },
+  "x-cython": {
+   "display": "Cython",
+   "grammar": null
+  },
+  "x-d-objdump": {
+   "display": "D-ObjDump",
+   "grammar": null
+  },
+  "x-d2": {
+   "display": "D2",
+   "grammar": null
+  },
+  "x-dafny": {
+   "display": "Dafny",
+   "grammar": null
+  },
+  "x-darcs-patch": {
+   "display": "Darcs Patch",
+   "grammar": null
+  },
+  "x-daslang": {
+   "display": "Daslang",
+   "grammar": null
+  },
+  "x-dataweave": {
+   "display": "DataWeave",
+   "grammar": null
+  },
+  "x-debian-package-control-file": {
+   "display": "Debian Package Control File",
+   "grammar": null
+  },
+  "x-denizenscript": {
+   "display": "DenizenScript",
+   "grammar": null
+  },
+  "x-digital-command-language": {
+   "display": "DIGITAL Command Language",
+   "grammar": null
+  },
+  "x-dircolors": {
+   "display": "dircolors",
+   "grammar": null
+  },
+  "x-directx-3d-file": {
+   "display": "DirectX 3D File",
+   "grammar": null
+  },
+  "x-dm": {
+   "display": "DM",
+   "grammar": null
+  },
+  "x-dns-zone": {
+   "display": "DNS Zone",
+   "grammar": null
+  },
+  "x-dogescript": {
+   "display": "Dogescript",
+   "grammar": null
+  },
+  "x-dune": {
+   "display": "Dune",
+   "grammar": null
+  },
+  "x-dylan": {
+   "display": "Dylan",
+   "grammar": null
+  },
+  "x-e": {
+   "display": "E",
+   "grammar": null
+  },
+  "x-e-mail": {
+   "display": "E-mail",
+   "grammar": null
+  },
+  "x-earthly": {
+   "display": "Earthly",
+   "grammar": null
+  },
+  "x-ebnf": {
+   "display": "EBNF",
+   "grammar": null
+  },
+  "x-ec": {
+   "display": "eC",
+   "grammar": null
+  },
+  "x-ecl": {
+   "display": "ECL",
+   "grammar": null
+  },
+  "x-eclipse": {
+   "display": "ECLiPSe",
+   "grammar": null
+  },
+  "x-ecmarkup": {
+   "display": "Ecmarkup",
+   "grammar": null
+  },
+  "x-edgeql": {
+   "display": "EdgeQL",
+   "grammar": null
+  },
+  "x-editorconfig": {
+   "display": "EditorConfig",
+   "grammar": "ini"
+  },
+  "x-edje-data-collection": {
+   "display": "Edje Data Collection",
+   "grammar": null
+  },
+  "x-eiffel": {
+   "display": "Eiffel",
+   "grammar": null
+  },
+  "x-ejs": {
+   "display": "EJS",
+   "grammar": null
+  },
+  "x-elvish": {
+   "display": "Elvish",
+   "grammar": null
+  },
+  "x-elvish-transcript": {
+   "display": "Elvish Transcript",
+   "grammar": null
+  },
+  "x-euphoria": {
+   "display": "Euphoria",
+   "grammar": null
+  },
+  "x-f*": {
+   "display": "F*",
+   "grammar": null
+  },
+  "x-factor": {
+   "display": "Factor",
+   "grammar": null
+  },
+  "x-fancy": {
+   "display": "Fancy",
+   "grammar": null
+  },
+  "x-fantom": {
+   "display": "Fantom",
+   "grammar": null
+  },
+  "x-faust": {
+   "display": "Faust",
+   "grammar": null
+  },
+  "x-figlet-font": {
+   "display": "FIGlet Font",
+   "grammar": null
+  },
+  "x-filebench-wml": {
+   "display": "Filebench WML",
+   "grammar": null
+  },
+  "x-filterscript": {
+   "display": "Filterscript",
+   "grammar": null
+  },
+  "x-firrtl": {
+   "display": "FIRRTL",
+   "grammar": null
+  },
+  "x-flatbuffers": {
+   "display": "FlatBuffers",
+   "grammar": null
+  },
+  "x-flix": {
+   "display": "Flix",
+   "grammar": null
+  },
+  "x-flux": {
+   "display": "FLUX",
+   "grammar": null
+  },
+  "x-formatted": {
+   "display": "Formatted",
+   "grammar": null
+  },
+  "x-forth": {
+   "display": "Forth",
+   "grammar": null
+  },
+  "x-fortran": {
+   "display": "Fortran",
+   "grammar": null
+  },
+  "x-fortran-free-form": {
+   "display": "Fortran Free Form",
+   "grammar": null
+  },
+  "x-freebasic": {
+   "display": "FreeBASIC",
+   "grammar": null
+  },
+  "x-futhark": {
+   "display": "Futhark",
+   "grammar": null
+  },
+  "x-g-code": {
+   "display": "G-code",
+   "grammar": null
+  },
+  "x-game-maker-language": {
+   "display": "Game Maker Language",
+   "grammar": null
+  },
+  "x-gaml": {
+   "display": "GAML",
+   "grammar": null
+  },
+  "x-gams": {
+   "display": "GAMS",
+   "grammar": null
+  },
+  "x-gap": {
+   "display": "GAP",
+   "grammar": null
+  },
+  "x-gcc-machine-description": {
+   "display": "GCC Machine Description",
+   "grammar": null
+  },
+  "x-gdb": {
+   "display": "GDB",
+   "grammar": null
+  },
+  "x-gedcom": {
+   "display": "GEDCOM",
+   "grammar": null
+  },
+  "x-gemfile.lock": {
+   "display": "Gemfile.lock",
+   "grammar": null
+  },
+  "x-genero-4gl": {
+   "display": "Genero 4gl",
+   "grammar": null
+  },
+  "x-genero-per": {
+   "display": "Genero per",
+   "grammar": null
+  },
+  "x-genshi": {
+   "display": "Genshi",
+   "grammar": null
+  },
+  "x-gerber-image": {
+   "display": "Gerber Image",
+   "grammar": null
+  },
+  "x-git-attributes": {
+   "display": "Git Attributes",
+   "grammar": null
+  },
+  "x-git-config": {
+   "display": "Git Config",
+   "grammar": null
+  },
+  "x-git-revision-list": {
+   "display": "Git Revision List",
+   "grammar": null
+  },
+  "x-gitignore": {
+   "display": "Ignore File",
+   "grammar": null
+  },
+  "x-glsl": {
+   "display": "GLSL",
+   "grammar": null
+  },
+  "x-glyph": {
+   "display": "Glyph",
+   "grammar": null
+  },
+  "x-glyph-bitmap-distribution-format": {
+   "display": "Glyph Bitmap Distribution Format",
+   "grammar": null
+  },
+  "x-gnuplot": {
+   "display": "Gnuplot",
+   "grammar": null
+  },
+  "x-go-checksums": {
+   "display": "Go Checksums",
+   "grammar": null
+  },
+  "x-go-module": {
+   "display": "Go Module",
+   "grammar": null
+  },
+  "x-go-template": {
+   "display": "Go Template",
+   "grammar": null
+  },
+  "x-go-workspace": {
+   "display": "Go Workspace",
+   "grammar": null
+  },
+  "x-golo": {
+   "display": "Golo",
+   "grammar": null
+  },
+  "x-gosu": {
+   "display": "Gosu",
+   "grammar": null
+  },
+  "x-grace": {
+   "display": "Grace",
+   "grammar": null
+  },
+  "x-gradle": {
+   "display": "Gradle",
+   "grammar": null
+  },
+  "x-grammatical-framework": {
+   "display": "Grammatical Framework",
+   "grammar": null
+  },
+  "x-graph-modeling-language": {
+   "display": "Graph Modeling Language",
+   "grammar": null
+  },
+  "x-graphviz-(dot)": {
+   "display": "Graphviz (DOT)",
+   "grammar": null
+  },
+  "x-groovy-server-pages": {
+   "display": "Groovy Server Pages",
+   "grammar": null
+  },
+  "x-gsc": {
+   "display": "GSC",
+   "grammar": null
+  },
+  "x-gtkrc": {
+   "display": "GtkRC",
+   "grammar": null
+  },
+  "x-haproxy": {
+   "display": "HAProxy",
+   "grammar": null
+  },
+  "x-harbour": {
+   "display": "Harbour",
+   "grammar": null
+  },
+  "x-hare": {
+   "display": "Hare",
+   "grammar": null
+  },
+  "x-hip": {
+   "display": "HIP",
+   "grammar": null
+  },
+  "x-hiveql": {
+   "display": "HiveQL",
+   "grammar": null
+  },
+  "x-hocon": {
+   "display": "HOCON",
+   "grammar": null
+  },
+  "x-holyc": {
+   "display": "HolyC",
+   "grammar": null
+  },
+  "x-hoon": {
+   "display": "hoon",
+   "grammar": null
+  },
+  "x-hosts-file": {
+   "display": "Hosts File",
+   "grammar": null
+  },
+  "x-htmlpecr": {
+   "display": "HTML+ECR",
+   "grammar": null
+  },
+  "x-htmlpeex": {
+   "display": "HTML+EEX",
+   "grammar": null
+  },
+  "x-htmlpphp": {
+   "display": "HTML+PHP",
+   "grammar": null
+  },
+  "x-hurl": {
+   "display": "Hurl",
+   "grammar": null
+  },
+  "x-hyphy": {
+   "display": "HyPhy",
+   "grammar": null
+  },
+  "x-icalendar": {
+   "display": "iCalendar",
+   "grammar": null
+  },
+  "x-idl": {
+   "display": "IDL",
+   "grammar": null
+  },
+  "x-idris": {
+   "display": "Idris",
+   "grammar": null
+  },
+  "x-ignore-list": {
+   "display": "Ignore List",
+   "grammar": null
+  },
+  "x-igor-pro": {
+   "display": "IGOR Pro",
+   "grammar": null
+  },
+  "x-il-assembly": {
+   "display": "IL Assembly",
+   "grammar": null
+  },
+  "x-imagej-macro": {
+   "display": "ImageJ Macro",
+   "grammar": null
+  },
+  "x-inform-7": {
+   "display": "Inform 7",
+   "grammar": null
+  },
+  "x-ink": {
+   "display": "Ink",
+   "grammar": null
+  },
+  "x-inno-setup": {
+   "display": "Inno Setup Script",
+   "grammar": "ini"
+  },
+  "x-io": {
+   "display": "Io",
+   "grammar": null
+  },
+  "x-ioke": {
+   "display": "Ioke",
+   "grammar": null
+  },
+  "x-irc-log": {
+   "display": "IRC log",
+   "grammar": null
+  },
+  "x-isabelle": {
+   "display": "Isabelle",
+   "grammar": null
+  },
+  "x-isabelle-root": {
+   "display": "Isabelle ROOT",
+   "grammar": null
+  },
+  "x-ispc": {
+   "display": "ISPC",
+   "grammar": null
+  },
+  "x-j": {
+   "display": "J",
+   "grammar": null
+  },
+  "x-jac": {
+   "display": "Jac",
+   "grammar": null
+  },
+  "x-jai": {
+   "display": "Jai",
+   "grammar": null
+  },
+  "x-janet": {
+   "display": "Janet",
+   "grammar": null
+  },
+  "x-jasmin": {
+   "display": "Jasmin",
+   "grammar": null
+  },
+  "x-java-properties": {
+   "display": "Java Properties",
+   "grammar": null
+  },
+  "x-java-server-pages": {
+   "display": "Java Server Pages",
+   "grammar": null
+  },
+  "x-java-template-engine": {
+   "display": "Java Template Engine",
+   "grammar": null
+  },
+  "x-jcl": {
+   "display": "JCL",
+   "grammar": null
+  },
+  "x-jest-snapshot": {
+   "display": "Jest Snapshot",
+   "grammar": null
+  },
+  "x-jetbrains-mps": {
+   "display": "JetBrains MPS",
+   "grammar": null
+  },
+  "x-jflex": {
+   "display": "JFlex",
+   "grammar": null
+  },
+  "x-jison-lex": {
+   "display": "Jison Lex",
+   "grammar": null
+  },
+  "x-jolie": {
+   "display": "Jolie",
+   "grammar": null
+  },
+  "x-jq": {
+   "display": "jq",
+   "grammar": null
+  },
+  "x-jsoniq": {
+   "display": "JSONiq",
+   "grammar": null
+  },
+  "x-julia-repl": {
+   "display": "Julia REPL",
+   "grammar": null
+  },
+  "x-kakounescript": {
+   "display": "KakouneScript",
+   "grammar": null
+  },
+  "x-kcl": {
+   "display": "KCL",
+   "grammar": null
+  },
+  "x-kerboscript": {
+   "display": "KerboScript",
+   "grammar": null
+  },
+  "x-kframework": {
+   "display": "KFramework",
+   "grammar": null
+  },
+  "x-kicad-layout": {
+   "display": "KiCad Layout",
+   "grammar": null
+  },
+  "x-kicad-legacy-layout": {
+   "display": "KiCad Legacy Layout",
+   "grammar": null
+  },
+  "x-kicad-schematic": {
+   "display": "KiCad Schematic",
+   "grammar": null
+  },
+  "x-kickstart": {
+   "display": "Kickstart",
+   "grammar": null
+  },
+  "x-koka": {
+   "display": "Koka",
+   "grammar": null
+  },
+  "x-kolmafia-ash": {
+   "display": "KoLmafia ASH",
+   "grammar": null
+  },
+  "x-krl": {
+   "display": "KRL",
+   "grammar": null
+  },
+  "x-kusto": {
+   "display": "Kusto",
+   "grammar": null
+  },
+  "x-kvlang": {
+   "display": "kvlang",
+   "grammar": null
+  },
+  "x-lambdapi": {
+   "display": "Lambdapi",
+   "grammar": null
+  },
+  "x-langium": {
+   "display": "Langium",
+   "grammar": null
+  },
+  "x-lark": {
+   "display": "Lark",
+   "grammar": null
+  },
+  "x-lasso": {
+   "display": "Lasso",
+   "grammar": null
+  },
+  "x-latte": {
+   "display": "Latte",
+   "grammar": null
+  },
+  "x-leo": {
+   "display": "Leo",
+   "grammar": null
+  },
+  "x-lex": {
+   "display": "Lex",
+   "grammar": null
+  },
+  "x-lfe": {
+   "display": "LFE",
+   "grammar": null
+  },
+  "x-ligolang": {
+   "display": "LigoLANG",
+   "grammar": null
+  },
+  "x-lilypond": {
+   "display": "LilyPond",
+   "grammar": null
+  },
+  "x-limbo": {
+   "display": "Limbo",
+   "grammar": null
+  },
+  "x-linear-programming": {
+   "display": "Linear Programming",
+   "grammar": null
+  },
+  "x-linker-script": {
+   "display": "Linker Script",
+   "grammar": null
+  },
+  "x-linux-kernel-module": {
+   "display": "Linux Kernel Module",
+   "grammar": null
+  },
+  "x-liquidsoap": {
+   "display": "Liquidsoap",
+   "grammar": null
+  },
+  "x-literate-agda": {
+   "display": "Literate Agda",
+   "grammar": null
+  },
+  "x-literate-coffeescript": {
+   "display": "Literate CoffeeScript",
+   "grammar": null
+  },
+  "x-literate-haskell": {
+   "display": "Literate Haskell",
+   "grammar": null
+  },
+  "x-livecode-script": {
+   "display": "LiveCode Script",
+   "grammar": null
+  },
+  "x-livescript": {
+   "display": "LiveScript",
+   "grammar": null
+  },
+  "x-logos": {
+   "display": "Logos",
+   "grammar": null
+  },
+  "x-logtalk": {
+   "display": "Logtalk",
+   "grammar": null
+  },
+  "x-lolcode": {
+   "display": "LOLCODE",
+   "grammar": null
+  },
+  "x-loomscript": {
+   "display": "LoomScript",
+   "grammar": null
+  },
+  "x-lsl": {
+   "display": "LSL",
+   "grammar": null
+  },
+  "x-ltspice-symbol": {
+   "display": "LTspice Symbol",
+   "grammar": null
+  },
+  "x-m": {
+   "display": "M",
+   "grammar": null
+  },
+  "x-m3u": {
+   "display": "M3U",
+   "grammar": null
+  },
+  "x-m4": {
+   "display": "M4",
+   "grammar": null
+  },
+  "x-m4sugar": {
+   "display": "M4Sugar",
+   "grammar": null
+  },
+  "x-macaulay2": {
+   "display": "Macaulay2",
+   "grammar": null
+  },
+  "x-mako": {
+   "display": "Mako",
+   "grammar": null
+  },
+  "x-mask": {
+   "display": "Mask",
+   "grammar": null
+  },
+  "x-mathematical-programming-system": {
+   "display": "Mathematical Programming System",
+   "grammar": null
+  },
+  "x-matlab": {
+   "display": "MATLAB",
+   "grammar": null
+  },
+  "x-maven-pom": {
+   "display": "Maven POM",
+   "grammar": null
+  },
+  "x-maxscript": {
+   "display": "MAXScript",
+   "grammar": null
+  },
+  "x-mcfunction": {
+   "display": "mcfunction",
+   "grammar": null
+  },
+  "x-mdsvex": {
+   "display": "mdsvex",
+   "grammar": null
+  },
+  "x-mercury": {
+   "display": "Mercury",
+   "grammar": null
+  },
+  "x-meson": {
+   "display": "Meson",
+   "grammar": null
+  },
+  "x-metal": {
+   "display": "Metal",
+   "grammar": null
+  },
+  "x-metta": {
+   "display": "MeTTa",
+   "grammar": null
+  },
+  "x-microsoft-developer-studio-project": {
+   "display": "Microsoft Developer Studio Project",
+   "grammar": null
+  },
+  "x-microsoft-visual-studio-solution": {
+   "display": "Microsoft Visual Studio Solution",
+   "grammar": null
+  },
+  "x-minid": {
+   "display": "MiniD",
+   "grammar": null
+  },
+  "x-miniyaml": {
+   "display": "MiniYAML",
+   "grammar": null
+  },
+  "x-minizinc": {
+   "display": "MiniZinc",
+   "grammar": null
+  },
+  "x-minizinc-data": {
+   "display": "MiniZinc Data",
+   "grammar": null
+  },
+  "x-mint": {
+   "display": "Mint",
+   "grammar": null
+  },
+  "x-mirc-script": {
+   "display": "mIRC Script",
+   "grammar": null
+  },
+  "x-mlir": {
+   "display": "MLIR",
+   "grammar": null
+  },
+  "x-modelica": {
+   "display": "Modelica",
+   "grammar": null
+  },
+  "x-modula-2": {
+   "display": "Modula-2",
+   "grammar": null
+  },
+  "x-modula-3": {
+   "display": "Modula-3",
+   "grammar": null
+  },
+  "x-module-def": {
+   "display": "Module Definition File",
+   "grammar": null
+  },
+  "x-module-management-system": {
+   "display": "Module Management System",
+   "grammar": null
+  },
+  "x-monkey": {
+   "display": "Monkey",
+   "grammar": null
+  },
+  "x-monkey-c": {
+   "display": "Monkey C",
+   "grammar": null
+  },
+  "x-moocode": {
+   "display": "Moocode",
+   "grammar": null
+  },
+  "x-moonscript": {
+   "display": "MoonScript",
+   "grammar": null
+  },
+  "x-motoko": {
+   "display": "Motoko",
+   "grammar": null
+  },
+  "x-motorola-68k-assembly": {
+   "display": "Motorola 68K Assembly",
+   "grammar": null
+  },
+  "x-mql4": {
+   "display": "MQL4",
+   "grammar": null
+  },
+  "x-mql5": {
+   "display": "MQL5",
+   "grammar": null
+  },
+  "x-muf": {
+   "display": "MUF",
+   "grammar": null
+  },
+  "x-mupad": {
+   "display": "mupad",
+   "grammar": null
+  },
+  "x-mustache": {
+   "display": "Mustache",
+   "grammar": null
+  },
+  "x-myghty": {
+   "display": "Myghty",
+   "grammar": null
+  },
+  "x-nanorc": {
+   "display": "nanorc",
+   "grammar": null
+  },
+  "x-nasal": {
+   "display": "Nasal",
+   "grammar": null
+  },
+  "x-nasl": {
+   "display": "NASL",
+   "grammar": null
+  },
+  "x-ncl": {
+   "display": "NCL",
+   "grammar": null
+  },
+  "x-nearley": {
+   "display": "Nearley",
+   "grammar": null
+  },
+  "x-nemerle": {
+   "display": "Nemerle",
+   "grammar": null
+  },
+  "x-neon": {
+   "display": "NEON",
+   "grammar": null
+  },
+  "x-nesc": {
+   "display": "nesC",
+   "grammar": null
+  },
+  "x-netlinx": {
+   "display": "NetLinx",
+   "grammar": null
+  },
+  "x-netlinxperb": {
+   "display": "NetLinx+ERB",
+   "grammar": null
+  },
+  "x-netlogo": {
+   "display": "NetLogo",
+   "grammar": null
+  },
+  "x-newlisp": {
+   "display": "NewLisp",
+   "grammar": null
+  },
+  "x-nginx": {
+   "display": "Nginx",
+   "grammar": null
+  },
+  "x-nickel": {
+   "display": "Nickel",
+   "grammar": null
+  },
+  "x-ninja": {
+   "display": "Ninja",
+   "grammar": null
+  },
+  "x-nit": {
+   "display": "Nit",
+   "grammar": null
+  },
+  "x-nl": {
+   "display": "NL",
+   "grammar": null
+  },
+  "x-nmodl": {
+   "display": "NMODL",
+   "grammar": null
+  },
+  "x-noir": {
+   "display": "Noir",
+   "grammar": null
+  },
+  "x-npm-config": {
+   "display": "NPM Config",
+   "grammar": null
+  },
+  "x-numpy": {
+   "display": "NumPy",
+   "grammar": null
+  },
+  "x-nunjucks": {
+   "display": "Nunjucks",
+   "grammar": null
+  },
+  "x-nwscript": {
+   "display": "NWScript",
+   "grammar": null
+  },
+  "x-oberon": {
+   "display": "Oberon",
+   "grammar": null
+  },
+  "x-objdump": {
+   "display": "ObjDump",
+   "grammar": null
+  },
+  "x-object-data-instance-notation": {
+   "display": "Object Data Instance Notation",
+   "grammar": null
+  },
+  "x-objective-cpp": {
+   "display": "Objective-C++",
+   "grammar": null
+  },
+  "x-objective-j": {
+   "display": "Objective-J",
+   "grammar": null
+  },
+  "x-objectscript": {
+   "display": "ObjectScript",
+   "grammar": null
+  },
+  "x-omgrofl": {
+   "display": "Omgrofl",
+   "grammar": null
+  },
+  "x-omnetpp-msg": {
+   "display": "OMNeT++ MSG",
+   "grammar": null
+  },
+  "x-omnetpp-ned": {
+   "display": "OMNeT++ NED",
+   "grammar": null
+  },
+  "x-ooc": {
+   "display": "ooc",
+   "grammar": null
+  },
+  "x-opa": {
+   "display": "Opa",
+   "grammar": null
+  },
+  "x-opal": {
+   "display": "Opal",
+   "grammar": null
+  },
+  "x-open-policy-agent": {
+   "display": "Open Policy Agent",
+   "grammar": null
+  },
+  "x-openapi-specification-v2": {
+   "display": "OpenAPI Specification v2",
+   "grammar": null
+  },
+  "x-openapi-specification-v3": {
+   "display": "OpenAPI Specification v3",
+   "grammar": null
+  },
+  "x-openedge-abl": {
+   "display": "OpenEdge ABL",
+   "grammar": null
+  },
+  "x-openqasm": {
+   "display": "OpenQASM",
+   "grammar": null
+  },
+  "x-openstep-property-list": {
+   "display": "OpenStep Property List",
+   "grammar": null
+  },
+  "x-opentype-feature-file": {
+   "display": "OpenType Feature File",
+   "grammar": null
+  },
+  "x-option-list": {
+   "display": "Option List",
+   "grammar": null
+  },
+  "x-overpassql": {
+   "display": "OverpassQL",
+   "grammar": null
+  },
+  "x-overpy": {
+   "display": "OverPy",
+   "grammar": null
+  },
+  "x-ox": {
+   "display": "Ox",
+   "grammar": null
+  },
+  "x-oxygene": {
+   "display": "Oxygene",
+   "grammar": null
+  },
+  "x-oz": {
+   "display": "Oz",
+   "grammar": null
+  },
+  "x-p4": {
+   "display": "P4",
+   "grammar": null
+  },
+  "x-pact": {
+   "display": "Pact",
+   "grammar": null
+  },
+  "x-pan": {
+   "display": "Pan",
+   "grammar": null
+  },
+  "x-papyrus": {
+   "display": "Papyrus",
+   "grammar": null
+  },
+  "x-parrot": {
+   "display": "Parrot",
+   "grammar": null
+  },
+  "x-parrot-assembly": {
+   "display": "Parrot Assembly",
+   "grammar": null
+  },
+  "x-parrot-internal-representation": {
+   "display": "Parrot Internal Representation",
+   "grammar": null
+  },
+  "x-pawn": {
+   "display": "Pawn",
+   "grammar": null
+  },
+  "x-pddl": {
+   "display": "PDDL",
+   "grammar": null
+  },
+  "x-peg.js": {
+   "display": "PEG.js",
+   "grammar": null
+  },
+  "x-pep8": {
+   "display": "Pep8",
+   "grammar": null
+  },
+  "x-pic": {
+   "display": "Pic",
+   "grammar": null
+  },
+  "x-pickle": {
+   "display": "Pickle",
+   "grammar": null
+  },
+  "x-picolisp": {
+   "display": "PicoLisp",
+   "grammar": null
+  },
+  "x-piglatin": {
+   "display": "PigLatin",
+   "grammar": null
+  },
+  "x-pike": {
+   "display": "Pike",
+   "grammar": null
+  },
+  "x-pip-requirements": {
+   "display": "Pip Requirements",
+   "grammar": null
+  },
+  "x-pkg-config": {
+   "display": "pkg-config",
+   "grammar": null
+  },
+  "x-plain-include": {
+   "display": "Include File",
+   "grammar": null
+  },
+  "x-plain-text": {
+   "display": "Plain Text",
+   "grammar": null
+  },
+  "x-plantuml": {
+   "display": "PlantUML",
+   "grammar": null
+  },
+  "x-pogoscript": {
+   "display": "PogoScript",
+   "grammar": null
+  },
+  "x-pony": {
+   "display": "Pony",
+   "grammar": null
+  },
+  "x-portugol": {
+   "display": "Portugol",
+   "grammar": null
+  },
+  "x-postscript": {
+   "display": "PostScript",
+   "grammar": null
+  },
+  "x-pov-ray-sdl": {
+   "display": "POV-Ray SDL",
+   "grammar": null
+  },
+  "x-powerbuilder": {
+   "display": "PowerBuilder",
+   "grammar": null
+  },
+  "x-praat": {
+   "display": "Praat",
+   "grammar": null
+  },
+  "x-processing": {
+   "display": "Processing",
+   "grammar": null
+  },
+  "x-procfile": {
+   "display": "Procfile",
+   "grammar": null
+  },
+  "x-proguard": {
+   "display": "Proguard",
+   "grammar": null
+  },
+  "x-promela": {
+   "display": "Promela",
+   "grammar": null
+  },
+  "x-propeller-spin": {
+   "display": "Propeller Spin",
+   "grammar": null
+  },
+  "x-protocol-buffer-text-format": {
+   "display": "Protocol Buffer Text Format",
+   "grammar": null
+  },
+  "x-public-key": {
+   "display": "Public Key",
+   "grammar": null
+  },
+  "x-pure-data": {
+   "display": "Pure Data",
+   "grammar": null
+  },
+  "x-purebasic": {
+   "display": "PureBasic",
+   "grammar": null
+  },
+  "x-pyret": {
+   "display": "Pyret",
+   "grammar": null
+  },
+  "x-python-console": {
+   "display": "Python console",
+   "grammar": null
+  },
+  "x-python-traceback": {
+   "display": "Python traceback",
+   "grammar": null
+  },
+  "x-q": {
+   "display": "q",
+   "grammar": null
+  },
+  "x-qmake": {
+   "display": "QMake",
+   "grammar": null
+  },
+  "x-qsharp": {
+   "display": "Q#",
+   "grammar": null
+  },
+  "x-quake": {
+   "display": "Quake",
+   "grammar": null
+  },
+  "x-quakec": {
+   "display": "QuakeC",
+   "grammar": null
+  },
+  "x-quickbasic": {
+   "display": "QuickBASIC",
+   "grammar": null
+  },
+  "x-quint": {
+   "display": "Quint",
+   "grammar": null
+  },
+  "x-racket": {
+   "display": "Racket",
+   "grammar": null
+  },
+  "x-ragel": {
+   "display": "Ragel",
+   "grammar": null
+  },
+  "x-rascal": {
+   "display": "Rascal",
+   "grammar": null
+  },
+  "x-rascript": {
+   "display": "RAScript",
+   "grammar": null
+  },
+  "x-raw-token-data": {
+   "display": "Raw token data",
+   "grammar": null
+  },
+  "x-readline-config": {
+   "display": "Readline Config",
+   "grammar": null
+  },
+  "x-realbasic": {
+   "display": "REALbasic",
+   "grammar": null
+  },
+  "x-reason": {
+   "display": "Reason",
+   "grammar": null
+  },
+  "x-reasonligo": {
+   "display": "ReasonLIGO",
+   "grammar": null
+  },
+  "x-rebol": {
+   "display": "Rebol",
+   "grammar": null
+  },
+  "x-record-jar": {
+   "display": "Record Jar",
+   "grammar": null
+  },
+  "x-red": {
+   "display": "Red",
+   "grammar": null
+  },
+  "x-redcode": {
+   "display": "Redcode",
+   "grammar": null
+  },
+  "x-redirect-rules": {
+   "display": "Redirect Rules",
+   "grammar": null
+  },
+  "x-redscript": {
+   "display": "Redscript",
+   "grammar": null
+  },
+  "x-renderscript": {
+   "display": "RenderScript",
+   "grammar": null
+  },
+  "x-renpy": {
+   "display": "Ren'Py",
+   "grammar": null
+  },
+  "x-rescript": {
+   "display": "ReScript",
+   "grammar": null
+  },
+  "x-resource-script": {
+   "display": "Windows Resource Script",
+   "grammar": "cpp"
+  },
+  "x-rexx": {
+   "display": "REXX",
+   "grammar": null
+  },
+  "x-rez": {
+   "display": "Rez",
+   "grammar": null
+  },
+  "x-rich-text-format": {
+   "display": "Rich Text Format",
+   "grammar": null
+  },
+  "x-ring": {
+   "display": "Ring",
+   "grammar": null
+  },
+  "x-riot": {
+   "display": "Riot",
+   "grammar": null
+  },
+  "x-robotframework": {
+   "display": "RobotFramework",
+   "grammar": null
+  },
+  "x-robots-exclusion-rules": {
+   "display": "Robots Exclusion Rules",
+   "grammar": null
+  },
+  "x-roc": {
+   "display": "Roc",
+   "grammar": null
+  },
+  "x-roff": {
+   "display": "Roff",
+   "grammar": null
+  },
+  "x-roff-manpage": {
+   "display": "Roff Manpage",
+   "grammar": null
+  },
+  "x-routeros-script": {
+   "display": "RouterOS Script",
+   "grammar": null
+  },
+  "x-rpgle": {
+   "display": "RPGLE",
+   "grammar": null
+  },
+  "x-rpm-spec": {
+   "display": "RPM Spec",
+   "grammar": null
+  },
+  "x-runoff": {
+   "display": "RUNOFF",
+   "grammar": null
+  },
+  "x-sail": {
+   "display": "Sail",
+   "grammar": null
+  },
+  "x-saltstack": {
+   "display": "SaltStack",
+   "grammar": null
+  },
+  "x-scaml": {
+   "display": "Scaml",
+   "grammar": null
+  },
+  "x-scenic": {
+   "display": "Scenic",
+   "grammar": null
+  },
+  "x-scilab": {
+   "display": "Scilab",
+   "grammar": null
+  },
+  "x-sed": {
+   "display": "sed",
+   "grammar": null
+  },
+  "x-self": {
+   "display": "Self",
+   "grammar": null
+  },
+  "x-selinux-policy": {
+   "display": "SELinux Policy",
+   "grammar": null
+  },
+  "x-shellcheck-config": {
+   "display": "ShellCheck Config",
+   "grammar": null
+  },
+  "x-shen": {
+   "display": "Shen",
+   "grammar": null
+  },
+  "x-sieve": {
+   "display": "Sieve",
+   "grammar": null
+  },
+  "x-simple-file-verification": {
+   "display": "Simple File Verification",
+   "grammar": null
+  },
+  "x-singularity": {
+   "display": "Singularity",
+   "grammar": null
+  },
+  "x-slang": {
+   "display": "Slang",
+   "grammar": null
+  },
+  "x-slash": {
+   "display": "Slash",
+   "grammar": null
+  },
+  "x-slice": {
+   "display": "Slice",
+   "grammar": null
+  },
+  "x-slim": {
+   "display": "Slim",
+   "grammar": null
+  },
+  "x-slint": {
+   "display": "Slint",
+   "grammar": null
+  },
+  "x-slt": {
+   "display": "Translation Archive",
+   "grammar": null
+  },
+  "x-smali": {
+   "display": "Smali",
+   "grammar": null
+  },
+  "x-smarty": {
+   "display": "Smarty",
+   "grammar": null
+  },
+  "x-smpl": {
+   "display": "SmPL",
+   "grammar": null
+  },
+  "x-smt": {
+   "display": "SMT",
+   "grammar": null
+  },
+  "x-soong": {
+   "display": "Soong",
+   "grammar": null
+  },
+  "x-sourcepawn": {
+   "display": "SourcePawn",
+   "grammar": null
+  },
+  "x-sparql": {
+   "display": "SPARQL",
+   "grammar": null
+  },
+  "x-spicedb-schema": {
+   "display": "SpiceDB Schema",
+   "grammar": null
+  },
+  "x-spline-font-database": {
+   "display": "Spline Font Database",
+   "grammar": null
+  },
+  "x-sqf": {
+   "display": "SQF",
+   "grammar": null
+  },
+  "x-squirrel": {
+   "display": "Squirrel",
+   "grammar": null
+  },
+  "x-srecode-template": {
+   "display": "SRecode Template",
+   "grammar": null
+  },
+  "x-stan": {
+   "display": "Stan",
+   "grammar": null
+  },
+  "x-standard-ml": {
+   "display": "Standard ML",
+   "grammar": null
+  },
+  "x-star": {
+   "display": "STAR",
+   "grammar": null
+  },
+  "x-stl": {
+   "display": "STL",
+   "grammar": null
+  },
+  "x-ston": {
+   "display": "STON",
+   "grammar": null
+  },
+  "x-stringtemplate": {
+   "display": "StringTemplate",
+   "grammar": null
+  },
+  "x-subrip-text": {
+   "display": "SubRip Text",
+   "grammar": null
+  },
+  "x-sugarss": {
+   "display": "SugarSS",
+   "grammar": null
+  },
+  "x-supercollider": {
+   "display": "SuperCollider",
+   "grammar": null
+  },
+  "x-survex-data": {
+   "display": "Survex data",
+   "grammar": null
+  },
+  "x-svg": {
+   "display": "SVG",
+   "grammar": null
+  },
+  "x-sway": {
+   "display": "Sway",
+   "grammar": null
+  },
+  "x-swig": {
+   "display": "SWIG",
+   "grammar": null
+  },
+  "x-tact": {
+   "display": "Tact",
+   "grammar": null
+  },
+  "x-tcl": {
+   "display": "Tcl",
+   "grammar": null
+  },
+  "x-tea": {
+   "display": "Tea",
+   "grammar": null
+  },
+  "x-teal": {
+   "display": "Teal",
+   "grammar": null
+  },
+  "x-terra": {
+   "display": "Terra",
+   "grammar": null
+  },
+  "x-textgrid": {
+   "display": "TextGrid",
+   "grammar": null
+  },
+  "x-textmate-properties": {
+   "display": "TextMate Properties",
+   "grammar": null
+  },
+  "x-thrift": {
+   "display": "Thrift",
+   "grammar": null
+  },
+  "x-ti-program": {
+   "display": "TI Program",
+   "grammar": null
+  },
+  "x-tl-verilog": {
+   "display": "TL-Verilog",
+   "grammar": null
+  },
+  "x-tla": {
+   "display": "TLA",
+   "grammar": null
+  },
+  "x-tmdl": {
+   "display": "TMDL",
+   "grammar": null
+  },
+  "x-toit": {
+   "display": "Toit",
+   "grammar": null
+  },
+  "x-tor-config": {
+   "display": "Tor Config",
+   "grammar": null
+  },
+  "x-tree-sitter-query": {
+   "display": "Tree-sitter Query",
+   "grammar": null
+  },
+  "x-tsplib-data": {
+   "display": "TSPLIB data",
+   "grammar": null
+  },
+  "x-tsql": {
+   "display": "TSQL",
+   "grammar": null
+  },
+  "x-turing": {
+   "display": "Turing",
+   "grammar": null
+  },
+  "x-turtle": {
+   "display": "Turtle",
+   "grammar": null
+  },
+  "x-txl": {
+   "display": "TXL",
+   "grammar": null
+  },
+  "x-type-language": {
+   "display": "Type Language",
+   "grammar": null
+  },
+  "x-unix-assembly": {
+   "display": "Unix Assembly",
+   "grammar": null
+  },
+  "x-untyped-plutus-core": {
+   "display": "Untyped Plutus Core",
+   "grammar": null
+  },
+  "x-urweb": {
+   "display": "UrWeb",
+   "grammar": null
+  },
+  "x-valve-data-format": {
+   "display": "Valve Data Format",
+   "grammar": null
+  },
+  "x-vb-class": {
+   "display": "Visual Basic Class",
+   "grammar": "vb"
+  },
+  "x-vba": {
+   "display": "VBA",
+   "grammar": null
+  },
+  "x-vbscript": {
+   "display": "VBScript",
+   "grammar": null
+  },
+  "x-vcard": {
+   "display": "vCard",
+   "grammar": null
+  },
+  "x-vcl": {
+   "display": "VCL",
+   "grammar": null
+  },
+  "x-velocity-template-language": {
+   "display": "Velocity Template Language",
+   "grammar": null
+  },
+  "x-vento": {
+   "display": "Vento",
+   "grammar": null
+  },
+  "x-vim-snippet": {
+   "display": "Vim Snippet",
+   "grammar": null
+  },
+  "x-visual-basic-.net": {
+   "display": "Visual Basic .NET",
+   "grammar": null
+  },
+  "x-visual-basic-6.0": {
+   "display": "Visual Basic 6.0",
+   "grammar": null
+  },
+  "x-vs-solution": {
+   "display": "Visual Studio Solution",
+   "grammar": null
+  },
+  "x-wavefront-material": {
+   "display": "Wavefront Material",
+   "grammar": null
+  },
+  "x-wavefront-object": {
+   "display": "Wavefront Object",
+   "grammar": null
+  },
+  "x-wdl": {
+   "display": "WDL",
+   "grammar": null
+  },
+  "x-webidl": {
+   "display": "WebIDL",
+   "grammar": null
+  },
+  "x-webvtt": {
+   "display": "WebVTT",
+   "grammar": null
+  },
+  "x-wget-config": {
+   "display": "Wget Config",
+   "grammar": null
+  },
+  "x-whiley": {
+   "display": "Whiley",
+   "grammar": null
+  },
+  "x-win32-message-file": {
+   "display": "Win32 Message File",
+   "grammar": null
+  },
+  "x-witcher-script": {
+   "display": "Witcher Script",
+   "grammar": null
+  },
+  "x-wollok": {
+   "display": "Wollok",
+   "grammar": null
+  },
+  "x-world-of-warcraft-addon-data": {
+   "display": "World of Warcraft Addon Data",
+   "grammar": null
+  },
+  "x-wren": {
+   "display": "Wren",
+   "grammar": null
+  },
+  "x-x-font-directory-index": {
+   "display": "X Font Directory Index",
+   "grammar": null
+  },
+  "x-x10": {
+   "display": "X10",
+   "grammar": null
+  },
+  "x-xbase": {
+   "display": "xBase",
+   "grammar": null
+  },
+  "x-xc": {
+   "display": "XC",
+   "grammar": null
+  },
+  "x-xcompose": {
+   "display": "XCompose",
+   "grammar": null
+  },
+  "x-xmake": {
+   "display": "Xmake",
+   "grammar": null
+  },
+  "x-xml-property-list": {
+   "display": "XML Property List",
+   "grammar": null
+  },
+  "x-xojo": {
+   "display": "Xojo",
+   "grammar": null
+  },
+  "x-xquery": {
+   "display": "XQuery",
+   "grammar": null
+  },
+  "x-xtend": {
+   "display": "Xtend",
+   "grammar": null
+  },
+  "x-yacc": {
+   "display": "Yacc",
+   "grammar": null
+  },
+  "x-yang": {
+   "display": "YANG",
+   "grammar": null
+  },
+  "x-yara": {
+   "display": "YARA",
+   "grammar": null
+  },
+  "x-yasnippet": {
+   "display": "YASnippet",
+   "grammar": null
+  },
+  "x-yul": {
+   "display": "Yul",
+   "grammar": null
+  },
+  "x-zap": {
+   "display": "ZAP",
+   "grammar": null
+  },
+  "x-zeek": {
+   "display": "Zeek",
+   "grammar": null
+  },
+  "x-zephir": {
+   "display": "Zephir",
+   "grammar": null
+  },
+  "x-zil": {
+   "display": "ZIL",
+   "grammar": null
+  },
+  "x-zimpl": {
+   "display": "Zimpl",
+   "grammar": null
+  },
+  "x-zmodel": {
+   "display": "Zmodel",
+   "grammar": null
+  },
+  "xml": {
+   "display": "COLLADA",
+   "grammar": "xml"
+  },
+  "xsl": {
+   "display": "XSLT",
+   "grammar": "xsl"
+  },
+  "yaml": {
+   "display": "BuildStream",
+   "grammar": "yaml"
+  },
+  "zenscript": {
+   "display": "ZenScript",
+   "grammar": "zenscript"
+  },
+  "zig": {
+   "display": "Zig",
+   "grammar": "zig"
+  }
+ },
+ "mask_rows": [
+  {
+   "bytes": 199,
+   "family": "CODE_CORE",
+   "row": "*.6pl;*.6pm;*.a51;*.abap;*.ado;*.apex;*.asd;*.asm;*.bal;*.bb;*.bf;*.boot;*.c;*.c++;*.c3;*.cairo;*.cake;*.carbon;*.cats;*.cbl;*.cc;*.ccp;*.cginc;*.chpl;*.chs;*.ck;*.cl;*.cl2;*.clar;*.clj;*.cljc;*.cljs"
+  },
+  {
+   "bytes": 192,
+   "family": "CODE_CORE",
+   "row": "*.cljscm;*.cljx;*.cob;*.cobol;*.coq;*.cp;*.cpp;*.cppm;*.cps;*.cpy;*.cr;*.cs;*.csx;*.cxx;*.d;*.dart;*.dfm;*.dhall;*.di;*.do;*.doh;*.dpr;*.edn;*.el;*.eliom;*.eliomi;*.elm;*.emacs;*.eq;*.erl;*.es"
+  },
+  {
+   "bytes": 196,
+   "family": "CODE_CORE",
+   "row": "*.escript;*.ex;*.exs;*.fnl;*.fr;*.fs;*.fsi;*.fsx;*.fx;*.fxh;*.gd;*.gdshader;*.gdshaderinc;*.gleam;*.go;*.groovy;*.grt;*.gs;*.gtpl;*.gvy;*.h;*.h++;*.hh;*.hic;*.hlean;*.hlsl;*.hlsli;*.hpp;*.hrl;*.hs"
+  },
+  {
+   "bytes": 193,
+   "family": "CODE_CORE",
+   "row": "*.hs-boot;*.hsc;*.hx;*.hxsl;*.hxx;*.hy;*.i;*.idc;*.ihlp;*.inl;*.ino;*.ipp;*.ixx;*.jav;*.java;*.jl;*.jsh;*.kojo;*.kt;*.ktm;*.kts;*.l;*.lean;*.linq;*.lisp;*.ll;*.lpr;*.lsp;*.m;*.ma;*.mata;*.matah"
+  },
+  {
+   "bytes": 198,
+   "family": "CODE_CORE",
+   "row": "*.mathematica;*.mbt;*.ml;*.ml4;*.mli;*.mll;*.mly;*.mojo;*.move;*.mt;*.nas;*.nasm;*.nb;*.nbp;*.nim;*.nimble;*.nimrod;*.nims;*.nqp;*.ny;*.odin;*.opencl;*.p6;*.p6l;*.p6m;*.pas;*.pascal;*.pc;*.pl6;*.plt"
+  },
+  {
+   "bytes": 196,
+   "family": "CODE_CORE",
+   "row": "*.pm6;*.podsl;*.pp;*.prolog;*.purs;*.ql;*.qll;*.raku;*.rakumod;*.re;*.rg;*.rs;*.s;*.sas;*.sbt;*.sc;*.scala;*.scm;*.sexp;*.shader;*.sld;*.sls;*.sol;*.sps;*.ss;*.sthlp;*.sv;*.svh;*.swift;*.tcc;*.tpp"
+  },
+  {
+   "bytes": 199,
+   "family": "CODE_CORE",
+   "row": "*.trigger;*.tsp;*.txx;*.uc;*.uno;*.upc;*.v;*.vala;*.vapi;*.veo;*.vh;*.vhd;*.vhdl;*.vhf;*.vhi;*.vho;*.vhs;*.vht;*.vhw;*.volt;*.vy;*.wast;*.wat;*.wgsl;*.wisp;*.wl;*.wls;*.wlt;*.x;*.xbm;*.xpm;*.xrl;*.xs"
+  },
+  {
+   "bytes": 197,
+   "family": "CODE_CORE",
+   "row": "*.yap;*.yrl;*.zig;*.app.src;*.cljs.hl;*.cs.pp;*.emacs.desktop;*.gradle.kts;*.h.in;*.nim.cfg;*.rs.in;*.zig.zon;.abbrev_defs;.emacs;.emacs.desktop;.gnus;.spacemacs;.viper;_emacs;abbrev_defs;cask;eask"
+  },
+  {
+   "bytes": 121,
+   "family": "CODE_CORE",
+   "row": "emakefile;go.mod;go.sum;jenkinsfile;mix.lock;nim.cfg;project.ede;rebar.config;rebar.config.lock;rebar.lock;riemann.config"
+  },
+  {
+   "bytes": 194,
+   "family": "SCRIPTS",
+   "row": "*.ahk;*.ahkl;*.al;*.applescript;*.auk;*.awk;*.bash;*.bat;*.bats;*.builder;*.bzl;*.cgi;*.cmd;*.command;*.csh;*.druby;*.duby;*.eb;*.ebuild;*.eclass;*.eye;*.fcgi;*.fish;*.gawk;*.gemspec;*.god;*.gyp"
+  },
+  {
+   "bytes": 194,
+   "family": "SCRIPTS",
+   "row": "*.gypi;*.jbuilder;*.ksh;*.lmi;*.lua;*.luau;*.mawk;*.mirah;*.mspec;*.nawk;*.nse;*.nu;*.p8;*.pd_lua;*.perl;*.ph;*.pl;*.pluginspec;*.plx;*.pm;*.podspec;*.prawn;*.ps1;*.psd1;*.psgi;*.psm1;*.py;*.py3"
+  },
+  {
+   "bytes": 191,
+   "family": "SCRIPTS",
+   "row": "*.pyde;*.pyi;*.pyp;*.pyt;*.pyw;*.r;*.rabl;*.rake;*.rb;*.rbi;*.rbuild;*.rbw;*.rbx;*.rbxs;*.rd;*.rockspec;*.rpy;*.rsx;*.ru;*.ruby;*.sage;*.sagews;*.sbatch;*.scpt;*.sh;*.sh-session;*.slurm;*.smk"
+  },
+  {
+   "bytes": 188,
+   "family": "SCRIPTS",
+   "row": "*.snakefile;*.spec;*.star;*.t;*.tac;*.talon;*.tcsh;*.thor;*.tmux;*.tool;*.vba;*.vim;*.vimrc;*.vmb;*.watchr;*.wlua;*.wsgi;*.xpy;*.xsh;*.zsh;*.zsh-theme;*.sh.in;.bash_aliases;.bash_functions"
+  },
+  {
+   "bytes": 195,
+   "family": "SCRIPTS",
+   "row": ".bash_history;.bash_logout;.bash_profile;.bashrc;.cshrc;.envrc;.exrc;.flaskenv;.gclient;.gvimrc;.irbrc;.kshrc;.latexmkrc;.login;.luacheckrc;.nvimrc;.profile;.pryrc;.rprofile;.simplecov;.tmux.conf"
+  },
+  {
+   "bytes": 199,
+   "family": "SCRIPTS",
+   "row": ".vimrc;.xinitrc;.xsession;.zlogin;.zlogout;.zprofile;.zshenv;.zshrc;9fs;_vimrc;ack;apkbuild;appraisals;bash_aliases;bash_logout;bash_profile;bashrc;berksfile;brewfile;buck;build;build.bazel;buildfile"
+  },
+  {
+   "bytes": 197,
+   "family": "SCRIPTS",
+   "row": "capfile;cpanfile;cshrc;dangerfile;deliverfile;deps;expr-dist;fastfile;gemfile;gradlew;gradlew.bat;guardfile;gvimrc;jarfile;kshrc;latexmkrc;login;makefile.pl;man;mavenfile;module.bazel;mvnw;mvnw.cmd"
+  },
+  {
+   "bytes": 191,
+   "family": "SCRIPTS",
+   "row": "nukefile;nvimrc;pkgbuild;podfile;profile;puppetfile;rakefile;rexfile;sconscript;sconstruct;snakefile;snapfile;steepfile;thorfile;tiltfile;tmux.conf;vagrantfile;vimrc;workspace;workspace.bazel"
+  },
+  {
+   "bytes": 78,
+   "family": "SCRIPTS",
+   "row": "workspace.bzlmod;wscript;xinitrc;xsession;zlogin;zlogout;zprofile;zshenv;zshrc"
+  },
+  {
+   "bytes": 195,
+   "family": "WEB",
+   "row": "*._js;*.astro;*.aw;*.blade;*.bones;*.cjs;*.cshtml;*.css;*.ctp;*.cts;*.cy;*.edge;*.erb;*.es6;*.frag;*.gjs;*.gql;*.graphql;*.graphqls;*.gts;*.hack;*.haml;*.handlebars;*.hbs;*.hhi;*.hta;*.htm;*.html"
+  },
+  {
+   "bytes": 198,
+   "family": "WEB",
+   "row": "*.http;*.imba;*.j2;*.jade;*.jake;*.javascript;*.jinja;*.jinja2;*.js;*.jsb;*.jscad;*.jsfl;*.jslib;*.jsm;*.jsonld;*.jspre;*.jss;*.jsx;*.kit;*.less;*.liquid;*.marko;*.mdx;*.mjs;*.mtml;*.mts;*.njs;*.pac"
+  },
+  {
+   "bytes": 198,
+   "family": "WEB",
+   "row": "*.pcss;*.php;*.php3;*.php4;*.php5;*.phps;*.phpt;*.postcss;*.pug;*.qbs;*.qml;*.qs;*.razor;*.rhtml;*.sass;*.scss;*.sjs;*.soy;*.ssjs;*.styl;*.svelte;*.templ;*.ts;*.tsx;*.twig;*.vue;*.xht;*.xhtml;*.xsjs"
+  },
+  {
+   "bytes": 156,
+   "family": "WEB",
+   "row": "*.xsjslib;*.blade.php;*.erb.deface;*.haml.deface;*.html.hl;*.js.erb;.php;.php_cs;.php_cs.dist;installscript.qs;jakefile;phakefile;toolchain_installscript.qs"
+  },
+  {
+   "bytes": 192,
+   "family": "DATA_CONFIG",
+   "row": "*.4dform;*.4dproject;*.action;*.anim;*.apacheconf;*.as;*.asset;*.avsc;*.be;*.bicep;*.bicepparam;*.bsl;*.bst;*.cdc;*.cfg;*.cls;*.cnf;*.code-snippets;*.code-workspace;*.conf;*.config;*.container"
+  },
+  {
+   "bytes": 196,
+   "family": "DATA_CONFIG",
+   "row": "*.containerfile;*.cue;*.def;*.desktop;*.dlg;*.dockerfile;*.dockerignore;*.dof;*.editorconfig;*.env;*.epj;*.frm;*.ftl;*.ftlh;*.gdnlib;*.gdns;*.geojson;*.gitattributes;*.gitignore;*.gltf;*.har;*.hcl"
+  },
+  {
+   "bytes": 200,
+   "family": "DATA_CONFIG",
+   "row": "*.ice;*.inc;*.inf;*.ini;*.ipynb;*.isl;*.iss;*.json;*.json-tmlanguage;*.json5;*.jsonc;*.jsonl;*.jsonnet;*.kdl;*.ksy;*.lektorproject;*.libsonnet;*.lkml;*.lookml;*.mask;*.mat;*.maxhelp;*.maxpat;*.maxproj"
+  },
+  {
+   "bytes": 199,
+   "family": "DATA_CONFIG",
+   "row": "*.mcmeta;*.meta;*.mir;*.mount;*.mxt;*.network;*.nix;*.nomad;*.npmignore;*.nsh;*.nsi;*.os;*.outjob;*.pcbdoc;*.polar;*.pq;*.prefab;*.prefs;*.prisma;*.prjpcb;*.pro;*.properties;*.proto;*.raml;*.rbs;*.rc"
+  },
+  {
+   "bytes": 182,
+   "family": "DATA_CONFIG",
+   "row": "*.rc2;*.reek;*.reg;*.rh;*.rh2;*.ron;*.rviz;*.sarif;*.schdoc;*.service;*.sln;*.slnf;*.slnlaunch;*.slt;*.smithy;*.socket;*.srv;*.sublime-build;*.sublime-color-scheme;*.sublime-commands"
+  },
+  {
+   "bytes": 196,
+   "family": "DATA_CONFIG",
+   "row": "*.sublime-completions;*.sublime-keymap;*.sublime-macro;*.sublime-menu;*.sublime-mousemap;*.sublime-project;*.sublime-settings;*.sublime-syntax;*.sublime-theme;*.sublime-workspace;*.sublime_metrics"
+  },
+  {
+   "bytes": 190,
+   "family": "DATA_CONFIG",
+   "row": "*.sublime_session;*.syntax;*.tact;*.target;*.tf;*.tfstate;*.tftpl;*.tfvars;*.timer;*.tofu;*.toml;*.topojson;*.tres;*.tscn;*.unity;*.url;*.vcf;*.vhost;*.webapp;*.webmanifest;*.workflow;*.yaml"
+  },
+  {
+   "bytes": 189,
+   "family": "DATA_CONFIG",
+   "row": "*.yaml-tmlanguage;*.yml;*.yy;*.yyp;*.desktop.in;*.json.example;*.tfstate.backup;*.toml.example;*.tsconfig.json;*.yaml.sed;*.yml.mysql;.all-contributorsrc;.arcconfig;.auto-changelog;.babelrc"
+  },
+  {
+   "bytes": 194,
+   "family": "DATA_CONFIG",
+   "row": ".buckconfig;.c8rc;.clang-format;.clang-tidy;.clangd;.coveragerc;.devcontainer.json;.env;.env.ci;.env.dev;.env.development;.env.development.local;.env.example;.env.local;.env.prod;.env.production"
+  },
+  {
+   "bytes": 195,
+   "family": "DATA_CONFIG",
+   "row": ".env.sample;.env.staging;.env.template;.env.test;.env.testing;.eslintrc;.eslintrc.json;.flake8;.gemrc;.gitconfig;.gitmodules;.htaccess;.htmlhintrc;.imgbotconfig;.jscsrc;.jshintrc;.jslintrc;.npmrc"
+  },
+  {
+   "bytes": 200,
+   "family": "DATA_CONFIG",
+   "row": ".nycrc;.oxlintrc.json;.prettierrc;.pylintrc;.swcrc;.tern-config;.tern-project;.watchmanconfig;apache2.conf;api-extractor.json;buildozer.spec;bun.lock;cargo.lock;cargo.toml.orig;citation.cff;codeowners"
+  },
+  {
+   "bytes": 200,
+   "family": "DATA_CONFIG",
+   "row": "codesign.cfg;commit_editmsg;composer.lock;containerfile;deno.lock;devcontainer.json;dockerfile;flake.lock;glide.lock;gopkg.lock;hosts;httpd.conf;jsconfig.json;language-configuration.json;languages.cfg"
+  },
+  {
+   "bytes": 200,
+   "family": "DATA_CONFIG",
+   "row": "manifest.mf;mcmod.info;mise.local.lock;mise.lock;module.bazel.lock;notebook;package.json;package.resolved;pdm.lock;pipfile;pipfile.lock;pixi.lock;plugins.cfg;poetry.lock;pylintrc;ssh-config;ssh_config"
+  },
+  {
+   "bytes": 98,
+   "family": "DATA_CONFIG",
+   "row": "sshconfig;sshconfig.snip;sshd-config;sshd_config;tsconfig.json;tslint.json;uv.lock;vlcrc;yarn.lock"
+  },
+  {
+   "bytes": 198,
+   "family": "XML_BASED",
+   "row": "*.adml;*.admx;*.ant;*.axaml;*.axml;*.brd;*.builds;*.ccproj;*.ccxml;*.clixml;*.cproject;*.cscfg;*.csdef;*.csl;*.csproj;*.ct;*.dae;*.depproj;*.dita;*.ditamap;*.ditaval;*.dotsettings;*.filters;*.fsproj"
+  },
+  {
+   "bytes": 192,
+   "family": "XML_BASED",
+   "row": "*.fxml;*.glade;*.gml;*.gmx;*.gpx;*.grxml;*.gst;*.hzp;*.icls;*.iml;*.ivy;*.jelly;*.jsproj;*.kml;*.launch;*.lvclass;*.lvlib;*.lvproj;*.manifest;*.mdpolicy;*.mjml;*.mm;*.mod;*.mxml;*.natvis;*.ncl"
+  },
+  {
+   "bytes": 197,
+   "family": "XML_BASED",
+   "row": "*.ndproj;*.nproj;*.nuspec;*.odd;*.osm;*.owl;*.pkgproj;*.proj;*.props;*.ps1xml;*.psc1;*.pubxml;*.qhelp;*.rdf;*.resx;*.rss;*.sch;*.scxml;*.sfproj;*.shproj;*.slnx;*.srdf;*.storyboard;*.sublime-snippet"
+  },
+  {
+   "bytes": 198,
+   "family": "XML_BASED",
+   "row": "*.sw;*.targets;*.tml;*.ui;*.urdf;*.ux;*.vbproj;*.vcxproj;*.vsixmanifest;*.vssettings;*.vstemplate;*.vxml;*.wixproj;*.wsdl;*.wsf;*.wxi;*.wxl;*.wxs;*.x3d;*.xacro;*.xaml;*.xib;*.xlf;*.xliff;*.xmi;*.xml"
+  },
+  {
+   "bytes": 189,
+   "family": "XML_BASED",
+   "row": "*.xmp;*.xpl;*.xproc;*.xproj;*.xsd;*.xsl;*.xslt;*.xsp-config;*.xspec;*.xul;*.zcml;*.dll.config;*.xml.dist;*.xsp.metadata;.classpath;.cproject;.project;app.config;nuget.config;packages.config"
+  },
+  {
+   "bytes": 64,
+   "family": "XML_BASED",
+   "row": "settings.stylecop;web.config;web.debug.config;web.release.config"
+  },
+  {
+   "bytes": 191,
+   "family": "BUILD_CI",
+   "row": "*.cmake;*.feature;*.gn;*.gni;*.hxml;*.jison;*.just;*.mak;*.make;*.makefile;*.mk;*.mkfile;*.nf;*.regex;*.regexp;*.scad;*.story;*.wit;*.zs;*.cmake.in;.editorconfig;.gitattributes;.gitignore;.gn"
+  },
+  {
+   "bytes": 194,
+   "family": "BUILD_CI",
+   "row": ".justfile;bsdmakefile;cmakelists.txt;gnumakefile;justfile;kbuild;makefile;makefile.am;makefile.boot;makefile.frag;makefile.in;makefile.inc;makefile.pc;makefile.sco;makefile.wat;mkfile;modulefile"
+  },
+  {
+   "bytes": 29,
+   "family": "BUILD_CI",
+   "row": "nextflow.config;project.godot"
+  },
+  {
+   "bytes": 198,
+   "family": "DOCS_ADJACENT",
+   "row": "*._coffee;*.aux;*.bbx;*.bdy;*.bib;*.bibtex;*.cbx;*.cjsx;*.coffee;*.cql;*.cson;*.cyp;*.cypher;*.db2;*.ddl;*.diff;*.em;*.emberscript;*.fnc;*.iced;*.ins;*.lbx;*.ltx;*.mermaid;*.mkii;*.mkiv;*.mkvi;*.mmd"
+  },
+  {
+   "bytes": 161,
+   "family": "DOCS_ADJACENT",
+   "row": "*.mysql;*.patch;*.pck;*.pgsql;*.pkb;*.pks;*.plb;*.pls;*.plsql;*.prc;*.spc;*.sql;*.sty;*.surql;*.tab;*.tex;*.toc;*.tpb;*.tps;*.trg;*.typ;*.udf;*.viw;*.vw;cakefile"
+  },
+  {
+   "bytes": 11,
+   "family": "PLAINTEXT",
+   "row": "*.txt;*.log"
+  }
+ ],
+ "never_claim": [
+  ".app",
+  ".cdf",
+  ".csv",
+  ".dbf",
+  ".dtx",
+  ".icn",
+  ".img",
+  ".mac",
+  ".markdown",
+  ".md",
+  ".msg",
+  ".pat",
+  ".pic",
+  ".pkl",
+  ".pt",
+  ".pyx",
+  ".res",
+  ".sam",
+  ".st",
+  ".ts.gz",
+  ".tsv",
+  ".web"
+ ]
+}

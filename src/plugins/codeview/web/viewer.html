@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en" data-polarity="dark">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark light">
+<title>Code Viewer</title>
+<link rel="stylesheet" href="viewer.css">
+<script type="module" src="viewer.js"></script>
+</head>
+<body>
+<!-- The document is the ONLY selectable content: the notice bar is
+     user-select:none so Select All yields exactly the file's text
+     (contracts/host-page-interface.md S4, spec FR-021). -->
+<div id="notice" hidden></div>
+<div id="scroller">
+  <div id="sizer"><div id="lines" role="document"></div></div>
+</div>
+</body>
+</html>

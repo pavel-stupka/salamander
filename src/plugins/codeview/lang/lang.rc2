@@ -1,0 +1,142 @@
+﻿//****************************************************************************
+//
+// Copyright (c) 2026 Open Salamander Authors
+//
+//****************************************************************************
+
+//
+// lang.rc2 - resources Microsoft Visual C++ does not edit directly
+//
+
+#ifdef APSTUDIO_INVOKED
+#error this file is not editable by Microsoft Visual C++
+#endif
+
+#include "..\versinfo.rh2"
+#include "versinfo.rc2"
+
+STRINGTABLE
+{
+ IDS_PLUGINNAME,          "Code Viewer"
+ IDS_ABOUT,               "About Plugin"
+ IDS_PLUGIN_DESCRIPTION,  "Shows source code and configuration files with syntax highlighting when you press F3."
+ IDS_PLUGIN_HOME,         "www.tandemcommander.org"
+ IDS_PLUGIN_BUGREP,       "An exception occurred in the Code Viewer plugin. Please inform the authors and, if possible, attach the file you were viewing."
+ IDS_PLUGIN_EMAIL,        ""
+ IDS_VIEWER_OPENWNDS,     "Some Code Viewer windows are open. Do you want to close them?"
+ IDS_INVALID_NUM,         "Invalid number!"
+
+ IDS_MENU_FILE,           "&File"
+ IDS_MENU_FILE_NEXTFILE,  "&Next File\tCtrl+PgDn"
+ IDS_MENU_FILE_PREVFILE,  "&Previous File\tCtrl+PgUp"
+ IDS_MENU_FILE_CLOSE,     "&Close\tEsc"
+ IDS_MENU_EDIT,           "&Edit"
+ IDS_MENU_EDIT_COPY,      "&Copy\tCtrl+C"
+ IDS_MENU_EDIT_SELALL,    "Select &All\tCtrl+A"
+ IDS_MENU_EDIT_FIND,      "&Find...\tCtrl+F"
+ IDS_MENU_EDIT_FINDNEXT,  "Find &Next\tF3"
+ IDS_MENU_EDIT_FINDPREV,  "Find &Previous\tShift+F3"
+ IDS_MENU_EDIT_GOTO,      "&Go to Line...\tCtrl+G"
+ IDS_MENU_VIEW,           "&View"
+ IDS_MENU_VIEW_SCHEME,    "Color &Scheme"
+ IDS_MENU_VIEW_FOLLOWAPP, "Follow &Application Theme"
+ IDS_MENU_VIEW_ZOOMIN,    "Zoom &In\tCtrl++"
+ IDS_MENU_VIEW_ZOOMOUT,   "Zoom &Out\tCtrl+-"
+ IDS_MENU_VIEW_ZOOMRESET, "&Reset Zoom\tCtrl+0"
+ IDS_MENU_VIEW_WRAP,      "&Word Wrap\tF2"
+ IDS_MENU_VIEW_LINENUMS,  "&Line Numbers"
+ IDS_MENU_VIEW_WHITESPACE, "Show W&hitespace"
+ IDS_MENU_VIEW_LANGUAGE,  "Lan&guage"
+ IDS_MENU_VIEW_ENCODING,  "&Encoding"
+ IDS_MENU_HELP,           "&Help"
+ IDS_MENU_HELP_ABOUT,     "&About Code Viewer"
+ IDS_MENU_LANG_AUTO,      "Automatic"
+
+ IDS_SCHEME_FIRST+0,      "GitHub Light"
+ IDS_SCHEME_FIRST+1,      "Visual Studio Light"
+ IDS_SCHEME_FIRST+2,      "One Light"
+ IDS_SCHEME_FIRST+3,      "Solarized Light"
+ IDS_SCHEME_FIRST+4,      "Catppuccin Latte"
+ IDS_SCHEME_FIRST+5,      "GitHub Dark"
+ IDS_SCHEME_FIRST+6,      "Visual Studio Dark"
+ IDS_SCHEME_FIRST+7,      "One Dark Pro"
+ IDS_SCHEME_FIRST+8,      "Solarized Dark"
+ IDS_SCHEME_FIRST+9,      "Catppuccin Mocha"
+ IDS_SCHEME_FIRST+10,     "Gruvbox Dark"
+ IDS_SCHEME_FIRST+11,     "Nord"
+
+ IDS_LOAD_ERROR,          "The file could not be opened."
+ IDS_FIND_PROMPT,         "Find text:"
+ IDS_NOT_FOUND,           "Text not found."
+ IDS_WINDOW_TITLE,        "Code Viewer"
+ IDS_ENGINE_UNAVAILABLE,  "The WebView2 runtime is not available. Opening the file as plain text instead."
+ IDS_PLAIN_TOO_LARGE,     "Syntax highlighting is off for this file: it is larger than the highlighting limit."
+ IDS_PLAIN_LONG_LINES,    "Syntax highlighting is off for this file: it contains lines longer than the limit."
+ IDS_BINARY_NOTICE,       "This file is not text and cannot be shown here."
+ IDS_OPEN_BUILTIN,        "Open in Built-in Viewer"
+ IDS_FIRSTRUN_HINT,       "Code Viewer now opens source and configuration files. Press Alt+F3 for the built-in viewer; change the file types in Options > Viewers."
+ IDS_HIGHLIGHT_ABORTED,   "Syntax highlighting was stopped for this file; showing plain text."
+ IDS_GOTO_PROMPT,         "Line number (or line:column):"
+ IDS_ENCODING_INVALID,    "This file contains %d byte sequences that are not valid in the selected encoding; they are shown as replacement characters."
+ IDS_LANG_PLAIN,          "Plain Text"
+ IDS_RESTORE_TYPES_DONE,  "The default file types of Code Viewer will be restored the next time the application starts. Entries you kept are left as they are."
+
+ IDS_STATUS_LINES,        "%d lines"
+ IDS_STATUS_LNCOL,        "Ln %d, Col %d"
+ IDS_STATUS_EOL_CRLF,     "CRLF"
+ IDS_STATUS_EOL_LF,       "LF"
+ IDS_STATUS_EOL_CR,       "CR"
+ IDS_STATUS_EOL_MIXED,    "Mixed"
+ IDS_STATUS_EOL_NONE,     "None"
+}
+
+IDD_FIND DIALOGEX 0, 0, 240, 76
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Find"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Find &text:", IDC_STATIC_1, 7, 9, 60, 8
+    EDITTEXT        IDC_FIND_TEXT, 7, 21, 226, 12, ES_AUTOHSCROLL
+    AUTOCHECKBOX    "Match &case", IDC_FIND_CASE, 7, 39, 100, 10
+    AUTOCHECKBOX    "&Whole words only", IDC_FIND_WHOLEWORD, 7, 51, 100, 10
+    DEFPUSHBUTTON   "Find &Next", IDOK, 128, 56, 50, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 183, 56, 50, 14
+END
+
+IDD_GOTO DIALOGEX 0, 0, 200, 60
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Go to Line"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "&Line number (or line:column):", IDC_STATIC_2, 7, 9, 186, 8
+    EDITTEXT        IDC_GOTO_TEXT, 7, 21, 186, 12, ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK", IDOK, 88, 40, 50, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 143, 40, 50, 14
+END
+
+IDD_CFG DIALOGEX 0, 0, 300, 190
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Code Viewer Configuration"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "&Font:", IDC_STATIC_3, 7, 9, 60, 8
+    EDITTEXT        IDC_CFG_FONTNAME, 70, 7, 150, 12, ES_AUTOHSCROLL
+    LTEXT           "Si&ze (0 = default):", IDC_STATIC_4, 7, 25, 60, 8
+    EDITTEXT        IDC_CFG_FONTSIZE, 70, 23, 40, 12, ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "&Tab width:", IDC_STATIC_5, 7, 41, 60, 8
+    EDITTEXT        IDC_CFG_TABWIDTH, 70, 39, 40, 12, ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "&Highlighting limit (KB):", IDC_STATIC_6, 7, 61, 90, 8
+    EDITTEXT        IDC_CFG_HLLIMIT, 110, 59, 40, 12, ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Larger files are shown as plain text.", IDC_STATIC_7, 155, 61, 138, 8
+    LTEXT           "&Maximum line length:", IDC_STATIC_8, 7, 77, 90, 8
+    EDITTEXT        IDC_CFG_MAXLINE, 110, 75, 40, 12, ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Files with longer lines are shown as plain text.", IDC_STATIC_9, 155, 77, 138, 8
+    LTEXT           "&Viewer limit (MB):", IDC_STATIC_10, 7, 93, 90, 8
+    EDITTEXT        IDC_CFG_VIEWLIMIT, 110, 91, 40, 12, ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Larger files open in the built-in viewer.", IDC_STATIC_11, 155, 93, 138, 8
+    AUTOCHECKBOX    "&Keep the rendering engine ready for instant viewing", IDC_CFG_KEEPREADY, 7, 113, 286, 10
+    LTEXT           "Files then open instantly after the first view in a session, at the cost of a small amount of memory held for the rest of the session.", IDC_STATIC_12, 18, 127, 275, 17
+    PUSHBUTTON      "&Restore Default File Types", IDC_CFG_RESTORETYPES, 7, 150, 110, 14
+    DEFPUSHBUTTON   "OK", IDOK, 188, 169, 50, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 243, 169, 50, 14
+END

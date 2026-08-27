@@ -1,0 +1,1300 @@
+{
+ "abap": {
+  "aliases": [],
+  "displayName": "ABAP",
+  "scopeName": "source.abap"
+ },
+ "actionscript-3": {
+  "aliases": [
+   "actionscript",
+   "as3"
+  ],
+  "displayName": "ActionScript",
+  "scopeName": "source.actionscript.3"
+ },
+ "ahk": {
+  "aliases": [
+   "ahk1"
+  ],
+  "displayName": "AutoHotkey",
+  "scopeName": "source.ahk"
+ },
+ "angular-html": {
+  "aliases": [],
+  "displayName": "Angular HTML",
+  "scopeName": "text.html.derivative.ng"
+ },
+ "angular-ts": {
+  "aliases": [],
+  "displayName": "Angular TypeScript",
+  "scopeName": "source.ts.ng"
+ },
+ "apache": {
+  "aliases": [],
+  "displayName": "Apache Conf",
+  "scopeName": "source.apacheconf"
+ },
+ "apex": {
+  "aliases": [],
+  "displayName": "Apex",
+  "scopeName": "source.apex"
+ },
+ "applescript": {
+  "aliases": [],
+  "displayName": "AppleScript",
+  "scopeName": "source.applescript"
+ },
+ "ara": {
+  "aliases": [],
+  "displayName": "Ara",
+  "scopeName": "source.ara"
+ },
+ "asciidoc": {
+  "aliases": [
+   "adoc"
+  ],
+  "displayName": "AsciiDoc",
+  "scopeName": "text.asciidoc"
+ },
+ "asm": {
+  "aliases": [],
+  "displayName": "Assembly",
+  "scopeName": "source.asm.x86_64"
+ },
+ "astro": {
+  "aliases": [],
+  "displayName": "Astro",
+  "scopeName": "source.astro"
+ },
+ "awk": {
+  "aliases": [],
+  "displayName": "AWK",
+  "scopeName": "source.awk"
+ },
+ "ballerina": {
+  "aliases": [],
+  "displayName": "Ballerina",
+  "scopeName": "source.ballerina"
+ },
+ "bat": {
+  "aliases": [
+   "batch",
+   "cmd"
+  ],
+  "displayName": "Batch File",
+  "scopeName": "source.batchfile"
+ },
+ "beancount": {
+  "aliases": [],
+  "displayName": "Beancount",
+  "scopeName": "text.beancount"
+ },
+ "berry": {
+  "aliases": [
+   "be"
+  ],
+  "displayName": "Berry",
+  "scopeName": "source.berry"
+ },
+ "bibtex": {
+  "aliases": [],
+  "displayName": "BibTeX",
+  "scopeName": "text.bibtex"
+ },
+ "bicep": {
+  "aliases": [],
+  "displayName": "Bicep",
+  "scopeName": "source.bicep"
+ },
+ "bird2": {
+  "aliases": [
+   "bird"
+  ],
+  "displayName": "BIRD2 Configuration",
+  "scopeName": "source.bird2"
+ },
+ "blade": {
+  "aliases": [],
+  "displayName": "Blade",
+  "scopeName": "text.html.php.blade"
+ },
+ "bsl": {
+  "aliases": [
+   "1c"
+  ],
+  "displayName": "1C (Enterprise)",
+  "scopeName": "source.bsl"
+ },
+ "c": {
+  "aliases": [],
+  "displayName": "C",
+  "scopeName": "source.c"
+ },
+ "c3": {
+  "aliases": [],
+  "displayName": "C3",
+  "scopeName": "source.c3"
+ },
+ "cadence": {
+  "aliases": [
+   "cdc"
+  ],
+  "displayName": "Cadence",
+  "scopeName": "source.cadence"
+ },
+ "cairo": {
+  "aliases": [],
+  "displayName": "Cairo",
+  "scopeName": "source.cairo0"
+ },
+ "chapel": {
+  "aliases": [
+   "chpl"
+  ],
+  "displayName": "Chapel",
+  "scopeName": "source.chapel"
+ },
+ "clarity": {
+  "aliases": [],
+  "displayName": "Clarity",
+  "scopeName": "source.clar"
+ },
+ "clojure": {
+  "aliases": [
+   "clj"
+  ],
+  "displayName": "Clojure",
+  "scopeName": "source.clojure"
+ },
+ "cmake": {
+  "aliases": [],
+  "displayName": "CMake",
+  "scopeName": "source.cmake"
+ },
+ "cobol": {
+  "aliases": [],
+  "displayName": "COBOL",
+  "scopeName": "source.cobol"
+ },
+ "codeowners": {
+  "aliases": [],
+  "displayName": "CODEOWNERS",
+  "scopeName": "text.codeowners"
+ },
+ "codeql": {
+  "aliases": [
+   "ql"
+  ],
+  "displayName": "CodeQL",
+  "scopeName": "source.ql"
+ },
+ "coffee": {
+  "aliases": [
+   "coffeescript"
+  ],
+  "displayName": "CoffeeScript",
+  "scopeName": "source.coffee"
+ },
+ "common-lisp": {
+  "aliases": [
+   "lisp"
+  ],
+  "displayName": "Common Lisp",
+  "scopeName": "source.commonlisp"
+ },
+ "coq": {
+  "aliases": [],
+  "displayName": "Rocq",
+  "scopeName": "source.rocq"
+ },
+ "cpp": {
+  "aliases": [
+   "c++"
+  ],
+  "displayName": "C++",
+  "scopeName": "source.cpp"
+ },
+ "crystal": {
+  "aliases": [],
+  "displayName": "Crystal",
+  "scopeName": "source.crystal"
+ },
+ "csharp": {
+  "aliases": [
+   "c#",
+   "cs"
+  ],
+  "displayName": "C#",
+  "scopeName": "source.cs"
+ },
+ "css": {
+  "aliases": [],
+  "displayName": "CSS",
+  "scopeName": "source.css"
+ },
+ "csv": {
+  "aliases": [],
+  "displayName": "CSV",
+  "scopeName": "text.csv"
+ },
+ "cue": {
+  "aliases": [],
+  "displayName": "CUE",
+  "scopeName": "source.cue"
+ },
+ "cypher": {
+  "aliases": [
+   "cql"
+  ],
+  "displayName": "Cypher",
+  "scopeName": "source.cypher"
+ },
+ "d": {
+  "aliases": [],
+  "displayName": "D",
+  "scopeName": "source.d"
+ },
+ "dart": {
+  "aliases": [],
+  "displayName": "Dart",
+  "scopeName": "source.dart"
+ },
+ "desktop": {
+  "aliases": [],
+  "displayName": "Desktop",
+  "scopeName": "source.desktop"
+ },
+ "diff": {
+  "aliases": [],
+  "displayName": "Diff",
+  "scopeName": "source.diff"
+ },
+ "docker": {
+  "aliases": [
+   "dockerfile"
+  ],
+  "displayName": "Dockerfile",
+  "scopeName": "source.dockerfile"
+ },
+ "dotenv": {
+  "aliases": [],
+  "displayName": "dotEnv",
+  "scopeName": "source.dotenv"
+ },
+ "edge": {
+  "aliases": [],
+  "displayName": "Edge",
+  "scopeName": "text.html.edge"
+ },
+ "elixir": {
+  "aliases": [],
+  "displayName": "Elixir",
+  "scopeName": "source.elixir"
+ },
+ "elm": {
+  "aliases": [],
+  "displayName": "Elm",
+  "scopeName": "source.elm"
+ },
+ "emacs-lisp": {
+  "aliases": [
+   "elisp"
+  ],
+  "displayName": "Emacs Lisp",
+  "scopeName": "source.emacs.lisp"
+ },
+ "erb": {
+  "aliases": [],
+  "displayName": "ERB",
+  "scopeName": "text.html.erb"
+ },
+ "erlang": {
+  "aliases": [
+   "erl"
+  ],
+  "displayName": "Erlang",
+  "scopeName": "source.erlang"
+ },
+ "fennel": {
+  "aliases": [],
+  "displayName": "Fennel",
+  "scopeName": "source.fnl"
+ },
+ "fish": {
+  "aliases": [],
+  "displayName": "Fish",
+  "scopeName": "source.fish"
+ },
+ "fluent": {
+  "aliases": [
+   "ftl"
+  ],
+  "displayName": "Fluent",
+  "scopeName": "source.ftl"
+ },
+ "fortran-fixed-form": {
+  "aliases": [
+   "f",
+   "for",
+   "f77"
+  ],
+  "displayName": "Fortran (Fixed Form)",
+  "scopeName": "source.fortran.fixed"
+ },
+ "fortran-free-form": {
+  "aliases": [
+   "f90",
+   "f95",
+   "f03",
+   "f08",
+   "f18"
+  ],
+  "displayName": "Fortran (Free Form)",
+  "scopeName": "source.fortran.free"
+ },
+ "fsharp": {
+  "aliases": [
+   "f#",
+   "fs"
+  ],
+  "displayName": "F#",
+  "scopeName": "source.fsharp"
+ },
+ "gdresource": {
+  "aliases": [
+   "tscn",
+   "tres"
+  ],
+  "displayName": "GDResource",
+  "scopeName": "source.gdresource"
+ },
+ "gdscript": {
+  "aliases": [
+   "gd"
+  ],
+  "displayName": "GDScript",
+  "scopeName": "source.gdscript"
+ },
+ "gdshader": {
+  "aliases": [],
+  "displayName": "GDShader",
+  "scopeName": "source.gdshader"
+ },
+ "genie": {
+  "aliases": [],
+  "displayName": "Genie",
+  "scopeName": "source.genie"
+ },
+ "gherkin": {
+  "aliases": [],
+  "displayName": "Gherkin",
+  "scopeName": "text.gherkin.feature"
+ },
+ "git-commit": {
+  "aliases": [],
+  "displayName": "Git Commit Message",
+  "scopeName": "text.git-commit"
+ },
+ "git-rebase": {
+  "aliases": [],
+  "displayName": "Git Rebase Message",
+  "scopeName": "text.git-rebase"
+ },
+ "gleam": {
+  "aliases": [],
+  "displayName": "Gleam",
+  "scopeName": "source.gleam"
+ },
+ "glimmer-js": {
+  "aliases": [
+   "gjs"
+  ],
+  "displayName": "Glimmer JS",
+  "scopeName": "source.gjs"
+ },
+ "glimmer-ts": {
+  "aliases": [
+   "gts"
+  ],
+  "displayName": "Glimmer TS",
+  "scopeName": "source.gts"
+ },
+ "gn": {
+  "aliases": [],
+  "displayName": "GN",
+  "scopeName": "source.gn"
+ },
+ "go": {
+  "aliases": [],
+  "displayName": "Go",
+  "scopeName": "source.go"
+ },
+ "graphql": {
+  "aliases": [
+   "gql"
+  ],
+  "displayName": "GraphQL",
+  "scopeName": "source.graphql"
+ },
+ "groovy": {
+  "aliases": [],
+  "displayName": "Groovy",
+  "scopeName": "source.groovy"
+ },
+ "hack": {
+  "aliases": [],
+  "displayName": "Hack",
+  "scopeName": "source.hack"
+ },
+ "haml": {
+  "aliases": [],
+  "displayName": "Ruby Haml",
+  "scopeName": "text.haml"
+ },
+ "handlebars": {
+  "aliases": [
+   "hbs"
+  ],
+  "displayName": "Handlebars",
+  "scopeName": "text.html.handlebars"
+ },
+ "haskell": {
+  "aliases": [
+   "hs"
+  ],
+  "displayName": "Haskell",
+  "scopeName": "source.haskell"
+ },
+ "haxe": {
+  "aliases": [],
+  "displayName": "Haxe",
+  "scopeName": "source.hx"
+ },
+ "hcl": {
+  "aliases": [],
+  "displayName": "HashiCorp HCL",
+  "scopeName": "source.hcl"
+ },
+ "hjson": {
+  "aliases": [],
+  "displayName": "Hjson",
+  "scopeName": "source.hjson"
+ },
+ "hlsl": {
+  "aliases": [],
+  "displayName": "HLSL",
+  "scopeName": "source.hlsl"
+ },
+ "html": {
+  "aliases": [],
+  "displayName": "HTML",
+  "scopeName": "text.html.basic"
+ },
+ "html-derivative": {
+  "aliases": [],
+  "displayName": "HTML (Derivative)",
+  "scopeName": "text.html.derivative"
+ },
+ "http": {
+  "aliases": [],
+  "displayName": "HTTP",
+  "scopeName": "source.http"
+ },
+ "hxml": {
+  "aliases": [],
+  "displayName": "HXML",
+  "scopeName": "source.hxml"
+ },
+ "hy": {
+  "aliases": [],
+  "displayName": "Hy",
+  "scopeName": "source.hy"
+ },
+ "imba": {
+  "aliases": [],
+  "displayName": "Imba",
+  "scopeName": "source.imba"
+ },
+ "ini": {
+  "aliases": [
+   "properties"
+  ],
+  "displayName": "INI",
+  "scopeName": "source.ini"
+ },
+ "java": {
+  "aliases": [],
+  "displayName": "Java",
+  "scopeName": "source.java"
+ },
+ "javascript": {
+  "aliases": [
+   "js",
+   "cjs",
+   "mjs"
+  ],
+  "displayName": "JavaScript",
+  "scopeName": "source.js"
+ },
+ "jinja": {
+  "aliases": [],
+  "displayName": "Jinja",
+  "scopeName": "source.jinja"
+ },
+ "jison": {
+  "aliases": [],
+  "displayName": "Jison",
+  "scopeName": "source.jison"
+ },
+ "json": {
+  "aliases": [],
+  "displayName": "JSON",
+  "scopeName": "source.json"
+ },
+ "json5": {
+  "aliases": [],
+  "displayName": "JSON5",
+  "scopeName": "source.json5"
+ },
+ "jsonc": {
+  "aliases": [],
+  "displayName": "JSON with Comments",
+  "scopeName": "source.json.comments"
+ },
+ "jsonl": {
+  "aliases": [],
+  "displayName": "JSON Lines",
+  "scopeName": "source.json.lines"
+ },
+ "jsonnet": {
+  "aliases": [],
+  "displayName": "Jsonnet",
+  "scopeName": "source.jsonnet"
+ },
+ "jssm": {
+  "aliases": [
+   "fsl"
+  ],
+  "displayName": "JSSM",
+  "scopeName": "source.jssm"
+ },
+ "jsx": {
+  "aliases": [],
+  "displayName": "JSX",
+  "scopeName": "source.js.jsx"
+ },
+ "julia": {
+  "aliases": [
+   "jl"
+  ],
+  "displayName": "Julia",
+  "scopeName": "source.julia"
+ },
+ "just": {
+  "aliases": [
+   "justfile"
+  ],
+  "displayName": "Just",
+  "scopeName": "source.just"
+ },
+ "kdl": {
+  "aliases": [],
+  "displayName": "KDL",
+  "scopeName": "source.kdl"
+ },
+ "kotlin": {
+  "aliases": [
+   "kt",
+   "kts"
+  ],
+  "displayName": "Kotlin",
+  "scopeName": "source.kotlin"
+ },
+ "latex": {
+  "aliases": [],
+  "displayName": "LaTeX",
+  "scopeName": "text.tex.latex"
+ },
+ "lean": {
+  "aliases": [
+   "lean4"
+  ],
+  "displayName": "Lean 4",
+  "scopeName": "source.lean4"
+ },
+ "less": {
+  "aliases": [],
+  "displayName": "Less",
+  "scopeName": "source.css.less"
+ },
+ "liquid": {
+  "aliases": [],
+  "displayName": "Liquid",
+  "scopeName": "text.html.liquid"
+ },
+ "llvm": {
+  "aliases": [],
+  "displayName": "LLVM IR",
+  "scopeName": "source.llvm"
+ },
+ "log": {
+  "aliases": [],
+  "displayName": "Log file",
+  "scopeName": "text.log"
+ },
+ "logo": {
+  "aliases": [],
+  "displayName": "Logo",
+  "scopeName": "source.logo"
+ },
+ "lua": {
+  "aliases": [],
+  "displayName": "Lua",
+  "scopeName": "source.lua"
+ },
+ "luau": {
+  "aliases": [],
+  "displayName": "Luau",
+  "scopeName": "source.luau"
+ },
+ "make": {
+  "aliases": [
+   "makefile"
+  ],
+  "displayName": "Makefile",
+  "scopeName": "source.makefile"
+ },
+ "markdown": {
+  "aliases": [
+   "md"
+  ],
+  "displayName": "Markdown",
+  "scopeName": "text.html.markdown"
+ },
+ "marko": {
+  "aliases": [],
+  "displayName": "Marko",
+  "scopeName": "text.marko"
+ },
+ "mdc": {
+  "aliases": [],
+  "displayName": "MDC",
+  "scopeName": "text.markdown.mdc.standalone"
+ },
+ "mdx": {
+  "aliases": [],
+  "displayName": "MDX",
+  "scopeName": "source.mdx"
+ },
+ "mermaid": {
+  "aliases": [
+   "mmd"
+  ],
+  "displayName": "Mermaid",
+  "scopeName": "markdown.mermaid.codeblock"
+ },
+ "mipsasm": {
+  "aliases": [
+   "mips"
+  ],
+  "displayName": "MIPS Assembly",
+  "scopeName": "source.mips"
+ },
+ "mojo": {
+  "aliases": [],
+  "displayName": "Mojo",
+  "scopeName": "source.mojo"
+ },
+ "moonbit": {
+  "aliases": [
+   "mbt",
+   "mbti"
+  ],
+  "displayName": "MoonBit",
+  "scopeName": "source.moonbit"
+ },
+ "move": {
+  "aliases": [],
+  "displayName": "Move",
+  "scopeName": "source.move"
+ },
+ "narrat": {
+  "aliases": [
+   "nar"
+  ],
+  "displayName": "Narrat Language",
+  "scopeName": "source.narrat"
+ },
+ "nextflow": {
+  "aliases": [
+   "nf"
+  ],
+  "displayName": "Nextflow",
+  "scopeName": "source.nextflow"
+ },
+ "nextflow-groovy": {
+  "aliases": [],
+  "displayName": "Nextflow Groovy",
+  "scopeName": "source.nextflow-groovy"
+ },
+ "nim": {
+  "aliases": [],
+  "displayName": "Nim",
+  "scopeName": "source.nim"
+ },
+ "nix": {
+  "aliases": [],
+  "displayName": "Nix",
+  "scopeName": "source.nix"
+ },
+ "nsis": {
+  "aliases": [],
+  "displayName": "NSIS",
+  "scopeName": "source.nsis"
+ },
+ "nushell": {
+  "aliases": [
+   "nu"
+  ],
+  "displayName": "nushell",
+  "scopeName": "source.nushell"
+ },
+ "objective-c": {
+  "aliases": [
+   "objc"
+  ],
+  "displayName": "Objective-C",
+  "scopeName": "source.objc"
+ },
+ "objective-cpp": {
+  "aliases": [],
+  "displayName": "Objective-C++",
+  "scopeName": "source.objcpp"
+ },
+ "ocaml": {
+  "aliases": [],
+  "displayName": "OCaml",
+  "scopeName": "source.ocaml"
+ },
+ "odin": {
+  "aliases": [],
+  "displayName": "Odin",
+  "scopeName": "source.odin"
+ },
+ "openscad": {
+  "aliases": [
+   "scad"
+  ],
+  "displayName": "OpenSCAD",
+  "scopeName": "source.scad"
+ },
+ "pascal": {
+  "aliases": [],
+  "displayName": "Pascal",
+  "scopeName": "source.pascal"
+ },
+ "perl": {
+  "aliases": [],
+  "displayName": "Perl",
+  "scopeName": "source.perl"
+ },
+ "php": {
+  "aliases": [],
+  "displayName": "PHP",
+  "scopeName": "source.php"
+ },
+ "pkl": {
+  "aliases": [],
+  "displayName": "Pkl",
+  "scopeName": "source.pkl"
+ },
+ "plsql": {
+  "aliases": [],
+  "displayName": "PL/SQL",
+  "scopeName": "source.plsql.oracle"
+ },
+ "po": {
+  "aliases": [
+   "pot",
+   "potx"
+  ],
+  "displayName": "Gettext PO",
+  "scopeName": "source.po"
+ },
+ "polar": {
+  "aliases": [],
+  "displayName": "Polar",
+  "scopeName": "source.polar"
+ },
+ "postcss": {
+  "aliases": [],
+  "displayName": "PostCSS",
+  "scopeName": "source.css.postcss"
+ },
+ "powerquery": {
+  "aliases": [],
+  "displayName": "PowerQuery",
+  "scopeName": "source.powerquery"
+ },
+ "powershell": {
+  "aliases": [
+   "ps",
+   "ps1",
+   "pwsh"
+  ],
+  "displayName": "PowerShell",
+  "scopeName": "source.powershell"
+ },
+ "prisma": {
+  "aliases": [],
+  "displayName": "Prisma",
+  "scopeName": "source.prisma"
+ },
+ "prolog": {
+  "aliases": [],
+  "displayName": "Prolog",
+  "scopeName": "source.prolog"
+ },
+ "proto": {
+  "aliases": [
+   "protobuf"
+  ],
+  "displayName": "Protocol Buffer 3",
+  "scopeName": "source.proto"
+ },
+ "pug": {
+  "aliases": [
+   "jade"
+  ],
+  "displayName": "Pug",
+  "scopeName": "text.pug"
+ },
+ "puppet": {
+  "aliases": [],
+  "displayName": "Puppet",
+  "scopeName": "source.puppet"
+ },
+ "purescript": {
+  "aliases": [],
+  "displayName": "PureScript",
+  "scopeName": "source.purescript"
+ },
+ "python": {
+  "aliases": [
+   "py"
+  ],
+  "displayName": "Python",
+  "scopeName": "source.python"
+ },
+ "qml": {
+  "aliases": [],
+  "displayName": "QML",
+  "scopeName": "source.qml"
+ },
+ "qmldir": {
+  "aliases": [],
+  "displayName": "QML Directory",
+  "scopeName": "source.qmldir"
+ },
+ "qss": {
+  "aliases": [],
+  "displayName": "Qt Style Sheets",
+  "scopeName": "source.qss"
+ },
+ "r": {
+  "aliases": [],
+  "displayName": "R",
+  "scopeName": "source.r"
+ },
+ "raku": {
+  "aliases": [
+   "perl6"
+  ],
+  "displayName": "Raku",
+  "scopeName": "source.perl.6"
+ },
+ "razor": {
+  "aliases": [],
+  "displayName": "ASP.NET Razor",
+  "scopeName": "text.aspnetcorerazor"
+ },
+ "rbs": {
+  "aliases": [
+   "ruby-signature"
+  ],
+  "displayName": "RBS",
+  "scopeName": "source.rbs"
+ },
+ "reg": {
+  "aliases": [],
+  "displayName": "Windows Registry Script",
+  "scopeName": "source.reg"
+ },
+ "regexp": {
+  "aliases": [
+   "regex"
+  ],
+  "displayName": "RegExp",
+  "scopeName": "source.regexp.python"
+ },
+ "riscv": {
+  "aliases": [],
+  "displayName": "RISC-V",
+  "scopeName": "source.riscv"
+ },
+ "ron": {
+  "aliases": [],
+  "displayName": "RON",
+  "scopeName": "source.ron"
+ },
+ "rosmsg": {
+  "aliases": [],
+  "displayName": "ROS Interface",
+  "scopeName": "source.rosmsg"
+ },
+ "rst": {
+  "aliases": [],
+  "displayName": "reStructuredText",
+  "scopeName": "source.rst"
+ },
+ "ruby": {
+  "aliases": [
+   "rb"
+  ],
+  "displayName": "Ruby",
+  "scopeName": "source.ruby"
+ },
+ "rust": {
+  "aliases": [
+   "rs"
+  ],
+  "displayName": "Rust",
+  "scopeName": "source.rust"
+ },
+ "sas": {
+  "aliases": [],
+  "displayName": "SAS",
+  "scopeName": "source.sas"
+ },
+ "sass": {
+  "aliases": [],
+  "displayName": "Sass",
+  "scopeName": "source.sass"
+ },
+ "scala": {
+  "aliases": [],
+  "displayName": "Scala",
+  "scopeName": "source.scala"
+ },
+ "scheme": {
+  "aliases": [],
+  "displayName": "Scheme",
+  "scopeName": "source.scheme"
+ },
+ "scss": {
+  "aliases": [],
+  "displayName": "SCSS",
+  "scopeName": "source.css.scss"
+ },
+ "sdbl": {
+  "aliases": [
+   "1c-query"
+  ],
+  "displayName": "1C (Query)",
+  "scopeName": "source.sdbl"
+ },
+ "shaderlab": {
+  "aliases": [
+   "shader"
+  ],
+  "displayName": "ShaderLab",
+  "scopeName": "source.shaderlab"
+ },
+ "shellscript": {
+  "aliases": [
+   "bash",
+   "sh",
+   "shell",
+   "zsh"
+  ],
+  "displayName": "Shell",
+  "scopeName": "source.shell"
+ },
+ "shellsession": {
+  "aliases": [
+   "console"
+  ],
+  "displayName": "Shell Session",
+  "scopeName": "text.shell-session"
+ },
+ "smalltalk": {
+  "aliases": [],
+  "displayName": "GNU Smalltalk",
+  "scopeName": "source.smalltalk.gnu"
+ },
+ "smithy": {
+  "aliases": [],
+  "displayName": "Smithy",
+  "scopeName": "source.smithy"
+ },
+ "solidity": {
+  "aliases": [],
+  "displayName": "Solidity",
+  "scopeName": "source.solidity"
+ },
+ "soy": {
+  "aliases": [
+   "closure-templates"
+  ],
+  "displayName": "Closure Templates",
+  "scopeName": "text.html.soy"
+ },
+ "splunk": {
+  "aliases": [
+   "spl"
+  ],
+  "displayName": "Splunk Query Language",
+  "scopeName": "source.splunk_search"
+ },
+ "sql": {
+  "aliases": [],
+  "displayName": "SQL",
+  "scopeName": "source.sql"
+ },
+ "ssh-config": {
+  "aliases": [],
+  "displayName": "SSH Config",
+  "scopeName": "source.ssh-config"
+ },
+ "stata": {
+  "aliases": [],
+  "displayName": "Stata",
+  "scopeName": "source.stata"
+ },
+ "stylus": {
+  "aliases": [
+   "styl"
+  ],
+  "displayName": "Stylus",
+  "scopeName": "source.stylus"
+ },
+ "surrealql": {
+  "aliases": [
+   "surql"
+  ],
+  "displayName": "SurrealQL",
+  "scopeName": "source.surrealql"
+ },
+ "svelte": {
+  "aliases": [],
+  "displayName": "Svelte",
+  "scopeName": "source.svelte"
+ },
+ "swift": {
+  "aliases": [],
+  "displayName": "Swift",
+  "scopeName": "source.swift"
+ },
+ "system-verilog": {
+  "aliases": [],
+  "displayName": "SystemVerilog",
+  "scopeName": "source.systemverilog"
+ },
+ "systemd": {
+  "aliases": [],
+  "displayName": "Systemd Units",
+  "scopeName": "source.systemd"
+ },
+ "talonscript": {
+  "aliases": [
+   "talon"
+  ],
+  "displayName": "TalonScript",
+  "scopeName": "source.talon"
+ },
+ "tasl": {
+  "aliases": [],
+  "displayName": "Tasl",
+  "scopeName": "source.tasl"
+ },
+ "templ": {
+  "aliases": [],
+  "displayName": "Templ",
+  "scopeName": "source.templ"
+ },
+ "terraform": {
+  "aliases": [
+   "tf",
+   "tfvars"
+  ],
+  "displayName": "Terraform",
+  "scopeName": "source.hcl.terraform"
+ },
+ "tex": {
+  "aliases": [],
+  "displayName": "TeX",
+  "scopeName": "text.tex"
+ },
+ "toml": {
+  "aliases": [],
+  "displayName": "TOML",
+  "scopeName": "source.toml"
+ },
+ "tsv": {
+  "aliases": [],
+  "displayName": "TSV",
+  "scopeName": "text.tsv"
+ },
+ "tsx": {
+  "aliases": [],
+  "displayName": "TSX",
+  "scopeName": "source.tsx"
+ },
+ "twig": {
+  "aliases": [],
+  "displayName": "Twig",
+  "scopeName": "text.html.twig"
+ },
+ "typescript": {
+  "aliases": [
+   "ts",
+   "cts",
+   "mts"
+  ],
+  "displayName": "TypeScript",
+  "scopeName": "source.ts"
+ },
+ "typespec": {
+  "aliases": [
+   "tsp"
+  ],
+  "displayName": "TypeSpec",
+  "scopeName": "source.tsp"
+ },
+ "typst": {
+  "aliases": [
+   "typ"
+  ],
+  "displayName": "Typst",
+  "scopeName": "source.typst"
+ },
+ "v": {
+  "aliases": [],
+  "displayName": "V",
+  "scopeName": "source.v"
+ },
+ "vala": {
+  "aliases": [],
+  "displayName": "Vala",
+  "scopeName": "source.vala"
+ },
+ "vb": {
+  "aliases": [],
+  "displayName": "Visual Basic",
+  "scopeName": "source.asp.vb.net"
+ },
+ "verilog": {
+  "aliases": [],
+  "displayName": "Verilog",
+  "scopeName": "source.verilog"
+ },
+ "vhdl": {
+  "aliases": [],
+  "displayName": "VHDL",
+  "scopeName": "source.vhdl"
+ },
+ "viml": {
+  "aliases": [
+   "vim",
+   "vimscript"
+  ],
+  "displayName": "Vim Script",
+  "scopeName": "source.viml"
+ },
+ "vue": {
+  "aliases": [],
+  "displayName": "Vue",
+  "scopeName": "text.html.vue"
+ },
+ "vue-html": {
+  "aliases": [],
+  "displayName": "Vue HTML",
+  "scopeName": "text.html.vue-html"
+ },
+ "vue-vine": {
+  "aliases": [],
+  "displayName": "Vue Vine",
+  "scopeName": "source.vue-vine"
+ },
+ "vyper": {
+  "aliases": [
+   "vy"
+  ],
+  "displayName": "Vyper",
+  "scopeName": "source.vyper"
+ },
+ "wasm": {
+  "aliases": [],
+  "displayName": "WebAssembly",
+  "scopeName": "source.wat"
+ },
+ "wenyan": {
+  "aliases": [
+   "\u6587\u8a00"
+  ],
+  "displayName": "Wenyan",
+  "scopeName": "source.wenyan"
+ },
+ "wgsl": {
+  "aliases": [],
+  "displayName": "WGSL",
+  "scopeName": "source.wgsl"
+ },
+ "wikitext": {
+  "aliases": [
+   "mediawiki",
+   "wiki"
+  ],
+  "displayName": "Wikitext",
+  "scopeName": "source.wikitext"
+ },
+ "wit": {
+  "aliases": [],
+  "displayName": "WebAssembly Interface Types",
+  "scopeName": "source.wit"
+ },
+ "wolfram": {
+  "aliases": [
+   "wl"
+  ],
+  "displayName": "Wolfram",
+  "scopeName": "source.wolfram"
+ },
+ "xml": {
+  "aliases": [],
+  "displayName": "XML",
+  "scopeName": "text.xml"
+ },
+ "xsl": {
+  "aliases": [],
+  "displayName": "XSL",
+  "scopeName": "text.xml.xsl"
+ },
+ "yaml": {
+  "aliases": [
+   "yml"
+  ],
+  "displayName": "YAML",
+  "scopeName": "source.yaml"
+ },
+ "zenscript": {
+  "aliases": [],
+  "displayName": "ZenScript",
+  "scopeName": "source.zenscript"
+ },
+ "zig": {
+  "aliases": [],
+  "displayName": "Zig",
+  "scopeName": "source.zig"
+ }
+}

@@ -1,0 +1,15 @@
+// codeview language-module resource script (english.slg).
+//
+#pragma code_page(65001)
+
+#include "lang.rh"
+
+#define APSTUDIO_READONLY_SYMBOLS
+#include "winresrc.h"
+#include "..\codeview.rh2"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#include "lang.rc2"   // non-Microsoft Visual C++ edited resources
+#endif

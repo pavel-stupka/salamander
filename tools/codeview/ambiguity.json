@@ -1,0 +1,73 @@
+{
+ "_comment": "Ambiguous extensions and their disambiguation, feature 070 FR-006. Every extension here resolves to 'default' unless the named rule's probe matches; the probes are implemented in src/plugins/codeview/intake.cpp (CvProbe*) and each is a test case in the harness. Source: specs/070-source-viewer-plugin/research/language-detection.md S3.",
+ "rules": {
+  "h-header": {
+   "fallback": "cpp",
+   "probe": "Objective-C markers (@interface / @implementation / #import <Foundation) -> objective-c; a C-only marker set with no C++ token -> c; otherwise C++.",
+   "candidates": ["objective-c", "c", "cpp"]
+  },
+  "m-source": {
+   "fallback": "objective-c",
+   "probe": "MATLAB markers (a leading 'function [' / '%%' cell marker and no @interface) -> matlab-plain; otherwise Objective-C.",
+   "candidates": ["objective-c", "x-matlab"]
+  },
+  "pl-script": {
+   "fallback": "perl",
+   "probe": "A Prolog clause (':-' at the start of a line) with no Perl sigil line -> prolog.",
+   "candidates": ["perl", "prolog"]
+  },
+  "v-source": {
+   "fallback": "verilog",
+   "probe": "'module <name> (' -> Verilog; 'Require Import' / 'Theorem ' -> Coq; 'fn ' + 'pub struct' -> V.",
+   "candidates": ["verilog", "coq", "v"]
+  },
+  "ts-source": {
+   "fallback": "typescript",
+   "probe": "'<TS ' or '<!DOCTYPE TS' in the first bytes -> Qt translation XML; the MPEG transport-stream signature (0x47 at 188-byte stride) is caught by the binary rule before this.",
+   "candidates": ["typescript", "xml"]
+  },
+  "inc-include": {
+   "fallback": "x-plain-include",
+   "probe": "'<?php' -> PHP; a leading assembler directive -> asm; C/C++ preprocessor lines -> cpp; otherwise plain.",
+   "candidates": ["php", "asm", "cpp", "x-plain-include"]
+  },
+  "sql-dialect": {
+   "fallback": "sql",
+   "probe": "'DECLARE @' or 'GO' batch separators -> T-SQL flavour; PL/SQL 'CREATE OR REPLACE PACKAGE' -> plsql.",
+   "candidates": ["sql", "plsql"]
+  },
+  "cls-file": {
+   "fallback": "x-vb-class",
+   "probe": "'\\\\documentclass' or '\\\\NeedsTeXFormat' -> LaTeX class; 'VERSION 1.0 CLASS' -> VB class; 'public with sharing class' -> Apex.",
+   "candidates": ["latex", "x-vb-class", "apex"]
+  },
+  "t-test": {
+   "fallback": "perl",
+   "probe": "'use strict' / 'use Test' -> Perl test; 'unit ' -> Turing; otherwise Perl.",
+   "candidates": ["perl"]
+  },
+  "r-source": {
+   "fallback": "r",
+   "probe": "'\\\\name{' / '\\\\alias{' -> R documentation (Rd); otherwise R.",
+   "candidates": ["r"]
+  },
+  "asm-source": {
+   "fallback": "asm",
+   "probe": "'.include' / '.globl' / 'section .text' -> assembler; a leading '#' comment block with 'riscv' -> riscv.",
+   "candidates": ["asm", "riscv"]
+  }
+ },
+ "extensions": {
+  ".h": {"default": "cpp", "rule": "h-header"},
+  ".m": {"default": "objective-c", "rule": "m-source"},
+  ".pl": {"default": "perl", "rule": "pl-script"},
+  ".v": {"default": "verilog", "rule": "v-source"},
+  ".ts": {"default": "typescript", "rule": "ts-source"},
+  ".inc": {"default": "x-plain-include", "rule": "inc-include"},
+  ".sql": {"default": "sql", "rule": "sql-dialect"},
+  ".cls": {"default": "x-vb-class", "rule": "cls-file"},
+  ".t": {"default": "perl", "rule": "t-test"},
+  ".r": {"default": "r", "rule": "r-source"},
+  ".s": {"default": "asm", "rule": "asm-source"}
+ }
+}

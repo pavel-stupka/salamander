@@ -1,0 +1,23 @@
+{
+ "_comment": "Pinned inputs for the codeview asset and language-map generators (feature 070). Changing a version here is a deliberate, reviewed act: regenerate with tools/codeview/build_web.py + gen_langmap.py and review the resulting diff, including web/licence-manifest.json.",
+ "_verified": "2026-08-26",
+ "npm": {
+  "@shikijs/core": "4.4.3",
+  "@shikijs/engine-oniguruma": "4.4.3",
+  "@shikijs/langs": "4.4.3",
+  "@shikijs/themes": "4.4.3",
+  "shiki": "4.4.3",
+  "tm-grammars": "1.32.8",
+  "tm-themes": "1.12.9",
+  "linguist-languages": "9.4.0",
+  "esbuild": "0.25.10"
+ },
+ "linguist": {
+  "_comment": "GitHub Linguist data used by gen_langmap.py. linguist-languages repackages languages.yml as JSON; heuristics.yml is fetched from the tagged revision below.",
+  "repo": "github-linguist/linguist",
+  "ref": "v9.4.0",
+  "heuristics_url": "https://raw.githubusercontent.com/github-linguist/linguist/v9.4.0/lib/linguist/heuristics.yml"
+ },
+ "minimum_grammars": 200,
+ "_minimum_grammars_note": "SC-001 requires at least 200 highlighted languages; build_web.py fails if the licence audit leaves fewer."
+}

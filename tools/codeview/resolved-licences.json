@@ -1,0 +1,132 @@
+{
+ "_comment": "Manual licence resolutions for tm-grammars entries whose package metadata names no licence (research D3). Each entry was verified on 2026-08-26 by fetching the licence text at the URL below; build_web.py refuses to ship anything not listed here or in the package metadata.",
+ "_verified": "2026-08-26",
+ "resolved": {
+  "abap": {
+   "spdx": "TextMate-permissive",
+   "file": "README.md",
+   "url": "https://raw.githubusercontent.com/pvl/abap.tmbundle/92e17e62a9449d2a6f87bfb30b4f920986c24018/README.md",
+   "repo": "pvl/abap.tmbundle"
+  },
+  "apache": {
+   "spdx": "BSD-2-Clause",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/colinta/ApacheConf.tmLanguage/1fdb47b6fe2cea20cfedbc522bff3ff1ed656c07/LICENSE",
+   "repo": "colinta/ApacheConf.tmLanguage"
+  },
+  "apex": {
+   "spdx": "BSD-3-Clause",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/forcedotcom/apex-tmLanguage/611becc66c4553876ac6fd0287f57135581e2e59/LICENSE",
+   "repo": "forcedotcom/apex-tmLanguage"
+  },
+  "applescript": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/applescript.tmbundle/4947cad7494eba084c21cfe04689b4efce96700f/README.mdown",
+   "repo": "textmate/applescript.tmbundle"
+  },
+  "asciidoc": {
+   "spdx": "MIT",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/asciidoctor/asciidoctor-vscode/09c406fcd67a300cfc1f49267c70cc97db978986/LICENSE",
+   "repo": "asciidoctor/asciidoctor-vscode"
+  },
+  "cue": {
+   "spdx": "MIT",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/cue-lang/vscode-cue/a9ee96a7e61fb8acd39f7403144d0b6f45652987/LICENSE",
+   "repo": "cue-lang/vscode-cue"
+  },
+  "elixir": {
+   "spdx": "Apache-2.0",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/elixir-editors/elixir-tmbundle/43c8cd957d5ac6e1abbd8730fc7a08c81a6e76c9/LICENSE",
+   "repo": "elixir-editors/elixir-tmbundle"
+  },
+  "erb": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/ruby.tmbundle/ecf0f1df23984bcff9b51552e35d9696cb0d9539/README.mdown",
+   "repo": "textmate/ruby.tmbundle"
+  },
+  "llvm": {
+   "spdx": "Apache-2.0",
+   "file": "LICENSE.TXT",
+   "url": "https://raw.githubusercontent.com/llvm/llvm-project/c07bc2962c5f76ebcbd040c4e97fe5d129530087/LICENSE.TXT",
+   "repo": "llvm/llvm-project"
+  },
+  "logo": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/logo.tmbundle/3205e987ed2a2aa11accdd55a7d094832441f89c/README.mdown",
+   "repo": "textmate/logo.tmbundle"
+  },
+  "luau": {
+   "spdx": "MIT",
+   "file": "LICENSE.md",
+   "url": "https://raw.githubusercontent.com/JohnnyMorganz/Luau.tmLanguage/2565337787d6d4df5cdfdc14bfb25521d55b7c4e/LICENSE.md",
+   "repo": "JohnnyMorganz/Luau.tmLanguage"
+  },
+  "mipsasm": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/mips.tmbundle/eb7601016a109bf912a48a1c21988f3c4a59fb3a/README.mdown",
+   "repo": "textmate/mips.tmbundle"
+  },
+  "nim": {
+   "spdx": "MIT",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/pragmagic/vscode-nim/0272a0544ddf147fde98f8a8f2b624b7dcb19eb3/LICENSE",
+   "repo": "pragmagic/vscode-nim"
+  },
+  "nsis": {
+   "spdx": "MIT",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/idleberg/vscode-nsis/9adaf15a501157c1d3b73730c08a7bcbb057f812/LICENSE",
+   "repo": "idleberg/vscode-nsis"
+  },
+  "po": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/gettext.tmbundle/08bb69558d82ada8d4f36b8869f871ce69014749/README.mdown",
+   "repo": "textmate/gettext.tmbundle"
+  },
+  "purescript": {
+   "spdx": "MIT",
+   "file": "LICENSE.md",
+   "url": "https://raw.githubusercontent.com/nwolverson/vscode-language-purescript/b7641936190d6d8eb346660284dab3a5d1cc636f/LICENSE.md",
+   "repo": "nwolverson/vscode-language-purescript"
+  },
+  "sass": {
+   "spdx": "MIT",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/TheRealSyler/vscode-sass-indented/f0e50cfaca4b64a1d49f8d938f188d6fd0bcfb6f/LICENSE",
+   "repo": "TheRealSyler/vscode-sass-indented"
+  },
+  "ssh-config": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/ssh-config.tmbundle/212a0000c50e0c877303b2c4fcead539d2af2670/README.mdown",
+   "repo": "textmate/ssh-config.tmbundle"
+  },
+  "toml": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/toml.tmbundle/e82b64c1e86396220786846201e9aa3f0a2d9ca2/README.mdown",
+   "repo": "textmate/toml.tmbundle"
+  },
+  "wolfram": {
+   "spdx": "MIT",
+   "file": "LICENSE",
+   "url": "https://raw.githubusercontent.com/WolframResearch/vscode-wolfram/8b55fb1724d971a303120b3f5b981d654c308c59/LICENSE",
+   "repo": "WolframResearch/vscode-wolfram"
+  },
+  "yaml": {
+   "spdx": "TextMate-permissive",
+   "file": "README.mdown",
+   "url": "https://raw.githubusercontent.com/textmate/yaml.tmbundle/e54ceae3b719506dba7e481a77cea4a8b576ae46/README.mdown",
+   "repo": "textmate/yaml.tmbundle"
+  }
+ }
+}

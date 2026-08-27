@@ -1,0 +1,123 @@
+/* SPDX-FileCopyrightText: 2026 Pavel Stupka
+   SPDX-License-Identifier: GPL-2.0-or-later
+
+   codeview page styling. Colours come from the active theme: the host sends
+   the theme's editor colours in the "init"/"setTheme" message and viewer.js
+   writes them into the custom properties below through the CSSOM (the CSP
+   forbids inline style attributes -- contracts/rendering-lockdown.md S2).
+   Token colours are generated classes (.t0, .t1, ...) in a second stylesheet. */
+
+:root {
+  --bg: #1e1e1e;
+  --fg: #d4d4d4;
+  --gutter-fg: #858585;
+  --gutter-bg: transparent;
+  --sel-bg: #264f78;
+  --find-bg: #613214;
+  --find-current-bg: #9e6a03;
+  --goto-flash: #ffffff20;
+  --notice-bg: #2d2d2d;
+  --notice-fg: #cccccc;
+  --notice-border: #454545;
+  --tab-size: 4;
+  --font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+  --font-size: 13px;
+  --line-height: 1.45;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  /* Programming ligatures are off unless the user picks a ligature font
+     deliberately (research D16 / spec FR-038). */
+  font-variant-ligatures: none;
+  display: flex;
+  flex-direction: column;
+}
+
+#notice {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  background: var(--notice-bg);
+  color: var(--notice-fg);
+  border-bottom: 1px solid var(--notice-border);
+  font-size: calc(var(--font-size) * 0.92);
+  /* never part of Select All / Copy */
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: pre-wrap;
+}
+#notice[hidden] { display: none; }
+
+#scroller {
+  flex: 1 1 auto;
+  overflow: auto;
+  position: relative;
+  contain: strict;
+}
+
+/* #sizer carries the full scroll height of all lines; #lines is translated to
+   the first materialised line (virtual list). */
+#sizer { position: relative; width: max-content; min-width: 100%; }
+#lines { position: absolute; top: 0; left: 0; right: 0; will-change: transform; }
+
+.ln {
+  display: flex;
+  align-items: flex-start;
+  white-space: pre;
+  tab-size: var(--tab-size);
+  -moz-tab-size: var(--tab-size);
+}
+
+/* Gutter: a real element rather than ::before content, so it can be toggled
+   and measured; user-select:none keeps line numbers out of the clipboard
+   (spec FR-018). */
+.gut {
+  flex: 0 0 auto;
+  text-align: right;
+  padding: 0 12px 0 8px;
+  color: var(--gutter-fg);
+  background: var(--gutter-bg);
+  user-select: none;
+  -webkit-user-select: none;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+body.nogutter .gut { display: none; }
+
+.tx { flex: 1 1 auto; white-space: pre; }
+
+body.wrap .ln { white-space: pre-wrap; }
+body.wrap .tx { white-space: pre-wrap; overflow-wrap: anywhere; }
+body.wrap #sizer { width: auto; }
+
+/* Whitespace rendering is paint-only: the DOM text keeps the real spaces and
+   tabs, so Copy is unaffected (spec FR-021). */
+body.ws .tx { position: relative; }
+body.ws .sp::before { content: "\00B7"; position: absolute; color: var(--gutter-fg); opacity: .45; }
+
+::selection { background: var(--sel-bg); }
+
+/* Find highlights use the CSS Custom Highlight API: no DOM mutation, so the
+   virtual list and the selection stay intact (research D7). */
+::highlight(cv-find) { background-color: var(--find-bg); }
+::highlight(cv-find-current) { background-color: var(--find-current-bg); }
+
+.flash { animation: cv-flash 900ms ease-out 1; }
+@keyframes cv-flash {
+  from { background-color: var(--goto-flash); }
+  to { background-color: transparent; }
+}

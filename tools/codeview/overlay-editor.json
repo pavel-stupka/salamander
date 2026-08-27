@@ -1,0 +1,105 @@
+{
+ "_comment": "Editor-convention overlay for the codeview language map (feature 070). Corrections and additions on top of GitHub Linguist, following what VS Code and other editors treat these names as. Committed and reviewed like source.",
+ "languages": {
+  "x-plain-include": {
+   "display": "Include File",
+   "grammar": null
+  },
+  "x-vb-class": {
+   "display": "Visual Basic Class",
+   "grammar": "vb"
+  },
+  "x-matlab": {
+   "display": "MATLAB",
+   "grammar": null
+  },
+  "log": {
+   "display": "Log File",
+   "grammar": "log"
+  },
+  "x-plain-text": {
+   "display": "Plain Text",
+   "grammar": null
+  },
+  "x-gitignore": {
+   "display": "Ignore File",
+   "grammar": null
+  },
+  "x-editorconfig": {
+   "display": "EditorConfig",
+   "grammar": "ini"
+  }
+ },
+ "extensions": {
+  ".txt": "x-plain-text",
+  ".log": "log",
+  ".mjs": "javascript",
+  ".cjs": "javascript",
+  ".mts": "typescript",
+  ".cts": "typescript",
+  ".jsonc": "jsonc",
+  ".json5": "json5",
+  ".jsonl": "jsonl",
+  ".code-workspace": "jsonc",
+  ".code-snippets": "jsonc",
+  ".env": "dotenv",
+  ".editorconfig": "x-editorconfig",
+  ".gitignore": "x-gitignore",
+  ".gitattributes": "x-gitignore",
+  ".dockerignore": "x-gitignore",
+  ".npmignore": "x-gitignore"
+ },
+ "filenames": {
+  "dockerfile": "docker",
+  "containerfile": "docker",
+  "makefile": "make",
+  "gnumakefile": "make",
+  "cmakelists.txt": "cmake",
+  "jenkinsfile": "groovy",
+  "vagrantfile": "ruby",
+  "gemfile": "ruby",
+  "rakefile": "ruby",
+  "podfile": "ruby",
+  "brewfile": "ruby",
+  "package.json": "json",
+  "tsconfig.json": "jsonc",
+  "jsconfig.json": "jsonc",
+  "cargo.lock": "toml",
+  "pipfile": "toml",
+  "go.mod": "go",
+  "go.sum": "go",
+  ".gitignore": "x-gitignore",
+  ".gitattributes": "x-gitignore",
+  ".gitmodules": "ini",
+  ".gitconfig": "ini",
+  ".editorconfig": "x-editorconfig",
+  ".env": "dotenv",
+  ".bashrc": "shellscript",
+  ".bash_profile": "shellscript",
+  ".zshrc": "shellscript",
+  ".profile": "shellscript",
+  ".clang-format": "yaml",
+  ".clang-tidy": "yaml",
+  "codeowners": "codeowners",
+  ".npmrc": "ini",
+  ".babelrc": "json",
+  ".eslintrc": "json",
+  ".prettierrc": "json"
+ },
+ "interpreters": {
+  "python3": "python",
+  "python2": "python",
+  "node": "javascript",
+  "nodejs": "javascript",
+  "deno": "typescript",
+  "bun": "typescript",
+  "pwsh": "powershell"
+ },
+ "drop_extensions": [
+  ".markdown",
+  ".md",
+  ".csv",
+  ".tsv",
+  ".dbf"
+ ]
+}
