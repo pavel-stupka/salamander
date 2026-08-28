@@ -373,3 +373,35 @@ plugin architecture preservation, UI consistency.
   uninitialized `HRESULT res` in `GetIconOverlayIndexAuxAux` when a reader
   slot is NULL. `cfapi.h` cannot be included at `_WIN32_WINNT=0x0601` —
   the two needed ABI-stable declarations are mirrored locally.
+- 071-configurable-command-shell: the **Command Shell** command (`Num /`,
+  `Ctrl+/`, Commands menu, toolbar button — one handler, `CM_DOSSHELL` →
+  `CMainWindow::OpenCommandShell` in `src/cmdshell.cpp`) opens a user-chosen
+  program: presets *Command Prompt* (default = the old `%COMSPEC%` launch,
+  bit-for-bit), *Windows PowerShell*, *PowerShell 7*, *Windows Terminal*
+  (`-d .`), *Git Bash*, or a *Custom* program + arguments (`$(FullPath)` = panel
+  directory **without** a trailing backslash, root excepted — the User Menu
+  *Initial Directory* meaning, table `CommandShellArgsExpArray` in
+  `execute.cpp`; `$[ENV]`). Preset table + locate algorithm live in
+  `src/common/salshell.*` behind an injectable probe (52 saltests checks with a
+  fake machine; PowerShell 7 is looked up alias/MSIX first because its MSI is
+  being phased out). Setting = 3 values under `Configuration` (`Command Shell
+  Preset|Program|Arguments`), no config-version bump. New Configuration page
+  *Command Shell* (`IDD_CFGPAGE_CMDSHELL`, `CCfgPageCmdShell`) inserted after
+  *Hot Paths* — the hard-coded `mode == 3` page index in
+  `CConfigurationDlg` moved 21 → 22; not-found presets are marked and refused
+  on OK; empty Custom fields pre-fill from the previous preset. Encoding:
+  `SalGetEnvVarU8` (wide env read) now also serves the shared `$[ENV]`
+  expansion in `DoExpandVarString`; new `SafeGetOpenFileNameW` for the
+  Browse button; launch errors composed from `LoadStrU8` with a Help button
+  to the new manual topic `configuration_cmdshell.htm` (first help page
+  authored after the rebrand: "Tandem Commander" + "© 2026 Pavel Stupka";
+  the other 236 pages still carry the 2023 Open Salamander footer — a
+  separate follow-up). Known/kept: `SalCreateProcess` never forwarded
+  `lpTitle` (since feature 004) — untouched; Windows refuses a starting
+  directory ≥ 259 chars for every program — the launcher retries with the 8.3
+  form. Translations: `ui-overrides.json` pins make the page name follow each
+  language's existing *Command Shell* menu term (cs "Příkazový řádek", de
+  "Eingabeaufforderung", fr "Interpréteur de commandes", nl "Opdracht Shell",
+  ro "Comanda Shell", sk "Príkazový riadok") and keep the corpus' formal
+  register. GUI matrix (quickstart §3–§6) is a human step; see
+  `specs/071-configurable-command-shell/fix-log.md`.
