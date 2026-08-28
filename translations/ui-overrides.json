@@ -198,11 +198,73 @@
     }
   },
   "salamand": {
+    "_feature_071": [
+      "Command Shell page: the page name follows each language's existing term",
+      "for the Command Shell command (menu IDS_MENU_CMD_SHELL), the corpus is",
+      "formal (Sie/vous/usted/u), \\n carries no padding spaces, and the",
+      "product name 'Windows Terminal' stays as Microsoft names it."
+    ],
     "czech": {
-      "IDS_FINDLOG_TEXT": "Text"
+      "IDS_FINDLOG_TEXT": "Text",
+      "IDT_CMDSHELL_INTRO": "Příkaz Příkazový řádek (Num /, Ctrl+/, tlačítko na panelu nástrojů) otevře tento program v adresáři aktivního panelu:",
+      "IDS_CMDSHELL_ERRNOTFOUND": "Vybraný program příkazového řádku (%s) nebyl na tomto počítači nalezen.\\n\\nVyberte jiný program v části Konfigurace / Příkazový řádek.",
+      "IDS_CMDSHELL_ERREXEC": "Nelze spustit program příkazového řádku:\\n%s\\n\\n%s\\n\\nProgram můžete změnit v části Konfigurace / Příkazový řádek."
     },
     "slovak": {
-      "IDS_FINDLOG_TEXT": "Text"
+      "IDS_FINDLOG_TEXT": "Text",
+      "#Command Shell": "Príkazový riadok",
+      "IDS_CMDSHELL_PRESET_WT": "Windows Terminal",
+      "IDS_CMDSHELL_ERRNOTFOUND": "Vybraný program príkazového riadku (%s) nebol na tomto počítači nájdený.\\n\\nVyberte iný program v časti Konfigurácia / Príkazový riadok.",
+      "IDS_CMDSHELL_ERREXEC": "Program príkazového riadku sa nedá spustiť:\\n%s\\n\\n%s\\n\\nProgram môžete zmeniť v časti Konfigurácia / Príkazový riadok."
+    },
+    "german": {
+      "#Command Shell": "Eingabeaufforderung",
+      "IDT_CMDSHELL_INTRO": "Der Befehl „Eingabeaufforderung“ (Num /, Strg+/, die Schaltfläche in der Symbolleiste) öffnet dieses Programm im Verzeichnis des aktiven Panels:",
+      "IDS_CMDSHELL_PRESETNOTFOUND": "Das ausgewählte Programm wurde auf diesem Computer nicht gefunden. Wählen Sie ein anderes aus, oder wählen Sie „Benutzerdefiniertes Programm“ und geben Sie seinen Pfad ein.",
+      "IDS_CMDSHELL_PROGRAMREQUIRED": "Geben Sie das Programm ein, das als Eingabeaufforderung gestartet werden soll.",
+      "IDS_CMDSHELL_BROWSETITLE": "Programm für die Eingabeaufforderung auswählen",
+      "IDS_CMDSHELL_ERRTITLE": "Fehler beim Starten der Eingabeaufforderung",
+      "IDS_CMDSHELL_ERRNOTFOUND": "Das ausgewählte Programm für die Eingabeaufforderung (%s) wurde auf diesem Computer nicht gefunden.\\n\\nWählen Sie ein anderes Programm unter „Konfiguration / Eingabeaufforderung“ aus.",
+      "IDS_CMDSHELL_ERREXEC": "Das Programm für die Eingabeaufforderung kann nicht gestartet werden:\\n%s\\n\\n%s\\n\\nSie können das Programm unter „Konfiguration / Eingabeaufforderung“ ändern."
+    },
+    "french": {
+      "#Command Shell": "Interpréteur de commandes",
+      "IDT_CMDSHELL_INTRO": "La commande « Interpréteur de commandes » (Num /, Ctrl+/, le bouton de la barre d'outils) ouvre ce programme dans le répertoire du panneau actif :",
+      "IDS_CMDSHELL_PRESETNOTFOUND": "Le programme sélectionné est introuvable sur cet ordinateur. Choisissez-en un autre, ou sélectionnez « Programme personnalisé » et saisissez son chemin.",
+      "IDS_CMDSHELL_PROGRAMREQUIRED": "Saisissez le programme à lancer comme interpréteur de commandes.",
+      "IDS_CMDSHELL_BROWSETITLE": "Sélectionner le programme de l'interpréteur de commandes",
+      "IDS_CMDSHELL_ERRTITLE": "Erreur au démarrage de l'interpréteur de commandes",
+      "IDS_CMDSHELL_ERRNOTFOUND": "Le programme d'interpréteur de commandes sélectionné (%s) est introuvable sur cet ordinateur.\\n\\nChoisissez un autre programme dans Configuration / Interpréteur de commandes.",
+      "IDS_CMDSHELL_ERREXEC": "Impossible de lancer le programme d'interpréteur de commandes :\\n%s\\n\\n%s\\n\\nVous pouvez changer de programme dans Configuration / Interpréteur de commandes."
+    },
+    "dutch": {
+      "#Command Shell": "Opdracht Shell",
+      "IDT_CMDSHELL_INTRO": "De opdracht Opdracht Shell (Num /, Ctrl+/, de knop op de werkbalk) opent dit programma in de map van het actieve paneel:",
+      "IDS_CMDSHELL_PRESETNOTFOUND": "Het geselecteerde programma is niet gevonden op deze computer. Kies een ander programma, of selecteer Aangepast programma en voer het pad ervan in.",
+      "IDS_CMDSHELL_PROGRAMREQUIRED": "Voer het programma in dat als opdrachtshell moet worden gestart.",
+      "IDS_CMDSHELL_BROWSETITLE": "Programma voor de Opdracht Shell selecteren",
+      "IDS_CMDSHELL_ERRTITLE": "Fout bij het starten van de Opdracht Shell",
+      "IDS_CMDSHELL_ERRNOTFOUND": "Het geselecteerde programma voor de Opdracht Shell (%s) is niet gevonden op deze computer.\\n\\nKies een ander programma in Configuratie / Opdracht Shell.",
+      "IDS_CMDSHELL_ERREXEC": "Het programma voor de Opdracht Shell kan niet worden gestart:\\n%s\\n\\n%s\\n\\nU kunt het programma wijzigen in Configuratie / Opdracht Shell."
+    },
+    "hungarian": {
+      "IDS_CMDSHELL_ERRNOTFOUND": "A kiválasztott parancssori program (%s) nem található ezen a számítógépen.\\n\\nVálasszon másik programot a Konfiguráció / Parancssor menüpontban.",
+      "IDS_CMDSHELL_ERREXEC": "Nem lehet elindítani a parancssor programot:\\n%s\\n\\n%s\\n\\nA programot a Konfiguráció / Parancssor menüpontban módosíthatja."
+    },
+    "romanian": {
+      "#Command Shell": "Comanda Shell",
+      "IDT_CMDSHELL_INTRO": "Comanda „Comanda Shell” (Num /, Ctrl+/, butonul din bara de instrumente) deschide acest program în directorul panoului activ:",
+      "IDS_CMDSHELL_PRESET_WT": "Windows Terminal",
+      "IDS_CMDSHELL_ERRNOTFOUND": "Programul de tip shell de comandă selectat (%s) nu a fost găsit pe acest computer.\\n\\nAlegeți un alt program în Configurare / Comanda Shell.",
+      "IDS_CMDSHELL_ERREXEC": "Nu se poate porni programul shell de comandă:\\n%s\\n\\n%s\\n\\nPuteți schimba programul în Configurare / Comanda Shell."
+    },
+    "spanish": {
+      "IDS_CMDSHELL_PRESET_WT": "Windows Terminal",
+      "IDS_CMDSHELL_PRESETNOTFOUND": "El programa seleccionado no se ha encontrado en este equipo. Elija otro, o seleccione «Programa personalizado» e introduzca su ruta.",
+      "IDS_CMDSHELL_PROGRAMREQUIRED": "Introduzca el programa que se ejecutará como shell de comandos.",
+      "IDS_CMDSHELL_BROWSETITLE": "Seleccionar el programa del shell de comandos",
+      "IDS_CMDSHELL_ERRNOTFOUND": "El programa de shell de comandos seleccionado (%s) no se ha encontrado en este equipo.\\n\\nElija otro programa en Configuración / Shell de comandos.",
+      "IDS_CMDSHELL_ERREXEC": "No se puede iniciar el programa del shell de comandos:\\n%s\\n\\n%s\\n\\nPuede cambiar el programa en Configuración / Shell de comandos."
     }
   },
   "zip": {

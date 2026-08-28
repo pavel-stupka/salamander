@@ -1,7 +1,7 @@
 ﻿[EXPORTINFO]
 PROJECTNAME,"translator\projects\_template\salamand\salamand.atp"
-TEXTVERSION,"0.1.1 (x64)"
-VERSION,"0,1,1,185"
+TEXTVERSION,"0.1.5 (x64)"
+VERSION,"0,1,5,189"
 
 [TRANSLATION]
 LANGID,1038
@@ -1583,6 +1583,21 @@ SLGINCOMPLETE,""
 1,19,59,50,14,0,"OK"
 2,77,59,50,14,1,"Mégse"
 9,135,59,50,14,1,"Súgó"
+
+[DIALOG 6223]
+299,231,1,"Parancssor"
+6224,1,4,294,16,1,"A Parancssor parancs (Num /, Ctrl+/, az eszköztár gombja) megnyitja ezt a programot az aktív panel könyvtárában:"
+6225,1,26,42,8,1,"&Program:"
+6226,45,24,150,90,1,""
+6227,1,42,42,8,1,"Található:"
+6228,45,40,246,12,1,""
+1150,1,62,295,82,1," Egyéni program "
+6229,8,76,36,8,1,"P&rogram:"
+6230,45,74,228,12,1,""
+6231,277,74,14,12,0,"..."
+6232,8,92,36,8,1,"&Argumentumok:"
+6233,45,90,245,12,1,""
+6234,8,108,287,26,1,"Az argumentumokban a $(FullPath) az aktív panel könyvtárát, a $[NAME] pedig a környezeti változókat jelöli. A program mindig az aktív panel könyvtárában indul el."
 
 [MENU 6010]
 0,1,"Sú&gó"
@@ -3446,4 +3461,20 @@ SLGINCOMPLETE,""
 14195,1,"Keres ablak bezárása, kérem várjon..."
 14196,1,"Ez a mappa olyan bejegyzéseket tartalmaz, amelyek nevei azonosnak tűnnek, de eltérő Unicode-írásmódot használnak (pl. összetett és szétbontott ékezetek): \n \n %s \n \n A Windows ezeket különböző fájlként kezeli. A Tandem Commander mindkét nevet pontosan úgy őrzi meg, ahogyan tárolva vannak."
 14197,1,"A bővítmény nem tudja feldolgozni ezt a nevet (egy régebbi felületre készült, amely nem támogatja az Unicode-ot és a hosszú elérési utakat): \n \n %s \n \n Az elemet kihagytuk, a többi elemet feldolgozzuk."
+14198,1,"Parancssor"
+14199,1,"Windows PowerShell"
+14200,1,"PowerShell 7"
+14201,1,"Windows Terminal"
+14202,1,"Git Bash"
+14203,1,"Egyéni program"
+14204,1," (nem található)"
+14205,1,"(nem található ezen a számítógépen)"
+14206,1,"A kiválasztott program nem található ezen a számítógépen. Válasszon egy másikat, vagy válassza az Egyéni program lehetőséget, és adja meg annak elérési útját."
+14207,1,"Adja meg a parancssorként futtatandó programot."
+
+[STRINGTABLE 162]
+14208,1,"Parancssori program kiválasztása"
+14209,1,"Hiba a parancssor elindításakor"
+14210,1,"A kiválasztott parancssori program (%s) nem található ezen a számítógépen.\n\nVálasszon másik programot a Konfiguráció / Parancssor menüpontban."
+14211,1,"Nem lehet elindítani a parancssor programot:\n%s\n\n%s\n\nA programot a Konfiguráció / Parancssor menüpontban módosíthatja."
 

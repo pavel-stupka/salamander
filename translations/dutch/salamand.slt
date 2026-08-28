@@ -1,7 +1,7 @@
 ﻿[EXPORTINFO]
 PROJECTNAME,"translator\projects\_template\salamand\salamand.atp"
-TEXTVERSION,"0.1.1 (x64)"
-VERSION,"0,1,1,185"
+TEXTVERSION,"0.1.5 (x64)"
+VERSION,"0,1,5,189"
 
 [TRANSLATION]
 LANGID,1043
@@ -1583,6 +1583,21 @@ SLGINCOMPLETE,""
 1,19,59,50,14,0,"OK"
 2,77,59,50,14,1,"Annuleren"
 9,135,59,50,14,1,"Help"
+
+[DIALOG 6223]
+299,231,1,"Opdracht Shell"
+6224,1,4,294,16,1,"De opdracht Opdracht Shell (Num /, Ctrl+/, de knop op de werkbalk) opent dit programma in de map van het actieve paneel:"
+6225,1,26,42,8,1,"&Programma:"
+6226,45,24,150,90,1,""
+6227,1,42,42,8,1,"Gevonden op:"
+6228,45,40,246,12,1,""
+1150,1,62,295,82,1," Aangepast programma "
+6229,8,76,36,8,1,"P&rogramma:"
+6230,45,74,228,12,1,""
+6231,277,74,14,12,0,"..."
+6232,8,92,36,8,1,"&Argumenten:"
+6233,45,90,245,12,1,""
+6234,8,108,287,26,1,"Argumenten kunnen $(FullPath) gebruiken voor de map van het actieve paneel en $[NAME] voor omgevingsvariabelen. Het programma start altijd in de map van het actieve paneel."
 
 [MENU 6010]
 0,1,"Hel&p"
@@ -3446,4 +3461,20 @@ SLGINCOMPLETE,""
 14195,1,"Zoeken vensters sluiten, moment geduld a.u.b..."
 14196,1,"Deze map bevat items waarvan de namen er identiek uitzien, maar die verschillende Unicode-spellingen gebruiken (bijv. samengestelde versus opgesplitste accenten): \n \n %s \n \n Windows beschouwt ze als verschillende bestanden. Tandem Commander behoudt beide namen precies zoals ze zijn opgeslagen."
 14197,1,"De plug-in kan deze naam niet verwerken (hij is gemaakt voor een oudere interface zonder ondersteuning voor Unicode en lange paden): \n \n %s \n \n Het item is overgeslagen, de overige items worden verwerkt."
+14198,1,"Opdrachtprompt"
+14199,1,"Windows PowerShell"
+14200,1,"PowerShell 7"
+14201,1,"Windows Terminal"
+14202,1,"Git Bash"
+14203,1,"Aangepast programma"
+14204,1," (niet gevonden)"
+14205,1,"(niet gevonden op deze computer)"
+14206,1,"Het geselecteerde programma is niet gevonden op deze computer. Kies een ander programma, of selecteer Aangepast programma en voer het pad ervan in."
+14207,1,"Voer het programma in dat als opdrachtshell moet worden gestart."
+
+[STRINGTABLE 162]
+14208,1,"Programma voor de Opdracht Shell selecteren"
+14209,1,"Fout bij het starten van de Opdracht Shell"
+14210,1,"Het geselecteerde programma voor de Opdracht Shell (%s) is niet gevonden op deze computer.\n\nKies een ander programma in Configuratie / Opdracht Shell."
+14211,1,"Het programma voor de Opdracht Shell kan niet worden gestart:\n%s\n\n%s\n\nU kunt het programma wijzigen in Configuratie / Opdracht Shell."
 

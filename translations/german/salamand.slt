@@ -1,7 +1,7 @@
 ﻿[EXPORTINFO]
 PROJECTNAME,"translator\projects\_template\salamand\salamand.atp"
-TEXTVERSION,"0.1.1 (x64)"
-VERSION,"0,1,1,185"
+TEXTVERSION,"0.1.5 (x64)"
+VERSION,"0,1,5,189"
 
 [TRANSLATION]
 LANGID,1031
@@ -1583,6 +1583,21 @@ SLGINCOMPLETE,""
 1,19,59,50,14,0,"OK"
 2,77,59,50,14,1,"Abbrechen"
 9,135,59,50,14,1,"Hilfe"
+
+[DIALOG 6223]
+299,231,1,"Eingabeaufforderung"
+6224,1,4,294,16,1,"Der Befehl „Eingabeaufforderung“ (Num /, Strg+/, die Schaltfläche in der Symbolleiste) öffnet dieses Programm im Verzeichnis des aktiven Panels:"
+6225,1,26,42,8,1,"&Programm:"
+6226,45,24,150,90,1,""
+6227,1,42,42,8,1,"Gefunden unter:"
+6228,45,40,246,12,1,""
+1150,1,62,295,82,1," Benutzerdefiniertes Programm "
+6229,8,76,36,8,1,"P&rogramm:"
+6230,45,74,228,12,1,""
+6231,277,74,14,12,0,"..."
+6232,8,92,36,8,1,"&Argumente:"
+6233,45,90,245,12,1,""
+6234,8,108,287,26,1,"Als Argumente können $(FullPath) für das Verzeichnis des aktiven Panels und $[NAME] für Umgebungsvariablen verwendet werden. Das Programm startet immer im Verzeichnis des aktiven Panels."
 
 [MENU 6010]
 0,1,"&Hilfe"
@@ -3446,4 +3461,20 @@ SLGINCOMPLETE,""
 14195,1,"Schließe Suchfenster, bitte warten..."
 14196,1,"Dieser Ordner enthält Einträge, deren Namen identisch aussehen, aber unterschiedliche Unicode-Schreibweisen verwenden (z. B. zusammengesetzte vs. zerlegte Akzente): \n \n %s \n \n Windows behandelt sie als unterschiedliche Dateien. Tandem Commander behält beide Namen genau so bei, wie sie gespeichert sind."
 14197,1,"Das Plugin kann diesen Namen nicht verarbeiten (es wurde für eine ältere Benutzeroberfläche ohne Unicode- und Unterstützung für lange Pfade entwickelt): \n \n %s \n \n Das Element wurde übersprungen, die restlichen Elemente werden verarbeitet."
+14198,1,"Eingabeaufforderung"
+14199,1,"Windows PowerShell"
+14200,1,"PowerShell 7"
+14201,1,"Windows Terminal"
+14202,1,"Git Bash"
+14203,1,"Benutzerdefiniertes Programm"
+14204,1," (nicht gefunden)"
+14205,1,"(auf diesem Computer nicht gefunden)"
+14206,1,"Das ausgewählte Programm wurde auf diesem Computer nicht gefunden. Wählen Sie ein anderes aus, oder wählen Sie „Benutzerdefiniertes Programm“ und geben Sie seinen Pfad ein."
+14207,1,"Geben Sie das Programm ein, das als Eingabeaufforderung gestartet werden soll."
+
+[STRINGTABLE 162]
+14208,1,"Programm für die Eingabeaufforderung auswählen"
+14209,1,"Fehler beim Starten der Eingabeaufforderung"
+14210,1,"Das ausgewählte Programm für die Eingabeaufforderung (%s) wurde auf diesem Computer nicht gefunden.\n\nWählen Sie ein anderes Programm unter „Konfiguration / Eingabeaufforderung“ aus."
+14211,1,"Das Programm für die Eingabeaufforderung kann nicht gestartet werden:\n%s\n\n%s\n\nSie können das Programm unter „Konfiguration / Eingabeaufforderung“ ändern."
 

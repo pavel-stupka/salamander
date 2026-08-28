@@ -1,7 +1,7 @@
 ﻿[EXPORTINFO]
 PROJECTNAME,"translator\projects\_template\salamand\salamand.atp"
-TEXTVERSION,"0.1.1 (x64)"
-VERSION,"0,1,1,185"
+TEXTVERSION,"0.1.5 (x64)"
+VERSION,"0,1,5,189"
 
 [TRANSLATION]
 LANGID,3082
@@ -1583,6 +1583,21 @@ SLGINCOMPLETE,""
 1,19,59,50,14,0,"OK"
 2,77,59,50,14,1,"Cancelar"
 9,135,59,50,14,1,"Ayuda"
+
+[DIALOG 6223]
+299,231,1,"Shell de comandos"
+6224,1,4,294,16,1,"El comando «Shell de comandos» (Num /, Ctrl+/, el botón de la barra de herramientas) abre este programa en el directorio del panel activo:"
+6225,1,26,42,8,1,"&Programa:"
+6226,45,24,150,90,1,""
+6227,1,42,42,8,1,"Encontrado en:"
+6228,45,40,246,12,1,""
+1150,1,62,295,82,1," Programa personalizado "
+6229,8,76,36,8,1,"P&rograma:"
+6230,45,74,228,12,1,""
+6231,277,74,14,12,0,"..."
+6232,8,92,36,8,1,"&Argumentos:"
+6233,45,90,245,12,1,""
+6234,8,108,287,26,1,"Los argumentos pueden usar $(FullPath) para el directorio del panel activo y $[NAME] para las variables de entorno. El programa siempre se inicia en el directorio del panel activo."
 
 [MENU 6010]
 0,1,"&Ayuda"
@@ -3446,4 +3461,20 @@ SLGINCOMPLETE,""
 14195,1,"Cerrando ventanas de Búsqueda; por favor, espere..."
 14196,1,"Esta carpeta contiene entradas cuyos nombres parecen idénticos pero utilizan grafías Unicode diferentes (por ejemplo, acentos precompuestos frente a acentos descompuestos): \n \n %s \n \n Windows los trata como archivos diferentes. Tandem Commander conserva ambos nombres tal y como están almacenados."
 14197,1,"El complemento no puede procesar este nombre (se creó para una interfaz más antigua sin soporte para Unicode ni rutas largas): \n \n %s \n \n Se ha omitido este elemento; se procesarán los restantes."
+14198,1,"Símbolo del sistema"
+14199,1,"Windows PowerShell"
+14200,1,"PowerShell 7"
+14201,1,"Windows Terminal"
+14202,1,"Git Bash"
+14203,1,"Programa personalizado"
+14204,1," (no encontrado)"
+14205,1,"(no encontrado en este ordenador)"
+14206,1,"El programa seleccionado no se ha encontrado en este equipo. Elija otro, o seleccione «Programa personalizado» e introduzca su ruta."
+14207,1,"Introduzca el programa que se ejecutará como shell de comandos."
+
+[STRINGTABLE 162]
+14208,1,"Seleccionar el programa del shell de comandos"
+14209,1,"Error al iniciar el shell de comandos"
+14210,1,"El programa de shell de comandos seleccionado (%s) no se ha encontrado en este equipo.\n\nElija otro programa en Configuración / Shell de comandos."
+14211,1,"No se puede iniciar el programa del shell de comandos:\n%s\n\n%s\n\nPuede cambiar el programa en Configuración / Shell de comandos."
 

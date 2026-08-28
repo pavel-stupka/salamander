@@ -1,7 +1,7 @@
 ﻿[EXPORTINFO]
 PROJECTNAME,"translator\projects\_template\salamand\salamand.atp"
-TEXTVERSION,"0.1.1 (x64)"
-VERSION,"0,1,1,185"
+TEXTVERSION,"0.1.5 (x64)"
+VERSION,"0,1,5,189"
 
 [TRANSLATION]
 LANGID,1048
@@ -1583,6 +1583,21 @@ SLGINCOMPLETE,""
 1,19,59,50,14,0,"OK"
 2,77,59,50,14,1,"Anuleaza"
 9,135,59,50,14,1,"Ajutor"
+
+[DIALOG 6223]
+299,231,1,"Comanda Shell"
+6224,1,4,294,16,1,"Comanda „Comanda Shell” (Num /, Ctrl+/, butonul din bara de instrumente) deschide acest program în directorul panoului activ:"
+6225,1,26,42,8,1,"&Program:"
+6226,45,24,150,90,1,""
+6227,1,42,42,8,1,"Găsit la:"
+6228,45,40,246,12,1,""
+1150,1,62,295,82,1," Program personalizat "
+6229,8,76,36,8,1,"P&rogram:"
+6230,45,74,228,12,1,""
+6231,277,74,14,12,0,"..."
+6232,8,92,36,8,1,"&Argumente:"
+6233,45,90,245,12,1,""
+6234,8,108,287,26,1,"Argumentele pot utiliza $(FullPath) pentru directorul panoului activ și $[NAME] pentru variabilele de mediu. Programul pornește întotdeauna din directorul panoului activ."
 
 [MENU 6010]
 0,1,"A&jutor"
@@ -3446,4 +3461,20 @@ SLGINCOMPLETE,""
 14195,1,"Inchid ferestrele Find windows, te rog asteapta..."
 14196,1,"Acest folder conține intrări ale căror nume par identice, dar utilizează ortografii Unicode diferite (de exemplu, accente precompuse vs. descompuse): \n \n %s \n \n Windows le tratează ca fișiere diferite. Tandem Commander păstrează ambele nume exact așa cum sunt stocate."
 14197,1,"Pluginul nu poate procesa acest nume (a fost creat pentru o interfață mai veche, fără suport pentru Unicode și căi lungi): \n \n %s \n \n Elementul a fost omis, elementele rămase vor fi procesate."
+14198,1,"Linia de comandă"
+14199,1,"Windows PowerShell"
+14200,1,"PowerShell 7"
+14201,1,"Windows Terminal"
+14202,1,"Git Bash"
+14203,1,"Program personalizat"
+14204,1," (nu a fost găsit)"
+14205,1,"(nu se găsește pe acest computer)"
+14206,1,"Programul selectat nu a fost găsit pe acest computer. Alegeți altul sau selectați Program personalizat și introduceți calea către acesta."
+14207,1,"Introduceți programul care va rula ca shell de comandă."
+
+[STRINGTABLE 162]
+14208,1,"Selectați programul de shell de comandă"
+14209,1,"Eroare la pornirea shell-ului de comandă"
+14210,1,"Programul de tip shell de comandă selectat (%s) nu a fost găsit pe acest computer.\n\nAlegeți un alt program în Configurare / Comanda Shell."
+14211,1,"Nu se poate porni programul shell de comandă:\n%s\n\n%s\n\nPuteți schimba programul în Configurare / Comanda Shell."
 

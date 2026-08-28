@@ -1,7 +1,7 @@
 ﻿[EXPORTINFO]
 PROJECTNAME,"translator\projects\_template\salamand\salamand.atp"
-TEXTVERSION,"0.1.1 (x64)"
-VERSION,"0,1,1,185"
+TEXTVERSION,"0.1.5 (x64)"
+VERSION,"0,1,5,189"
 
 [TRANSLATION]
 LANGID,1036
@@ -1584,6 +1584,21 @@ SLGINCOMPLETE,""
 2,77,59,50,14,1,"Annuler"
 9,135,59,50,14,1,"Aide"
 
+[DIALOG 6223]
+299,231,1,"Interpréteur de commandes"
+6224,1,4,294,16,1,"La commande « Interpréteur de commandes » (Num /, Ctrl+/, le bouton de la barre d'outils) ouvre ce programme dans le répertoire du panneau actif :"
+6225,1,26,42,8,1,"&Programme :"
+6226,45,24,150,90,1,""
+6227,1,42,42,8,1,"Trouvé à l'adresse :"
+6228,45,40,246,12,1,""
+1150,1,62,295,82,1," Programme personnalisé "
+6229,8,76,36,8,1,"P&rogramme :"
+6230,45,74,228,12,1,""
+6231,277,74,14,12,0,"..."
+6232,8,92,36,8,1,"&Arguments :"
+6233,45,90,245,12,1,""
+6234,8,108,287,26,1,"Les arguments peuvent utiliser $(FullPath) pour le répertoire du panneau actif et $[NAME] pour les variables d'environnement. Le programme démarre toujours dans le répertoire du panneau actif."
+
 [MENU 6010]
 0,1,"Aid&e"
 6050,1,"&Ouvrir...\tCtrl+O"
@@ -1735,7 +1750,7 @@ SLGINCOMPLETE,""
 10084,1,"Le chemin d'accès indiqué est trop long."
 10085,1,"Impossible de lancer le visionneur externe '%s'.\n\n%s"
 10086,1,"Impossible de lancer l'éditeur externe '%s'.\n\n%s"
-10087,1,"Interpréteur de commande"
+10087,1,"Interpréteur de commandes"
 10088,1,"Erreur de lecture du fichier"
 10089,1,"Visionneur"
 10090,1,"Erreur lors du chargement des élements de configuration"
@@ -3446,4 +3461,20 @@ SLGINCOMPLETE,""
 14195,1,"Fermeture de la fenêtre Rechercher, veuillez patienter..."
 14196,1,"Ce dossier contient des entrées dont les noms semblent identiques mais qui utilisent des orthographes Unicode différentes (par exemple, accents précomposés vs accents décomposés) : \n \n %s \n \n Windows les considère comme des fichiers différents. Tandem Commander conserve les deux noms exactement tels qu’ils sont stockés."
 14197,1,"Le plugin ne peut pas traiter ce nom (il a été conçu pour une ancienne interface ne prenant pas en charge l'Unicode ni les chemins d'accès longs) : \n \n %s \n \n L'élément a été ignoré, les éléments restants seront traités."
+14198,1,"Invite de commandes"
+14199,1,"Windows PowerShell"
+14200,1,"PowerShell 7"
+14201,1,"Terminal Windows"
+14202,1,"Git Bash"
+14203,1,"Programme personnalisé"
+14204,1," (introuvable)"
+14205,1,"(introuvable sur cet ordinateur)"
+14206,1,"Le programme sélectionné est introuvable sur cet ordinateur. Choisissez-en un autre, ou sélectionnez « Programme personnalisé » et saisissez son chemin."
+14207,1,"Saisissez le programme à lancer comme interpréteur de commandes."
+
+[STRINGTABLE 162]
+14208,1,"Sélectionner le programme de l'interpréteur de commandes"
+14209,1,"Erreur au démarrage de l'interpréteur de commandes"
+14210,1,"Le programme d'interpréteur de commandes sélectionné (%s) est introuvable sur cet ordinateur.\n\nChoisissez un autre programme dans Configuration / Interpréteur de commandes."
+14211,1,"Impossible de lancer le programme d'interpréteur de commandes :\n%s\n\n%s\n\nVous pouvez changer de programme dans Configuration / Interpréteur de commandes."
 

@@ -147,6 +147,7 @@ _WORDS = sorted(
     solid space split storage subdirs subkey table target track tree
     treemap undo unpack upper used verify version vertical viewer volume
     volumes whitespace wipe
+    shell preset cmd found args arguments custom intro hint program
     """.split(),
     key=len,
     reverse=True,
