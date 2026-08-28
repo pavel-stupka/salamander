@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Command Shell configuration</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="../salamander_help.css" />
+<link rel="stylesheet" type="text/css" href="../salamander_help_shared.css" />
+</head>
+
+<body>
+<div id="help_page">
+<div class="header">Tandem Commander: Dialog Boxes: Configuration</div>
+<div class="page">
+<h1>Command Shell</h1>
+
+<p>Chooses the program that the <a href="othertask_shell.htm">Command Shell</a>
+command (Num /, Ctrl+/, the Commands menu, the toolbar button) opens. The program
+always starts in the directory of the active panel.</p>
+
+<h4>Dialog Box Options</h4>
+<dl>
+<dt><i>Program</i></dt>
+<dd>The program to open. The list offers <i>Command Prompt</i> (the default: the
+system command interpreter, as in earlier versions), <i>Windows PowerShell</i>,
+<i>PowerShell 7</i>, <i>Windows Terminal</i>, <i>Git Bash</i> and <i>Custom
+program</i>. A preset that is not installed on this computer is marked
+<i>(not found)</i> and cannot be confirmed; select another one or use <i>Custom
+program</i>. Presets are looked up at their standard installation places; an
+installation elsewhere is served by <i>Custom program</i>.</dd>
+
+<dt><i>Found at</i></dt>
+<dd>The full path of the program the selected preset will start, so you can tell
+which installation is used (for example PowerShell 7 versus Windows PowerShell).</dd>
+
+<dt><i>Custom program: Program</i></dt>
+<dd>The path of your own program. Use the <i>...</i> button to browse for it. The
+path may contain <code>$(WinDir)</code>, <code>$(SysDir)</code>, <code>$(SalDir)</code>
+and <code>$[NAME]</code> for the value of the environment variable NAME. When you
+switch to <i>Custom program</i> while both fields are empty, they are filled with
+the program and arguments of the preset selected until then, so a preset is a
+starting point for your own settings (for example a specific Windows Terminal
+profile). Text you have entered is never overwritten.</dd>
+
+<dt><i>Custom program: Arguments</i></dt>
+<dd>Optional arguments. <code>$(FullPath)</code> is replaced by the directory of the
+active panel without a trailing backslash (for example <code>D:\Work</code>); a drive
+root keeps it (<code>C:\</code>). <code>$(WinDir)</code>, <code>$(SysDir)</code>,
+<code>$(SalDir)</code> and <code>$[NAME]</code> work as in the program field. Since the
+program starts in the panel directory anyway, arguments are only needed for programs
+that ignore their starting directory. Windows treats a backslash before a quotation
+mark as an escape, so <code>"$(FullPath)"</code> for a drive root reaches the program
+as <code>C:"</code>; use it without quotation marks or append a dot
+(<code>"$(FullPath)."</code>) in that case.</dd>
+</dl>
+
+<h4>Remarks</h4>
+<p>Changes apply to the next Command Shell command; no restart is needed. The setting
+is stored with the rest of the configuration and travels with an exported configuration.
+If the configured program cannot be started (it was uninstalled, or the path is wrong),
+the command shows an error naming the program and the reason; nothing else is started.</p>
+
+<p>Whether a program accepts a network (UNC) path or a very long path as its starting
+directory is the program's own behaviour: Command Prompt falls back to the Windows
+directory for a UNC path, while PowerShell, Windows Terminal and Git Bash accept it.
+Windows itself refuses to start any program in a directory whose path has 259 or more
+characters; Tandem Commander then retries with the short (8.3) form of the directory.</p>
+
+<h4>See Also</h4>
+<p>
+<a href="othertask_shell.htm">Opening Command Shell</a><br />
+<a href="customize_usrmn.htm">Customizing User Menu</a><br />
+<a href="appendix_grouppolicy.htm">Group Policy Restrictions</a><br />
+</p>
+
+</div>
+<div class="footer">&#169; 2026 Pavel Stupka</div>
+</div>
+</body>
+</html>

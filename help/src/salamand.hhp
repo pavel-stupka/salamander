@@ -311,6 +311,7 @@ IDD_CFGPAGE_VIEWS=hh\salamand\configuration_views.htm
 IDD_CFGPAGE_ICONOVRLS=hh\salamand\configuration_iconovrls.htm
 IDD_CFGPAGE_USERMENU=hh\salamand\configuration_usrmn.htm
 IDD_CFGPAGE_HOTPATH=hh\salamand\configuration_hotpa.htm
+IDD_CFGPAGE_CMDSHELL=hh\salamand\configuration_cmdshell.htm
 IDD_CFGPAGE_COLORS=hh\salamand\configuration_color.htm
 IDD_CFGPAGE_CONFIRMATIONS=hh\salamand\configuration_cnfir.htm
 IDD_CFGPAGE_DRIVES=hh\salamand\configuration_drive.htm

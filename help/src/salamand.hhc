@@ -580,6 +580,10 @@
 				<param name="Local" value="hh\salamand\configuration_color.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Command Shell">
+				<param name="Local" value="hh\salamand\configuration_cmdshell.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Confirmations">
 				<param name="Local" value="hh\salamand\configuration_cnfir.htm">
 				</OBJECT>

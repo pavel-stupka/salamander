@@ -14,7 +14,11 @@
 
 <h1>Opening Command Shell</h1>
 
-<p>You can open command shell window for current directory.</p>
+<p>You can open a command shell window for the current directory. Which program
+opens - Command Prompt (the default), Windows PowerShell, PowerShell 7, Windows
+Terminal, Git Bash or a program of your choice - is set on the
+<a href="configuration_cmdshell.htm">Command Shell</a> page of the Configuration
+dialog box.</p>
 
 <h3>To open the command shell window:</h3>
 <table>
@@ -25,12 +29,24 @@
 </table>
    
 <h4>Remarks</h4>
-<p>UNC paths are not supported in the command shell. If you
-open command shell on the UNC path, Windows directory will be used as current
-path.</p>
+<p>The program starts in the directory of the active panel. When the panel shows
+an archive, that is the folder containing the archive; when it shows a plugin file
+system (for example FTP or SFTP), no starting directory is set.</p>
+
+<p>Whether the program accepts a network (UNC) path as its starting directory is
+the program's own behaviour: Command Prompt does not support UNC paths and falls
+back to the Windows directory, while PowerShell, Windows Terminal and Git Bash
+accept them. Windows itself refuses to start any program in a directory whose
+path has 259 or more characters; Tandem Commander then retries with the short
+(8.3) form of the directory.</p>
+
+<p>On Windows 11 with Windows Terminal set as the default terminal application,
+console programs such as Command Prompt and PowerShell open inside Windows
+Terminal.</p>
 
 <h4>See also</h4>
 <p>
+<a href="configuration_cmdshell.htm">Command Shell configuration</a><br />
 <a href="appendix_grouppolicy.htm">Group Policy Restrictions</a><br />
 </p>
 
