@@ -941,7 +941,10 @@ BOOL DoExpandVarString(HWND msgParent, const char* varText, BOOL validateOnly, i
                                 varLen = MAX_PATH - 1;
                             memcpy(envVar, var, varLen);
                             envVar[varLen] = 0;
-                            DWORD res = GetEnvironmentVariable(envVar, buf, MAX_PATH);
+                            // feature 071: wide read, so a value outside the ANSI code
+                            // page survives ($[ENV] is documented for the User Menu and
+                            // the Command Shell arguments); same return contract
+                            DWORD res = SalGetEnvVarU8(envVar, buf, MAX_PATH);
                             if (res == 0 || res >= MAX_PATH)
                             {
                                 char text[MAX_PATH + 100];

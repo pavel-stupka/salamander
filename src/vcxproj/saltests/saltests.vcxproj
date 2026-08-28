@@ -83,6 +83,8 @@
     </ClCompile>
     <ClCompile Include="..\..\common\salpath.cpp">
     </ClCompile>
+    <ClCompile Include="..\..\common\salshell.cpp">
+    </ClCompile>
     <ClCompile Include="..\..\common\salunicode.cpp">
     </ClCompile>
     <ClCompile Include="..\..\saltests\saltests.cpp">

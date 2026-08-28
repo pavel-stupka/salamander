@@ -14,6 +14,12 @@
 #include "salfileio.h"
 #include "salclip.h"
 #include "themes_palette.h"
+#include "salshell.h" // feature 071
+
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
 
 static int g_checks = 0;
 static int g_failures = 0;
@@ -1652,6 +1658,248 @@ static void TestEncodingFixes069()
     }
 }
 
+//*****************************************************************************
+//
+// feature 071 (configurable command shell): the preset table and locate
+// algorithm of src/common/salshell.cpp, driven by a fake machine
+//
+
+class CFakeShellProbe : public CSalShellProbe
+{
+public:
+    std::set<std::string> Files;                                // existing files
+    std::map<std::string, std::string> Env;                     // environment
+    std::map<std::string, std::string> RegValues;               // "ROOT\subkey|value" -> data
+    std::map<std::string, std::vector<std::string>> RegSubKeys; // "ROOT\subkey" -> subkey names
+    std::map<std::string, std::string> Packages;                // package family -> install folder
+
+    static std::string Root(HKEY root)
+    {
+        return root == HKEY_LOCAL_MACHINE ? "HKLM\\" : root == HKEY_CURRENT_USER ? "HKCU\\"
+                                                                                : "?\\";
+    }
+    static BOOL Out(const std::string& s, char* buf, int size)
+    {
+        if ((int)s.size() + 1 > size)
+        {
+            if (size > 0)
+                buf[0] = 0;
+            return FALSE;
+        }
+        memcpy(buf, s.c_str(), s.size() + 1);
+        return TRUE;
+    }
+    void AddReg(HKEY root, const char* subKey, const char* value, const char* data)
+    {
+        RegValues[Root(root) + subKey + "|" + (value != NULL ? value : "")] = data;
+    }
+    // 'data' NULL = the subkey exists but has no such value
+    void AddSubKey(HKEY root, const char* subKey, const char* name, const char* value, const char* data)
+    {
+        RegSubKeys[Root(root) + subKey].push_back(name);
+        if (data != NULL)
+            AddReg(root, (std::string(subKey) + "\\" + name).c_str(), value, data);
+    }
+
+    virtual BOOL FileExists(const char* u8Path) const { return Files.count(u8Path) != 0; }
+    virtual BOOL GetEnv(const char* name, char* u8Buf, int bufSize) const
+    {
+        auto it = Env.find(name);
+        if (it == Env.end())
+        {
+            u8Buf[0] = 0;
+            return FALSE;
+        }
+        return Out(it->second, u8Buf, bufSize);
+    }
+    virtual BOOL RegReadString(HKEY root, const char* subKey, const char* value, char* u8Buf, int bufSize) const
+    {
+        auto it = RegValues.find(Root(root) + subKey + "|" + (value != NULL ? value : ""));
+        if (it == RegValues.end())
+        {
+            u8Buf[0] = 0;
+            return FALSE;
+        }
+        return Out(it->second, u8Buf, bufSize);
+    }
+    virtual BOOL RegSubKeyString(HKEY root, const char* subKey, int index, const char* value, char* u8Buf, int bufSize) const
+    {
+        u8Buf[0] = 0;
+        auto it = RegSubKeys.find(Root(root) + subKey);
+        if (it == RegSubKeys.end() || index < 0 || index >= (int)it->second.size())
+            return FALSE;
+        std::string full = std::string(subKey) + "\\" + it->second[index];
+        RegReadString(root, full.c_str(), value, u8Buf, bufSize); // "" when the value is missing
+        return TRUE;
+    }
+    virtual BOOL GetPackagePath(const char* family, char* u8Buf, int bufSize) const
+    {
+        auto it = Packages.find(family);
+        if (it == Packages.end())
+        {
+            u8Buf[0] = 0;
+            return FALSE;
+        }
+        return Out(it->second, u8Buf, bufSize);
+    }
+};
+
+static BOOL Located(int preset, const CSalShellProbe* probe, const char* expected)
+{
+    char path[2048];
+    BOOL found = SalShellLocatePreset(preset, probe, path, sizeof(path));
+    if (!found || strcmp(path, expected) != 0)
+    {
+        printf("  preset %s: got %s, expected %s\n", SalShellPresetKey(preset), found ? path : "(not found)", expected);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static void TestCommandShell071()
+{
+    char path[2048];
+
+    // Command Prompt: COMSPEC first, the System32 fallback second, not found last
+    {
+        CFakeShellProbe p;
+        p.Env["COMSPEC"] = "C:\\WINDOWS\\system32\\cmd.exe";
+        p.Env["SystemRoot"] = "C:\\WINDOWS";
+        p.Files.insert("C:\\WINDOWS\\system32\\cmd.exe");
+        p.Files.insert("C:\\WINDOWS\\System32\\cmd.exe");
+        CHECK(Located(sspCommandPrompt, &p, "C:\\WINDOWS\\system32\\cmd.exe"));
+        p.Env.erase("COMSPEC");
+        CHECK(Located(sspCommandPrompt, &p, "C:\\WINDOWS\\System32\\cmd.exe"));
+        p.Files.clear();
+        strcpy(path, "stale");
+        CHECK(!SalShellLocatePreset(sspCommandPrompt, &p, path, sizeof(path)));
+        CHECK(path[0] == 0);
+    }
+
+    // Windows PowerShell: the fixed System32 location
+    {
+        CFakeShellProbe p;
+        p.Env["SystemRoot"] = "C:\\WINDOWS";
+        CHECK(!SalShellLocatePreset(sspWindowsPowerShell, &p, path, sizeof(path)));
+        p.Files.insert("C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe");
+        CHECK(Located(sspWindowsPowerShell, &p, "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"));
+    }
+
+    // PowerShell 7: Program Files, MSIX alias, family alias, InstalledVersions
+    // (a subkey without the exe or without the value must not stop the walk;
+    // a trailing backslash in the registry is not doubled), App Paths
+    {
+        CFakeShellProbe p;
+        p.Env["ProgramFiles"] = "C:\\Program Files";
+        p.Env["LOCALAPPDATA"] = "C:\\Users\\test\\AppData\\Local";
+        const char* versions = "SOFTWARE\\Microsoft\\PowerShellCore\\InstalledVersions";
+        p.AddSubKey(HKEY_LOCAL_MACHINE, versions, "{old}", "InstallLocation", "D:\\Old\\PowerShell\\7");
+        p.AddSubKey(HKEY_LOCAL_MACHINE, versions, "{empty}", "InstallLocation", NULL);
+        p.AddSubKey(HKEY_LOCAL_MACHINE, versions, "{new}", "InstallLocation", "D:\\PowerShell\\7\\");
+        p.AddReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\pwsh.exe", NULL, "E:\\pwsh\\pwsh.exe");
+        CHECK(!SalShellLocatePreset(sspPowerShell7, &p, path, sizeof(path)));
+        p.Files.insert("E:\\pwsh\\pwsh.exe");
+        CHECK(Located(sspPowerShell7, &p, "E:\\pwsh\\pwsh.exe"));
+        p.Files.insert("D:\\PowerShell\\7\\pwsh.exe");
+        CHECK(Located(sspPowerShell7, &p, "D:\\PowerShell\\7\\pwsh.exe"));
+        p.Files.insert("C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe");
+        CHECK(Located(sspPowerShell7, &p, "C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe"));
+        p.Files.insert("C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\pwsh.exe");
+        CHECK(Located(sspPowerShell7, &p, "C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\pwsh.exe"));
+        p.Files.insert("C:\\Program Files\\PowerShell\\7\\pwsh.exe");
+        CHECK(Located(sspPowerShell7, &p, "C:\\Program Files\\PowerShell\\7\\pwsh.exe"));
+        CHECK(SalShellPresetArguments(sspPowerShell7)[0] == 0);
+    }
+
+    // Windows Terminal: alias, family alias, package folder (known package
+    // without wt.exe on disk falls through to not found); recipe "-d ."
+    {
+        CFakeShellProbe p;
+        p.Env["LOCALAPPDATA"] = "C:\\Users\\test\\AppData\\Local";
+        const char* pkg = "C:\\Program Files\\WindowsApps\\Microsoft.WindowsTerminal_1.24.11911.0_x64__8wekyb3d8bbwe";
+        p.Packages["Microsoft.WindowsTerminal_8wekyb3d8bbwe"] = pkg;
+        CHECK(!SalShellLocatePreset(sspWindowsTerminal, &p, path, sizeof(path)));
+        p.Files.insert(std::string(pkg) + "\\wt.exe");
+        CHECK(Located(sspWindowsTerminal, &p, (std::string(pkg) + "\\wt.exe").c_str()));
+        p.Files.insert("C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
+        CHECK(Located(sspWindowsTerminal, &p, "C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe"));
+        p.Files.insert("C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe");
+        CHECK(Located(sspWindowsTerminal, &p, "C:\\Users\\test\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe"));
+        CHECK(strcmp(SalShellPresetArguments(sspWindowsTerminal), "-d .") == 0);
+    }
+
+    // Git Bash: HKCU before HKLM (+ WOW6432Node), the Inno uninstall entry, the
+    // default folders; a per-user folder with non-ASCII characters stays intact
+    {
+        CFakeShellProbe p;
+        p.Env["ProgramFiles"] = "C:\\Program Files";
+        const char* localAppData = "C:\\Users\\Ji" "\xC5\x99" "\xC3\xAD" "\\AppData\\Local"; // Jiří
+        p.Env["LOCALAPPDATA"] = localAppData;
+        CHECK(!SalShellLocatePreset(sspGitBash, &p, path, sizeof(path)));
+        std::string userGit = std::string(localAppData) + "\\Programs\\Git\\git-bash.exe";
+        p.Files.insert(userGit);
+        CHECK(Located(sspGitBash, &p, userGit.c_str()));
+        p.Files.insert("C:\\Program Files\\Git\\git-bash.exe");
+        CHECK(Located(sspGitBash, &p, "C:\\Program Files\\Git\\git-bash.exe"));
+        p.AddReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Git_is1", "InstallLocation", "D:\\Tools\\Git\\");
+        p.Files.insert("D:\\Tools\\Git\\git-bash.exe");
+        CHECK(Located(sspGitBash, &p, "D:\\Tools\\Git\\git-bash.exe"));
+        p.AddReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\GitForWindows", "InstallPath", "D:\\Git32");
+        p.Files.insert("D:\\Git32\\git-bash.exe");
+        CHECK(Located(sspGitBash, &p, "D:\\Git32\\git-bash.exe"));
+        p.AddReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\GitForWindows", "InstallPath", "D:\\Git64");
+        p.Files.insert("D:\\Git64\\git-bash.exe");
+        CHECK(Located(sspGitBash, &p, "D:\\Git64\\git-bash.exe"));
+        p.AddReg(HKEY_CURRENT_USER, "Software\\GitForWindows", "InstallPath", "D:\\GitUser");
+        p.Files.insert("D:\\GitUser\\git-bash.exe");
+        CHECK(Located(sspGitBash, &p, "D:\\GitUser\\git-bash.exe"));
+        CHECK(SalShellPresetArguments(sspGitBash)[0] == 0);
+    }
+
+    // ids, keys, recipes, buffer contract
+    {
+        CFakeShellProbe p;
+        CHECK(!SalShellLocatePreset(sspCustom, &p, path, sizeof(path)));
+        CHECK(!SalShellLocatePreset(-1, &p, path, sizeof(path)));
+        CHECK(!SalShellLocatePreset(sspCount, &p, path, sizeof(path)));
+        CHECK(strcmp(SalShellPresetKey(sspCommandPrompt), "cmd") == 0);
+        CHECK(strcmp(SalShellPresetKey(sspWindowsPowerShell), "powershell") == 0);
+        CHECK(strcmp(SalShellPresetKey(sspPowerShell7), "pwsh") == 0);
+        CHECK(strcmp(SalShellPresetKey(sspWindowsTerminal), "wt") == 0);
+        CHECK(strcmp(SalShellPresetKey(sspGitBash), "git-bash") == 0);
+        CHECK(strcmp(SalShellPresetKey(sspCustom), "custom") == 0);
+        CHECK(SalShellPresetKey(99)[0] == 0 && SalShellPresetArguments(99)[0] == 0);
+        for (int i = 0; i < sspCount; i++)
+            CHECK(strstr(SalShellPresetArguments(i), "$(") == NULL);
+        p.Env["COMSPEC"] = "C:\\WINDOWS\\system32\\cmd.exe";
+        p.Files.insert("C:\\WINDOWS\\system32\\cmd.exe");
+        char tiny[8];
+        CHECK(!SalShellLocatePreset(sspCommandPrompt, &p, tiny, sizeof(tiny)) && tiny[0] == 0);
+    }
+
+    // SalGetEnvVarU8: a value outside the ANSI code page round-trips; API-like sizes
+    {
+        const WCHAR* valW = L"C:\\Users\\Ji\u0159\u00ed \u4e2d\\x";
+        const char* valU8 = "C:\\Users\\Ji" "\xC5\x99" "\xC3\xAD" " " "\xE4\xB8\xAD" "\\x";
+        CHECK(SetEnvironmentVariableW(L"SALTEST_071", valW));
+        char buf[100];
+        DWORD res = SalGetEnvVarU8("SALTEST_071", buf, sizeof(buf));
+        CHECK(res == (DWORD)strlen(valU8) && strcmp(buf, valU8) == 0);
+        CHECK(SalGetEnvVarU8("SALTEST_071", buf, 5) == (DWORD)strlen(valU8) + 1); // required size incl. terminator
+        CHECK(SalGetEnvVarU8("SALTEST_071", NULL, 0) == (DWORD)strlen(valU8) + 1);
+        SetEnvironmentVariableW(L"SALTEST_071", NULL);
+        CHECK(SalGetEnvVarU8("SALTEST_071", buf, sizeof(buf)) == 0);
+        CHECK(SalGetEnvVarU8("", buf, sizeof(buf)) == 0);
+        CHECK(SalGetEnvVarU8(NULL, buf, sizeof(buf)) == 0);
+    }
+
+    // the real machine: Command Prompt and Windows PowerShell are part of Windows
+    {
+        CHECK(SalShellLocatePreset(sspCommandPrompt, NULL, path, sizeof(path)) && path[0] != 0);
+        CHECK(SalShellLocatePreset(sspWindowsPowerShell, NULL, path, sizeof(path)) && path[0] != 0);
+    }
+}
+
 int main()
 {
     TestConversions();
@@ -1673,6 +1921,7 @@ int main()
     TestWtf8FileOps();
     TestEncodingReview068();
     TestEncodingFixes069();
+    TestCommandShell071();
 
     printf("saltests: %d checks, %d failed\n", g_checks, g_failures);
     return g_failures;

@@ -504,6 +504,11 @@ CConfiguration::CConfiguration()
     UseEditNewFileDefault = FALSE;
     EditNewFileDefault[0] = 0;
 
+    // feature 071: Command Prompt = the pre-071 behaviour (%COMSPEC%)
+    CommandShellPreset = sspCommandPrompt;
+    CommandShellProgram[0] = 0;
+    CommandShellArguments[0] = 0;
+
     // Tip of the Day
     //  ShowTipOfTheDay = TRUE;
     //  LastTipOfTheDay = 0;
@@ -680,7 +685,7 @@ CConfigurationDlg::CConfigurationDlg(HWND parent, CUserMenuItems* userMenuItems,
     : CTreePropDialog(parent, HLanguage, LoadStr(IDS_CONFIGURATION),
                       mode == 0 ? Configuration.LastFocusedPage : mode == 1 ? 14
                                                               : mode == 2   ? 13
-                                                              : mode == 3   ? 21
+                                                              : mode == 3   ? 22 /* feature 071: +1, Command Shell precedes */
                                                               : mode == 4   ? 12
                                                               : mode == 5   ? 1
                                                                             : 11 /* mode == 6 */,
@@ -714,19 +719,20 @@ CConfigurationDlg::CConfigurationDlg(HWND parent, CUserMenuItems* userMenuItems,
     /*12*/ Add(&PageView);          // Views
     /*13*/ Add(&PageUserMenu);      // User Menu
     /*14*/ Add(&PageHotPath);       // Hot Paths
-    /*15*/ Add(&PageSecurity);      // Security
-    /*16*/ Add(&PageIconOvrls);     // Icon Overlays
-    /*17*/ Add(&PageViewEdit, NULL, &Configuration.ViewersAndEditorsExpanded);
-    /*18*/ Add(&Page13, &PageViewEdit);
-    /*19*/ Add(&Page14, &PageViewEdit);
-    /*20*/ Add(&Page15, &PageViewEdit);
-    /*21*/ Add(&PageViewer, &PageViewEdit);
-    /*22*/ Add(&PagePP, NULL, &Configuration.PackersAndUnpackersExpanded);
-    /*23*/ Add(&PageP4, &PagePP);
-    /*24*/ Add(&PageP3, &PagePP);
-    /*25*/ Add(&PageP1, &PagePP);
-    /*26*/ Add(&PageP2, &PagePP);
-    /*27*/ //  Add(&PageShellExtensions);
+    /*15*/ Add(&PageCmdShell);      // Command Shell (feature 071)
+    /*16*/ Add(&PageSecurity);      // Security
+    /*17*/ Add(&PageIconOvrls);     // Icon Overlays
+    /*18*/ Add(&PageViewEdit, NULL, &Configuration.ViewersAndEditorsExpanded);
+    /*19*/ Add(&Page13, &PageViewEdit);
+    /*20*/ Add(&Page14, &PageViewEdit);
+    /*21*/ Add(&Page15, &PageViewEdit);
+    /*22*/ Add(&PageViewer, &PageViewEdit);
+    /*23*/ Add(&PagePP, NULL, &Configuration.PackersAndUnpackersExpanded);
+    /*24*/ Add(&PageP4, &PagePP);
+    /*25*/ Add(&PageP3, &PagePP);
+    /*26*/ Add(&PageP1, &PagePP);
+    /*27*/ Add(&PageP2, &PagePP);
+    /*28*/ //  Add(&PageShellExtensions);
            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
            // when the page order changes, update the constructor
            // mode == 0 ? Configuration.LastFocusedPage : 4
@@ -4278,6 +4284,256 @@ CCfgPageHistory::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
             EnableControls();
             break;
         }
+        }
+        break;
+    }
+    }
+    return CCommonPropSheetPage::DialogProc(uMsg, wParam, lParam);
+}
+
+//
+// ****************************************************************************
+// CCfgPageCmdShell (feature 071: which program the Command Shell command opens)
+//
+
+CCfgPageCmdShell::CCfgPageCmdShell()
+    : CCommonPropSheetPage(NULL, HLanguage, IDD_CFGPAGE_CMDSHELL, IDD_CFGPAGE_CMDSHELL, PSP_USETITLE, NULL)
+{
+    for (int i = 0; i < sspCount; i++)
+    {
+        Found[i] = FALSE;
+        FoundPath[i] = NULL;
+    }
+    LastPreset = sspCommandPrompt;
+}
+
+CCfgPageCmdShell::~CCfgPageCmdShell()
+{
+    for (int i = 0; i < sspCount; i++)
+        free(FoundPath[i]);
+}
+
+void CCfgPageCmdShell::LocatePresets()
+{
+    char* buf = (char*)malloc(SAL_MAX_PATH_UTF8);
+    for (int i = 0; i < sspCustom; i++)
+    {
+        free(FoundPath[i]);
+        FoundPath[i] = NULL;
+        Found[i] = buf != NULL && SalShellLocatePreset(i, NULL, buf, SAL_MAX_PATH_UTF8);
+        if (Found[i])
+            FoundPath[i] = DupStr(buf);
+    }
+    free(buf);
+}
+
+void CCfgPageCmdShell::FillPresetCombo()
+{
+    HWND combo = GetDlgItem(HWindow, IDC_CMDSHELL_PRESET);
+    SendMessage(combo, CB_RESETCONTENT, 0, 0);
+    for (int i = 0; i < sspCount; i++)
+    {
+        char text[400];
+        lstrcpyn(text, LoadStr(GetCommandShellPresetNameResID(i)), 300);
+        if (i < sspCustom && !Found[i])
+            lstrcat(text, LoadStr(IDS_CMDSHELL_NOTFOUND)); // visibly marked, refused by Validate
+        SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)text);
+    }
+}
+
+int CCfgPageCmdShell::GetSelectedPreset()
+{
+    int sel = (int)SendDlgItemMessage(HWindow, IDC_CMDSHELL_PRESET, CB_GETCURSEL, 0, 0);
+    return (sel < 0 || sel >= sspCount) ? sspCommandPrompt : sel;
+}
+
+void CCfgPageCmdShell::UpdateFoundAt()
+{
+    int sel = GetSelectedPreset();
+    if (sel == sspCustom)
+        SalSetDlgItemTextU8(HWindow, IDE_CMDSHELL_FOUNDAT, "");
+    else if (Found[sel] && FoundPath[sel] != NULL)
+        SalSetDlgItemTextU8(HWindow, IDE_CMDSHELL_FOUNDAT, FoundPath[sel]);
+    else
+        SalSetDlgItemTextU8(HWindow, IDE_CMDSHELL_FOUNDAT, LoadStrU8(IDS_CMDSHELL_NOTFOUNDTEXT));
+}
+
+void CCfgPageCmdShell::EnableControls()
+{
+    BOOL custom = GetSelectedPreset() == sspCustom;
+    static const int customCtrls[] = {IDT_CMDSHELL_CUSTPROG, IDE_CMDSHELL_CUSTPROG, IDB_CMDSHELL_BROWSE,
+                                      IDT_CMDSHELL_CUSTARGS, IDE_CMDSHELL_CUSTARGS, IDT_CMDSHELL_HINT};
+    for (int i = 0; i < _countof(customCtrls); i++)
+        EnableWindow(GetDlgItem(HWindow, customCtrls[i]), custom);
+    EnableWindow(GetDlgItem(HWindow, IDT_CMDSHELL_FOUNDAT), !custom);
+    EnableWindow(GetDlgItem(HWindow, IDE_CMDSHELL_FOUNDAT), !custom);
+}
+
+void CCfgPageCmdShell::OnPresetChanged()
+{
+    int sel = GetSelectedPreset();
+    if (sel == sspCustom)
+    {
+        // pre-fill EMPTY Custom fields from the preset chosen until now, so a
+        // preset is a starting point (e.g. add a Windows Terminal profile);
+        // the user's own text is never overwritten
+        if (LastPreset < sspCustom && Found[LastPreset] && FoundPath[LastPreset] != NULL &&
+            GetWindowTextLength(GetDlgItem(HWindow, IDE_CMDSHELL_CUSTPROG)) == 0 &&
+            GetWindowTextLength(GetDlgItem(HWindow, IDE_CMDSHELL_CUSTARGS)) == 0)
+        {
+            SalSetDlgItemTextU8(HWindow, IDE_CMDSHELL_CUSTPROG, FoundPath[LastPreset]);
+            SalSetDlgItemTextU8(HWindow, IDE_CMDSHELL_CUSTARGS, SalShellPresetArguments(LastPreset));
+        }
+    }
+    else
+        LastPreset = sel;
+    UpdateFoundAt();
+    EnableControls();
+}
+
+void CCfgPageCmdShell::OnBrowse()
+{
+    // the wide common dialog, so a path outside the ANSI code page round-trips
+    // (BrowseCommand() is the ANSI GetOpenFileName and would garble it)
+    WCHAR* file = (WCHAR*)malloc(SAL_MAX_PATH_W * sizeof(WCHAR));
+    char* u8 = (char*)malloc(SAL_MAX_PATH_UTF8);
+    if (file == NULL || u8 == NULL)
+    {
+        TRACE_E(LOW_MEMORY);
+        free(file);
+        free(u8);
+        return;
+    }
+    SalGetDlgItemTextU8(HWindow, IDE_CMDSHELL_CUSTPROG, u8, SAL_MAX_PATH_UTF8);
+    if (SalU8ToW(u8, -1, file, SAL_MAX_PATH_W) == 0)
+        file[0] = 0;
+
+    WCHAR filter[512];
+    lstrcpynW(filter, LoadStrW(IDS_EXEFILTER), _countof(filter));
+    for (WCHAR* w = filter; *w != 0; w++) // '|' separated -> double-null terminated
+        if (*w == L'|')
+            *w = 0;
+    WCHAR title[200];
+    lstrcpynW(title, LoadStrW(IDS_CMDSHELL_BROWSETITLE), _countof(title));
+
+    OPENFILENAMEW ofn;
+    memset(&ofn, 0, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = HWindow;
+    ofn.lpstrFilter = filter;
+    ofn.lpstrFile = file;
+    ofn.nMaxFile = SAL_MAX_PATH_W;
+    ofn.lpstrTitle = title;
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+    if (SafeGetOpenFileNameW(&ofn))
+    {
+        if (SalWToU8(file, -1, u8, SAL_MAX_PATH_UTF8) != 0)
+            SalSetDlgItemTextU8(HWindow, IDE_CMDSHELL_CUSTPROG, u8);
+    }
+    free(u8);
+    free(file);
+}
+
+void CCfgPageCmdShell::Transfer(CTransferInfo& ti)
+{
+    HWND combo = GetDlgItem(HWindow, IDC_CMDSHELL_PRESET);
+    if (ti.Type == ttDataToWindow)
+    {
+        int preset = Configuration.CommandShellPreset;
+        if (preset < 0 || preset >= sspCount)
+            preset = sspCommandPrompt;
+        SendMessage(combo, CB_SETCURSEL, preset, 0);
+        LastPreset = preset < sspCustom ? preset : sspCommandPrompt;
+    }
+    ti.EditLine(IDE_CMDSHELL_CUSTPROG, Configuration.CommandShellProgram, SAL_MAX_PATH_UTF8);
+    ti.EditLine(IDE_CMDSHELL_CUSTARGS, Configuration.CommandShellArguments, SAL_SHELL_ARGS_MAX);
+    if (ti.Type == ttDataToWindow)
+    {
+        UpdateFoundAt();
+        EnableControls();
+    }
+    else
+        Configuration.CommandShellPreset = GetSelectedPreset();
+}
+
+void CCfgPageCmdShell::Validate(CTransferInfo& ti)
+{
+    int sel = GetSelectedPreset();
+    if (sel < sspCustom)
+    {
+        if (!Found[sel]) // US3: a preset that is not installed cannot be confirmed
+        {
+            SalMessageBox(HWindow, LoadStr(IDS_CMDSHELL_PRESETNOTFOUND), LoadStr(IDS_ERRORTITLE),
+                          MB_OK | MB_ICONEXCLAMATION);
+            ti.ErrorOn(IDC_CMDSHELL_PRESET);
+        }
+        return;
+    }
+
+    char* text = (char*)malloc(SAL_MAX_PATH_UTF8 > SAL_SHELL_ARGS_MAX ? SAL_MAX_PATH_UTF8 : SAL_SHELL_ARGS_MAX);
+    if (text == NULL)
+    {
+        TRACE_E(LOW_MEMORY);
+        return;
+    }
+    int errorPos1 = 0;
+    int errorPos2 = -1;
+    SalGetDlgItemTextU8(HWindow, IDE_CMDSHELL_CUSTPROG, text, SAL_MAX_PATH_UTF8);
+    const char* s = text;
+    while (*s == ' ')
+        s++;
+    BOOL ok;
+    if (*s == 0)
+    {
+        SalMessageBox(HWindow, LoadStr(IDS_CMDSHELL_PROGRAMREQUIRED), LoadStr(IDS_ERRORTITLE),
+                      MB_OK | MB_ICONEXCLAMATION);
+        ok = FALSE;
+    }
+    else
+        ok = ValidateCommandFile(HWindow, text, errorPos1, errorPos2); // reports the bad variable itself
+    if (!ok)
+    {
+        SetFocus(GetDlgItem(HWindow, IDE_CMDSHELL_CUSTPROG));
+        SendDlgItemMessage(HWindow, IDE_CMDSHELL_CUSTPROG, EM_SETSEL, errorPos1, errorPos2);
+        ti.ErrorOn(IDE_CMDSHELL_CUSTPROG);
+    }
+    else
+    {
+        SalGetDlgItemTextU8(HWindow, IDE_CMDSHELL_CUSTARGS, text, SAL_SHELL_ARGS_MAX);
+        if (!ValidateCommandShellArguments(HWindow, text, errorPos1, errorPos2))
+        {
+            SetFocus(GetDlgItem(HWindow, IDE_CMDSHELL_CUSTARGS));
+            SendDlgItemMessage(HWindow, IDE_CMDSHELL_CUSTARGS, EM_SETSEL, errorPos1, errorPos2);
+            ti.ErrorOn(IDE_CMDSHELL_CUSTARGS);
+        }
+    }
+    free(text);
+}
+
+INT_PTR
+CCfgPageCmdShell::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case WM_INITDIALOG:
+    {
+        LocatePresets();
+        FillPresetCombo();
+        break; // the base class then transfers the configuration into the controls
+    }
+
+    case WM_COMMAND:
+    {
+        if (LOWORD(wParam) == IDC_CMDSHELL_PRESET && HIWORD(wParam) == CBN_SELCHANGE)
+        {
+            OnPresetChanged();
+            return 0;
+        }
+        if (LOWORD(wParam) == IDB_CMDSHELL_BROWSE && HIWORD(wParam) == BN_CLICKED)
+        {
+            OnBrowse();
+            return 0;
         }
         break;
     }

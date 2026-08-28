@@ -1586,6 +1586,25 @@ BEGIN
     PUSHBUTTON      "&Clear History...",IDC_HISTORY_CLEARHISTORY,1,126,60,14
 END
 
+IDD_CFGPAGE_CMDSHELL DIALOGEX 65, 18, 299, 231
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
+CAPTION "Command Shell"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "The Command Shell command (Num /, Ctrl+/, the toolbar button) opens this program in the directory of the active panel:",IDT_CMDSHELL_INTRO,1,4,290,16
+    LTEXT           "&Program:",IDT_CMDSHELL_PROGRAM,1,26,42,8
+    COMBOBOX        IDC_CMDSHELL_PRESET,45,24,150,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Found at:",IDT_CMDSHELL_FOUNDAT,1,42,42,8
+    EDITTEXT        IDE_CMDSHELL_FOUNDAT,45,40,246,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    GROUPBOX        " Custom program ",IDC_STATIC_1,1,62,295,82
+    LTEXT           "P&rogram:",IDT_CMDSHELL_CUSTPROG,8,76,36,8
+    EDITTEXT        IDE_CMDSHELL_CUSTPROG,45,74,228,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "...",IDB_CMDSHELL_BROWSE,277,74,13,12,WS_GROUP
+    LTEXT           "&Arguments:",IDT_CMDSHELL_CUSTARGS,8,92,36,8
+    EDITTEXT        IDE_CMDSHELL_CUSTARGS,45,90,245,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Arguments may use $(FullPath) for the directory of the active panel and $[NAME] for environment variables. The program always starts in the directory of the active panel.",IDT_CMDSHELL_HINT,8,108,282,26
+END
+
 IDD_SHARES DIALOGEX 12, 24, 344, 238
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Shared Directories"
@@ -2136,6 +2155,10 @@ BEGIN
     END
 
     IDD_CFGPAGE_GENERAL, DIALOG
+    BEGIN
+    END
+
+    IDD_CFGPAGE_CMDSHELL, DIALOG
     BEGIN
     END
 

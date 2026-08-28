@@ -2176,3 +2176,55 @@ BOOL BrowseCommand(HWND hParent, int editlineResID, int filterResID)
     }
     return FALSE;
 }
+
+//*****************************************************************************
+//
+// feature 071 (configurable command shell): placeholders of the Custom
+// arguments on the Configuration > Command Shell page
+//
+// $(FullPath) is the directory of the active panel with the User Menu's
+// *Initial Directory* meaning - no trailing backslash ("D:\Work"), a drive
+// root keeps it ("C:\") - so "$(FullPath)" in quotes reaches the program as one
+// argument. It expands to "" when the panel has no disk directory (plugin file
+// system). No RemoveDoubleBackslahesFromPath pass: it would collapse a UNC
+// "\\server" appearing later in an argument string.
+//
+
+const char* WINAPI ExecuteExpCmdShellDir(HWND msgParent, void* param)
+{
+    CExecuteExpData* data = (CExecuteExpData*)param;
+    if (data->Name == NULL || data->Name[0] == 0)
+        return "";
+    lstrcpyn(data->Buffer, data->Name, _countof(data->Buffer));
+    size_t len = strlen(data->Buffer);
+    if (len > 1 && data->Buffer[len - 1] == '\\' && !(len == 3 && data->Buffer[1] == ':'))
+        data->Buffer[len - 1] = 0;
+    return data->Buffer;
+}
+
+CSalamanderVarStrEntry CommandShellArgsExpArray[] =
+    {
+        {EXECUTE_FULLPATH, ExecuteExpCmdShellDir},
+        {EXECUTE_WINDIR, ExecuteExpWinDir2},
+        {EXECUTE_SYSDIR, ExecuteExpSysDir2},
+        {EXECUTE_SALDIR, ExecuteExpSalDir2},
+        {NULL, NULL}};
+
+BOOL ValidateCommandShellArguments(HWND msgParent, const char* varText, int& errorPos1, int& errorPos2)
+{
+    CALL_STACK_MESSAGE2("ValidateCommandShellArguments(, %s, ,)", varText);
+    return ValidateVarString(msgParent, varText, errorPos1, errorPos2, CommandShellArgsExpArray);
+}
+
+BOOL ExpandCommandShellArguments(HWND msgParent, const char* u8PanelDir, const char* varText,
+                                 char* buffer, int bufferLen, BOOL ignoreEnvVarNotFoundOrTooLong)
+{
+    CALL_STACK_MESSAGE3("ExpandCommandShellArguments(, %s, %s, , ,)", u8PanelDir != NULL ? u8PanelDir : "", varText);
+    CExecuteExpData data;
+    data.Name = u8PanelDir;
+    data.DosName = NULL;
+    data.FileNameUsed = NULL;
+    data.UserMenuAdvancedData = NULL;
+    return ExpandVarString(msgParent, varText, buffer, bufferLen, CommandShellArgsExpArray, &data,
+                           ignoreEnvVarNotFoundOrTooLong);
+}

@@ -62,6 +62,7 @@
 #include "salunicode.h"
 #include "salpath.h"
 #include "salfileio.h"
+#include "salshell.h" // feature 071: Command Shell presets
 #include "spl_com.h"
 #include "spl_base.h"
 #include "spl_crypt.h"

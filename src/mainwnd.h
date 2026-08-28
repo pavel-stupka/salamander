@@ -600,6 +600,11 @@ public:
     void UpdateDefaultDir(BOOL activePrefered);
     void SetDefaultDirectories(const char* curPath = NULL);
 
+    // feature 071: the Command Shell command (CM_DOSSHELL) - opens the program
+    // chosen in Configuration > Command Shell in the active panel's directory
+    // (cmdshell.cpp)
+    void OpenCommandShell(CFilesWindow* activePanel);
+
     HWND GetActivePanelHWND();
     int GetDirectoryLineHeight();
 

@@ -688,6 +688,19 @@
 #define IDD_VIEWERGOTOOFFSET            6220
 #define IDE_VGTO_OFFSET                 6221
 #define IDC_VGTO_HEX                    6222
+// feature 071: Configuration > Command Shell page
+#define IDD_CFGPAGE_CMDSHELL            6223
+#define IDT_CMDSHELL_INTRO              6224
+#define IDT_CMDSHELL_PROGRAM            6225
+#define IDC_CMDSHELL_PRESET             6226
+#define IDT_CMDSHELL_FOUNDAT            6227
+#define IDE_CMDSHELL_FOUNDAT            6228
+#define IDT_CMDSHELL_CUSTPROG           6229
+#define IDE_CMDSHELL_CUSTPROG           6230
+#define IDB_CMDSHELL_BROWSE             6231
+#define IDT_CMDSHELL_CUSTARGS           6232
+#define IDE_CMDSHELL_CUSTARGS           6233
+#define IDT_CMDSHELL_HINT               6234
 
 // Next default values for new objects
 // 
@@ -695,7 +708,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        8200
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         6223
+#define _APS_NEXT_CONTROL_VALUE         6235
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

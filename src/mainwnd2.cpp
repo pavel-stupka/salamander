@@ -343,6 +343,11 @@ const char* CONFIG_SHOWSLGINCOMPLETE_REG = "Show Translation Is Incomplete";
 const char* CONFIG_EDITNEWFILE_USEDEFAULT_REG = "Edit New File Use Default";
 const char* CONFIG_EDITNEWFILE_DEFAULT_REG = "Edit New File Default";
 
+// feature 071: the program opened by the Command Shell command (contracts/command-shell-setting.md)
+const char* CONFIG_CMDSHELL_PRESET_REG = "Command Shell Preset";
+const char* CONFIG_CMDSHELL_PROGRAM_REG = "Command Shell Program";
+const char* CONFIG_CMDSHELL_ARGS_REG = "Command Shell Arguments";
+
 //const char *CONFIG_SPACESELCALCSPACE = "Space Selecting";
 const char* CONFIG_USETIMERESOLUTION = "Use Time Resolution";
 const char* CONFIG_TIMERESOLUTION = "Time Resolution";
@@ -1746,6 +1751,14 @@ void CMainWindow::SaveConfig(HWND parent)
                          &Configuration.UseEditNewFileDefault, sizeof(DWORD));
                 SetValue(actKey, CONFIG_EDITNEWFILE_DEFAULT_REG, REG_SZ,
                          Configuration.EditNewFileDefault, -1);
+
+                // feature 071: strings are UTF-8 through the W8 registry facade
+                SetValue(actKey, CONFIG_CMDSHELL_PRESET_REG, REG_DWORD,
+                         &Configuration.CommandShellPreset, sizeof(DWORD));
+                SetValue(actKey, CONFIG_CMDSHELL_PROGRAM_REG, REG_SZ,
+                         Configuration.CommandShellProgram, -1);
+                SetValue(actKey, CONFIG_CMDSHELL_ARGS_REG, REG_SZ,
+                         Configuration.CommandShellArguments, -1);
 
                 HKEY actSubKey;
                 if (CreateKey(actKey, SALAMANDER_CONFIRMATION_REG, actSubKey))
@@ -3306,6 +3319,17 @@ BOOL CMainWindow::LoadConfig(BOOL importingOldConfig, const CCommandLineParams* 
                      &Configuration.UseEditNewFileDefault, sizeof(DWORD));
             GetValue(actKey, CONFIG_EDITNEWFILE_DEFAULT_REG, REG_SZ,
                      Configuration.EditNewFileDefault, MAX_PATH);
+
+            // feature 071: a missing value keeps the constructor default; an
+            // unknown preset id (a newer configuration) falls back to Command Prompt
+            GetValue(actKey, CONFIG_CMDSHELL_PRESET_REG, REG_DWORD,
+                     &Configuration.CommandShellPreset, sizeof(DWORD));
+            if (Configuration.CommandShellPreset < 0 || Configuration.CommandShellPreset >= sspCount)
+                Configuration.CommandShellPreset = sspCommandPrompt;
+            GetValue(actKey, CONFIG_CMDSHELL_PROGRAM_REG, REG_SZ,
+                     Configuration.CommandShellProgram, SAL_MAX_PATH_UTF8);
+            GetValue(actKey, CONFIG_CMDSHELL_ARGS_REG, REG_SZ,
+                     Configuration.CommandShellArguments, SAL_SHELL_ARGS_MAX);
 
             HKEY actSubKey;
             if (OpenKey(actKey, SALAMANDER_CONFIRMATION_REG, actSubKey))

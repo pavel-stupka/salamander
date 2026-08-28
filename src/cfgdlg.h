@@ -406,6 +406,11 @@ struct CConfiguration
     BOOL UseEditNewFileDefault;        // should the EditNewFileDefault value be used? (if not, it is loaded from resources, thus language switching works)
     char EditNewFileDefault[MAX_PATH]; // used as the default for the EditNewFile command when UseEditNewFileDefault is enabled
 
+    // feature 071: which program the Command Shell command (Num /) opens
+    int CommandShellPreset;                        // CSalShellPreset id; sspCustom = the two fields below
+    char CommandShellProgram[SAL_MAX_PATH_UTF8];   // Custom: program path (UTF-8; $(SalDir), $[ENV] allowed)
+    char CommandShellArguments[SAL_SHELL_ARGS_MAX]; // Custom: arguments (UTF-8; $(FullPath), $[ENV] allowed)
+
     // Tip of the Day
     //  int  ShowTipOfTheDay;         // display Tip of the Day at program startup
     //  int  LastTipOfTheDay;         // index of the last displayed tip
@@ -717,6 +722,37 @@ public:
     void SetItemIcon(int index, int iconIndex); // feature 047: list row icon preview
     void EnableControls();
     void EnableHeader();
+
+protected:
+    virtual INT_PTR DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+};
+
+//
+// ****************************************************************************
+// CCfgPageCmdShell - feature 071: which program the Command Shell command opens
+// (contracts/configuration-page.md)
+
+class CCfgPageCmdShell : public CCommonPropSheetPage
+{
+protected:
+    BOOL Found[sspCount];      // preset located on this machine?
+    char* FoundPath[sspCount]; // its resolved program (UTF-8, heap) or NULL
+    int LastPreset;            // last preset chosen - the source of the Custom pre-fill
+
+public:
+    CCfgPageCmdShell();
+    ~CCfgPageCmdShell();
+
+    virtual void Validate(CTransferInfo& ti);
+    virtual void Transfer(CTransferInfo& ti);
+
+    void LocatePresets();
+    void FillPresetCombo();
+    int GetSelectedPreset();
+    void UpdateFoundAt();
+    void EnableControls();
+    void OnPresetChanged();
+    void OnBrowse();
 
 protected:
     virtual INT_PTR DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -1169,6 +1205,7 @@ public:
     CCfgPageViewer PageViewer;
     CCfgPageUserMenu PageUserMenu;
     CCfgPageHotPath PageHotPath;
+    CCfgPageCmdShell PageCmdShell; // feature 071
     CCfgPageSystem PageSystem;
     CCfgPageColors PageColors;
     CCfgPageConfirmations PageConfirmations;
@@ -1205,5 +1242,8 @@ protected:
 // ****************************************************************************
 
 BOOL ValidatePathIsNotEmpty(HWND hParent, const char* path);
+
+// feature 071: IDS_CMDSHELL_PRESET_* for a CSalShellPreset id (cmdshell.cpp)
+int GetCommandShellPresetNameResID(int preset);
 
 extern CConfiguration Configuration;

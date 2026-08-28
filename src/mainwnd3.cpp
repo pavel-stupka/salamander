@@ -4289,69 +4289,9 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
 
         case CM_DOSSHELL:
         {
-            activePanel->UserWorkedOnThisPath = TRUE;
-
-            char cmd[MAX_PATH];
-            if (!GetEnvironmentVariable("COMSPEC", cmd, MAX_PATH))
-                cmd[0] = 0;
-
-            if (SystemPolicies.GetNoRun() ||
-                (SystemPolicies.GetMyRunRestricted() && !SystemPolicies.GetMyCanRun(cmd)))
-            {
-                MSGBOXEX_PARAMS params;
-                memset(&params, 0, sizeof(params));
-                params.HParent = HWindow;
-                params.Flags = MSGBOXEX_OK | MSGBOXEX_HELP | MSGBOXEX_ICONEXCLAMATION;
-                params.Caption = LoadStr(IDS_POLICIESRESTRICTION_TITLE);
-                params.Text = LoadStr(IDS_POLICIESRESTRICTION);
-                params.ContextHelpId = IDH_GROUPPOLICY;
-                params.HelpCallback = MessageBoxHelpCallback;
-                SalMessageBoxEx(&params);
-                return 0;
-            }
-
-            AddDoubleQuotesIfNeeded(cmd, MAX_PATH); // CreateProcess requires the name with spaces in quotes (otherwise it tries various options; see help)
-
-            SetDefaultDirectories();
-
-            STARTUPINFO si;
-            memset(&si, 0, sizeof(STARTUPINFO));
-            si.cb = sizeof(STARTUPINFO);
-            si.lpTitle = LoadStr(IDS_COMMANDSHELL);
-            // There is an undocumented flag 0x400 where we can pass the monitor handle into si.hStdOutput
-            // Unfortunately it works with SOL.EXE but not with CMD.EXE, so we use the old method
-            // with a dummy window
-            // On W2K the flag appears as #define STARTF_HASHMONITOR 0x00000400  // same as HASSHELLDATA
-            // STARTF_MONITOR was mentioned online in an article about undocumented features
-            si.dwFlags = STARTF_USESHOWWINDOW;
-            POINT p;
-            if (MultiMonGetDefaultWindowPos(MainWindow->HWindow, &p))
-            {
-                // if the main window is on another monitor we should open
-                // the new window there as well, preferably at the default position (same as on the primary)
-                si.dwFlags |= STARTF_USEPOSITION;
-                si.dwX = p.x;
-                si.dwY = p.y;
-                // TRACE_I("MultiMonGetDefaultWindowPos(): x = " << p.x << ", y = " << p.y);
-            }
-            si.wShowWindow = SW_SHOWNORMAL;
-
-            PROCESS_INFORMATION pi;
-
-            if (!SalCreateProcess(NULL, cmd, NULL, NULL, FALSE,
-                                  CREATE_DEFAULT_ERROR_MODE | NORMAL_PRIORITY_CLASS, NULL,
-                                  (activePanel->Is(ptDisk) || activePanel->Is(ptZIPArchive)) ? activePanel->GetPath() : NULL, &si, &pi))
-            {
-                DWORD err = GetLastError();
-                SalMessageBox(HWindow, GetErrorText(err),
-                              LoadStr(IDS_ERROREXECPROMPT), MB_OK | MB_ICONEXCLAMATION);
-            }
-            else
-            {
-                HANDLES(CloseHandle(pi.hProcess));
-                HANDLES(CloseHandle(pi.hThread));
-            }
-
+            // feature 071: the program is a user setting (Configuration > Command
+            // Shell); the launch moved to cmdshell.cpp
+            OpenCommandShell(activePanel);
             return 0;
         }
 

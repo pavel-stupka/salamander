@@ -1777,6 +1777,28 @@ BOOL SafeGetSaveFileNameW(LPOPENFILENAMEW lpofn)
     return ret;
 }
 
+// feature 071: the Open twin of SafeGetSaveFileNameW (the Command Shell page
+// browses for an executable; a UTF-8 path must round-trip)
+BOOL SafeGetOpenFileNameW(LPOPENFILENAMEW lpofn)
+{
+    BOOL ret = GetOpenFileNameW(lpofn);
+    if (!ret && FNERR_INVALIDFILENAME == CommDlgExtendedError())
+    {
+        char initDir[MAX_PATH];
+        WCHAR initDirW[MAX_PATH];
+        const WCHAR* oldInitDir = lpofn->lpstrInitialDir;
+        if (!GetMyDocumentsOrDesktopPath(initDir, MAX_PATH) || SalU8ToW(initDir, -1, initDirW, MAX_PATH) == 0)
+            initDirW[0] = 0;
+        lpofn->lpstrInitialDir = initDirW;
+        lpofn->lpstrFile[0] = 0;
+        ret = GetOpenFileNameW(lpofn);
+        lpofn->lpstrInitialDir = oldInitDir;
+    }
+    if (!ret && CommDlgExtendedError() != 0)
+        TRACE_E("Cannot open OpenFile dialog box. CommDlgExtendedError()=" << CommDlgExtendedError());
+    return ret;
+}
+
 void GetIfPathIsInaccessibleGoTo(char* path, BOOL forceIsMyDocs)
 {
     if (forceIsMyDocs || Configuration.IfPathIsInaccessibleGoToIsMyDocs)

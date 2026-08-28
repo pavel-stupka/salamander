@@ -221,3 +221,12 @@ BOOL ExpandCommand(HWND msgParent, const char* varText, char* buffer, int buffer
 // msgParent - parent of the message box for errors; if NULL, errors are not shown
 BOOL ExpandHotPath(HWND msgParent, const char* varText, char* buffer, int bufferLen,
                    BOOL ignoreEnvVarNotFoundOrTooLong);
+
+// feature 071: the Custom arguments of the Command Shell command (Configuration >
+// Command Shell). Variables: $(FullPath) = the active panel's directory without
+// a trailing backslash (a drive root keeps it), "" when 'u8PanelDir' is NULL/"";
+// $(WinDir), $(SysDir), $(SalDir) without a trailing backslash; $[ENV].
+// msgParent - parent of the message box for errors; if NULL, errors are not shown
+BOOL ValidateCommandShellArguments(HWND msgParent, const char* varText, int& errorPos1, int& errorPos2);
+BOOL ExpandCommandShellArguments(HWND msgParent, const char* u8PanelDir, const char* varText,
+                                 char* buffer, int bufferLen, BOOL ignoreEnvVarNotFoundOrTooLong);

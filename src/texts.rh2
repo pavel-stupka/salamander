@@ -2711,6 +2711,23 @@
 #define IDS_EQUIVNAMESPAIR              14196
 #define IDS_PLUGINCANTHANDLENAME        14197
 
+// feature 071 (configurable command shell): Configuration > Command Shell page
+// and the launch errors of the Command Shell command
+#define IDS_CMDSHELL_PRESET_CMD         14198
+#define IDS_CMDSHELL_PRESET_POWERSHELL  14199
+#define IDS_CMDSHELL_PRESET_PWSH        14200
+#define IDS_CMDSHELL_PRESET_WT          14201
+#define IDS_CMDSHELL_PRESET_GITBASH     14202
+#define IDS_CMDSHELL_PRESET_CUSTOM      14203
+#define IDS_CMDSHELL_NOTFOUND           14204
+#define IDS_CMDSHELL_NOTFOUNDTEXT       14205
+#define IDS_CMDSHELL_PRESETNOTFOUND     14206
+#define IDS_CMDSHELL_PROGRAMREQUIRED    14207
+#define IDS_CMDSHELL_BROWSETITLE        14208
+#define IDS_CMDSHELL_ERRTITLE           14209
+#define IDS_CMDSHELL_ERRNOTFOUND        14210
+#define IDS_CMDSHELL_ERREXEC            14211
+
 //#define CM_TEXTS_MAX                  18000    // maximal texts id
 
 #endif // __TEXTS_RH2

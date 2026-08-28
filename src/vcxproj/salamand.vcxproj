@@ -269,6 +269,8 @@
     </ClCompile>
     <ClCompile Include="..\common\salpath.cpp">
     </ClCompile>
+    <ClCompile Include="..\common\salshell.cpp">
+    </ClCompile>
     <ClCompile Include="..\common\salunicode.cpp">
     </ClCompile>
     <ClCompile Include="..\common\sheets.cpp">
@@ -370,6 +372,8 @@
     <ClCompile Include="..\drivelst.cpp">
     </ClCompile>
     <ClCompile Include="..\editwnd.cpp">
+    </ClCompile>
+    <ClCompile Include="..\cmdshell.cpp">
     </ClCompile>
     <ClCompile Include="..\edtlbwnd.cpp">
     </ClCompile>

@@ -84,6 +84,9 @@
     <ClCompile Include="..\edtlbwnd.cpp">
       <Filter>cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\cmdshell.cpp">
+      <Filter>cpp</Filter>
+    </ClCompile>
     <ClCompile Include="..\execute.cpp">
       <Filter>cpp</Filter>
     </ClCompile>
@@ -409,6 +412,9 @@
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\common\salpath.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\salshell.cpp">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\common\salunicode.cpp">

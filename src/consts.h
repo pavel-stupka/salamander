@@ -1713,6 +1713,7 @@ DWORD GetImageListColorFlags(); // vrati ILC_COLOR??? podle verzi Windows - odla
 BOOL SafeGetOpenFileName(LPOPENFILENAME lpofn);
 BOOL SafeGetSaveFileName(LPOPENFILENAME lpofn);
 BOOL SafeGetSaveFileNameW(LPOPENFILENAMEW lpofn); // feature 005: UTF-8-fidelity browse (internal)
+BOOL SafeGetOpenFileNameW(LPOPENFILENAMEW lpofn); // feature 071: its Open twin
 
 // feature 041: UTF-8, like every other narrow string in the application. The
 // buffers are sized for the UTF-8 form (up to 3 characters = 12 bytes + null);
