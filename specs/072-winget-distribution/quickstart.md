@@ -53,6 +53,29 @@ warn first that the file's version does not match, and leave
 written. A file under 1 MB is rejected earlier still, with
 `the installer is only N bytes - wrong file?`.
 
+## 2b. The installer installs silently — MANDATORY before any submission
+
+The catalogue installs every submitted package unattended. If this fails, no
+manifest can pass, whatever it says. From an **elevated** shell, against the
+installer you are about to publish:
+
+```powershell
+$log="$env:TEMP\tc_silent.log"; $p=Start-Process 'setup\output\tandemcommander-<version>-x64-setup.exe' -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',"/LOG=$log" -Wait -PassThru; "EXIT CODE: $($p.ExitCode)"; Get-Content $log -Tail 20
+```
+
+Must print `EXIT CODE: 0` and the log must end with
+`Installation process succeeded.` It reinstalls the same version over itself,
+so nothing is lost.
+
+Run it **elevated**. From a normal shell the UAC prompt cannot be answered and
+you get exit code 2 with no log — that is the prompt being dismissed, not a
+defect.
+
+This step exists because releases 0.1.0 to 0.1.6 all failed it: the AI
+disclaimer page kept the *Next* button disabled and a silent install, which
+still traverses the wizard's pages, aborted with `Failed to proceed to next
+wizard page`. Fixed in 0.1.7 with a `not WizardSilent` guard.
+
 ## 3. One installer entry, machine scope (SC-003)
 
 Check the generated installer manifest. Under `Installers:` there must be
@@ -73,21 +96,20 @@ package, and the installer does per-machine installation on its own anyway.
 ### Why there is no per-user entry
 
 The first submission carried a second `Scope: user` entry with
-`Custom: /CURRENTUSER`, plus `/ALLUSERS` on the machine entry. It failed check
-08 Installation Validation on microsoft/winget-pkgs#426038 with the label
-`Validation-Shell-Execute` and was removed.
+`Custom: /CURRENTUSER`, plus `/ALLUSERS` on the machine entry. It was removed
+after check 08 failed — but the machine-only manifest then failed identically,
+so the entry was **not** the cause (see §2b). Whether it would work is
+untested.
 
-Inno Setup is not the obstacle and was verified: with
-`PrivilegesRequiredOverridesAllowed=dialog` (which implies `commandline`) a
-probe built with the installer's exact privilege configuration accepted
+Inno Setup is not the obstacle:
+`PrivilegesRequiredOverridesAllowed=dialog` implies `commandline`, and a probe
+with the installer's exact privilege configuration accepted
 `/VERYSILENT /CURRENTUSER`, exited 0, installed into
 `%LOCALAPPDATA%\Programs\<AppName>` with no elevation and wrote the `HKCU`
-uninstall key. The untested half was the catalogue's pipeline, which runs
-manifests elevated (winget-pkgs issue 72224) so the install lands in the
-administrator's profile and is not found afterwards.
+uninstall key.
 
-Before retrying it: add the entry back to `templates/installer.yaml.in`, prove
-it with `Tools\SandboxTest.ps1` (§4c), and submit it on its own.
+To retry it: add the entry back to `templates/installer.yaml.in`, prove it with
+`Tools\SandboxTest.ps1` (§4c), and submit it on its own.
 
 ## 4. Real installation **(manual)** (US1, SC-002)
 

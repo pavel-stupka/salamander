@@ -121,8 +121,15 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 { AI disclaimer page: shown right after the GPL license page and gated by a
   checkbox - Next stays disabled until the user explicitly accepts. The page
   chrome (title, subtitle, checkbox) is localized via [CustomMessages]; the
-  disclaimer body itself intentionally stays English. Silent installs skip
-  wizard pages by Inno Setup design, like the license page. }
+  disclaimer body itself intentionally stays English.
+
+  Feature 072: the WizardSilent guard in CurPageChanged is load-bearing, not a
+  nicety. A silent install still traverses the wizard pages, so disabling the
+  Next button there aborted Setup outright - "Failed to proceed to next wizard
+  page", exit code 1. /VERYSILENT and /SILENT installs had therefore been
+  impossible since this page was introduced in feature 050, which is what made
+  winget's Installation Validation reject the package. With the guard, a silent
+  install skips the page exactly as it skips the license page. }
 var
   DisclaimerPage: TOutputMsgMemoWizardPage;
   DisclaimerAcceptedCheck: TNewCheckBox;
@@ -168,7 +175,7 @@ end;
 
 procedure CurPageChanged(CurPageID: Integer);
 begin
-  if CurPageID = DisclaimerPage.ID then
+  if (CurPageID = DisclaimerPage.ID) and not WizardSilent then
     WizardForm.NextButton.Enabled := DisclaimerAcceptedCheck.Checked;
 end;
 

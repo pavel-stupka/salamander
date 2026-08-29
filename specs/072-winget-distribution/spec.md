@@ -102,13 +102,12 @@ user` and gets Tandem Commander in their own profile, with no UAC prompt.
 it into the submission that also had to get a new package accepted was a
 mistake.
 
-**Status: withdrawn, not delivered.** The manifest entry failed check 08
-Installation Validation on microsoft/winget-pkgs#426038
-(`Validation-Shell-Execute`) and was removed. The Inno Setup side works — a
-silent `/CURRENTUSER` install was verified — but the catalogue's pipeline runs
-manifests elevated, so the install lands in the administrator's profile and is
-not detected afterwards. Reinstating it needs a passing `SandboxTest.ps1` run
-and a pull request of its own.
+**Status: withdrawn, and still untested.** The entry was removed after check
+08 Installation Validation failed — but the machine-only manifest then failed
+identically, so the entry was not the cause. The real defect was that the
+installer could not be installed silently at all (see FR-013); it masked
+everything else. Whether a per-user entry works is unknown. Retrying it needs a
+passing `SandboxTest.ps1` run and a pull request of its own.
 
 **Independent Test** (for when it is retried): `winget install --manifest
 <dir> --scope user` completes without elevation and installs into
@@ -152,6 +151,11 @@ and a pull request of its own.
 - **FR-009**: ~~The generator MUST refuse to run if that directive is
   absent.~~ **Withdrawn with FR-008** — the manifests no longer depend on the
   directive, so the check guarded nothing and was removed.
+- **FR-013** *(added after two failed submissions)*: The installer MUST
+  complete an unattended installation (`/VERYSILENT`) with exit code 0, and
+  this MUST be verified on the built installer before every submission. The
+  catalogue installs every package unattended, so no manifest can compensate
+  for an installer that cannot.
 - **FR-010**: Generated manifests MUST be free of authoring comments and MUST
   be committed as a record of what was submitted.
 - **FR-011**: The token MUST NOT be passed on a command line by the workflow.

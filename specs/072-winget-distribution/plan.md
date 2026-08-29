@@ -147,24 +147,50 @@ always had, and a probe with the installer's exact privilege configuration
 installed per-user silently with no elevation. The installer change and the
 boundary were both removed.
 
-*Second premise, also wrong:* that the Inno Setup side working meant the
-feature worked. The first submission, microsoft/winget-pkgs#426038, failed
-check 08 Installation Validation with the label `Validation-Shell-Execute`.
-The catalogue's pipeline runs manifests in an elevated context (winget-pkgs
-issue 72224), so `/CURRENTUSER` installs into the administrator's profile and
-the package is not detected afterwards. The entry was removed and the package
-resubmitted as machine-only.
+*Second premise, also wrong:* that the per-user entry was what check 08
+rejected. It was removed on that theory — the pipeline runs manifests elevated
+(winget-pkgs issue 72224), so `/CURRENTUSER` would land in the administrator's
+profile — and the machine-only manifest **failed identically**. The theory was
+plausible, matched the label and matched T017, and was still wrong.
 
-**The process error, not the technical one:** T017 recorded "winget may
-displace `InstallerSwitches.Custom`" as an *unverified assumption*, and the
-manifest was submitted with it anyway — in the one pull request that also had
-to get a brand-new package accepted. An unverified assumption does not belong
-in a first submission. Per-user support is worth having; it needs a passing
-`SandboxTest.ps1` run and a pull request of its own.
+*The actual cause* was not in the manifest at all: the installer could not be
+installed silently. See D7. Whether a per-user entry works remains untested,
+because the real defect masked it.
+
+**The process error, not the technical one:** the failure was never
+reproduced. Running the installer with winget's own switches took under a
+minute and gave the answer at once; it should have been the first step after
+round 1, not the third. Two rounds of validation were spent on theories
+instead. Separately, T017 was recorded as an *unverified assumption* and the
+manifest submitted with it anyway, in the one pull request that also had to get
+a brand-new package accepted.
 
 The `PrivilegesRequiredOverridesAllowed` assertion added to `publish.ps1`
 alongside the boundary went with the entry: the manifests no longer depend on
 that directive, so the check guarded nothing.
+
+**D7 — The installer could not be installed silently, and that was the real
+defect.** Tandem Commander's AI disclaimer page (feature 050) keeps the *Next*
+button disabled until its checkbox is ticked. A silent install still traverses
+the wizard's pages, so Setup met a button it could not press and aborted with
+exit code 1 and `Failed to proceed to next wizard page`. **Every release from
+v0.1.0 to v0.1.6** was affected: unattended installation had never worked, and
+nobody noticed because the installer had only ever been run by hand.
+
+Proven with a pair of probe installers differing only in the guard — without
+it exit 1 and the same log line, with it exit 0 and `Installation process
+succeeded.` Fixed in `setup/tandemcommander.iss` by guarding `CurPageChanged`
+with `not WizardSilent`, shipped in **0.1.7**; interactive behaviour is
+unchanged.
+
+0.1.6 could not be salvaged, because the manifest pins the SHA256 of the
+published asset and replacing a released binary is not acceptable. PR #426038
+was closed and the submission remade for 0.1.7.
+
+The lasting consequence is a new mandatory step, quickstart §2b: verify
+`/VERYSILENT` on the built installer before every submission. It has to be run
+from an elevated shell — from a normal one the UAC prompt cannot be answered
+and the result is exit code 2, which looks like a defect and is not one.
 
 ## Complexity Tracking
 

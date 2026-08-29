@@ -48,33 +48,46 @@ installation; winget must not uninstall first.
 Setup requires administrator rights by default and raises the UAC prompt
 itself, and winget handles an Inno installer's elevation without being told.
 
-### Why not per-user as well
+### The installer must survive a silent install
 
-A second `Scope: user` entry with `Custom: /CURRENTUSER` (and `/ALLUSERS` on
-the machine entry) was submitted in the first pull request,
-microsoft/winget-pkgs#426038, and **failed check 08 Installation Validation**
-with the label `Validation-Shell-Execute`. It was removed and the package
-resubmitted as machine-only.
+This is the requirement everything else here rests on, and it was **not met**
+by any release up to 0.1.6. The catalogue installs every submitted package
+unattended; if `/VERYSILENT` fails, no manifest can be written that passes.
 
-The Inno Setup half of the mechanism is sound and was verified: a probe
-installer built with the *exact* privilege configuration of
-`tandemcommander.iss` (`PrivilegesRequired` unset = admin,
-`PrivilegesRequiredOverridesAllowed=dialog`, `DefaultDirName={autopf}\...`)
-accepts `/VERYSILENT /CURRENTUSER`, exits 0, installs into
-`%LOCALAPPDATA%\Programs\<AppName>` with no elevation and writes the `HKCU`
-uninstall key `{AppId}_is1`. `dialog` implies `commandline`, so no installer
-change was ever needed.
+Tandem Commander's installer aborted with exit code 1 and
+`Failed to proceed to next wizard page` because its AI disclaimer page keeps
+the *Next* button disabled until a checkbox is ticked, and a silent install
+still traverses the wizard's pages. Fixed in 0.1.7 by guarding
+`CurPageChanged` with `not WizardSilent` in `setup/tandemcommander.iss`. Proven
+with a pair of probe installers differing only in that guard: without it exit 1
+and the same log line, with it exit 0 and `Installation process succeeded.`
 
-What was never verified — and is recorded in the plan as the open assumption
-T017 — is how the **catalogue's validation pipeline** treats such an entry. It
-runs manifests in an elevated context (winget-pkgs issue 72224), which makes a
-`/CURRENTUSER` install land in the administrator's profile, where the package
-is not found afterwards.
+Before submitting any future version, `/VERYSILENT` must be verified on the
+built installer - quickstart section 2b.
 
-Reinstating per-user support therefore needs, in this order: a passing
-`Tools\SandboxTest.ps1` run against a manifest that carries the entry, and a
-pull request of its own — never folded into one that is also asking for a new
-package to be accepted.
+### Why there is no per-user entry, and what is still unknown
+
+The first submission carried a second `Scope: user` entry with
+`Custom: /CURRENTUSER`, plus `/ALLUSERS` on the machine entry. It failed check
+08 Installation Validation with the label `Validation-Shell-Execute`, and was
+removed on the theory that the pipeline runs manifests elevated so a
+`/CURRENTUSER` install lands in the administrator's profile.
+
+**That theory was wrong.** The machine-only manifest failed the same check in
+the same way, because the installer could not be installed silently at all.
+Whether a per-user entry works is therefore **still untested** - the real
+defect masked it.
+
+What is known: Inno Setup does accept the switches.
+`PrivilegesRequiredOverridesAllowed=dialog` implies `commandline`, and a probe
+with the installer's exact privilege configuration took
+`/VERYSILENT /CURRENTUSER`, exited 0, installed into
+`%LOCALAPPDATA%\Programs\<AppName>` with no elevation and wrote the `HKCU`
+uninstall key `{AppId}_is1`.
+
+If per-user support is wanted, it is a change of its own: add the entry, prove
+it with `Tools\SandboxTest.ps1`, and submit it separately - never folded into a
+submission that is also asking for something else.
 
 ## 4. Platform floor
 

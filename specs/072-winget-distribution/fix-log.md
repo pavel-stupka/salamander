@@ -100,47 +100,71 @@ the tooling, was never submitted, and keeping it would suggest a release that
 never reached the catalogue. The verification runs recorded below were made
 against it and stand as written.
 
-## The per-user entry failed validation and was withdrawn
+## Root cause: the installer could not be installed silently
 
-The first submission carried two installer entries — `Scope: machine` with
-`Custom: /ALLUSERS` and `Scope: user` with `Custom: /CURRENTUSER`. On
-microsoft/winget-pkgs#426038 checks 01–07 and 10 passed, but **08 Installation
-Validation failed** after 6m37s and the validator applied
-`Validation-Shell-Execute`, followed by `Needs-Author-Feedback` and
-`Validation-Guide`. Check 09 was skipped as a consequence.
+Two rounds of Installation Validation failed on
+microsoft/winget-pkgs#426038 before the cause was found, and the first
+explanation was wrong. The record is kept in order because the way it went
+wrong is the lesson.
 
-**Cause.** The catalogue's pipeline runs manifests in an elevated context
-(winget-pkgs issue 72224). A `/CURRENTUSER` install then lands in the
-administrator's profile, and the package is not detected afterwards. The Inno
-Setup half was never the problem and had been verified: `dialog` implies
-`commandline`, and a probe with the installer's exact privilege configuration
-took `/VERYSILENT /CURRENTUSER`, exited 0 and wrote the `HKCU` uninstall key
-with no elevation.
+**Round 1.** Two installer entries — `Scope: machine` with `Custom: /ALLUSERS`
+and `Scope: user` with `Custom: /CURRENTUSER`. Checks 01–07 and 10 passed, 08
+Installation Validation failed after 6m37s, label `Validation-Shell-Execute`,
+09 skipped as a consequence.
 
-**Fix.** The template now emits one machine-scope entry with no
-`InstallerSwitches` and no `ElevationRequirement` — the canonical shape for an
-Inno package in this catalogue. Only the installer manifest changed, so the
-correction went onto the pull request branch as a single file edit rather than
-a new submission. The `PrivilegesRequiredOverridesAllowed` assertion in
-`publish.ps1` was removed with it: the manifests no longer depend on that
-directive, so it guarded nothing. The directive itself stays in
-`tandemcommander.iss`, with its comment corrected to say that nothing outside
-Setup depends on it today.
+**Wrong diagnosis.** The per-user entry was blamed: the pipeline runs manifests
+elevated (winget-pkgs issue 72224), so `/CURRENTUSER` would land in the
+administrator's profile and not be found. Plausible, consistent with the label,
+and it matched T017 — the assumption the plan had already flagged as
+unverified. The entry was removed and the package resubmitted machine-only.
 
-**What this cost, and why.** T017 was recorded in the plan as an *unverified
-assumption* — "winget may add a scope switch of its own that displaces
-`InstallerSwitches.Custom`" — and the manifest was submitted with it anyway,
-in the one pull request that also had to get a brand-new package accepted.
-That is the actual mistake: not the technical guess, which was reasonable, but
-carrying it into a first submission instead of getting the package in
-machine-only and proposing per-user separately. Per-user installation was also
-not part of the original request; it entered the design as an option raised
-during clarification.
+**Round 2 failed identically**, which refuted it.
+
+**Actual cause, proven.** Running the published 0.1.6 installer with the
+switches winget uses, from an elevated shell:
+
+```
+EXIT CODE: 1
+Failed to proceed to next wizard page; aborting.
+Caught EAbort exception.
+```
+
+The AI disclaimer page added in feature 050 keeps the *Next* button disabled
+until its checkbox is ticked. A silent install still traverses the wizard's
+pages even though it displays none of them, so Setup met a button it could not
+press and aborted. **Unattended installation had never worked** — `git tag
+--contains` puts the page in every release from v0.1.0 to v0.1.6. Nobody
+noticed because the installer had only ever been run by hand.
+
+Confirmed by a pair of probe installers differing in one line:
+
+| Probe | Exit | Log |
+|---|---|---|
+| as shipped | 1 | `Failed to proceed to next wizard page; aborting.` |
+| `and not WizardSilent` | 0 | `Installation process succeeded.` |
+
+**Fix.** `setup/tandemcommander.iss`, one guard in `CurPageChanged`, shipped in
+**0.1.7**. Interactive behaviour is unchanged; a silent install skips the page
+as it always skipped the licence page. 0.1.6 cannot be salvaged: the manifest
+pins the SHA256 of the published asset, and replacing a released binary is not
+acceptable. PR #426038 is closed and the submission remade for 0.1.7.
+
+**What this cost, and why.** Twice a plausible theory was acted on instead of
+the failure being reproduced first. The reproduction — running the installer
+with winget's own switches — took under a minute and gave the answer
+immediately; it should have been the first step after round 1, not the third.
+The `Validation-Shell-Execute` label was read as evidence for a specific
+mechanism when it only means "the installer handler failed".
+
+Two further notes on the first round. The per-user entry was submitted with
+T017 openly recorded as an *unverified assumption*, in the pull request that
+also had to get a brand-new package accepted; and it had entered the design as
+an option raised during clarification, not as part of the request. Whether a
+per-user entry actually works is **still unknown** — the real defect masked it.
 
 **User-facing texts were wrong too, briefly.** `--scope user` had been promised
 in `README.md`, in the `CHANGELOG.md` entry for 0.1.6 and in the release notes
-already published on the GitHub release page. All three were corrected to say
-the package installs for all users.
+already published on the GitHub release page. All three were corrected.
 
 ## Workflow, verified in production
 

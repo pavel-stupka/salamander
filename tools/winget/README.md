@@ -145,21 +145,37 @@ The manifests declare **one** installer: `Scope: machine`, no switches. It
 installs into `%ProgramFiles%\Tandem Commander` and asks for administrator
 rights, which is what the installer does on its own.
 
-`winget install --scope user` is therefore not offered. A per-user entry
-(`Custom: /CURRENTUSER`) was part of the first submission and failed the
-catalogue's *08. Installation Validation* with the label
-`Validation-Shell-Execute`; it was removed and the package went in
-machine-only.
-
-Inno Setup itself is not the obstacle — `PrivilegesRequiredOverridesAllowed=dialog`
-in `setup/tandemcommander.iss` already enables `/ALLUSERS` and `/CURRENTUSER`,
-and a silent `/CURRENTUSER` install was verified to work with no elevation. The
-untested part was the validation pipeline, which runs manifests elevated, so a
-per-user install lands in the administrator's profile and is not detected.
-
-If you want to bring it back: add the entry to
+`winget install --scope user` is not offered. A per-user entry was part of the
+first submission and was removed when validation failed — but that turned out
+not to be the cause (see below), so whether it would work is simply untested.
+Adding it back is a change of its own: put the entry in
 `templates/installer.yaml.in`, prove it with `Tools\SandboxTest.ps1` from a
-winget-pkgs clone, and submit it as a change of its own.
+winget-pkgs clone, and submit it separately.
+
+## The installer must install silently
+
+The catalogue installs every submitted package unattended. If `/VERYSILENT`
+fails, nothing you write in the manifest can save the submission.
+
+That is what sank the first two attempts for 0.1.6. The installer's AI
+disclaimer page keeps the *Next* button disabled until a checkbox is ticked,
+and a silent install still walks through the wizard's pages — so Setup met a
+button it could not press and aborted with exit code 1 and
+`Failed to proceed to next wizard page`. Every release from 0.1.0 to 0.1.6 was
+affected; unattended installation had never worked. Fixed in 0.1.7 by guarding
+`CurPageChanged` with `not WizardSilent` in `setup/tandemcommander.iss`.
+
+**Verify this before every submission**, on the installer you are about to
+publish, from an elevated shell:
+
+```powershell
+$log="$env:TEMP\tc_silent.log"; $p=Start-Process 'setup\output\tandemcommander-<version>-x64-setup.exe' -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',"/LOG=$log" -Wait -PassThru; "EXIT CODE: $($p.ExitCode)"; Get-Content $log -Tail 20
+```
+
+`EXIT CODE: 0` and `Installation process succeeded.` in the log. Anything else
+means the submission will fail, whatever the manifest says. Run it elevated —
+from a normal shell the UAC prompt cannot be answered and you get exit code 2,
+which looks like a defect but is not one.
 
 ## Troubleshooting
 
