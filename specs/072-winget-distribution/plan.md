@@ -63,7 +63,7 @@ would reject; the token must never reach a command line
 | IV. Windows Platform Commitment | Windows-only tooling: Windows PowerShell 5.1, winget, Inno Setup, Authenticode. | PASS |
 | V. Plugin Architecture Preservation | No `src/` change at all; plugin interface untouched. | PASS |
 | VI. UI Consistency | No user interface. The installer wizard is unchanged. | PASS |
-| Release Documentation | Nothing shipped in the product changes, so no `CHANGELOG.md` entry is due. The catalogue becoming available is worth an entry under whichever version is current when the package is accepted; tracked in [fix-log.md](fix-log.md). | PASS |
+| Release Documentation | Nothing shipped in the product changes, so the tooling itself needs no entry. Availability through winget is user-visible and is recorded in the `CHANGELOG.md` entry for **0.1.6** (build 190, 2026-08-29), the release that carries the first submission. | PASS |
 
 ## Project Structure
 

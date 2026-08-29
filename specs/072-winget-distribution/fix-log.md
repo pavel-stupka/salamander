@@ -26,9 +26,9 @@ says *verified*.
 | T017 Both scopes installed | **open (manual)** | no special build needed any more |
 | T018 CLAUDE.md | done | |
 | T019 This log | done | |
-| T020 CHANGELOG | **open** | when the package is accepted |
+| T020 CHANGELOG | done | written with the 0.1.6 bump |
 | T021 First submission | **open (user's call)** | irreversible, public |
-| T022 User-facing README | **open** | after the package is accepted |
+| T022 User-facing README | done | website still to follow |
 
 ## The one real correction: the installer needed no change at all
 
@@ -161,10 +161,13 @@ actually changed instead of pointing at a URL.
   displace `InstallerSwitches.Custom`. If `--scope user` were to install
   per-machine, the switches must move to the `Silent` / `SilentWithProgress`
   fields.
-- **T021** the first submission is irreversible and public — held for the user.
-- **T020 / T022** once the package is accepted: a CHANGELOG entry announcing
-  winget availability (with whichever version bump is current then), a
-  user-facing *Installing* section in `README.md`, and the same on
-  tandemcommander.org. Advertising it before acceptance would be wrong.
+- **T021** the first submission is irreversible and public — held for the
+  user. It will be made for **0.1.6**, not 0.1.5: that is the release the
+  CHANGELOG and the README announce winget with.
+- **tandemcommander.org** still needs the same *Installing* wording as
+  `README.md`; that lives outside this repository.
+- Both the CHANGELOG entry and the README section state availability as
+  following Microsoft's acceptance, so neither claims something untrue in the
+  days between the release and the merge.
 - Not in scope, but now cheap: `checkver` could be redirected at the GitHub
   Releases API, or dropped in favour of `winget upgrade`.

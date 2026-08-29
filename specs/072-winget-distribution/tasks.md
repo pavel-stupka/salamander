@@ -94,10 +94,11 @@ ticked box means "checked", not "written".
 - [x] T018 Add the *Recent Changes* entry to `CLAUDE.md`
 - [x] T019 Record deviations, open items and verification results in
   `fix-log.md`
-- [ ] T020 Once the package is accepted, add a CHANGELOG entry announcing
-  winget availability, with the version bump current at that time (per the
-  constitution a changelog entry ships in the same change as the bump)
+- [x] T020 CHANGELOG entry announcing winget availability, written with the
+  0.1.6 version bump (build 190, released 2026-08-29) as the constitution
+  requires; phrased so it stays true before Microsoft accepts the submission
 - [ ] T021 [MANUAL] Submit the first pull request (quickstart §6). Irreversible
   and public; explicitly held for the user's decision
-- [ ] T022 After the package is accepted, add a user-facing *Installing*
-  section to `README.md` and to tandemcommander.org
+- [x] T022 User-facing *Installing* section in `README.md` (installer
+  download + the two winget commands, with availability stated as pending
+  acceptance). tandemcommander.org still to follow - outside this repository

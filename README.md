@@ -6,6 +6,19 @@ Tandem Commander is a fast, keyboard-friendly two-panel file manager for Windows
 
 **Issues**: [github.com/tandemcommander/tandemcommander/issues](https://github.com/tandemcommander/tandemcommander/issues)
 
+## Installing
+
+Download the signed installer from the [Releases page](https://github.com/tandemcommander/tandemcommander/releases/latest) and run it. Windows 11 or newer, 64-bit.
+
+From version 0.1.6 the application is also published in the Windows Package Manager catalogue, so once Microsoft has accepted the submission it can be installed and kept up to date with:
+
+```
+winget install tandemcommander
+winget upgrade tandemcommander
+```
+
+Add `--scope user` to install into your own profile without administrator rights.
+
 ## Why This Project Exists — A Personal Note
 
 Whenever I have worked on Windows, there has always been a Salamander close at hand. First Servant Salamander, later Altap Salamander — in my view one of the finest pieces of software I have ever worked with. But the last released version of Altap Salamander dates back to 2019, and it still carries a few aches inherited from the original versions: incomplete encoding support, missing long directory and file path support, and quite a few others. At the same time, many of my friends and family members use Altap Salamander every day, both at work and at home.
