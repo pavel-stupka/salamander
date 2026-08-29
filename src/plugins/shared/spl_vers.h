@@ -34,7 +34,7 @@
 // where MINORB were hundredths appended without a dot (2.53) and a zero was dropped (5.0)
 #define VERSINFO_SALAMANDER_MAJOR 0
 #define VERSINFO_SALAMANDER_MINORA 1
-#define VERSINFO_SALAMANDER_MINORB 6
+#define VERSINFO_SALAMANDER_MINORB 7
 
 #define VERSINFO_SALAMANDER_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSION_TXT
 #define VERSINFO_SAL_SHORT_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSIONSHORT_TXT
@@ -126,10 +126,15 @@
 //       viewer for 200+ formats in 12 colour schemes; configurable Command
 //       Shell - PowerShell, Windows Terminal, Git Bash or a custom program;
 //       winget distribution - features 070-072; see CHANGELOG.md)
+// 191 - Tandem Commander 0.1.7 (installer fix: silent installation works
+//       at last - the AI disclaimer page aborted every /VERYSILENT and
+//       /SILENT setup since feature 050, and that is what blocked the
+//       winget submission; the application itself is unchanged from 0.1.6
+//       - feature 072; see CHANGELOG.md)
 
 // ! DULEZITE: nova cisla buildu je nutne zapsat do vetve "default", a pak
 //             teprve do vedlejsi vetve (kompletni seznam je jen v "default" vetvi)
-#define VERSINFO_BUILDNUMBER 190
+#define VERSINFO_BUILDNUMBER 191
 
 // VERSINFO_BETAVERSION_TXT:
 //

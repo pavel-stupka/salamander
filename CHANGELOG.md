@@ -9,6 +9,31 @@ not restate Open Salamander's own history. Versions follow
 also carries an internal build number shared by the application and every
 plugin.
 
+## [0.1.7] — 2026-08-29
+
+**Build 191.** Installer fix. Unattended installation — `/VERYSILENT` and
+`/SILENT` — works for the first time; it had been failing outright since
+version 0.1.0. Nothing in the application itself changed from 0.1.6: the source
+code is identical, only the installer script and the build number differ.
+
+### Fixed
+
+- **Unattended installation works.** Running the installer with `/VERYSILENT`
+  or `/SILENT` aborted immediately without installing anything, reporting exit
+  code 1 and, in an installation log, "Failed to proceed to next wizard page".
+  Every published version from 0.1.0 to 0.1.6 was affected, so scripted and
+  managed deployment was impossible — the installer could only ever be run by
+  hand. Cause: the AI disclaimer page keeps the *Next* button disabled until
+  the checkbox is ticked, and a silent installation still walks through the
+  wizard's pages even though it shows none of them, so it met a button it
+  could not press. The page is now skipped in a silent installation, exactly
+  as the licence page always was. Interactive installation is unchanged — the
+  disclaimer still has to be accepted before *Next* becomes available.
+
+  This is also what stopped Tandem Commander from being accepted into the
+  Windows Package Manager catalogue: its validation installs every submitted
+  package unattended.
+
 ## [0.1.6] — 2026-08-29
 
 **Build 190.** Feature release. Pressing F3 on a source or configuration file
