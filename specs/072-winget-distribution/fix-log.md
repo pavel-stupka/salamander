@@ -287,5 +287,16 @@ actually changed instead of pointing at a URL.
 - Both the CHANGELOG entry and the README section state availability as
   following Microsoft's acceptance, so neither claims something untrue in the
   days between the release and the merge.
+- **Upgrading while the application is running aborts the install.** Found
+  while verifying the 0.1.7 fix: with Tandem Commander open, a silent install
+  logs "RestartManager found an application using one of our files" followed
+  by "Some applications could not be shut down", and `/SUPPRESSMSGBOXES`
+  answers the resulting Abort/Retry/Ignore prompt with **Abort** - exit code 5,
+  changes rolled back. Practically, `winget upgrade` fails for anyone who has
+  the program open. The catalogue's validation installs on a clean machine so
+  it is unaffected, and it does not block the submission. The fix belongs in
+  the application: respond to the Restart Manager's shutdown request
+  (`WM_QUERYENDSESSION` / `RegisterApplicationRestart`) so Setup can close it.
+  Worth a feature of its own.
 - Not in scope, but now cheap: `checkver` could be redirected at the GitHub
   Releases API, or dropped in favour of `winget upgrade`.
