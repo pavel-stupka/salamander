@@ -7,11 +7,18 @@
 # a block scalar may start with '#'.
 # Placeholders: VERSION, SHA256, RELEASE_DATE
 #
-# Both scopes work on every released version. Inno Setup treats
-# "PrivilegesRequiredOverridesAllowed=dialog" (setup/tandemcommander.iss) as
-# implying "commandline", so /ALLUSERS and /CURRENTUSER are accepted in a
-# silent install - verified against that exact configuration. publish.ps1
-# fails if that directive ever disappears from the installer script.
+# ONE machine-scope installer, no switches - the canonical shape for an Inno
+# Setup package in this catalogue, and deliberately minimal.
+#
+# A second Scope: user entry with Custom: /CURRENTUSER (and /ALLUSERS on the
+# machine entry) was submitted first and FAILED check 08 Installation
+# Validation on winget-pkgs#426038, label Validation-Shell-Execute. Inno Setup
+# itself accepts the switches - that was verified - but the validation
+# pipeline runs manifests elevated (winget-pkgs issue 72224), so a
+# /CURRENTUSER install lands in the administrator's profile and is not found
+# afterwards. Per-user support is worth having, but it needs to be proven in
+# a Windows Sandbox first and added on its own, not folded into a submission
+# that is also asking for a new package to be accepted.
 #
 # ProductCode is the uninstall registry key Inno Setup derives from AppId
 # (setup/tandemcommander.iss line 10) as "<AppId>_is1". It is what lets winget
@@ -36,24 +43,14 @@ AppsAndFeaturesEntries:
     DisplayVersion: {{VERSION}}
     ProductCode: '{35C0B0DC-DB73-429C-AAA8-FBC41C937F66}_is1'
 Installers:
-  # Per-machine install into Program Files. Inno Setup requires administrator
-  # rights by default, so the installer raises the UAC prompt itself.
+  # Per-machine install into Program Files, which is what the installer does on
+  # its own: Inno Setup requires administrator rights by default and raises the
+  # UAC prompt itself. No switch is passed for the scope, and no
+  # ElevationRequirement is declared - winget handles an Inno installer's
+  # elevation without being told.
   - Architecture: x64
     Scope: machine
-    ElevationRequirement: elevatesSelf
     InstallerUrl: https://github.com/tandemcommander/tandemcommander/releases/download/v{{VERSION}}/tandemcommander-{{VERSION}}-x64-setup.exe
     InstallerSha256: {{SHA256}}
-    InstallerSwitches:
-      Custom: /ALLUSERS
-  # Per-user install into %LOCALAPPDATA%\Programs\Tandem Commander, no
-  # administrator rights needed. Same file as above - only the Inno Setup mode
-  # switch differs. ElevationRequirement is deliberately absent: a per-user
-  # install started from an already elevated shell is legal, just profile-bound.
-  - Architecture: x64
-    Scope: user
-    InstallerUrl: https://github.com/tandemcommander/tandemcommander/releases/download/v{{VERSION}}/tandemcommander-{{VERSION}}-x64-setup.exe
-    InstallerSha256: {{SHA256}}
-    InstallerSwitches:
-      Custom: /CURRENTUSER
 ManifestType: installer
 ManifestVersion: 1.10.0

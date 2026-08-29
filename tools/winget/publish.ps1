@@ -17,12 +17,10 @@
     With -Submit the manifests are sent to microsoft/winget-pkgs as a pull
     request through wingetcreate (downloaded on demand when not on PATH).
 
-    The manifests offer both install scopes. That depends on one directive in
-    setup\tandemcommander.iss - PrivilegesRequiredOverridesAllowed, which Inno
-    Setup treats as enabling the /ALLUSERS and /CURRENTUSER command line
-    parameters that winget uses to pick the scope. Its presence is asserted
-    below, so removing it fails the run loudly instead of shipping manifests
-    whose silent installs would break.
+    The manifests declare a single machine-scope installer with no switches.
+    A per-user entry was tried first and failed the catalogue's Installation
+    Validation; read the note in templates\installer.yaml.in before adding one
+    back.
 
     Contract: specs\072-winget-distribution\contracts\winget-manifest.md
     Windows PowerShell 5.1 compatible. ASCII only.
@@ -112,14 +110,6 @@ if (-not $Version) {
 }
 if ($Version -notmatch '^\d+\.\d+\.\d+$') { Fail "version must look like 0.1.5, got '$Version'" }
 
-# The manifests advertise both install scopes, which works only because the
-# installer permits the /ALLUSERS and /CURRENTUSER command line parameters.
-# Inno Setup enables them for either override mode, so any value will do - but
-# the directive must be there. Without it winget's silent install breaks in a
-# way nothing else here would catch.
-if (-not (Select-String -LiteralPath $IssPath -Pattern '^\s*PrivilegesRequiredOverridesAllowed\s*=\s*\S' -Quiet)) {
-    Fail "setup\tandemcommander.iss has no PrivilegesRequiredOverridesAllowed - the manifests offer a per-user install the installer would refuse (contracts/winget-manifest.md section 3)"
-}
 
 #------------------------------------------------------------------
 # Release date and release summary: from CHANGELOG.md
@@ -293,7 +283,7 @@ Write-Host (' Version       : {0}' -f $Version)
 Write-Host (' Release date  : {0}' -f $ReleaseDate)
 Write-Host (' Installer     : {0} ({1:N0} bytes)' -f $installerOrigin, $installerItem.Length)
 Write-Host (' SHA256        : {0}' -f $Sha256)
-Write-Host (' Scopes        : machine + user')
+Write-Host (' Scope         : machine')
 Write-Host (' Submit        : {0}' -f $submitText)
 Write-Host '============================================================'
 Write-Host ''

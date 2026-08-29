@@ -125,14 +125,9 @@ winget uninstall PavelStupka.TandemCommander
 ```
 
 The install must be completely silent — no wizard, no disclaimer page, and the
-application must not start afterwards. Also test the per-user path from a
-**normal, non-elevated** shell; it must complete **without a UAC prompt** and
-land in `%LOCALAPPDATA%\Programs\Tandem Commander`:
-
-```
-winget install --manifest tools\winget\manifests\0.1.6 --scope user
-winget uninstall PavelStupka.TandemCommander --scope user
-```
+application must not start afterwards. Note that this replaces whatever
+Tandem Commander you already have installed, and the uninstall step removes
+it; run it only when you mean to, or use the sandbox below instead.
 
 ### Reproduce the pipeline's own test
 
@@ -144,26 +139,27 @@ git clone --depth 1 https://github.com/microsoft/winget-pkgs
 winget-pkgs\Tools\SandboxTest.ps1 tools\winget\manifests\0.1.6
 ```
 
-## Install scopes
+## Install scope
 
-The manifests offer both scopes, over the same installer file:
+The manifests declare **one** installer: `Scope: machine`, no switches. It
+installs into `%ProgramFiles%\Tandem Commander` and asks for administrator
+rights, which is what the installer does on its own.
 
-| `--scope` | Switch passed to Inno Setup | Installs into | Elevation |
-|---|---|---|---|
-| `machine` (default) | `/ALLUSERS` | `%ProgramFiles%\Tandem Commander` | UAC prompt |
-| `user` | `/CURRENTUSER` | `%LOCALAPPDATA%\Programs\Tandem Commander` | none |
+`winget install --scope user` is therefore not offered. A per-user entry
+(`Custom: /CURRENTUSER`) was part of the first submission and failed the
+catalogue's *08. Installation Validation* with the label
+`Validation-Shell-Execute`; it was removed and the package went in
+machine-only.
 
-This works on **every released version**, 0.1.5 included, and needed no change
-to the installer: Inno Setup enables the `/ALLUSERS` and `/CURRENTUSER`
-command-line parameters for either override mode, and
-`setup/tandemcommander.iss` has always carried
-`PrivilegesRequiredOverridesAllowed=dialog`.
+Inno Setup itself is not the obstacle — `PrivilegesRequiredOverridesAllowed=dialog`
+in `setup/tandemcommander.iss` already enables `/ALLUSERS` and `/CURRENTUSER`,
+and a silent `/CURRENTUSER` install was verified to work with no elevation. The
+untested part was the validation pipeline, which runs manifests elevated, so a
+per-user install lands in the administrator's profile and is not detected.
 
-That directive is therefore load-bearing for winget even though nothing in the
-installer script otherwise suggests it. It carries a comment saying so, and
-`publish.ps1` refuses to generate anything if it disappears — otherwise the
-manifests would keep advertising a per-user install that silently fails on
-users' machines.
+If you want to bring it back: add the entry to
+`templates/installer.yaml.in`, prove it with `Tools\SandboxTest.ps1` from a
+winget-pkgs clone, and submit it as a change of its own.
 
 ## Troubleshooting
 

@@ -20,16 +20,7 @@ AppsAndFeaturesEntries:
 Installers:
   - Architecture: x64
     Scope: machine
-    ElevationRequirement: elevatesSelf
     InstallerUrl: https://github.com/tandemcommander/tandemcommander/releases/download/v0.1.6/tandemcommander-0.1.6-x64-setup.exe
     InstallerSha256: 88AEE5CF60B3459D59979D1A3C01FF9AF7CA8C38EABC18D167773924CE2841CB
-    InstallerSwitches:
-      Custom: /ALLUSERS
-  - Architecture: x64
-    Scope: user
-    InstallerUrl: https://github.com/tandemcommander/tandemcommander/releases/download/v0.1.6/tandemcommander-0.1.6-x64-setup.exe
-    InstallerSha256: 88AEE5CF60B3459D59979D1A3C01FF9AF7CA8C38EABC18D167773924CE2841CB
-    InstallerSwitches:
-      Custom: /CURRENTUSER
 ManifestType: installer
 ManifestVersion: 1.10.0
