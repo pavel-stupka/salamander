@@ -51,11 +51,12 @@ ticked box means "checked", not "written".
   placeholder substitution, comment stripping, download, Authenticode verification against
   `tools/codesign/codesign.cfg`, SHA256, write, `winget validate`,
   `wingetcreate submit`
-- [x] T007 Run quickstart §1 for 0.1.5; fix the two schema errors it exposed
+- [x] T007 Run quickstart §1 (first for 0.1.5); fix the two schema errors it exposed
   (`InstallerSuccessCodes: [0]` is rejected; the locale field is
   `Documentations`, not `Documentation`)
-- [x] T008 Commit the generated `tools/winget/manifests/0.1.5/` as the record
-  of what will be submitted (FR-010)
+- [x] T008 Commit the generated manifests as the record of what was
+  submitted (FR-010). `manifests/0.1.6/`; the 0.1.5 directory was generated
+  during development, never submitted, and has been removed
 - [x] T009 Run quickstart §2 (signature gate) and confirm both rejection paths
 - [ ] T010 [MANUAL] Run quickstart §4: real silent install from the manifests,
   `winget list`, uninstall. Needs an administrator shell.
@@ -97,8 +98,10 @@ ticked box means "checked", not "written".
 - [x] T020 CHANGELOG entry announcing winget availability, written with the
   0.1.6 version bump (build 190, released 2026-08-29) as the constitution
   requires; phrased so it stays true before Microsoft accepts the submission
-- [ ] T021 [MANUAL] Submit the first pull request (quickstart §6). Irreversible
-  and public; explicitly held for the user's decision
+- [x] T021 First pull request submitted for **0.1.6**:
+  microsoft/winget-pkgs#426038 (2026-08-29). CLA signed, checks 01-06 and
+  license/cla green, 05 neutral as expected for a new package, 07-10 running;
+  awaiting the human review the `New-Package` label calls for
 - [x] T022 User-facing *Installing* section in `README.md` (installer
   download + the two winget commands, with availability stated as pending
   acceptance). tandemcommander.org still to follow - outside this repository

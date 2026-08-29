@@ -14,7 +14,7 @@ says *verified*.
 | T005 locale template | done | 16 tags, WebView2 note |
 | T006 publish.ps1 | done | 5.1, ASCII, ~350 lines |
 | T007 Generate + validate 0.1.5 | **verified** | `Manifest validation succeeded.` |
-| T008 Commit manifests | done | `tools/winget/manifests/0.1.5/` |
+| T008 Commit manifests | done | `tools/winget/manifests/0.1.6/` |
 | T009 Signature gate | **verified** | both rejection paths |
 | T010 Real install | **open (manual)** | needs an administrator shell |
 | T011 Workflow | done | YAML parsed; not yet run |
@@ -27,7 +27,7 @@ says *verified*.
 | T018 CLAUDE.md | done | |
 | T019 This log | done | |
 | T020 CHANGELOG | done | written with the 0.1.6 bump |
-| T021 First submission | **open (user's call)** | irreversible, public |
+| T021 First submission | **done** | winget-pkgs#426038, for 0.1.6 |
 | T022 User-facing README | done | website still to follow |
 
 ## The one real correction: the installer needed no change at all
@@ -74,6 +74,31 @@ machine-wide Tandem Commander 0.1.5 installation was never touched.
 Recorded because the mistake is instructive: the boundary would have shipped
 correct manifests for the wrong reason, and would have delayed a working
 feature by a release.
+
+## First submission
+
+Opened 2026-08-29 for **0.1.6**, not 0.1.5: 0.1.6 is the release whose
+CHANGELOG and README announce winget, and it was published while this feature
+was still in progress.
+
+- Pull request: **microsoft/winget-pkgs#426038**
+- Installer SHA256 `88AEE5CF60B3459D59979D1A3C01FF9AF7CA8C38EABC18D167773924CE2841CB`,
+  8 002 608 bytes, signature verified against `codesign.cfg` before generating
+- CLA signed on the pull request (one-off; later versions do not need it)
+- Checks 01 Pull Request Validation, 02 Manifest Validation, 03 URLs
+  Validation, 04 URL Domain Validation, 06 Catalog Content Verification and
+  `license/cla` green; 05 Manifest Policy Validation **neutral**, which is the
+  expected outcome for a new package rather than a failure; 07-10 running at
+  the time of writing
+- Labelled `New-Package`, so it waits on a human reviewer
+
+**Manifest schema 1.10.0 was accepted** by check 02, although the pull request
+template mentions 1.12 — the concern noted during implementation was unfounded.
+
+The `manifests/0.1.5/` directory was removed: it was generated while building
+the tooling, was never submitted, and keeping it would suggest a release that
+never reached the catalogue. The verification runs recorded below were made
+against it and stand as written.
 
 ## Verification results
 
@@ -161,9 +186,7 @@ actually changed instead of pointing at a URL.
   displace `InstallerSwitches.Custom`. If `--scope user` were to install
   per-machine, the switches must move to the `Silent` / `SilentWithProgress`
   fields.
-- **T021** the first submission is irreversible and public — held for the
-  user. It will be made for **0.1.6**, not 0.1.5: that is the release the
-  CHANGELOG and the README announce winget with.
+- **T021 is done** — see *First submission* below.
 - **tandemcommander.org** still needs the same *Installing* wording as
   `README.md`; that lives outside this repository.
 - Both the CHANGELOG entry and the README section state availability as

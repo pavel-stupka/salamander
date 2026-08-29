@@ -17,17 +17,17 @@ software; they cannot be automated here.
 ## 1. Generate and validate for a released version (FR-002..FR-005, SC-001)
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.5
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.6
 ```
 
 Must:
 
 - download the asset from
-  `https://github.com/tandemcommander/tandemcommander/releases/download/v0.1.5/tandemcommander-0.1.5-x64-setup.exe`
-- report `SHA256 : 0B41E35A0C86AD5CB7C10F6D5C99BEBBE32B907F47A2A1BFFD4884AC8D1C36D5`
-- report `Release date  : 2026-08-25` (taken from `CHANGELOG.md`, not typed)
+  `https://github.com/tandemcommander/tandemcommander/releases/download/v0.1.6/tandemcommander-0.1.6-x64-setup.exe`
+- report `SHA256 : 88AEE5CF60B3459D59979D1A3C01FF9AF7CA8C38EABC18D167773924CE2841CB`
+- report `Release date  : 2026-08-29` (taken from `CHANGELOG.md`, not typed)
 - report `Scopes        : machine + user`
-- write three files into `tools\winget\manifests\0.1.5\`
+- write three files into `tools\winget\manifests\0.1.6\`
 - print `Manifest validation succeeded.` and exit 0
 
 Then check the generated installer manifest contains **two** entries under
@@ -43,13 +43,13 @@ size check:
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 ^
-    -Version 0.1.5 -LocalFile C:\Windows\explorer.exe
+    -Version 0.1.6 -LocalFile C:\Windows\explorer.exe
 ```
 
 Must fail with
 `ERROR: the installer is signed by an unexpected certificate (CN=Microsoft Windows, ...)`,
 warn first that the file's version does not match, and leave
-`tools\winget\manifests\0.1.5\` untouched — the check runs before anything is
+`tools\winget\manifests\0.1.6\` untouched — the check runs before anything is
 written. A file under 1 MB is rejected earlier still, with
 `the installer is only N bytes - wrong file?`.
 
@@ -63,7 +63,7 @@ it. To prove the guard still works, comment the directive out temporarily:
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "(Get-Content setup\tandemcommander.iss) -replace '^PrivilegesRequiredOverridesAllowed', ';PrivilegesRequiredOverridesAllowed' | Set-Content setup\tandemcommander.iss"
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.5
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.6
 git checkout -- setup\tandemcommander.iss
 ```
 
@@ -93,7 +93,7 @@ winget settings --enable LocalManifestFiles
 Then:
 
 ```
-winget install --manifest tools\winget\manifests\0.1.5
+winget install --manifest tools\winget\manifests\0.1.6
 winget list PavelStupka.TandemCommander
 winget uninstall PavelStupka.TandemCommander
 ```
@@ -102,7 +102,7 @@ Must:
 
 - install with **no wizard, no licence page, no disclaimer page**, and must
   **not** start the application afterwards
-- appear in `winget list` as `Tandem Commander  PavelStupka.TandemCommander  0.1.5`
+- appear in `winget list` as `Tandem Commander  PavelStupka.TandemCommander  0.1.6`
 - uninstall silently and leave no entry in *Apps & features*
 
 ### 4b. Per-user installation **(manual)** (US3)
@@ -110,7 +110,7 @@ Must:
 No special build is needed. In a **normal, non-elevated** shell:
 
 ```
-winget install --manifest tools\winget\manifests\0.1.5 --scope user
+winget install --manifest tools\winget\manifests\0.1.6 --scope user
 winget uninstall PavelStupka.TandemCommander --scope user
 ```
 
@@ -135,7 +135,7 @@ Windows Sandbox:
 
 ```
 git clone --depth 1 https://github.com/microsoft/winget-pkgs
-winget-pkgs\Tools\SandboxTest.ps1 tools\winget\manifests\0.1.5
+winget-pkgs\Tools\SandboxTest.ps1 tools\winget\manifests\0.1.6
 ```
 
 ## 5. Workflow (FR-007)
@@ -155,7 +155,7 @@ the manifests only.`
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 ^
-    -Version 0.1.5 -Submit
+    -Version 0.1.6 -Submit
 ```
 
 Opens a pull request in `microsoft/winget-pkgs`. The first submission of a new
