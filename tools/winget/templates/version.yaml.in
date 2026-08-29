@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.version.1.10.0.schema.json
+#
+# Tandem Commander - winget version manifest template.
+# Generated into tools/winget/manifests/<version>/ by tools/winget/publish.ps1,
+# which strips every comment except the schema line above - so authoring notes
+# stay here and never reach the submitted manifest. Consequence: no line inside
+# a block scalar may start with '#'.
+# Placeholders: VERSION
+
+PackageIdentifier: PavelStupka.TandemCommander
+PackageVersion: {{VERSION}}
+DefaultLocale: en-US
+ManifestType: version
+ManifestVersion: 1.10.0

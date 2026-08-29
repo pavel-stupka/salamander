@@ -1,0 +1,196 @@
+# winget distribution
+
+Everything needed to publish Tandem Commander in the **Windows Package
+Manager** catalogue, so it can be installed and kept up to date with:
+
+```
+winget install tandemcommander
+winget upgrade tandemcommander
+```
+
+The catalogue does not host the installer — it hosts a *manifest* that points
+at the installer already published on GitHub Releases and records its SHA256.
+Publishing a version therefore means opening a pull request against
+[microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs) with three
+YAML files. That is what this directory automates.
+
+| | |
+|---|---|
+| Package identifier | `PavelStupka.TandemCommander` |
+| Short name (moniker) | `tandemcommander` |
+| Catalogue path | `manifests/p/PavelStupka/TandemCommander/<version>/` |
+
+The identifier is permanent. Changing it after the package is accepted creates
+a *different* package — installed users would not be moved to it — so it is
+not something to revise casually.
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `publish.ps1` | The only entry point: generates, validates and optionally submits |
+| `templates/version.yaml.in` | Version manifest template |
+| `templates/installer.yaml.in` | Installer manifest template — architecture, scopes, ProductCode |
+| `templates/locale.en-US.yaml.in` | **All catalogue metadata**: description, tags, URLs, licence |
+| `manifests/<version>/` | Generated output, committed as a record of what was submitted |
+
+**The templates are the source of truth.** To change the description, add a
+tag, or fix a URL, edit `templates/locale.en-US.yaml.in` and regenerate — never
+edit a file under `manifests/`. Authoring comments in the templates are
+stripped from the generated manifests, so explanations can be as long as they
+need to be.
+
+## One-time setup
+
+Only needed before the *first* submission, or before the workflow can submit
+on its own.
+
+1. **Fork winget-pkgs.** Open <https://github.com/microsoft/winget-pkgs> and
+   fork it to the GitHub account that will own the token below. `wingetcreate`
+   pushes the branch to that fork and opens the pull request from it.
+2. **Create a token.** GitHub → *Settings* → *Developer settings* →
+   *Personal access tokens* → *Tokens (classic)* → *Generate new token*.
+   The only scope needed is **`public_repo`**. Copy the value once.
+3. **For automatic submission**, add it to this repository:
+   *Settings* → *Secrets and variables* → *Actions* → *New repository secret*,
+   name `WINGET_PAT`. Without this secret the workflow still runs and still
+   generates the manifests — it simply does not submit.
+4. **For local submission**, set it in the shell instead:
+   `$env:WINGET_PAT = '<token>'`.
+
+`wingetcreate` is downloaded on demand when it is not on PATH, so nothing has
+to be installed. To have it permanently:
+`winget install Microsoft.WingetCreate`.
+
+## Publishing a version
+
+Once the GitHub release for `v<version>` exists **and its installer asset is
+uploaded**, publishing is one command:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.6 -Submit
+```
+
+Or nothing at all: the `Publish to winget` workflow runs automatically when a
+GitHub release is published and does exactly the same, provided `WINGET_PAT`
+is configured. Pre-releases are skipped.
+
+Leave `-Submit` off for a dry run — the manifests are generated and validated,
+and nothing leaves the machine:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.6
+```
+
+`-Version` may be omitted; it then defaults to `MyAppVersion` from
+`setup\tandemcommander.iss`.
+
+What the script does, in order:
+
+1. Reads the release date and the lead paragraph of that version's
+   `CHANGELOG.md` section (the paragraph becomes the catalogue release notes).
+2. Downloads the installer from its GitHub Releases URL — the very file users
+   will get, not a local build. `-LocalFile <path>` hashes a local build
+   instead, for a rehearsal before the release is uploaded.
+3. **Verifies the Authenticode signature** against the thumbprint in
+   `tools\codesign\codesign.cfg`. An unsigned or differently signed binary
+   stops the run; `-SkipSignatureCheck` overrides this for testing only.
+4. Computes the SHA256 and renders the three manifests into
+   `manifests\<version>\`.
+5. Runs `winget validate`.
+6. With `-Submit`, opens the pull request through `wingetcreate`.
+
+Commit the generated `manifests\<version>\` directory — it is the record of
+what was submitted.
+
+### After submitting
+
+The **first** submission of a new package is reviewed by a human moderator and
+can take a few days. Later versions are usually merged automatically once the
+pipeline's install/uninstall test in a Windows Sandbox passes. Watch the pull
+request for validation labels; a failure there is nearly always the silent
+install or the uninstall, both of which can be reproduced locally (below).
+
+## Testing before submitting
+
+### Install straight from the generated manifests
+
+In an **administrator** shell:
+
+```
+winget settings --enable LocalManifestFiles
+winget install --manifest tools\winget\manifests\0.1.6
+winget list PavelStupka.TandemCommander
+winget uninstall PavelStupka.TandemCommander
+```
+
+The install must be completely silent — no wizard, no disclaimer page, and the
+application must not start afterwards. Also test the per-user path from a
+**normal, non-elevated** shell; it must complete **without a UAC prompt** and
+land in `%LOCALAPPDATA%\Programs\Tandem Commander`:
+
+```
+winget install --manifest tools\winget\manifests\0.1.6 --scope user
+winget uninstall PavelStupka.TandemCommander --scope user
+```
+
+### Reproduce the pipeline's own test
+
+The winget-pkgs repository ships the script the validation pipeline uses. It
+installs and uninstalls the package in a throwaway Windows Sandbox:
+
+```
+git clone --depth 1 https://github.com/microsoft/winget-pkgs
+winget-pkgs\Tools\SandboxTest.ps1 tools\winget\manifests\0.1.6
+```
+
+## Install scopes
+
+The manifests offer both scopes, over the same installer file:
+
+| `--scope` | Switch passed to Inno Setup | Installs into | Elevation |
+|---|---|---|---|
+| `machine` (default) | `/ALLUSERS` | `%ProgramFiles%\Tandem Commander` | UAC prompt |
+| `user` | `/CURRENTUSER` | `%LOCALAPPDATA%\Programs\Tandem Commander` | none |
+
+This works on **every released version**, 0.1.5 included, and needed no change
+to the installer: Inno Setup enables the `/ALLUSERS` and `/CURRENTUSER`
+command-line parameters for either override mode, and
+`setup/tandemcommander.iss` has always carried
+`PrivilegesRequiredOverridesAllowed=dialog`.
+
+That directive is therefore load-bearing for winget even though nothing in the
+installer script otherwise suggests it. It carries a comment saying so, and
+`publish.ps1` refuses to generate anything if it disappears — otherwise the
+manifests would keep advertising a per-user install that silently fails on
+users' machines.
+
+## Troubleshooting
+
+**`the installer is not validly signed`** — the release asset was built
+without `sign`. Rebuild with `build.cmd full release sign setup`, re-upload the
+asset, and run again. Never publish an unsigned installer: SmartScreen warns
+on it and the catalogue makes it far more widely downloaded.
+
+**`the installer reports version 'x' but y is being published`** — a warning,
+not an error: the downloaded file's version resource disagrees with
+`-Version`. Usually the wrong `-LocalFile`, or an asset uploaded to the wrong
+tag.
+
+**`could not download the release asset`** — the release exists but the
+installer is not attached to it yet, or the tag is not `v<version>`.
+
+**`setup\tandemcommander.iss has no PrivilegesRequiredOverridesAllowed`** —
+that directive was removed or commented out. Restore it; see *Install scopes*
+above for why the manifests depend on it.
+
+**`winget validate rejected the manifests`** — a template edit broke the
+schema. The message names the field. The schema for each file is linked from
+its first line, and editors with a YAML language server will flag mistakes as
+you type.
+
+**`no GitHub token`** — `-Token` was not passed and `WINGET_PAT` is not set;
+see *One-time setup*.
+
+**The pull request pipeline fails on installation** — reproduce it with
+`SandboxTest.ps1` above. Almost always the installer, not the manifest.

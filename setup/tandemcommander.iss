@@ -1,4 +1,4 @@
-﻿#define MyAppName "Tandem Commander"
+#define MyAppName "Tandem Commander"
 #define MyAppVersion "0.1.5"
 #define MyAppPublisher "Pavel Stupka"
 #define MyAppURL "https://tandemcommander.org/"
@@ -31,6 +31,12 @@ DisableProgramGroupPage=yes
 LicenseFile=license.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
+; Feature 072: do not narrow this. Permitting the install-mode dialog also
+; enables the /ALLUSERS and /CURRENTUSER command line parameters (Inno Setup
+; documents "dialog" as implying "commandline"), and that is how winget picks
+; the install scope in a silent install, where no dialog can be shown.
+; Verified against this exact configuration: /VERYSILENT /CURRENTUSER installs
+; into %LOCALAPPDATA%\Programs with no elevation. See tools/winget/README.md.
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=output
 OutputBaseFilename=tandemcommander-{#MyAppVersion}-x64-setup

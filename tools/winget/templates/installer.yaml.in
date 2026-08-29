@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.10.0.schema.json
+#
+# Tandem Commander - winget installer manifest template.
+# Generated into tools/winget/manifests/<version>/ by tools/winget/publish.ps1,
+# which strips every comment except the schema line above - so authoring notes
+# stay here and never reach the submitted manifest. Consequence: no line inside
+# a block scalar may start with '#'.
+# Placeholders: VERSION, SHA256, RELEASE_DATE
+#
+# Both scopes work on every released version. Inno Setup treats
+# "PrivilegesRequiredOverridesAllowed=dialog" (setup/tandemcommander.iss) as
+# implying "commandline", so /ALLUSERS and /CURRENTUSER are accepted in a
+# silent install - verified against that exact configuration. publish.ps1
+# fails if that directive ever disappears from the installer script.
+#
+# ProductCode is the uninstall registry key Inno Setup derives from AppId
+# (setup/tandemcommander.iss line 10) as "<AppId>_is1". It is what lets winget
+# recognise an already installed Tandem Commander for list/upgrade/uninstall.
+# It must be kept in step with AppId; changing AppId breaks upgrade detection.
+
+PackageIdentifier: PavelStupka.TandemCommander
+PackageVersion: {{VERSION}}
+Platform:
+  - Windows.Desktop
+MinimumOSVersion: 10.0.19041.0
+InstallerType: inno
+UpgradeBehavior: install
+ReleaseDate: {{RELEASE_DATE}}
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+AppsAndFeaturesEntries:
+  - DisplayName: Tandem Commander
+    Publisher: Pavel Stupka
+    DisplayVersion: {{VERSION}}
+    ProductCode: '{35C0B0DC-DB73-429C-AAA8-FBC41C937F66}_is1'
+Installers:
+  # Per-machine install into Program Files. Inno Setup requires administrator
+  # rights by default, so the installer raises the UAC prompt itself.
+  - Architecture: x64
+    Scope: machine
+    ElevationRequirement: elevatesSelf
+    InstallerUrl: https://github.com/tandemcommander/tandemcommander/releases/download/v{{VERSION}}/tandemcommander-{{VERSION}}-x64-setup.exe
+    InstallerSha256: {{SHA256}}
+    InstallerSwitches:
+      Custom: /ALLUSERS
+  # Per-user install into %LOCALAPPDATA%\Programs\Tandem Commander, no
+  # administrator rights needed. Same file as above - only the Inno Setup mode
+  # switch differs. ElevationRequirement is deliberately absent: a per-user
+  # install started from an already elevated shell is legal, just profile-bound.
+  - Architecture: x64
+    Scope: user
+    InstallerUrl: https://github.com/tandemcommander/tandemcommander/releases/download/v{{VERSION}}/tandemcommander-{{VERSION}}-x64-setup.exe
+    InstallerSha256: {{SHA256}}
+    InstallerSwitches:
+      Custom: /CURRENTUSER
+ManifestType: installer
+ManifestVersion: 1.10.0
