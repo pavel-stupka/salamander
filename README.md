@@ -17,7 +17,7 @@ winget install tandemcommander
 winget upgrade tandemcommander
 ```
 
-Add `--scope user` to install into your own profile without administrator rights.
+It installs for all users, into `Program Files`, and asks for administrator rights the same way the installer does.
 
 ## Why This Project Exists — A Personal Note
 

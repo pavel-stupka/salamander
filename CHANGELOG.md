@@ -58,8 +58,8 @@ Existing behaviour is unchanged for anyone who touches neither setting.
 - **Installation and updates through winget.** Tandem Commander is published
   in the Windows Package Manager catalogue as `PavelStupka.TandemCommander`,
   so it can be installed with `winget install tandemcommander` and updated
-  with `winget upgrade` — per-machine as usual, or per-user without
-  administrator rights with `--scope user`. Availability follows Microsoft's
+  with `winget upgrade`. It installs for all users, exactly as the installer
+  does on its own. Availability follows Microsoft's
   acceptance of the submission; the download on the website and on GitHub is
   unchanged and stays the primary channel.
 
