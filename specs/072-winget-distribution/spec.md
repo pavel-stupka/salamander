@@ -30,10 +30,9 @@ No workflow touches tags or releases, and no workflow uses a secret.
   script and a GitHub workflow. The script must work without any token so it
   is usable before, and independently of, the automation.
 - Q: Should per-user installation (`winget install --scope user`) be
-  supported? → A: Yes. Planned as a change to `setup\tandemcommander.iss`;
-  implementation established that no change is needed — the existing
-  `PrivilegesRequiredOverridesAllowed=dialog` already enables the command-line
-  scope switches, so every released version supports it.
+  supported? → A: Yes, was the answer. It did not survive contact with the
+  catalogue: the entry failed Installation Validation and was withdrawn, so
+  the package ships machine-only. US3 is **not delivered**.
 - Q: Which `MinimumOSVersion` should the manifest declare, given that the
   project claims Windows 11 but the binaries target the Windows 7 API? → A:
   `10.0.19041.0` (Windows 10 2004) — what the product can actually run on,
@@ -99,11 +98,20 @@ reports the correct SHA256 for the published asset.
 A user on a locked-down machine runs `winget install tandemcommander --scope
 user` and gets Tandem Commander in their own profile, with no UAC prompt.
 
-**Why this priority**: Useful but secondary. It turned out to need no
-installer change, so it applies to every released version.
+**Why this priority**: Useful but secondary — which is exactly why carrying
+it into the submission that also had to get a new package accepted was a
+mistake.
 
-**Independent Test**: `winget install --manifest <dir> --scope user`
-completes without elevation and installs into
+**Status: withdrawn, not delivered.** The manifest entry failed check 08
+Installation Validation on microsoft/winget-pkgs#426038
+(`Validation-Shell-Execute`) and was removed. The Inno Setup side works — a
+silent `/CURRENTUSER` install was verified — but the catalogue's pipeline runs
+manifests elevated, so the install lands in the administrator's profile and is
+not detected afterwards. Reinstating it needs a passing `SandboxTest.ps1` run
+and a pull request of its own.
+
+**Independent Test** (for when it is retried): `winget install --manifest
+<dir> --scope user` completes without elevation and installs into
 `%LOCALAPPDATA%\Programs\Tandem Commander`.
 
 **Acceptance Scenarios**:
@@ -136,18 +144,19 @@ completes without elevation and installs into
 - **FR-007**: A GitHub workflow MUST run the same generator when a release is
   published, MUST skip pre-releases, and MUST finish successfully when the
   token secret is absent.
-- **FR-008**: The installer MUST accept `/ALLUSERS` and `/CURRENTUSER` so
-  winget can select the scope in a silent install. Satisfied by the existing
-  `PrivilegesRequiredOverridesAllowed` directive; no installer change.
-- **FR-009**: The generator MUST refuse to run if that directive is absent
-  from `setup/tandemcommander.iss`, so the manifests cannot advertise an
-  install mode the installer would reject.
+- **FR-008**: ~~The installer MUST accept `/ALLUSERS` and `/CURRENTUSER` so
+  winget can select the scope in a silent install.~~ **Withdrawn.** The
+  installer does accept them, but the manifests no longer use them — the
+  per-user entry failed the catalogue's Installation Validation. The manifests
+  declare a single machine-scope installer with no switches.
+- **FR-009**: ~~The generator MUST refuse to run if that directive is
+  absent.~~ **Withdrawn with FR-008** — the manifests no longer depend on the
+  directive, so the check guarded nothing and was removed.
 - **FR-010**: Generated manifests MUST be free of authoring comments and MUST
   be committed as a record of what was submitted.
 - **FR-011**: The token MUST NOT be passed on a command line by the workflow.
 - **FR-012**: Documentation MUST cover the one-time fork/token setup, the
-  per-release procedure, local install testing in both scopes, and
-  troubleshooting.
+  per-release procedure, local install testing, and troubleshooting.
 
 ### Non-goals
 
@@ -163,8 +172,9 @@ completes without elevation and installs into
 - **SC-001**: `winget validate` passes on the generated manifests for 0.1.5.
 - **SC-002**: `winget install --manifest` installs 0.1.5 silently, is listed
   by `winget list`, and uninstalls cleanly.
-- **SC-003**: Generated manifests declare both install scopes, and the
-  generator refuses to run if the installer directive they depend on is gone.
+- **SC-003**: Generated manifests declare exactly one installer entry,
+  machine scope, with no switches — the shape that passes the catalogue's
+  Installation Validation.
 - **SC-004**: The generator refuses an installer whose signature does not
   match the committed thumbprint.
 - **SC-005**: Publishing a subsequent version requires exactly one command and

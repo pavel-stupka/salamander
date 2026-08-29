@@ -26,7 +26,7 @@ Must:
   `https://github.com/tandemcommander/tandemcommander/releases/download/v0.1.6/tandemcommander-0.1.6-x64-setup.exe`
 - report `SHA256 : 88AEE5CF60B3459D59979D1A3C01FF9AF7CA8C38EABC18D167773924CE2841CB`
 - report `Release date  : 2026-08-29` (taken from `CHANGELOG.md`, not typed)
-- report `Scopes        : machine + user`
+- report `Scope         : machine`
 - write three files into `tools\winget\manifests\0.1.6\`
 - print `Manifest validation succeeded.` and exit 0
 
@@ -53,34 +53,41 @@ warn first that the file's version does not match, and leave
 written. A file under 1 MB is rejected earlier still, with
 `the installer is only N bytes - wrong file?`.
 
-## 3. The installer-directive guard (FR-009)
+## 3. One installer entry, machine scope (SC-003)
 
-The manifests offer a per-user install only because
-`setup\tandemcommander.iss` permits the Inno Setup scope switches. Nobody
-edits that file with winget in mind, so the generator refuses to run without
-it. To prove the guard still works, comment the directive out temporarily:
+Check the generated installer manifest. Under `Installers:` there must be
+**exactly one** entry:
 
+```yaml
+Installers:
+  - Architecture: x64
+    Scope: machine
+    InstallerUrl: ...
+    InstallerSha256: ...
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "(Get-Content setup\tandemcommander.iss) -replace '^PrivilegesRequiredOverridesAllowed', ';PrivilegesRequiredOverridesAllowed' | Set-Content setup\tandemcommander.iss"
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.6
-git checkout -- setup\tandemcommander.iss
-```
 
-The middle command must fail with
-`ERROR: setup\tandemcommander.iss has no PrivilegesRequiredOverridesAllowed ...`.
-Confirm `git status` is clean afterwards.
+No `InstallerSwitches`, no `ElevationRequirement`, no second entry. That is the
+shape the catalogue's Installation Validation accepts for an Inno Setup
+package, and the installer does per-machine installation on its own anyway.
 
-### Why no version boundary
+### Why there is no per-user entry
 
-The plan assumed older releases could not honour `/ALLUSERS` and
-`/CURRENTUSER`, and gated them out. That was wrong: Inno Setup enables the
-command-line switches for the `dialog` override mode too, which
-`tandemcommander.iss` has always had. Verified with a probe installer carrying
-the *exact* privilege configuration of the real one — `/VERYSILENT
-/CURRENTUSER` exited 0, installed into `%LOCALAPPDATA%\Programs\<AppName>`
-with no elevation, and wrote the `HKCU` uninstall key. Every released version,
-0.1.5 included, therefore supports both scopes.
+The first submission carried a second `Scope: user` entry with
+`Custom: /CURRENTUSER`, plus `/ALLUSERS` on the machine entry. It failed check
+08 Installation Validation on microsoft/winget-pkgs#426038 with the label
+`Validation-Shell-Execute` and was removed.
+
+Inno Setup is not the obstacle and was verified: with
+`PrivilegesRequiredOverridesAllowed=dialog` (which implies `commandline`) a
+probe built with the installer's exact privilege configuration accepted
+`/VERYSILENT /CURRENTUSER`, exited 0, installed into
+`%LOCALAPPDATA%\Programs\<AppName>` with no elevation and wrote the `HKCU`
+uninstall key. The untested half was the catalogue's pipeline, which runs
+manifests elevated (winget-pkgs issue 72224) so the install lands in the
+administrator's profile and is not found afterwards.
+
+Before retrying it: add the entry back to `templates/installer.yaml.in`, prove
+it with `Tools\SandboxTest.ps1` (§4c), and submit it on its own.
 
 ## 4. Real installation **(manual)** (US1, SC-002)
 
@@ -105,28 +112,21 @@ Must:
 - appear in `winget list` as `Tandem Commander  PavelStupka.TandemCommander  0.1.6`
 - uninstall silently and leave no entry in *Apps & features*
 
-### 4b. Per-user installation **(manual)** (US3)
+### 4b. Per-user installation — not offered
 
-No special build is needed. In a **normal, non-elevated** shell:
+`winget install --scope user` is deliberately not available; see §3. If it is
+ever retried, this is the test it has to pass, from a **normal, non-elevated**
+shell:
 
 ```
-winget install --manifest tools\winget\manifests\0.1.6 --scope user
+winget install --manifest tools\winget\manifests\<version> --scope user
 winget uninstall PavelStupka.TandemCommander --scope user
 ```
 
-Must complete **without any UAC prompt** and install into
-`%LOCALAPPDATA%\Programs\Tandem Commander`. Then confirm the machine scope
-still works from an administrator shell with `--scope machine`, installing into
-`%ProgramFiles%\Tandem Commander`.
-
-Note that a per-user and a per-machine installation can coexist; uninstall
-whichever the test created.
-
-This step also confirms the assumption that winget adds no scope switch of its
-own that would displace `InstallerSwitches.Custom`. If `--scope user` were to
-install per-machine, or the install were to fail with an Inno Setup command
-line error, that assumption is wrong and the switches must move to the
-`Silent`/`SilentWithProgress` fields instead.
+It must complete **without any UAC prompt**, install into
+`%LOCALAPPDATA%\Programs\Tandem Commander`, and — the part that actually
+failed in the catalogue — still be found by `winget list` afterwards. Run it
+under §4c as well, since that is the environment that rejected it.
 
 ### 4c. The pipeline's own test **(manual, optional)**
 
@@ -143,9 +143,11 @@ winget-pkgs\Tools\SandboxTest.ps1 tools\winget\manifests\0.1.6
 On this branch, *Actions* -> *Publish to winget* -> *Run workflow*, leaving
 `submit` unchecked and `version` empty.
 
-Must: finish green, resolve the version from `setup/tandemcommander.iss`, print
-`Manifest validation succeeded` or the "winget is not available here" warning,
-and attach a `winget-manifests-<version>` artifact containing the three files.
+Must: finish green, resolve the version from `setup/tandemcommander.iss`,
+print `Manifest validation succeeded.` and attach a
+`winget-manifests-<version>` artifact containing the three files. The runner
+does have `winget`, so the schema really is validated there — the fallback
+warning path exists for hosts that do not.
 
 With no `WINGET_PAT` configured, a run with `submit` checked must also finish
 **green**, printing `WINGET_PAT is not configured - generating and validating

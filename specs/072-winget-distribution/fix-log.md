@@ -10,7 +10,7 @@ says *verified*.
 | T001 Branch + log | done | branched from `main` |
 | T002 Decisions | done | plan.md D1-D6 |
 | T003 version template | done | |
-| T004 installer template | done | two scopes, unconditional |
+| T004 installer template | done | one machine entry, no switches |
 | T005 locale template | done | 16 tags, WebView2 note |
 | T006 publish.ps1 | done | 5.1, ASCII, ~350 lines |
 | T007 Generate + validate 0.1.5 | **verified** | `Manifest validation succeeded.` |
@@ -20,14 +20,14 @@ says *verified*.
 | T011 Workflow | done | YAML parsed; not yet run |
 | T012 tools/winget/README.md | done | |
 | T013 README.md subsection | done | |
-| T014 Workflow dry run | **open (manual)** | needs a push + Actions run |
+| T014 Workflow dry run | **verified** | runs #1 and #2, both green |
 | T015 .iss directive | **premise refuted** | change made, then reverted - see below |
-| T016 Directive guard | **verified** | fires when the directive is removed |
-| T017 Both scopes installed | **open (manual)** | no special build needed any more |
+| T016 Directive guard | **removed again** | it guarded nothing once the scope entry went |
+| T017 Both scopes installed | **refuted** | per-user entry failed validation, withdrawn |
 | T018 CLAUDE.md | done | |
 | T019 This log | done | |
 | T020 CHANGELOG | done | written with the 0.1.6 bump |
-| T021 First submission | **done** | winget-pkgs#426038, for 0.1.6 |
+| T021 First submission | **done, one round of rework** | winget-pkgs#426038 |
 | T022 User-facing README | done | website still to follow |
 
 ## The one real correction: the installer needed no change at all
@@ -99,6 +99,76 @@ The `manifests/0.1.5/` directory was removed: it was generated while building
 the tooling, was never submitted, and keeping it would suggest a release that
 never reached the catalogue. The verification runs recorded below were made
 against it and stand as written.
+
+## The per-user entry failed validation and was withdrawn
+
+The first submission carried two installer entries — `Scope: machine` with
+`Custom: /ALLUSERS` and `Scope: user` with `Custom: /CURRENTUSER`. On
+microsoft/winget-pkgs#426038 checks 01–07 and 10 passed, but **08 Installation
+Validation failed** after 6m37s and the validator applied
+`Validation-Shell-Execute`, followed by `Needs-Author-Feedback` and
+`Validation-Guide`. Check 09 was skipped as a consequence.
+
+**Cause.** The catalogue's pipeline runs manifests in an elevated context
+(winget-pkgs issue 72224). A `/CURRENTUSER` install then lands in the
+administrator's profile, and the package is not detected afterwards. The Inno
+Setup half was never the problem and had been verified: `dialog` implies
+`commandline`, and a probe with the installer's exact privilege configuration
+took `/VERYSILENT /CURRENTUSER`, exited 0 and wrote the `HKCU` uninstall key
+with no elevation.
+
+**Fix.** The template now emits one machine-scope entry with no
+`InstallerSwitches` and no `ElevationRequirement` — the canonical shape for an
+Inno package in this catalogue. Only the installer manifest changed, so the
+correction went onto the pull request branch as a single file edit rather than
+a new submission. The `PrivilegesRequiredOverridesAllowed` assertion in
+`publish.ps1` was removed with it: the manifests no longer depend on that
+directive, so it guarded nothing. The directive itself stays in
+`tandemcommander.iss`, with its comment corrected to say that nothing outside
+Setup depends on it today.
+
+**What this cost, and why.** T017 was recorded in the plan as an *unverified
+assumption* — "winget may add a scope switch of its own that displaces
+`InstallerSwitches.Custom`" — and the manifest was submitted with it anyway,
+in the one pull request that also had to get a brand-new package accepted.
+That is the actual mistake: not the technical guess, which was reasonable, but
+carrying it into a first submission instead of getting the package in
+machine-only and proposing per-user separately. Per-user installation was also
+not part of the original request; it entered the design as an option raised
+during clarification.
+
+**User-facing texts were wrong too, briefly.** `--scope user` had been promised
+in `README.md`, in the `CHANGELOG.md` entry for 0.1.6 and in the release notes
+already published on the GitHub release page. All three were corrected to say
+the package installs for all users.
+
+## Workflow, verified in production
+
+Both halves of the automation proved themselves on 2026-08-29 without being
+staged for it.
+
+**Run #1 fired by itself** when the v0.1.6 GitHub release was published, at a
+point when `WINGET_PAT` did not yet exist. It finished green having generated
+and validated the manifests and submitted nothing — exactly the intended
+degradation. Had that guard not worked, `winget-pkgs` would have received a
+second pull request for 0.1.6 alongside the manual one, for a moderator to
+close.
+
+**Run #2** was the deliberate `workflow_dispatch` dry run with `submit`
+unchecked. It settled three things that had been unverifiable locally:
+
+- the GitHub runner **can** validate the Certum certificate chain — the
+  Authenticode check passes there, so a signed release is not rejected in CI;
+- `winget` **is** available on `windows-latest`, so the schema is validated on
+  the runner too. The "winget is not available here" fallback was written on
+  the opposite assumption and stays as a safety net, not as the normal path;
+- the run produced `SHA256 88AEE5CF...41CB`, byte-identical to the local run
+  and to the submitted manifest.
+
+Consequence to remember: with the secret now in place, the **next** published
+release submits on its own. Running `publish.ps1 -Submit` by hand afterwards
+would open a duplicate pull request; the script is the fallback for when the
+workflow fails, not a second channel.
 
 ## Verification results
 
@@ -178,9 +248,10 @@ actually changed instead of pointing at a URL.
 
 ## Open items
 
-- **T010 / T014 / T017 are manual** and cannot be run from here: they install
-  software, need an administrator shell, or need a pushed branch. Commands are
-  in [quickstart.md](quickstart.md).
+- **T010 and T017 are manual** and cannot be run from here: they install
+  software and need an administrator shell. Commands are in
+  [quickstart.md](quickstart.md). T014 is done — see *Workflow, verified in
+  production* above.
 - **T017 also validates an assumption** that testing could not settle here:
   that winget adds no scope switch of its own for `inno` installers that would
   displace `InstallerSwitches.Custom`. If `--scope user` were to install

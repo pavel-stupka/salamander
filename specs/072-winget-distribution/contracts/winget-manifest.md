@@ -41,44 +41,40 @@ believe the package is not installed and will keep offering it.
 `UpgradeBehavior: install` — Inno Setup upgrades in place over an existing
 installation; winget must not uninstall first.
 
-## 3. Install scopes
+## 3. Install scope
 
-winget selects a scope by appending a switch from `InstallerSwitches.Custom`.
-Inno Setup accepts `/ALLUSERS` and `/CURRENTUSER` only when the installer
-permits the override — and **`PrivilegesRequiredOverridesAllowed=dialog`
-already does**: Inno Setup documents permitting the dialog as also enabling the
-command-line parameters. `setup/tandemcommander.iss` has carried that directive
-since before this feature, so **every released version supports both scopes**,
-including those published before it.
+**One installer entry, `Scope: machine`, no `InstallerSwitches`, no
+`ElevationRequirement`.** That is what the installer does on its own: Inno
+Setup requires administrator rights by default and raises the UAC prompt
+itself, and winget handles an Inno installer's elevation without being told.
 
-Verified against a probe installer built with the *exact* privilege
-configuration of `tandemcommander.iss` (`PrivilegesRequired` unset = admin,
-`PrivilegesRequiredOverridesAllowed=dialog`, `DefaultDirName={autopf}\...`):
-`/VERYSILENT /CURRENTUSER` exits 0, installs into
-`%LOCALAPPDATA%\Programs\<AppName>` **with no elevation**, and writes the
-`HKCU` uninstall key `{AppId}_is1`.
+### Why not per-user as well
 
-Both installer entries reference the same file and the same hash:
+A second `Scope: user` entry with `Custom: /CURRENTUSER` (and `/ALLUSERS` on
+the machine entry) was submitted in the first pull request,
+microsoft/winget-pkgs#426038, and **failed check 08 Installation Validation**
+with the label `Validation-Shell-Execute`. It was removed and the package
+resubmitted as machine-only.
 
-| Scope | Switch | ElevationRequirement | Installs into |
-|---|---|---|---|
-| `machine` | `/ALLUSERS` | `elevatesSelf` | `%ProgramFiles%\Tandem Commander` |
-| `user` | `/CURRENTUSER` | *(absent)* | `%LOCALAPPDATA%\Programs\Tandem Commander` |
+The Inno Setup half of the mechanism is sound and was verified: a probe
+installer built with the *exact* privilege configuration of
+`tandemcommander.iss` (`PrivilegesRequired` unset = admin,
+`PrivilegesRequiredOverridesAllowed=dialog`, `DefaultDirName={autopf}\...`)
+accepts `/VERYSILENT /CURRENTUSER`, exits 0, installs into
+`%LOCALAPPDATA%\Programs\<AppName>` with no elevation and writes the `HKCU`
+uninstall key `{AppId}_is1`. `dialog` implies `commandline`, so no installer
+change was ever needed.
 
-- The machine entry's `elevatesSelf` reflects Inno Setup raising its own UAC
-  prompt.
-- The user entry deliberately carries **no** `ElevationRequirement`. A
-  per-user install started from an already elevated shell is legal; it simply
-  installs into that profile. `elevationProhibited` would make winget refuse
-  the request in an elevated console. (`elevationNotRequired` is not a value
-  the schema defines — the enum is `elevationRequired`, `elevationProhibited`,
-  `elevatesSelf`.)
+What was never verified — and is recorded in the plan as the open assumption
+T017 — is how the **catalogue's validation pipeline** treats such an entry. It
+runs manifests in an elevated context (winget-pkgs issue 72224), which makes a
+`/CURRENTUSER` install land in the administrator's profile, where the package
+is not found afterwards.
 
-**This is the one thing here that a change to the installer could silently
-break.** If `PrivilegesRequiredOverridesAllowed` were removed or narrowed,
-these manifests would keep advertising a per-user install that no longer
-works. `publish.ps1` therefore asserts the directive is present in
-`setup/tandemcommander.iss` and refuses to generate without it.
+Reinstating per-user support therefore needs, in this order: a passing
+`Tools\SandboxTest.ps1` run against a manifest that carries the entry, and a
+pull request of its own — never folded into one that is also asking for a new
+package to be accepted.
 
 ## 4. Platform floor
 

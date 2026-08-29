@@ -33,9 +33,9 @@ ticked box means "checked", not "written".
 - [x] T004 [P] Write `tools/winget/templates/installer.yaml.in` per
   contracts/winget-manifest.md §2-§4: `InstallerType: inno`,
   `UpgradeBehavior: install`, `MinimumOSVersion: 10.0.19041.0`,
-  `AppsAndFeaturesEntries.ProductCode` = `{AppId}_is1`, and two installer
-  entries over the same file - machine (`/ALLUSERS`, `elevatesSelf`) and user
-  (`/CURRENTUSER`, no `ElevationRequirement`)
+  `AppsAndFeaturesEntries.ProductCode` = `{AppId}_is1`, and one machine-scope
+  installer entry with no switches (the two-entry machine+user version was
+  withdrawn after it failed validation - see T017)
 - [x] T005 [P] Write `tools/winget/templates/locale.en-US.yaml.in` with every
   catalogue metadata field: publisher/author/URLs, `License: GPL-2.0-or-later`,
   copyright per the CLAUDE.md holder rule, short + long description, 16 tags,
@@ -68,12 +68,14 @@ ticked box means "checked", not "written".
   degrade to generate-and-validate when `WINGET_PAT` is absent, pass the token
   only through the environment (FR-011), upload the manifests as an artifact
 - [x] T012 Write `tools/winget/README.md`: one-time fork/token setup,
-  per-release procedure, local testing in both scopes, how the scopes work,
+  per-release procedure, local testing, how the install scope works,
   troubleshooting
 - [x] T013 [P] Add the *Publishing to winget* subsection to `README.md` under
   *Release, Code Signing & Installer*
-- [ ] T014 [MANUAL] Run quickstart §5: `workflow_dispatch` with `submit`
-  unchecked on this branch; confirm it finishes green and attaches the artifact
+- [x] T014 Workflow verified on `main` (2026-08-29), and twice over: run #1
+  fired by itself on the v0.1.6 release publication with no `WINGET_PAT` yet
+  and correctly degraded to generate-and-validate; run #2 was the deliberate
+  `workflow_dispatch` dry run. Both green
 
 ## Phase 5: US3 - Per-user installation (P2)
 
@@ -83,12 +85,14 @@ ticked box means "checked", not "written".
   showed `dialog` alone already accepts `/CURRENTUSER` in a silent install.
   `setup/tandemcommander.iss` keeps `=dialog` and gains only a comment saying
   the directive must not be narrowed (quickstart §3)
-- [x] T016 Replace the version gating with an invariant check in
-  `publish.ps1`: refuse to generate if `PrivilegesRequiredOverridesAllowed` is
-  missing from the installer script; prove it fires by removing the directive
-- [ ] T017 [MANUAL] Run quickstart §4b: install `--scope user` without
-  elevation and `--scope machine` with it; confirm winget does not displace
-  `InstallerSwitches.Custom`
+- [x] T016 Version gating replaced with an invariant check in `publish.ps1`,
+  proven to fire; **later removed again** with the per-user entry, since the
+  manifests stopped depending on the directive it guarded
+- [x] T017 **Assumption refuted in production.** The per-user entry failed
+  check 08 Installation Validation on microsoft/winget-pkgs#426038
+  (`Validation-Shell-Execute`) and was removed; the package ships
+  machine-only. Reinstating it needs `SandboxTest.ps1` and a separate pull
+  request. See plan.md D6
 
 ## Phase 6: Ship gate
 

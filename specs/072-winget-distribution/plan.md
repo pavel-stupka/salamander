@@ -28,11 +28,9 @@ behaviour; the installer script gains only a comment.
   pre-releases, and degrades to generate-and-validate when `WINGET_PAT` is
   absent, following the repository's existing "not applicable → inform and
   succeed" guard convention.
-- **Both install scopes are offered on every released version**, including
-  0.1.5. The planned installer change turned out to be unnecessary: Inno Setup
-  treats the existing `PrivilegesRequiredOverridesAllowed=dialog` as enabling
-  the `/ALLUSERS` and `/CURRENTUSER` command-line switches too. The generator
-  asserts that directive is still present instead of gating on a version.
+- **One machine-scope installer entry, no switches.** Per-user installation
+  was attempted and withdrawn: Inno Setup accepts the scope switches, but the
+  catalogue's Installation Validation rejected the entry. See D6.
 
 ## Technical Context
 
@@ -58,7 +56,7 @@ would reject; the token must never reach a command line
 | Principle | Gate | Status |
 |-----------|------|--------|
 | I. Build Reproducibility | Nothing in the build changes. The generator derives every value from committed sources (`tandemcommander.iss`, `CHANGELOG.md`, `codesign.cfg`) and from the published asset; the same version always produces the same manifests, and they are committed. | PASS |
-| II. Backward Compatibility | No functional change to the installer at all — only a comment was added, recording why the directive must not be narrowed. Already released versions gain a per-user install path they always had but nothing exposed. | PASS |
+| II. Backward Compatibility | No functional change to the installer at all — only a comment was added. Nothing about how Tandem Commander installs or behaves changes; winget merely becomes a second way to obtain the same installer. | PASS |
 | III. Incremental Modernization | All new code is in new files under `tools/winget/`; the only edit to an existing product file is a comment. | PASS |
 | IV. Windows Platform Commitment | Windows-only tooling: Windows PowerShell 5.1, winget, Inno Setup, Authenticode. | PASS |
 | V. Plugin Architecture Preservation | No `src/` change at all; plugin interface untouched. | PASS |
@@ -138,22 +136,35 @@ describes capability rather than marketing. Windows 10 users are told in
 Windows 11 includes) — a note rather than a hard `Dependencies` entry, which
 would force the runtime on everyone.
 
-**D6 — An invariant check instead of version gating.** The plan assumed
-`/ALLUSERS` and `/CURRENTUSER` require
-`PrivilegesRequiredOverridesAllowed=commandline`, and built a version boundary
-so older releases would not advertise a scope they could not honour. Testing
-refuted the premise: Inno Setup enables the command-line switches for the
-`dialog` mode as well, which `setup/tandemcommander.iss` has always had. A
-probe built with the installer's exact privilege configuration installed
-per-user, silently, with no elevation. So the installer needed no change,
-0.1.5 offers both scopes, and the boundary was removed.
+**D6 — Per-user installation: attempted, refuted twice, withdrawn.** This
+went wrong in two stages and the record is worth keeping whole.
 
-What survives is the real risk the boundary was groping at: these manifests
-depend on a directive in a file nobody edits with winget in mind. `publish.ps1`
-therefore asserts `PrivilegesRequiredOverridesAllowed` is present and refuses
-to generate without it — a check that fails at generation time rather than
-silently at install time on a user's machine. The directive carries a comment
-saying why it must not be narrowed.
+*First premise, wrong:* that `/ALLUSERS` and `/CURRENTUSER` need
+`PrivilegesRequiredOverridesAllowed=commandline`, so older releases had to be
+gated out with a version boundary. Testing refuted it — Inno Setup enables the
+switches for the `dialog` mode too, which `setup/tandemcommander.iss` has
+always had, and a probe with the installer's exact privilege configuration
+installed per-user silently with no elevation. The installer change and the
+boundary were both removed.
+
+*Second premise, also wrong:* that the Inno Setup side working meant the
+feature worked. The first submission, microsoft/winget-pkgs#426038, failed
+check 08 Installation Validation with the label `Validation-Shell-Execute`.
+The catalogue's pipeline runs manifests in an elevated context (winget-pkgs
+issue 72224), so `/CURRENTUSER` installs into the administrator's profile and
+the package is not detected afterwards. The entry was removed and the package
+resubmitted as machine-only.
+
+**The process error, not the technical one:** T017 recorded "winget may
+displace `InstallerSwitches.Custom`" as an *unverified assumption*, and the
+manifest was submitted with it anyway — in the one pull request that also had
+to get a brand-new package accepted. An unverified assumption does not belong
+in a first submission. Per-user support is worth having; it needs a passing
+`SandboxTest.ps1` run and a pull request of its own.
+
+The `PrivilegesRequiredOverridesAllowed` assertion added to `publish.ps1`
+alongside the boundary went with the entry: the manifests no longer depend on
+that directive, so the check guarded nothing.
 
 ## Complexity Tracking
 
