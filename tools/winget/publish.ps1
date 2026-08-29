@@ -47,7 +47,8 @@
 .PARAMETER Token
     GitHub token used by wingetcreate. Default: the WINGET_PAT environment
     variable. A classic PAT with the public_repo scope; the account owning it
-    must have a fork of microsoft/winget-pkgs.
+    must have a fork of microsoft/winget-pkgs. It is handed to wingetcreate
+    through WINGET_CREATE_GITHUB_TOKEN, never on a command line.
 
 .PARAMETER SkipSignatureCheck
     Skip the Authenticode verification. For testing an unsigned local build
@@ -363,8 +364,19 @@ if ($wc) {
 
 Write-Host ''
 Write-Host "Submitting to microsoft/winget-pkgs via $wingetCreate"
-& $wingetCreate submit --token $Token $OutDir
-if ($LASTEXITCODE -ne 0) { Fail "wingetcreate submit failed with exit code $LASTEXITCODE" }
+
+# Hand the token over in the environment rather than on the command line:
+# wingetcreate warns that --token can end up in a log, which matters most in
+# CI, where the run log is kept and readable. See https://aka.ms/winget-create-token.
+# The variable is scoped to this process and removed again either way.
+$env:WINGET_CREATE_GITHUB_TOKEN = $Token
+try {
+    & $wingetCreate submit $OutDir
+    $submitExit = $LASTEXITCODE
+} finally {
+    Remove-Item Env:\WINGET_CREATE_GITHUB_TOKEN -ErrorAction SilentlyContinue
+}
+if ($submitExit -ne 0) { Fail "wingetcreate submit failed with exit code $submitExit" }
 
 Write-Host ''
 Write-Host "Pull request opened for $PackageIdentifier $Version."
