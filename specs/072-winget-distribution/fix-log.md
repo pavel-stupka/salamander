@@ -100,6 +100,40 @@ the tooling, was never submitted, and keeping it would suggest a release that
 never reached the catalogue. The verification runs recorded below were made
 against it and stand as written.
 
+## 0.1.7 passed the catalogue's validation
+
+microsoft/winget-pkgs#426090, opened automatically by the workflow when the
+v0.1.7 GitHub release was published. **All checks green**, awaiting a human
+reviewer (`New-Package`; "Merging is blocked / Review required" is the normal
+state for a new package, not a fault).
+
+| Check | Result |
+|---|---|
+| 01 Pull Request Validation | 12s |
+| 02 Manifest Validation | 10s — schema 1.10.0 accepted |
+| 03 URLs Validation | 24s |
+| 04 URL Domain Validation | 13s |
+| 05 Manifest Policy Validation | neutral — expected for a new package |
+| 06 Catalog Content Verification | 29s |
+| 07 Installers Scan | 3m |
+| **08 Installation Validation** | **32m — the check that failed twice** |
+| **09 Installer Metadata Validation** | **21s — ran for the first time** |
+| 10 Validation Completed | 10s |
+| license/cla | met (signed once, on #426038) |
+
+Two of these settle open questions. **08** confirms the `WizardSilent` fix was
+the right diagnosis: the same manifest shape that failed twice now installs
+unattended. **09** had been skipped on every previous attempt, because 08's
+failure cut the run short — it compares what the installer actually writes to
+Add/Remove Programs against `AppsAndFeaturesEntries`, so the `ProductCode`
+`{35C0B0DC-DB73-429C-AAA8-FBC41C937F66}_is1`, `DisplayName`, `Publisher` and
+`DisplayVersion` are now verified rather than assumed. That is what
+`winget list` and `winget upgrade` rely on.
+
+The installer hash the workflow published,
+`6731E14611B18C42B5AF268A03AA379F34E5332231DA8E1B602A99B5875F64DD`, is
+byte-identical to the one generated locally from the same asset.
+
 ## Root cause: the installer could not be installed silently
 
 Two rounds of Installation Validation failed on
