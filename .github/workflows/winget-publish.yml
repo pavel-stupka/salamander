@@ -1,0 +1,109 @@
+name: Publish to winget
+
+# Submits the winget manifests for a released version to microsoft/winget-pkgs.
+#
+# The pull request is opened by wingetcreate on behalf of the account owning
+# secrets.WINGET_PAT (a classic PAT with the public_repo scope). That account
+# must have a fork of microsoft/winget-pkgs. Until the secret exists this
+# workflow still runs and still generates the manifests - it just does not
+# submit them, so the repository never goes red over a missing secret.
+#
+# Everything it does can also be done from a developer machine:
+#   powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 -Version 0.1.6 -Submit
+# See tools/winget/README.md.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 0.1.6); empty = MyAppVersion from setup/tandemcommander.iss"
+        required: false
+        type: string
+      submit:
+        description: "Open the pull request in microsoft/winget-pkgs (otherwise generate and validate only)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: winget-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Submit manifests to microsoft/winget-pkgs
+    runs-on: windows-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version and mode
+        id: cfg
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_SUBMIT: ${{ inputs.submit }}
+          EVENT_NAME: ${{ github.event_name }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          WINGET_PAT: ${{ secrets.WINGET_PAT }}
+        run: |
+          $version = $env:INPUT_VERSION
+          if (-not $version -and $env:TAG_NAME) { $version = $env:TAG_NAME -replace '^v', '' }
+          if (-not $version) {
+            $iss = Get-Content -LiteralPath 'setup\tandemcommander.iss' -Encoding UTF8
+            $line = $iss | Where-Object { $_ -match '^\s*#define\s+MyAppVersion\s+"([^"]+)"' } | Select-Object -First 1
+            if ($line -match '"([^"]+)"') { $version = $Matches[1] }
+          }
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            Write-Host "::error::could not determine a version to publish (got '$version')"
+            exit 1
+          }
+
+          # A published release submits; a manual run submits only when asked.
+          $submit = ($env:EVENT_NAME -eq 'release') -or ($env:INPUT_SUBMIT -eq 'true')
+          if ($submit -and -not $env:WINGET_PAT) {
+            Write-Host "WINGET_PAT is not configured - generating and validating the manifests only."
+            Write-Host "Add the secret (classic PAT, public_repo scope) to submit automatically; see tools/winget/README.md."
+            $submit = $false
+          }
+
+          Write-Host "Version: $version   Submit: $submit"
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "submit=$submit"   | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Generate, validate and submit manifests
+        env:
+          WINGET_PAT: ${{ secrets.WINGET_PAT }}
+          TC_VERSION: ${{ steps.cfg.outputs.version }}
+          TC_SUBMIT: ${{ steps.cfg.outputs.submit }}
+        run: |
+          # publish.ps1 targets Windows PowerShell 5.1, the same way it is run
+          # on a developer machine. The token reaches it through WINGET_PAT, so
+          # it never appears on a command line.
+          $psArgs = @(
+            '-NoProfile'
+            '-ExecutionPolicy', 'Bypass'
+            '-File', '.\tools\winget\publish.ps1'
+            '-Version', $env:TC_VERSION
+          )
+          if ($env:TC_SUBMIT -eq 'True') { $psArgs += '-Submit' }
+          & powershell.exe @psArgs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload manifests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: winget-manifests-${{ steps.cfg.outputs.version }}
+          path: tools/winget/manifests/${{ steps.cfg.outputs.version }}/
+          if-no-files-found: warn
