@@ -9,6 +9,83 @@ not restate Open Salamander's own history. Versions follow
 also carries an internal build number shared by the application and every
 plugin.
 
+## [0.1.6] — 2026-08-29
+
+**Build 190.** Feature release. Pressing F3 on a source or configuration file
+now opens a new **Code Viewer** with syntax highlighting in a choice of twelve
+colour schemes, covering over 200 languages and formats. The **Command Shell**
+command (`Num /`) is no longer tied to Command Prompt — it can open Windows
+PowerShell, PowerShell 7, Windows Terminal, Git Bash or any program you name.
+This is also the first release published to the Windows Package Manager
+catalogue, so Tandem Commander can be installed and updated with `winget`.
+Existing behaviour is unchanged for anyone who touches neither setting.
+
+### Added
+
+- **Code Viewer: F3 shows source and configuration files with syntax
+  highlighting.** A new plugin takes over F3 for source code, markup and
+  configuration formats — `.cpp`, `.c`, `.h`, `.cs`, `.java`, `.js`, `.ts`,
+  `.py`, `.php`, `.rb`, `.go`, `.rs`, `.sql`, `.xml`, `.json`, `.yaml`,
+  `.toml`, `.ini`, `.sh`, `.ps1`, `Dockerfile`, `Makefile` and some two
+  hundred more, `.txt` and `.log` included (those open as plain text with line
+  numbers). Comments, strings, keywords and numbers are coloured, lines are
+  numbered, and the detected format is named in the title and the status bar.
+  The window is read-only in the strict sense: the file on disk is never
+  modified. Twelve colour schemes ship — five light (GitHub Light, Light Plus,
+  One Light, Solarized Light, Catppuccin Latte) and seven dark (GitHub Dark,
+  Dark Plus, One Dark Pro, Solarized Dark, Catppuccin Mocha, Gruvbox Dark
+  Medium, Nord) — plus a "follow the application theme" option; switching
+  recolours the open file without reloading it and keeps the scroll position.
+  Ctrl+PgDn / Ctrl+PgUp move to the next and previous file of the panel, and
+  the usual Find, word wrap, whitespace display and font size controls are on
+  the menu. Like the Markdown viewer, the Code Viewer renders through the
+  Windows WebView2 engine and shares the same warm engine, so only the first
+  view of a session pays the start-up wait. Nothing from a viewed file is ever
+  executed and no network request is made, whatever the file contains.
+
+- **The Command Shell command opens the program you choose.** *Commands →
+  Command Shell*, `Num /`, `Ctrl+/` and the toolbar button used to open the
+  system Command Prompt with no way to change it. A new **Command Shell** page
+  in the Configuration dialog (after *Hot Paths*) offers Command Prompt (the
+  default, and exactly today's behaviour), Windows PowerShell, PowerShell 7,
+  Windows Terminal and Git Bash — each located automatically wherever it is
+  installed — or a *Custom* program with your own arguments, which may use
+  `$(FullPath)` for the panel directory and `$[NAME]` for environment
+  variables. A preset that is not installed is marked in the list and refused
+  on OK. The command line box at the bottom of the window is unaffected and
+  keeps running typed commands through the system interpreter.
+
+- **Installation and updates through winget.** Tandem Commander is published
+  in the Windows Package Manager catalogue as `PavelStupka.TandemCommander`,
+  so it can be installed with `winget install tandemcommander` and updated
+  with `winget upgrade` — per-machine as usual, or per-user without
+  administrator rights with `--scope user`. Availability follows Microsoft's
+  acceptance of the submission; the download on the website and on GitHub is
+  unchanged and stays the primary channel.
+
+### Changed
+
+- **Source and configuration files no longer open in the built-in text
+  viewer** on F3, because the Code Viewer claims them. The built-in viewer is
+  still available on **Alt+F3**, and the Code Viewer declines files it cannot
+  handle (very large or binary content) and offers to open them there. Which
+  file types each viewer takes can be changed in Plugins Manager as for any
+  viewer plugin.
+
+- The default build now ships **20 plugins** instead of 19; `codeview.spl`
+  carries its own highlighting data, so the installed program and the
+  installer download are noticeably larger than 0.1.5.
+
+- The remembered *last used page* of the Configuration dialog shifts by one
+  for pages after *Hot Paths*, once, because the new page is inserted there.
+
+### Fixed
+
+- **Environment variables in user-menu arguments expand correctly when their
+  value falls outside the Windows code page.** `$[USERPROFILE]` and the like
+  used to lose accented characters — on an account named, for example, *Jiří
+  Novák* the expanded path did not exist and the command failed.
+
 ## [0.1.5] — 2026-08-25
 
 **Build 189.** Bug-fix release built on a product-wide review of how the

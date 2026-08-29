@@ -8,7 +8,7 @@ WinAPI C++ application — no MFC, no Qt, no cross-platform frameworks.
 
 ## Product Identity (established in feature 032, renamed in feature 046)
 
-- **Product name**: Tandem Commander, version **0.1.5** (internal build 189);
+- **Product name**: Tandem Commander, version **0.1.6** (internal build 190);
   released versions and what changed in each are recorded in `CHANGELOG.md`
   (mandatory per the constitution: a release bumps
   `VERSINFO_SALAMANDER_MINORB` + `VERSINFO_BUILDNUMBER` in
@@ -60,7 +60,7 @@ WinAPI C++ application — no MFC, no Qt, no cross-platform frameworks.
 src/                   All source code (~2,224 files)
   common/              Shared libraries and headers
     dep/               Third-party libs (zlib, bzip2, sqlite, fmt, wil...)
-  plugins/             29 plugins (archive, viewer, utility, network)
+  plugins/             31 plugins (archive, viewer, utility, network)
     shared/            Shared plugin build infrastructure
   vcxproj/             VS solution (salamand.sln) and project files
   lang/                English resources for main app
@@ -91,7 +91,7 @@ build.cmd full release          :: Complete Release x64 build
 
 **Plugin build policy**: `plugins.cfg` in the repository root decides
 which plugins are compiled and shipped (`name=on|off`, one line per
-plugin; currently 19 on / 10 off). Every `build.cmd` run validates the
+plugin; currently 20 on / 11 off). Every `build.cmd` run validates the
 file, builds only enabled plugins (via a generated solution filter
 `src\vcxproj\salamand.gen.slnf`, gitignored), and removes outputs of
 disabled plugins. See `specs/007-plugin-build-policy/`.
@@ -119,12 +119,12 @@ Alternative scripts in `src\vcxproj\`: `build.cmd` (simple), `rebuild.cmd` (inte
 
 ## Key Facts
 
-- **78 projects** in salamand.sln (1 main app, 29 plugins, 30 lang
+- **82 projects** in salamand.sln (1 main app, 31 plugins, 32 lang
   modules, 7 helper libs, 5 utilities, 2 shell exts, 3 setup, 1 other)
 - **Plugin set is policy-driven**: 8 obsolete plugins were removed in
   feature 007 (pak, unarj, unlha, unfat, wmobile, ieviewer, splitcbn,
   winscp); `plugins.cfg` disables 10 more by default (demos and
-  marginal plugins), so a default build ships 19 plugins
+  marginal plugins), so a default build ships 20 plugins
 - **All dependencies are embedded** — zero NuGet packages
 - **Missing deps**: unrar.dll (unrar), OpenSSL (ftp); pictview runs on
   the built-in Windows WIC engine since feature 006 (no pvw32cnv.dll

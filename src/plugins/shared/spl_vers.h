@@ -34,7 +34,7 @@
 // where MINORB were hundredths appended without a dot (2.53) and a zero was dropped (5.0)
 #define VERSINFO_SALAMANDER_MAJOR 0
 #define VERSINFO_SALAMANDER_MINORA 1
-#define VERSINFO_SALAMANDER_MINORB 5
+#define VERSINFO_SALAMANDER_MINORB 6
 
 #define VERSINFO_SALAMANDER_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) "." VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSION_TXT
 #define VERSINFO_SAL_SHORT_VERSION VERSINFO_xstr(VERSINFO_SALAMANDER_MAJOR) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORA) VERSINFO_xstr(VERSINFO_SALAMANDER_MINORB) VERSINFO_BETAVERSIONSHORT_TXT
@@ -122,10 +122,14 @@
 //       archivers, cloud drive entries, shortcuts, Explorer drops, volume
 //       information and the remaining dialogs; unpaired-surrogate names;
 //       instant Markdown viewing - features 065-069; see CHANGELOG.md)
+// 190 - Tandem Commander 0.1.6 (Code Viewer plugin - syntax-highlighted F3
+//       viewer for 200+ formats in 12 colour schemes; configurable Command
+//       Shell - PowerShell, Windows Terminal, Git Bash or a custom program;
+//       winget distribution - features 070-072; see CHANGELOG.md)
 
 // ! DULEZITE: nova cisla buildu je nutne zapsat do vetve "default", a pak
 //             teprve do vedlejsi vetve (kompletni seznam je jen v "default" vetvi)
-#define VERSINFO_BUILDNUMBER 189
+#define VERSINFO_BUILDNUMBER 190
 
 // VERSINFO_BETAVERSION_TXT:
 //
