@@ -405,3 +405,40 @@ plugin architecture preservation, UI consistency.
   ro "Comanda Shell", sk "Príkazový riadok") and keep the corpus' formal
   register. GUI matrix (quickstart §3–§6) is a human step; see
   `specs/071-configurable-command-shell/fix-log.md`.
+- 072-winget-distribution: Tandem Commander is published to the **Windows
+  Package Manager** catalogue as `PavelStupka.TandemCommander` (moniker
+  `tandemcommander`), so `winget install tandemcommander` / `winget upgrade`
+  work - the product's first update path. The catalogue stores no binary, only
+  three YAML manifests pointing at the GitHub release asset and pinning its
+  SHA256, so publishing = a pull request to `microsoft/winget-pkgs`. Tooling in
+  `tools/winget/`: the **templates are the source of truth** for all catalogue
+  metadata (authoring comments are stripped on generation, so submitted
+  manifests stay conventional - consequence: no line inside a YAML block scalar
+  may start with `#`), and one entry point `publish.ps1` (Windows PowerShell
+  5.1, `sign_release.ps1` tier) derives the version from
+  `setup/tandemcommander.iss`, the release date **and release notes** from
+  `CHANGELOG.md`, downloads the published asset, **verifies its Authenticode
+  signature against `tools/codesign/codesign.cfg`**, hashes it, renders,
+  `winget validate`s, and with `-Submit` hands the directory to `wingetcreate`.
+  `.github/workflows/winget-publish.yml` runs the same script on
+  `release: published` (pre-releases skipped) and degrades to
+  generate-and-validate when `secrets.WINGET_PAT` is absent - the first
+  workflow in the repository to use a secret. **No product file changes
+  behaviour**: the plan called for adding `commandline` to
+  `PrivilegesRequiredOverridesAllowed` in `tandemcommander.iss` so winget could
+  pass `/ALLUSERS` / `/CURRENTUSER` in a silent install, plus a version gate
+  keeping older releases from advertising a scope they could not honour. Both
+  were **refuted by testing and removed**: Inno Setup enables the command-line
+  scope switches for the `dialog` override mode too, which the installer has
+  always had - a probe with the installer's exact privilege configuration
+  installed per-user silently with no elevation. So `=dialog` stays (plus a
+  comment: **do not narrow it, winget depends on it**), and 0.1.5 already
+  offers **both** scopes. What replaces the gate is an invariant check -
+  `publish.ps1` refuses to generate if that directive is missing, so the
+  manifests can never advertise an install mode the installer would reject.
+  `MinimumOSVersion: 10.0.19041.0` states what the binaries can run on
+  (`_WIN32_WINNT=0x0601`), not the Windows 11 the project markets; winget
+  refuses to install below it. `ProductCode` is the Inno key `{AppId}_is1` and
+  must move with `AppId` or upgrade detection silently breaks. Real installs,
+  the workflow run and the first (irreversible, public) submission are manual -
+  see `specs/072-winget-distribution/quickstart.md` and `fix-log.md`.

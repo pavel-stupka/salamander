@@ -126,6 +126,35 @@ a safety net.
    certificate is re-signed; timestamps keep previously released binaries
    valid after the old certificate expires.
 
+### Publishing to winget
+
+Released versions are also published to the **Windows Package Manager**
+catalogue as `PavelStupka.TandemCommander`, so users can install and update
+with `winget install tandemcommander` / `winget upgrade tandemcommander`.
+
+The catalogue stores a manifest that points at the installer already published
+on GitHub Releases, so publishing a version means opening a pull request
+against [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs) —
+which is one command once the release asset is uploaded:
+
+```batch
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\winget\publish.ps1 ^
+    -Version 0.1.6 -Submit
+```
+
+Without `-Submit` the manifests are only generated into
+`tools\winget\manifests\<version>\` and validated, which is the safe way to
+review them first. The script downloads the published installer, **verifies
+its Authenticode signature** against `tools\codesign\codesign.cfg`, and takes
+the release date and release notes from `CHANGELOG.md`. The
+`Publish to winget` GitHub workflow runs the same script automatically when a
+release is published.
+
+Catalogue metadata (description, tags, URLs) lives in
+`tools\winget\templates\` — see
+[`tools/winget/README.md`](tools/winget/README.md) for the one-time token
+setup, local install testing, and troubleshooting.
+
 ## Development Process
 
 Features are developed one at a time through the SpecKit workflow: **specify → clarify → plan → tasks → implement**. Each feature lives in the [`specs/`](specs/) directory with its full paper trail — specification, implementation plan, task breakdown, research notes, and contracts — committed alongside the code, so the repository records not only what changed but why. Project-wide rules (build reproducibility, backward compatibility, incremental modernization, Windows platform commitment, plugin architecture preservation) are codified in the project constitution at `.specify/memory/constitution.md`.
