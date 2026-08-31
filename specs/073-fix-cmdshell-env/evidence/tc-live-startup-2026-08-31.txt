@@ -1,0 +1,52 @@
+===== explorer.exe PID 14436 started 08/31/2026 07:40:04 =====
+var count: 48
+  USERPROFILE=C:\Users\pavel
+  HOMEDRIVE=C:
+  HOMEPATH=\Users\pavel
+  HOME <unset>
+  APPDATA=C:\Users\pavel\AppData\Roaming
+  LOCALAPPDATA=C:\Users\pavel\AppData\Local
+  TEMP=C:\Users\pavel\AppData\Local\Temp
+  TMP=C:\Users\pavel\AppData\Local\Temp
+  USERNAME=pavel
+  COMSPEC=C:\WINDOWS\system32\cmd.exe
+  XDG_CACHE_HOME <unset>
+  HF_HOME <unset>
+  HF_HUB_CACHE <unset>
+  HF_HUB_OFFLINE <unset>
+  VIRTUAL_ENV <unset>
+  CONDA_PREFIX <unset>
+  NODE_OPTIONS <unset>
+  PYTHONPATH <unset>
+  OPENAI_API_KEY <unset>
+===== tandemcommander.exe PID 43552 started 08/31/2026 10:11:32 =====
+var count: 47
+  USERPROFILE=C:\Users\pavel
+  HOMEDRIVE=C:
+  HOMEPATH=\Users\pavel
+  HOME <unset>
+  APPDATA=C:\Users\pavel\AppData\Roaming
+  LOCALAPPDATA=C:\Users\pavel\AppData\Local
+  TEMP=C:\Users\pavel\AppData\Local\Temp
+  TMP=C:\Users\pavel\AppData\Local\Temp
+  USERNAME=pavel
+  COMSPEC=C:\WINDOWS\system32\cmd.exe
+  XDG_CACHE_HOME <unset>
+  HF_HOME <unset>
+  HF_HUB_CACHE <unset>
+  HF_HUB_OFFLINE <unset>
+  VIRTUAL_ENV <unset>
+  CONDA_PREFIX <unset>
+  NODE_OPTIONS <unset>
+  PYTHONPATH <unset>
+  OPENAI_API_KEY <unset>
+===== diff explorer.exe vs tandemcommander.exe =====
+  only in explorer: =::=::\
+===== registry env (what a regeneration would produce) =====
+  HKCU ChocolateyLastPathUpdate=133703648866566805
+  HKCU OneDrive=E:\OneDrive - Simopt, s.r.o
+  HKCU Path=C:\Users\pavel\bin;C:\Users\pavel\AppData\Local\Microsoft\WindowsApps;C:\Users\pavel\.dotnet\tools;C:\Users\pavel\AppData\Local\JetBrains\Toolbox\scripts;C:\Users\pavel\AppData\Roaming\Composer\vendor\bin;C:\Users\pavel\.bun\bin;C:\Users\pavel\.dotnet\tools;C:\Users\pavel\AppData\Roaming\npm;C:\Users\pavel\AppData\Local\Microsoft\WindowsApps;C:\Users\pavel\AppData\Local\Programs\Ollama;C:\Users\pavel\AppData\Local\Programs\Antigravity\bin;C:\Users\pavel\AppData\Roaming\Python\Python313\Scripts;C:\Users\pavel\.local\bin;C:\Users\pavel\AppData\Local\Programs\Microsoft VS Code\bin;C:\Programs\codesign;
+  HKCU TEMP=C:\Users\pavel\AppData\Local\Temp
+  HKCU TMP=C:\Users\pavel\AppData\Local\Temp
+  HKCU OneDriveCommercial=E:\OneDrive - Simopt, s.r.o
+  HKCU OneDriveConsumer=E:\OneDrive
