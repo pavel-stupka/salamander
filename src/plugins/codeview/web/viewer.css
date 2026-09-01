@@ -11,7 +11,10 @@
   --bg: #1e1e1e;
   --fg: #d4d4d4;
   --gutter-fg: #858585;
-  --gutter-bg: transparent;
+  /* The gutter is position:sticky, so it stays at the left edge while long
+     lines scroll UNDER it. Transparent (as it was) meant the code showed
+     through the numbers and the two smeared together -- feature 074. */
+  --gutter-bg: var(--bg);
   --sel-bg: #264f78;
   --find-bg: #613214;
   --find-current-bg: #9e6a03;
@@ -95,9 +98,32 @@ body {
 
 /* Gutter: a real element rather than ::before content, so it can be toggled
    and measured; user-select:none keeps line numbers out of the clipboard
-   (spec FR-018). */
+   (spec FR-018).
+
+   ONE width for the whole document -- feature 074. viewer.js publishes
+   --gutter-min as <digits>ch from the document's total line count; without
+   this pair the box was sized to its own number and the code stepped one
+   character to the right at line 10, 100 and 1000.
+   Two details are load-bearing, both established by measuring a real engine
+   (specs/074-fix-codeview-gutter/contracts/gutter-geometry.md):
+     * box-sizing is content-box, deliberately against the page-wide
+       border-box: the 20px of padding must sit OUTSIDE the constraint. Under
+       border-box the padding is inside it, the constraint is then smaller
+       than the natural digits-plus-padding width for every realistic digit
+       count, and the declaration silently does nothing.
+     * width, not min-width: 1ch is the engine's advance for "0" (7.14453px at
+       13px Consolas) and a rendered digit is fractionally wider (7.15625px),
+       so min-width would leave the widest rows 1/64px off the rest. width
+       pins every row to the same box; the longest number spills that 1/64px
+       into the 8px of left padding, where nothing can see it.
+   No var() fallback on purpose: if the property were ever missing the
+   declaration is invalid at computed-value time and width falls back to
+   auto -- the pre-074 behaviour -- rather than to a column too narrow
+   to hold the numbers. */
 .gut {
   flex: 0 0 auto;
+  width: var(--gutter-min);
+  box-sizing: content-box;
   text-align: right;
   padding: 0 12px 0 8px;
   color: var(--gutter-fg);

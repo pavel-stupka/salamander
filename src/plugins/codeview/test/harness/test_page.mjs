@@ -213,5 +213,63 @@ check(cppDefault === 'Consolas', 'font: the host default is Consolas (' + cppDef
 check(/monospace\s*$/.test(cssStack.trim()) && /monospace\s*$/.test(jsStack.trim()),
       'font: both stacks still end in the generic monospace family')
 
+// ==========================================================================
+// 6. the line-number gutter is ONE column, not one box per line
+// ==========================================================================
+//
+// Feature 074. The width rule is a PRODUCER/CONSUMER PAIR and it shipped
+// broken: layout() computed the digit count and published it as --gutter-min,
+// and no stylesheet rule ever read it, so every row's number box was sized to
+// its own number and the code stepped one character right at line 10, 100 and
+// 1000. Nothing was wrong with any function's logic, so only a shape check can
+// catch it -- see specs/074-fix-codeview-gutter/contracts/gutter-geometry.md.
+
+const gutterDigitsFor = eval('(' + lift('gutterDigitsFor') + ')')
+check(gutterDigitsFor(0) === 1, 'gutter: the empty document still has a defined width (1 digit)')
+check(gutterDigitsFor(1) === 1 && gutterDigitsFor(9) === 1, 'gutter: 1..9 lines need one digit')
+check(gutterDigitsFor(10) === 2 && gutterDigitsFor(99) === 2, 'gutter: 10..99 lines need two digits')
+check(gutterDigitsFor(100) === 3 && gutterDigitsFor(999) === 3, 'gutter: 100..999 lines need three digits')
+check(gutterDigitsFor(1000) === 4, 'gutter: 1000 lines need four digits')
+check(gutterDigitsFor(1000000) === 7, 'gutter: a million lines need seven digits')
+
+// The CONSUMER half. `width` and not `min-width`, and `content-box` against
+// the page-wide `* { box-sizing: border-box }`, are both load-bearing and both
+// were established by measuring a real engine (research R2/R2b):
+//   * under border-box the 20 px of padding sits INSIDE the constraint, which
+//     is then smaller than the natural digits-plus-padding width for every
+//     realistic digit count -- the declaration computes, and does nothing;
+//   * `1ch` is the advance of "0" as the engine derives it (7.14453 px for
+//     13 px Consolas), which is NOT the advance of a rendered digit
+//     (7.15625 px). With `min-width` the widest rows therefore keep their
+//     natural width and sit 1/64 px off the rest; `width` pins every row to
+//     the same box and the longest number spills that 1/64 px into the 8 px
+//     of left padding, where nothing can see it.
+const gutRule = (css.match(/^\.gut\s*\{([^}]*)\}/m) || [])[1] || ''
+check(/(^|[;\s])width:\s*var\(--gutter-min\)/.test(gutRule),
+      'gutter: the .gut rule CONSUMES --gutter-min as its width')
+check(/box-sizing:\s*content-box/.test(gutRule),
+      'gutter: .gut is content-box, so the width is digits and not digits-minus-padding')
+// Units under units. This declaration predates 074 and was INERT while the box
+// hugged its content -- it only became visible once the box got a width, so it
+// is asserted here rather than assumed to have survived.
+check(/text-align:\s*right/.test(gutRule),
+      'gutter: the numbers are flush right in the column')
+// position:sticky means long lines scroll UNDER the column, so it has to be
+// opaque; shipped transparent, which drew the code through the numbers.
+check(!/^\s*--gutter-bg:\s*transparent/m.test(css),
+      'gutter: the sticky column is not transparent')
+
+// The PRODUCER half, and the absence of the per-row style write it replaced.
+// makeLine runs for every visible row on every scroll frame; the width is a
+// property of the document, so it belongs in the stylesheet, not in a CSSOM
+// write per row (rendering-lockdown.md S2).
+const layoutBody = lift('layout')
+check(/setProperty\('--gutter-min'/.test(layoutBody),
+      'gutter: layout() PUBLISHES --gutter-min')
+check(/gutterDigitsFor\(lines\.length\)/.test(layoutBody),
+      'gutter: the width comes from the whole document, not the rendered window')
+check(!/style\.minWidth/.test(lift('makeLine')),
+      'gutter: makeLine writes no per-row inline width')
+
 console.log(failures ? 'RESULT: ' + failures + ' FAILURE(S)' : 'RESULT: ALL PASS')
 process.exit(failures ? 1 : 0)

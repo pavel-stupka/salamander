@@ -47,7 +47,6 @@ let lang = null
 let themeId = null          // active scheme id (from init/setTheme)
 let showGutter = true
 let showWhitespace = false
-let gutterDigits = 1
 let highlighting = false
 let selectAllActive = false // Select All covers the whole document, not the DOM
 
@@ -91,6 +90,7 @@ function applyThemeColors(t) {
   set('--bg', c['editor.background'] || t.bg, '#1e1e1e')
   set('--fg', c['editor.foreground'] || t.fg, '#d4d4d4')
   set('--gutter-fg', c['editorLineNumber.foreground'], 'color-mix(in srgb, var(--fg) 55%, transparent)')
+  set('--gutter-bg', c['editorGutter.background'], 'var(--bg)')
   set('--sel-bg', c['editor.selectionBackground'], 'color-mix(in srgb, var(--fg) 25%, transparent)')
   set('--find-bg', c['editor.findMatchHighlightBackground'], 'color-mix(in srgb, var(--fg) 22%, transparent)')
   set('--find-current-bg', c['editor.findMatchBackground'], 'color-mix(in srgb, var(--fg) 42%, transparent)')
@@ -193,7 +193,6 @@ function makeLine(i) {
     const g = document.createElement('span')
     g.className = 'gut'
     g.textContent = String(i + 1)
-    g.style.minWidth = ''
     row.appendChild(g)
   }
   const tx = document.createElement('span')
@@ -346,11 +345,21 @@ function render(force) {
 
 function post0(msg) { if (worker) worker.postMessage(msg) }
 
+// Width of the line-number column, in digits. Derived from the document's
+// TOTAL line count, never from the lines currently materialised -- a width
+// taken from the visible window would shift the text as the reader scrolls.
+// Named (not inlined) so the headless harness can lift and test it.
+function gutterDigitsFor(count) {
+  return String(Math.max(1, count)).length
+}
+
 function layout() {
+  // The column width goes first: in wrap mode it decides how much room the
+  // text has on a row, so the geometry below must be reset against the NEW
+  // column rather than the previous document's.
+  document.documentElement.style.setProperty('--gutter-min', gutterDigitsFor(lines.length) + 'ch')
   resetGeometry()
   sizer.style.height = totalHeight() + 'px'
-  gutterDigits = String(Math.max(1, lines.length)).length
-  document.documentElement.style.setProperty('--gutter-min', gutterDigits + 'ch')
   render(true)
 }
 
