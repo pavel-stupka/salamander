@@ -3306,6 +3306,16 @@ BOOL CSalamanderGeneral::GetConversionTable(HWND parent, char* table, const char
         TRACE_E("Invalid parametr (table==NULL) in CSalamanderGeneral::GetConversionTable!");
         return FALSE;
     }
+    // feature 075 (D3): the name was not checked, unlike 'table' above, so a
+    // NULL from a plugin reached the table lookup and faulted inside the name
+    // comparison.  FALSE is inside the documented contract (spl_gen.h: FALSE
+    // means the conversion was not found and 'table' is not valid), so the
+    // shared header does not change.
+    if (conversion == NULL)
+    {
+        TRACE_E("Invalid parametr (conversion==NULL) in CSalamanderGeneral::GetConversionTable!");
+        return FALSE;
+    }
     parent = (parent == NULL ? MainWindow->HWindow : parent);
     BOOL ret = CodeTables.Init(parent);
     int codeType;
