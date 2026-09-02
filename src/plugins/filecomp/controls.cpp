@@ -18,11 +18,52 @@ HBRUSH HDitheredBrush = NULL;
 // CFileHeaderWindow
 //
 
+// feature 075 (D5): store a header text without writing past the destination.
+// Both entry points used an unbounded strcpy into Text[MAX_PATH]; the callers
+// happen to be bounded by construction today (every path arrives through a
+// MAX_PATH buffer), so this is defensive, not a repair of something visible.
+// 'Text' is a UTF-8 path (interface 104, see WM_PAINT below), so the byte clamp
+// can land inside a multi-byte character - the walk-back drops such a torn tail
+// whole, because a torn name makes the wide draw reject the whole string. The
+// core's SalU8TrimIncompleteTail is not reachable from a plugin and the shared
+// headers must not grow for six lines, so it is repeated here.
+//   The walk-back runs ONLY when the copy actually truncated (the shape of
+// cmdshell.cpp's guarded trim).  Not every text arriving here is UTF-8: the
+// remote entry point comes from the ANSI fcremote.exe, so a path can be
+// code-page bytes, and an unconditional walk-back would eat the last character
+// of an untruncated name ending in a byte >= 0xC0 ("...\Petru" with u-ring,
+// "...\resume" with e-acute).  Those are exactly the names the narrow-draw
+// fallback below exists to render.
+// Returns the stored length.
+static int StoreHeaderText(char* dst, int dstSize, const char* text)
+{
+    lstrcpynA(dst, text, dstSize);
+    int len = (int)strlen(dst);
+    if ((int)strlen(text) < dstSize)
+        return len; // nothing was clamped - leave the text exactly as it arrived
+    int i = len;
+    while (i > 0 && ((unsigned char)dst[i - 1] & 0xC0) == 0x80)
+        i--; // walk back over the continuation bytes
+    if (i > 0)
+    {
+        unsigned char lead = (unsigned char)dst[i - 1];
+        if (lead >= 0xC0) // a lead byte: is its sequence complete?
+        {
+            int seqLen = lead >= 0xF0 ? 4 : (lead >= 0xE0 ? 3 : 2);
+            if (len - (i - 1) < seqLen) // fewer bytes present than promised
+            {
+                dst[i - 1] = 0; // the sequence was cut: drop it whole
+                len = i - 1;
+            }
+        }
+    }
+    return len;
+}
+
 CFileHeaderWindow::CFileHeaderWindow(const char* text)
 {
     CALL_STACK_MESSAGE2("CFileHeaderWindow::CFileHeaderWindow(%s)", text);
-    strcpy(Text, text);
-    TextLen = int(strlen(text));
+    TextLen = StoreHeaderText(Text, _countof(Text), text);
     BkgndBrush = NULL;
 }
 
@@ -36,8 +77,7 @@ CFileHeaderWindow::~CFileHeaderWindow()
 void CFileHeaderWindow::SetText(const char* text)
 {
     CALL_STACK_MESSAGE2("CFileHeaderWindow::SetText(%s)", text);
-    strcpy(Text, text);
-    TextLen = int(strlen(text));
+    TextLen = StoreHeaderText(Text, _countof(Text), text); // feature 075 (D5)
     InvalidateRect(HWindow, NULL, FALSE);
     UpdateWindow(HWindow);
 }
