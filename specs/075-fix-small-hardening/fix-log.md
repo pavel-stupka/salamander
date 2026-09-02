@@ -577,6 +577,66 @@ the Node 20 half of SC-005 stays unverified.
 
 ---
 
+## The four remaining before-proofs — attempted with cdb, not achieved
+
+**Attempted 2026-09-02**, on the hidden desktop, with
+`C:\Program Files (x86)\Windows Kits\Debuggersd\cdb.exe`. Recorded in
+detail because the next attempt should start from where this one stopped, not
+from the beginning.
+
+**What works and is reusable** (`scratchpad/dbg.ps1`):
+
+- Symbols load fully from the build directory —
+  `.sympath E:\...\Debug_x64` + `.reload`. Never `.symfix`: it goes to the
+  Microsoft symbol server and hangs the run.
+  `x tandemcommander!CodeTables` → `00000100`04983420`,
+  `x tandemcommander!CCodeTables::GetCodeName` → the full signature
+  `(int, char *, int)`. Private types and globals are all reachable.
+- Allocating and canary-filling scratch memory in the target works:
+  `.foreach /pS 5 ( ba { .dvalloc 1000 } ) { r $t1 = ba }` then `f @$t1 L100 0xab`.
+- A breakpoint that rewrites the arguments of the real call is accepted and is
+  the right shape for the D1 boundary — it makes the *real* call use a
+  canary-guarded buffer with `bufferLen` equal to the name length:
+  `bp tandemcommander!CCodeTables::GetCodeName "r rdx=@$t1; r r8d=0n19; gu; db @$t1 L18; qd"`
+
+**Where it stops**: the breakpoint never fires, because **the internal viewer
+does not open while the process is attached to cdb**. A posted
+`WM_COMMAND CM_VIEW` opens it every time without a debugger (that is how the D4
+proof above was obtained) and never once with one — with exceptions fully
+ignored (`sxi eh`), with delays up to 25 s, and with the open attempted before
+the attach as well as after. That single unexplained behaviour is the blocker
+for D1, and the same trigger problem blocks D2 (needs the Coding menu) and D5
+(needs a File Comparator instance).
+
+**Dead ends, so they are not retried**: `.call` cannot invoke these functions.
+The member-call form
+`.call @@c++(((tandemcommander!CCodeTables *)@$t0)->GetCodeName(...))` returns
+*"Type does not have given member"*; passing `this` as an explicit first
+argument to `.call Module!Class::Method(...)` mismatches the arity and faults
+inside `Valid`; `0n`-prefixed decimals are rejected by `.call`'s argument
+parser; and a function-pointer cast is rejected by the expression parser
+outright.
+
+**What to try next**, in order of promise:
+
+1. Trigger `GetCodeName` from a path that needs no viewer — `dialogs3.cpp:136`
+   (`CConvertFilesDlg::UpdateCodingText`, buffer 1024) is reached from the main
+   window's *Files ▸ Convert* command, so only one `WM_COMMAND` is needed.
+2. Give the hidden desktop a real input queue instead of posted messages
+   (`SwitchDesktop` on a secondary session, or a real input injection), in case
+   the viewer's opening depends on input state the debugger perturbs.
+3. Set the breakpoint on `CCodeTables::GetCodeName` and simply leave the
+   application running under cdb for a long time while a person uses it — the
+   argument-rewrite line above is already correct and would then fire.
+
+**None of this weakens the fixes.** All four defects are unreachable with
+shipped data — which is exactly why each needs artificial state injection — and
+their logic is proven by the probe (37 checks, verbatim pre/post bodies in
+canary arenas) and independently re-verified by three reviewers who compiled the
+bodies themselves and swept the input space.
+
+---
+
 ## G6 — the half that could be done without a debugger
 
 Run on the hidden desktop with all six fixes in, on the D4 fixture
