@@ -577,6 +577,28 @@ the Node 20 half of SC-005 stays unverified.
 
 ---
 
+## G6 — the half that could be done without a debugger
+
+Run on the hidden desktop with all six fixes in, on the D4 fixture
+(`C:	0075\<60×č>\<70×č>.dat`, 274 UTF-8 bytes):
+
+- start → open the internal viewer on that file → post `WM_CLOSE` to the viewer
+  → post `WM_CLOSE` to the main window → **CLEAN EXIT**.
+- No crash, no runtime-check dialog, no window left behind.
+
+One thing checked rather than assumed: closing the main window *while the
+viewer is still open* does **not** end the process (25 s timeout). That is the
+application's own design — viewer windows are independent top-level windows —
+and not something this feature introduced: it reproduces the same way with no
+viewer involved once the order is reversed, and the clean exit above is the
+control.
+
+**Still owed**: the leak and handle counts themselves. They arrive through
+`OutputDebugString` at exit and need a debug listener attached; that part of G6
+remains a human step.
+
+---
+
 ## Changelog text (T052) — for the ship gate, NOT applied here
 
 To be added under the next unreleased version, in the same change as the

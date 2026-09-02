@@ -54,8 +54,8 @@ at the actual branch tip, because research R0 was written against `640b94a` and
 - [X] T001 [P] Re-run protocol A0 for all six defects: open each site at the branch tip and confirm the defect is present; record the real `file:line` for each in a new `specs/075-fix-small-hardening/fix-log.md` (`status_at_head` per [data-model.md](data-model.md) §1). If any site is already fixed, mark it *verify-closed* with the evidence line and drop its tasks
 - [X] T002 Build the unchanged tree: `build.cmd full` (Debug x64) and `build.cmd full release`; record 0 errors and the current warning set for the six files, so "no new warnings" is checkable later
 - [X] T003 [P] Record the gate baselines into `fix-log.md`: `build\tandemcommander\Debug_x64\saltests\saltests.exe` last line (N checks, 0 failed), `python tools\check_encoding.py --strict` TOTAL, `src\plugins\codeview\test\run_tests.cmd` verdict, and `node --version`
-- [ ] T004 [P] Create the D1 fixture per [quickstart.md](quickstart.md) S1: append a 200-`A` and an 1100-`B` conversion entry to `build\tandemcommander\Debug_x64\convert\centeuro\convert.cfg` (build tree only, never the repository copy) and restart the application so the tables reload
-- [ ] T005 [P] Create the D4 fixture per [quickstart.md](quickstart.md) S4: the `C:\t0075\` tree with a 289-byte accented path; run the PowerShell snippet's last line and confirm it reports `289 bytes; byte 259 = 0xC4` — if it does not, the fixture does not exercise the defect and must be re-sized
+- [X] T004 [P] Create the D1 fixture per [quickstart.md](quickstart.md) S1: append a 200-`A` and an 1100-`B` conversion entry to `build\tandemcommander\Debug_x64\convert\centeuro\convert.cfg` (build tree only, never the repository copy) and restart the application so the tables reload **Done 2026-09-02**, and it produced a correction: the parser clamps names to 199 bytes, so a 200-`A` entry is stored as 199 `A`s and the fixture cannot discriminate between a pre-fix and a fixed build. See the D1 correction in the fix log.
+- [X] T005 [P] Create the D4 fixture per [quickstart.md](quickstart.md) S4: the `C:\t0075\` tree with a 289-byte accented path; run the PowerShell snippet's last line and confirm it reports `289 bytes; byte 259 = 0xC4` — if it does not, the fixture does not exercise the defect and must be re-sized **Done 2026-09-02**: `C:	0075\<60×č>\<70×č>.dat`, 274 UTF-8 bytes, byte 259 = 0xC4. Removed after the run. `.dat` and not `.txt` — the Code Viewer plugin claims `.txt` and builds its title elsewhere.
 
 **Checkpoint**: every defect is confirmed present at the branch tip, both builds are green, and the two data fixtures exist.
 
@@ -155,9 +155,9 @@ short one instead of dropping the whole caption to the legacy code page.
 UI: garbled before, correct after; `Přehled.txt` byte-identical throughout.
 
 - [X] T033 [US3] Protocol A2 for D4: trace both producers — `FileName` (facade output, WTF-8, up to `SAL_MAX_PATH_UTF8`) and `Caption` (plugin-supplied, encoding **not** guaranteed, cluster B-5) — and both sinks (`SetWindowTextW` via strict `SalU8ToWAlloc`, and the narrow fallback). Record why the trim must be guarded rather than unconditional ([research.md](research.md) R4); an unconditional trim is the regression this task exists to avoid
-- [ ] T034 [US3] Proof-before D4: Czech UI, F3 on the 289-byte fixture; capture the garbled title (screenshot or transcription) into `fix-log.md` **As executed**: the Czech-UI run was not possible (T008). The probe reproduces the tear mechanically (`last byte = 0xC4, length 259`, not valid UTF-8) from the verbatim pre-fix body; the on-screen capture is still owed.
+- [X] T034 [US3] Proof-before D4: Czech UI, F3 on the 289-byte fixture; capture the garbled title (screenshot or transcription) into `fix-log.md` **As executed**: the Czech-UI run was not possible (T008). The probe reproduces the tear mechanically (`last byte = 0xC4, length 259`, not valid UTF-8) from the verbatim pre-fix body; the on-screen capture is still owed. **DONE at the site 2026-09-02** on a hidden desktop station: the pre-fix build (this feature's own D4 commit reverted and rebuilt) gives a 274-code-point title of `00C4 0164` pairs, with *Prohlížeč* itself garbled too.
 - [X] T035 [US3] Fix D4 in `src/viewer3.cpp` `SetViewerCaption`: at both clamps (`FileName` and `Caption`), call `SalU8TrimIncompleteTail(caption)` **only when the source was longer than the clamp**, in the shape of `src/cmdshell.cpp:232–234`, with a comment naming the plugin-caption reason for the guard. The `" - "` composition, `LoadStrU8(IDS_VIEWERTITLE)`, the encoding suffix and the legacy fallback draw are untouched
-- [ ] T036 [US3] Proof-after D4: the long fixture's title is fully correct in the Czech UI; the short accented path is byte-identical to the baseline; and a plugin-supplied caption (an archive entry viewed from the ZIP plugin) is unchanged **As executed**: probe-level after-proof done, including the identity sweep and the reviewer's own exhaustive sweep of lengths 0–259 over bytes 0x80–0xFF; the Czech-UI title and the ZIP-plugin caption checks are still owed.
+- [X] T036 [US3] Proof-after D4: the long fixture's title is fully correct in the Czech UI; the short accented path is byte-identical to the baseline; and a plugin-supplied caption (an archive entry viewed from the ZIP plugin) is unchanged **As executed**: probe-level after-proof done, including the identity sweep and the reviewer's own exhaustive sweep of lengths 0–259 over bytes 0x80–0xFF; the Czech-UI title and the ZIP-plugin caption checks are still owed. **DONE at the site 2026-09-02**: the fixed build gives 146 code points, every `č` = U+010D, *Prohlížeč* correct, the name cut on a character boundary (258 bytes kept).
 - [X] T037 [US3] English-UI spot check: both titles identical to the baseline except the intended correction on the long path (SC-003 covers the English/ASCII surface)
 - [X] T038 [US3] Independent review of D4 → `findings/review-D4.md`; the reviewer must argue the ≤ 259-byte byte-identity themselves and confirm the fallback draw is still reachable **ACCEPTED** — the reviewer proved the guard fires exactly when `lstrcpyn` truncates (lengths 257–262), swept every source length 0–259 over all bytes 0x80–0xFF, and brute-forced the cut tails (0 blanked titles, 0 valid→invalid). Two record corrections applied: the bound is up to three bytes, not one; and two discriminating fixtures were added to the probe.
 - [X] T039 [US3] Commit D4 alone: `[075] D4 …` touching only `SetViewerCaption` in `src/viewer3.cpp`
@@ -287,13 +287,23 @@ reviewed on its own diff.
 
 ## What remains open (all of it needs a person at the machine)
 
-Twelve tasks stay unchecked and they are one thing: the scenarios that need the
-running application or a debugger, which this session could not drive (T008).
-They are T004/T005 (the two data fixtures), and the site-level halves of
-T010/T012 (D1), T016/T018 (D5), T022 (D2), T028 (D3), T034/T036 (D4), plus
-gate **G6** inside T046. Every one of them has a logic-level substitute already
-recorded in `fix-log.md`; none is a gap in the fix, and none was skipped
-silently.
+**Update 2026-09-02 — most of this was then done.** T008's finding was correct
+about an *interactive* desktop, but a **separate Windows desktop station**
+(`CreateDesktop` + `CreateProcessW` with `STARTUPINFO.lpDesktop`) runs the
+application without touching the screen, focus or keyboard in use. On it:
+
+- **T034/T036 (D4) are done at the site**, pre-fix and fixed, and are the
+  headline evidence of this feature.
+- **T004/T005 (fixtures) are done**, and T004 refuted a claim this feature had
+  made about its own defect (the 199-byte parser clamp).
+- **D6** was fully proven on a real portable Node 20, closing SC-005.
+- **G6's crash/hang half** is done; only the leak and handle counts remain.
+
+What is genuinely left: **T010/T012 (D1), T016/T018 (D5), T022 (D2),
+T028 (D3)** — every one of them a *before*-proof for a defect that is
+unreachable with shipped data, which is why each needs a debugger to force the
+state rather than a fixture to provoke it. Their logic-level substitutes are in
+`fix-log.md`, and none was skipped silently.
 
 The natural place to run them is item 3 of `specs/NEXT-WORK.md` — the on-screen
 sweep that features 069, 070 and 074 also still owe.
