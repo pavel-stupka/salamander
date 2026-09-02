@@ -170,6 +170,16 @@ Property sheets: `plugins/shared/vcxproj/plugin_base.props` + debug/release vari
 - **`ai-main`** — main branch for AI-assisted development
 - Feature branches (e.g., `003-speckit-review`) are created from and merged into `ai-main`
 
+## What To Work On Next
+
+`specs/NEXT-WORK.md` is the single entry point for continuing work — a
+consolidated, prioritized ordering of the per-feature handoffs
+(`specs/069-finish-encoding-fixes/REMAINING-WORK.md`,
+`specs/070-source-viewer-plugin/REMAINING-WORK.md`,
+`specs/072-winget-distribution/REMAINING-WORK.md`), which stay authoritative
+for the detail and the reasoning behind each item. Start there rather than
+re-deriving the order from the individual files.
+
 ## Constitution
 
 Project principles are in `.specify/memory/constitution.md`
