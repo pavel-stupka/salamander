@@ -8,6 +8,13 @@
 ::
 ::     src\plugins\codeview\test\run_tests.cmd
 ::
+:: Needs Node >= 20.10 and Python 3. The worker harness imports web\worker.js,
+:: which is an ES module in a directory with no package.json; Node treats a bare
+:: .js file as CommonJS until 22.7 and refuses it, so --experimental-detect-module
+:: is passed below (accepted from 20.10, and the default from 22.7 -- passing it
+:: on a newer Node changes nothing). Without it the harness fails on Node 20 for
+:: a reason that has nothing to do with the plugin -- feature 075, D6.
+::
 setlocal
 set REPO=%~dp0..\..\..\..
 set FAILED=0
@@ -22,7 +29,7 @@ echo.
 echo ============================================================
 echo  codeview: tokenizer worker (web\worker.js)
 echo ============================================================
-node "%REPO%\src\plugins\codeview\test\harness\test_worker.mjs"
+node --experimental-detect-module "%REPO%\src\plugins\codeview\test\harness\test_worker.mjs"
 if errorlevel 1 set FAILED=1
 
 echo.
