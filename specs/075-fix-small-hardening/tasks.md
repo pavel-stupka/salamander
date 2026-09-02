@@ -198,7 +198,7 @@ than a stale one.
 - [X] T050 [P] Add the 075 entry to `CLAUDE.md` "Recent Changes" in the house style: what was closed, what was deliberately not touched, and that the plugin ABI is unchanged
 - [X] T051 [P] Add a one-line pointer in `specs/074-fix-codeview-gutter/fix-log.md` ("Unrelated, pre-existing, not fixed here") to D6, so the note does not outlive the defect
 - [X] T052 Draft the changelog text into `fix-log.md` per [research.md](research.md) R9 — the D4 entry in the user's terms and the single honest hardening line for D1/D3/D5, with `hygiene — no entry` recorded for D2 and D6. **Do not** touch `CHANGELOG.md` or any version file: that is the ship gate of the release that carries this batch ([plan.md](plan.md) Ship gate)
-- [ ] T053 Commit the documentation updates as one change: `[075] Close the handoff items and record the batch`
+- [X] T053 Commit the documentation updates as one change: `[075] Close the handoff items and record the batch`
 
 ---
 
