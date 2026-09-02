@@ -204,6 +204,30 @@ Build: `BUILD SUCCEEDED`, `codetbl.cpp` recompiled with `/RTCc /RTC1`
 (the command line in this build's own log, which supersedes the tlog reading in
 T007), no compiler warning. `saltests: 1353 checks, 0 failed` — unchanged.
 
+### ⚠ Correction found while running the GUI proof (2026-09-02)
+
+The records above said the conversion name is unbounded, "`DupStr` of whatever
+`convert.cfg` line the user wrote". **That is wrong.** `InitAux` parses each
+name into `char nameBuf[200]` under `int l = (int)min(txt - beg, 199)`
+(`codetbl.cpp:59,154`), so **no stored name can exceed 199 bytes**; the only
+other names are two translated strings.
+
+Both pre-fix overflows were therefore **unreachable, not merely unreached**:
+the scratch one needs ≥ 1024 bytes, and the one-byte one needs a name of
+exactly the caller's buffer size — 200 or 1024 with the three real callers —
+all above the 199-byte ceiling.
+
+Demonstrated rather than asserted: appending a 200-`A` conversion to the build
+tree's `convert.cfg` and selecting it in the viewer gives a title ending
+`- [` + **199** × `A` + `]` — the parser had already clamped it — so the
+fixture produces the *same* title on a pre-fix and a fixed build. Quickstart
+S1 is updated to say so.
+
+The fix is unaffected and stays: `GetCodeName` is now correct for any buffer
+size, which is what it should always have been. What changed is only what this
+record may claim about triggering it. The review's verdict rested on byte
+identity and correctness, not on reachability.
+
 **Review**: [findings/review-D1.md](findings/review-D1.md) — **ACCEPTED**. The
 reviewer compiled both bodies himself and swept every name length 0–300 at
 `bufferLen` 200 and 0–1100 at 1024, with mixed high bytes so a multibyte-aware
@@ -344,6 +368,31 @@ ok   - D4 after:  a complete final character at the clamp boundary is kept
 ```
 
 ---
+
+### Site proof on the real binary (2026-09-02) — **the defect reproduced and fixed**
+
+Run on a separate Windows desktop station so the user's screen, focus and
+keyboard were never touched (harness: `CreateDesktop` + `CreateProcessW` with
+`STARTUPINFO.lpDesktop`, windows enumerated with `EnumDesktopWindows`, titles
+read with `GetWindowTextW`, the viewer opened by posting `WM_COMMAND CM_VIEW`
+(742) to the main window). Fixture: `C:	0075\<60×č>\<70×č>.dat` — 274 UTF-8
+bytes, 144 UTF-16 characters, byte 259 = `0xC4`, a lead byte.
+
+The title of `Salamander's Viewer Window`, read as code points:
+
+| | code points | path | translated word |
+|---|---|---|---|
+| **pre-fix build** | 274 | `00C4 0164 00C4 0164 …` = `Ä Ť Ä Ť …` | `Prohl` `0102 00AD 0139 013E` `e` `00C4 0164` — **also garbled** |
+| **with the fix** | 146 | `010D 010D …` = `č č …` | `Prohlížeč` = `0050 0072 006F 0068 006C 00ED 017E 0065 010D` |
+
+That is exactly what research R4 predicted: one torn character drops the
+**whole** title — the translated word with it — to the legacy code page. The
+fixed title keeps `9 + 120 + 1 + 128 = 258` bytes, i.e. the trim removed
+precisely the torn lead byte and nothing else.
+
+The pre-fix binary was produced by reverting this feature's own commit
+(`git show e197a11 -- src/viewer3.cpp | git apply -R`), rebuilding, running,
+then restoring and rebuilding.
 
 **Review**: [findings/review-D4.md](findings/review-D4.md) — **ACCEPTED**. The
 reviewer proved the guard fires exactly when `lstrcpyn` truncates (measured at

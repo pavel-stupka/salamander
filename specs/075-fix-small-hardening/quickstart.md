@@ -43,12 +43,21 @@ BBBB…(exactly 1100 × B)=ISO21250.TAB
 (`=` and `&` are the only reserved characters; any `.TAB` of the set will do.)
 Restart the application so the tables reload.
 
-**Before (Debug build, must fail):**
-1. Open a text file in the viewer, *Coding* ▸ the 200-A entry.
-   Expected: `/RTC1` dialog *"Run-Time Check Failure #2 — Stack around the
-   variable 'codeName' was corrupted"* when `SetViewerCaption` returns.
-2. *Coding* ▸ the 1100-B entry.
-   Expected: the same for `'buff'` inside `CCodeTables::GetCodeName`.
+> **This scenario does not discriminate, and it cannot be made to.** Verified on
+> 2026-09-02: the parser clamps every conversion name to 199 bytes
+> (`InitAux`, `codetbl.cpp:59,154` — `char nameBuf[200]`,
+> `min(txt - beg, 199)`), so the 200-`A` line above is stored as 199 `A`s and
+> both builds produce the identical title `- [` + 199 × `A` + `]`. The 1100-`B`
+> line likewise never reaches the 1024-byte scratch. **Both pre-fix overflows
+> were unreachable**, which is a correction to this feature's own earlier claim
+> that the name is unbounded (research R1). Keep the steps below only as a
+> "the viewer still works with an over-long entry" smoke test; the discriminating
+> evidence for D1 is the probe, which exercises the function directly.
+
+**Before (Debug build) — expected to behave identically to After:**
+1. Open a file in the viewer, *Coding* ▸ the 200-A entry.
+   Observed: title ends `- [` + 199 × `A` + `]`, no runtime-check dialog.
+2. *Coding* ▸ the 1100-B entry: likewise clamped to 199 `B`s.
 
 **After (must pass):**
 1. 200-A entry: no dialog; the title shows 199 × `A`.
@@ -123,9 +132,16 @@ $b = [Text.Encoding]::UTF8.GetBytes($file)
 Also keep a short accented path for the identity check, e.g.
 `C:\t0075\Přehled.txt`.
 
+> **Verified on 2026-09-02** on the real binary, both halves — see fix-log
+> "Site proof". Two practical notes for whoever repeats it: give the fixture an
+> extension the **internal** viewer handles (`.dat`; `.txt` is claimed by the
+> Code Viewer plugin, whose title is built elsewhere), and open the viewer by
+> posting `WM_COMMAND` 742 (`CM_VIEW`) — a posted F3 does not reach the panel.
+
 **Before (Czech UI):** F3 on the long file — the title bar shows the path and
 the word *Prohlížeč* with garbled accented characters (each `č` as two
-code-page characters).
+code-page characters; measured: `00C4 0164` pairs, and *Prohlížeč* itself comes
+out as `Prohl` `0102 00AD 0139 013E` `e` `00C4 0164`).
 **After:** the title reads `C:\t0075\ččč…\ččč…(24 × č) - Prohlížeč - […]`, every
 character correct; the file name prefix ends after the 24th complete `č`.
 **Identity:** F3 on `Přehled.txt` — title identical to HEAD (`Přehled.txt -

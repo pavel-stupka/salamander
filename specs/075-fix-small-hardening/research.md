@@ -35,10 +35,28 @@ machine.
 1. `len == bufferLen` → `buffer[bufferLen] = 0` — one byte past the caller's
    buffer, result *fits* (wrong).
 2. `strlen(Name) >= 1024` → `strcpy(buff, …)` overflows the scratch buffer.
-   `Name` is unbounded: `DupStr` of whatever `convert.cfg` line the user wrote.
 3. `bufferLen <= 0` → `len = bufferLen - 1` is negative → `strncpy` with a huge
    `size_t`. (Not called that way today; guarded anyway because the fix makes
    it free.)
+
+> **CORRECTION (2026-09-02, found while running the GUI proof).** This section
+> first said `Name` is unbounded — "`DupStr` of whatever `convert.cfg` line the
+> user wrote". **That is wrong.** The parser clamps every name before storing
+> it: `InitAux` reads into `char nameBuf[200]` with
+> `int l = (int)min(txt - beg, 199)` (`codetbl.cpp:59,154`), and the only other
+> names are two translated strings. The longest storable name is therefore
+> **199 bytes**.
+>
+> Both overflows were consequently **unreachable, not merely unreached**:
+> defect 2 needs a name ≥ 1024 bytes, and defect 1 needs a name of exactly
+> `bufferLen`, which with the three callers means exactly 200 or exactly 1024 —
+> all above the 199-byte ceiling. A hand-edited `convert.cfg` cannot produce
+> them either; a 200-`A` line is stored as 199 `A`s.
+>
+> This does not change the fix or its verdict. It makes the function correct for
+> *any* buffer size, which is what it should have been; it changes only what this
+> record may claim about how it could be triggered. Quickstart S1's fixture is
+> updated to say it cannot discriminate, and why.
 
 **Decision**: one bounded copy from the source, no scratch:
 
