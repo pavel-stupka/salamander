@@ -861,23 +861,24 @@ BOOL CCodeTables::GetCodeName(int codeType, char* buffer, int bufferLen)
         TRACE_E("CCodeTables::GetCodeName: Table is not loaded");
         return FALSE;
     }
-    char buff[1024];
     if (bufferLen > 0)
         buffer[0] = 0;
     if (!Valid(codeType))
         return FALSE;
-    if (codeType == 0)
-        strcpy(buff, LoadStr(IDS_VIEWERNONECODING));
-    else
-        strcpy(buff, Table->Data[codeType - 1]->Name);
-    int len = (int)strlen(buff);
-    if (len > bufferLen)
-        len = bufferLen - 1;
-    strncpy(buffer, buff, len);
-    buffer[len] = 0;
-    if ((int)strlen(buff) > bufferLen)
-        return FALSE;
-    return TRUE;
+    // feature 075 (D1): one bounded copy straight from the name.  The old code
+    // went through a 1024-byte scratch buffer with an unbounded strcpy -- a
+    // conversion name in convert.cfg has no length limit -- and then clamped
+    // with 'len > bufferLen', so a name of exactly bufferLen bytes wrote
+    // buffer[bufferLen], one byte past the caller's storage, and still reported
+    // success.  Valid() above guarantees Name != NULL for codeType > 0.
+    //   The name's own bytes are copied, never re-encoded: they are handed to
+    // plugins by EnumConversionTables, accepted back by GetConversionTable and
+    // persisted by dbviewer and filecomp (feature 069, F-P4-01).
+    const char* name = codeType == 0 ? LoadStr(IDS_VIEWERNONECODING) : Table->Data[codeType - 1]->Name;
+    int nameLen = (int)strlen(name);
+    if (bufferLen > 0)
+        lstrcpyn(buffer, name, bufferLen);
+    return nameLen < bufferLen;
 }
 
 void CCodeTables::GetWinCodePage(char* buf)
