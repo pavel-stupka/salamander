@@ -185,8 +185,10 @@ src\plugins\codeview\test\run_tests.cmd
 module by default. **This is why the HEAD reproduction needs a Node 20
 install**: with nvm-windows/fnm, `nvm use 20` then the runner →
 `RESULT: FAILURES` with a `SyntaxError: Cannot use import statement outside a
-module` from `worker.js`. If no Node 20 is available, record that and rely on
-the emulation above.
+module` from `worker.js`. If no Node 20 is installed, a portable build works and needs no
+installation: download `node-v20.18.0-win-x64.zip` from nodejs.org, expand it
+anywhere, and put that directory first on `PATH` for the run — which is how
+this was actually verified on 2026-09-02.
 **After:** the runner passes on Node 24 **and** on Node 20 (if available); the
 worker line in the script carries `--experimental-detect-module`.
 **Still fails when it should:** temporarily break `web/worker.js` (e.g. rename

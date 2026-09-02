@@ -475,9 +475,24 @@ Error [ERR_REQUIRE_CYCLE_MODULE]: Cannot require() ES Module
 exit=1
 ```
 
-No real Node 20 run: neither `nvm` nor `fnm` is installed on this machine and
-`npx node@20.18.0` produced no usable binary. Recorded as not performed, per
-quickstart S6.
+**Superseded — the real Node 20 run was performed** (2026-09-02, later the same
+session). A portable `node-v20.18.0-win-x64` was downloaded to the scratchpad
+and put first on `PATH`; nothing was installed on the machine. With the
+**pre-fix** runner (the flag removed by `sed`):
+
+```
+> node --version
+v20.18.0
+> src\plugins\codeview	est\_prefix_tmp.cmd
+SyntaxError: Cannot use import statement outside a module
+ RESULT: FAILURES -- see above
+```
+
+Note the diagnostic: on a real Node 20 the failure is `SyntaxError: Cannot use
+import statement outside a module`, **not** the `ERR_REQUIRE_CYCLE_MODULE` the
+Node 24 emulation produced. Same cause (the CommonJS loader applied to an ESM
+file), different message — which is why the emulation was only ever recorded as
+a substitute.
 
 **Proof after**:
 
