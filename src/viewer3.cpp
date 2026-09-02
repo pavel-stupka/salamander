@@ -3297,7 +3297,14 @@ CViewerWindow::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 else
                 {
                     // if auto-select is off, one item must be the default
-                    int defCodeType;
+                    // feature 075 (D2): GetCodeType leaves its out-parameter
+                    // untouched when the tables are not loaded (the only one of
+                    // its three exits that does not assign), and InitMenu above
+                    // has then already returned without adding any coding item
+                    // -- so without this initialiser an unset value reached
+                    // SetMenuDefaultItem.  0 means the "none" entry, which is
+                    // what a name that does not resolve already selects.
+                    int defCodeType = 0;
                     CodeTables.GetCodeType(DefaultConvert, defCodeType);
                     SetMenuDefaultItem(subMenu, CM_CODING_MIN + defCodeType, FALSE);
                 }
