@@ -25,15 +25,34 @@ BOOL ViewerActive(HWND hwnd)
 void CViewerWindow::SetViewerCaption()
 {
     char caption[MAX_PATH + 300];
+    // feature 075 (D4): the MAX_PATH byte clamps below can cut a multi-byte
+    // character in half.  A torn tail makes the strict conversion at the end of
+    // this function fail, and then the WHOLE title - the translated word and the
+    // file name with it - is drawn through the legacy code page.  File names are
+    // long-path capable since feature 012, so any accented path over 259 bytes
+    // hits it; feature 069's title fixes do not reach these.
+    //   The trim runs only when the copy really truncated (the shape of
+    // cmdshell.cpp's guarded trim).  Caption comes from a plugin and is not
+    // guaranteed UTF-8 - an unconditional trim would drop the last character of
+    // an untruncated code-page caption ending in a byte >= 0xC0, and the legacy
+    // fallback at the end of this function is exactly what renders those.
     if (Caption == NULL)
     {
         if (FileName != NULL)
+        {
             lstrcpyn(caption, FileName, MAX_PATH); // caption according to the file
+            if ((int)strlen(FileName) >= MAX_PATH)
+                SalU8TrimIncompleteTail(caption);
+        }
         else
             caption[0] = 0;
     }
     else
+    {
         lstrcpyn(caption, Caption, MAX_PATH); // caption according to the plug-in request
+        if ((int)strlen(Caption) >= MAX_PATH)
+            SalU8TrimIncompleteTail(caption);
+    }
     if (Caption == NULL || !WholeCaption)
     {
         if (caption[0] != 0)
