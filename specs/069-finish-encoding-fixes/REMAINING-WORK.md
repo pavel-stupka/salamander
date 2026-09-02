@@ -99,6 +99,26 @@ been a regression or a half-fix.
 
 ## 3. New defects found while doing the work (none is in an 068 finding)
 
+> **CLOSED by feature 075** (2026-09-02, branch `075-fix-small-hardening`).
+> All five were fixed, each in its own commit, each independently reviewed —
+> one was **rejected on review and reworked**. Record and evidence:
+> [`specs/075-fix-small-hardening/fix-log.md`](../075-fix-small-hardening/fix-log.md).
+> The list below is kept as written, with each item's disposition appended, so
+> the reasoning that produced it stays readable.
+>
+> | # | Fixed as | Commit | Review |
+> |---|---|---|---|
+> | 1 `codetbl.cpp:873` | D1 — and it was **two** overflows, not one: the same function also copied an unbounded `convert.cfg` name into a 1024-byte stack scratch | `8102dd8` | ACCEPTED |
+> | 2 `viewer3.cpp:3291` | D2 | `ff1c684` | ACCEPTED |
+> | 3 `zip.cpp:3292` | D3 | `2230787` | ACCEPTED |
+> | 4 `viewer3.cpp:30/35` | D4 | `e197a11` | ACCEPTED |
+> | 5 `filecomp/controls.cpp:24,39` | D5 | `1ffdf3b` | REJECTED → reworked → ACCEPTED |
+>
+> The "**Fix this first**" instruction on item 1 is retired — it was followed.
+> Two site references had drifted (item 1 is at `:874`, item 2 at `:3300`), which
+> is the third time this handoff's line numbers have aged; feature 075 re-ran the
+> A0 check before touching anything, as the protocol requires.
+
 Recorded rather than fixed, because FR-001 forbids a change without a finding
 behind it. **The first one is a real out-of-bounds write.**
 

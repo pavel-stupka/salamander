@@ -14,7 +14,29 @@ blocker for anything already shipped.
 
 ---
 
-## 1. Small hardening batch (hours, one feature)
+## 1. Small hardening batch — ✅ DONE (feature 075, 2026-09-02)
+
+> Delivered as `075-fix-small-hardening`: six commits, one per defect, each
+> independently reviewed. Record:
+> [`075-fix-small-hardening/fix-log.md`](075-fix-small-hardening/fix-log.md).
+> `069/REMAINING-WORK.md` §3 is now empty of open items.
+>
+> Two things worth carrying forward. **The independent review earned its place
+> again**: D5's first version ran a UTF-8 walk-back unconditionally and ate the
+> last character of an untruncated code-page name — reachable through the ANSI
+> `fcremote.exe` — while the build, 1,353 tests and the evidence probe were all
+> green. And **the GUI half is still owed**: this session could not drive the
+> application or a debugger, so scenarios S1–S5 in
+> [`075-fix-small-hardening/quickstart.md`](075-fix-small-hardening/quickstart.md)
+> remain a human step, as does gate G6. They are small and they fold naturally
+> into item 3's sweep below.
+>
+> The original entry follows, unchanged.
+
+<details>
+<summary>Original entry</summary>
+
+### Small hardening batch (hours, one feature)
 
 Five defects recorded in `069/REMAINING-WORK.md` §3. Feature 069 could not fix
 them because its charter (FR-001) forbids a change without a finding behind it —
@@ -38,7 +60,9 @@ reports `RESULT: FAILURES` on this machine before *and* after feature 074
 **Why first**: best risk-to-cost ratio in the whole list, and it makes the test
 output trustworthy for everything below.
 
-## 2. Restart Manager — upgrading over a running instance (winget P1)
+</details>
+
+## 2. Restart Manager — upgrading over a running instance (winget P1) ← **start here**
 
 The one item that **fails for real users** now that the package is in the
 catalogue. With the program open, `winget upgrade` (which passes

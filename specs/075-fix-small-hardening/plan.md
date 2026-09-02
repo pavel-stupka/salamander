@@ -37,7 +37,7 @@ One Windows batch file (`run_tests.cmd`) and its Node harness.
 **Primary Dependencies**: none new. Uses the existing shared helpers
 (`lstrcpyn`, `SalU8TrimIncompleteTail` in `src/common/salunicode.cpp`), the
 existing trace macros, and the Node flag `--experimental-detect-module`
-(Node ≥ 20.10; default-on from 22.12).
+(Node ≥ 20.10; default from 22.7).
 **Storage**: none — no registry value, no configuration change. The
 conversion-table name bytes (plugin-facing, persisted by dbviewer/filecomp) are
 copied, never altered.
@@ -205,7 +205,7 @@ construction, are deliberately not touched (constitution III).
 The worker harness line becomes
 `node --experimental-detect-module "%REPO%\src\plugins\codeview\test\harness\test_worker.mjs"`,
 and the script header gains one line: *needs Node ≥ 20.10 (the flag); default
-behaviour from 22.12*. `test_page.mjs` lifts source text and never imports the
+behaviour from 22.7*. `test_page.mjs` lifts source text and never imports the
 `.js` file, so it is not touched. Nothing under `web/` changes, so the data
 harness's resource-table rule is not in play. Verified on the development
 machine: the flag is accepted on Node 24 and the harness passes; inverting it

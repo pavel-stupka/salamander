@@ -146,6 +146,13 @@ clipboard or theme plumbing. `codeview.spl` is built and carries the fix.
 
 ## Unrelated, pre-existing, not fixed here
 
+> **Fixed by feature 075 (D6)**, commit `eecfca5`: the runner now passes
+> `--experimental-detect-module` to the worker harness, so the verdict is the
+> same on Node 20 and Node 22+. The third remedy guessed at below — a
+> `web/package.json` — was rejected in that feature for the reason suspected
+> here (a new file in the shipped asset tree, with an unverified interaction
+> with `check_data.py`'s resource-table rule).
+
 `src\plugins\codeview\test\run_tests.cmd` reports `RESULT: FAILURES` on this
 machine **before and after** this feature. The cause is the tokenizer-worker
 harness, not the product: `test_worker.mjs` imports `web/worker.js`, and the

@@ -68,7 +68,7 @@ consumed immediately, as today.
 |---|---|---|---|
 | `dialogs3.cpp:136` `CConvertFilesDlg::UpdateCodingText` | `buff[1024]`, passes 1024 | no | none below 1024 bytes; a ≥1024-byte name no longer overflows (either buffer) |
 | `viewer3.cpp:58` `SetViewerCaption` | `codeName[200]`, passes 200 | no | none below 200; a 200-byte name no longer writes `codeName[200]` (the `/RTC1` reproducer, quickstart S1) |
-| `viewer3.cpp:1914` `CM_SETDEFAULT_CODING` | `DefaultConvert[200]`, passes 200 | **yes** — clears the default on FALSE | a 200-byte name: today stores a 199-byte truncated default and reports success; after, the default is cleared. Intended: a truncated default could never match again anyway (`GetCodeType` compares whole names) |
+| `viewer3.cpp:1914` `CM_SETDEFAULT_CODING` | `DefaultConvert[200]`, passes 200 | **yes** — clears the default on FALSE | a 200-byte name: today the clamp does **not** fire (`len > bufferLen` is false at `len == bufferLen`), so the *whole* 200-byte name is copied and the terminator is written one past the array — the overflow lands in whatever follows `Configuration.DefaultConvert` and the stored "string" runs on into it, and the call still reports success. After the fix the default is cleared instead. Intended: a name that does not fit could never match again anyway (`GetCodeType` compares whole names). *(Corrected after the D1 review, which showed the earlier wording — "stores a 199-byte truncated default" — was wrong about the pre-fix behaviour.)* |
 
 **Alternatives rejected**: (a) just `>` → `>=` — leaves defect 2 in place;
 (b) `strncpy_s`/`strcpy_s` — not the house call, and `_TRUNCATE` semantics are
@@ -168,7 +168,7 @@ unconditional trim would drop the final byte of an *untruncated* code-page
 caption whose last byte is ≥ 0xC0 (e.g. CP1250 `á` = 0xE1 looks like a 3-byte
 lead with no continuation) — a regression on a working legacy plugin. With the
 guard, a name of ≤ 259 bytes is never touched (FR-005 byte identity), and a
-truncated code-page caption can lose at most one more byte of an already-cut
+truncated code-page caption can lose **up to three** more bytes of an already-cut
 string while the legacy fallback still draws it.
 
 **Helper facts** (`salunicode.cpp:612–630`, tests `saltests.cpp:1439–1477`):
@@ -228,7 +228,7 @@ header and no report after.
 `web/worker.js` is an ES module (`import` statements) in a directory with no
 `package.json`; Node < 22.7 treats a bare `.js` as CommonJS unless
 `--experimental-detect-module` is given (flag exists from 20.10; on by default
-from 22.7, stable in 22.12). `test_page.mjs` reads the sources as text and
+from 22.7, the default from 22.7). `test_page.mjs` reads the sources as text and
 never imports the `.js` file — unaffected.
 
 **Verified on this machine** (Node 24.19.0):

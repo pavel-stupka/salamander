@@ -159,6 +159,13 @@ with an ellipsis to the width).
 stored text ends after byte 258, not with a lone `\xC4`.
 **Identity:** normal use — compare two files with accented names: both headers
 identical to HEAD.
+**The ANSI chain (added after the D5 review):** launch the comparison through
+`fcremote.exe` (the remote entry point) on a file whose name **ends** in an
+accented character — `D:\t0075\Petrů` or `…\résumé`. That path arrives as
+code-page bytes, not UTF-8, because `fcremote` is an ANSI build
+(`fcremote.cpp:359` calls `GetCommandLine()`), and the header must show the
+final character. This is feature 069's V-21 extended to the chain the review
+identified; the first version of this fix broke exactly it.
 
 ## S6 — D6: one verdict per source tree *(FR-007)*
 

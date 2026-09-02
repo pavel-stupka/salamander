@@ -452,3 +452,33 @@ plugin architecture preservation, UI consistency.
   must move with `AppId` or upgrade detection silently breaks. Real installs,
   the workflow run and the first (irreversible, public) submission are manual -
   see `specs/072-winget-distribution/quickstart.md` and `fix-log.md`.
+- 075-fix-small-hardening: closed the six defects that were **recorded but not
+  fixed** — the five from `069/REMAINING-WORK.md` §3 (which feature 069's own
+  charter forbade it to touch, having no finding behind them) plus the Code
+  Viewer test-runner note from 074. One commit per defect, each independently
+  reviewed: `CCodeTables::GetCodeName` (**two** overflows, not the one recorded
+  — a name of exactly the caller's buffer length wrote one byte past it *and*
+  an unbounded `convert.cfg` name overran a 1024-byte stack scratch; one
+  bounded `lstrcpyn` replaces both), the viewer's coding-menu default read
+  before it was set, a NULL conversion name faulting inside the plugin-facing
+  `GetConversionTable`, the viewer title torn mid-character on paths over 259
+  bytes (the one user-visible item), the File Comparator's unbounded header
+  copy, and `run_tests.cmd`'s Node-version-dependent verdict
+  (`--experimental-detect-module`; detection is the default from Node **22.7**,
+  not 22.12). **Plugin ABI untouched** — no `src/plugins/shared/` diff,
+  interface 106, `saltests` unchanged at 1353/0 by design (contract C14: none
+  of the sites is reachable from a test exe that links only `src/common/`).
+  **Process, and the reason to keep it**: the independent review REJECTED the
+  File Comparator fix — its walk-back ran unconditionally and ate the last
+  character of an *untruncated* code-page name, reachable because
+  `fcremote.exe` is an ANSI build — while the build, the tests and the evidence
+  probe were all green; the same trap had been written into the *viewer title's*
+  design hours earlier and simply not applied. Reviews also corrected three
+  factual claims in the feature's own records. Evidence: a committed probe
+  (`specs/075-fix-small-hardening/probe/`) compiling the verbatim pre- and
+  post-fix bodies in canary arenas, 37 checks — its first two failures were
+  fixture bugs, and after each review it gained the fixture class that would
+  have caught what the reviewer found. **Still owed**: the GUI scenarios S1–S5
+  and gate G6 need a person; this session could not drive the application or a
+  debugger, which is recorded rather than worked around. No version bump, no
+  changelog entry yet — the text is drafted in `fix-log.md` for the ship gate.
